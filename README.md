@@ -80,11 +80,18 @@ MenuFacile data was also used to build a separate Business Intelligence portfoli
 
 [View the MenuFacile Power BI Portfolio](https://github.com/salles1109-coder/menufacile-powerbi-portfolio)
 
-## Live project
+## Live project & demos
 
-[Visit MenuFacile](https://menufacile.org)
+**Main website:** [MenuFacile](https://menufacile.org/)
 
-Individual demo links for each business segment will be documented here as part of the portfolio presentation.
+Explore the platform through live demo environments representing different business segments:
+
+- **Food & Delivery — Bella Food:** [Open live demo](https://menufacile.org/menu/bella-pizza)
+- **Appointments & Services — Studio Bella:** [Open live demo](https://menufacile.org/menu/studio-bella)
+- **Online Store & Product Catalog — MenuFacile Store:** [Open live demo](https://menufacile.org/menu/iphone)
+- **Custom Orders & Scheduled Production — Encomenda Facile:** available from the demo section on the [MenuFacile website](https://menufacile.org/)
+
+The demos allow recruiters and visitors to explore real customer-facing flows such as digital ordering, scheduling, product browsing and scheduled custom orders.
 
 ## Security
 

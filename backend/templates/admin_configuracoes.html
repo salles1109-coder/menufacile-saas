@@ -1,0 +1,4314 @@
+{% set idioma_painel = idioma_empresa(empresa) %}
+{% set mf_tipo_admin = (empresa.tipo or '')|lower %}
+{% set mf_admin_servicos = mf_tipo_admin in ['salao','salão','servicos','serviços','barbearia','estetica','estética','clinica','clínica','clinica_simples','consultorio','consultório','academia','oficina','servicos_gerais','outros_servicos'] %}
+{% set mf_admin_produtos = mf_tipo_admin in ['loja','loja_catalogo','catalogo','mercado','mercearia','adega','bebidas','farmacia','farmácia','pet_shop','petshop','floricultura','outras_lojas'] %}
+{% set mf_admin_encomendas = mf_tipo_admin in ['encomendas','encomenda','sob_encomenda','confeitaria_encomendas'] %}
+{% set mf_mostrar_cardapio_qr = not (mf_admin_servicos or mf_admin_produtos or mf_admin_encomendas) %}
+<!DOCTYPE html>
+{% extends "base.html" %}
+{% block body_attrs %} class="mf-ds-admin mf-ds-configuracoes"{% endblock %}
+{% block title %}{{ t("Configurações", idioma_painel) }} - {{ empresa.nome }}{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="/static/css/encomendas-apresentacao-admin-v812.css?v=819">
+
+<!-- MENUFACILE ADMIN LAYOUT FIX - padroniza sidebar e área principal -->
+<style id="mf-v73-dados-identidade-preview">
+  #dados-empresa{
+    overflow:hidden;
+  }
+  #dados-empresa > .card-title{
+    margin-bottom:0;
+  }
+  #dados-empresa .mf-company-workspace{
+    display:grid;
+    grid-template-columns:minmax(0,.94fr) minmax(430px,1.06fr);
+    gap:0;
+    margin-top:10px;
+    border-top:1px solid #e8edf5;
+  }
+  #dados-empresa .mf-company-editor,
+  #dados-empresa .mf-company-preview-column{
+    box-sizing:border-box;
+    min-width:0;
+    padding:30px 30px 26px;
+  }
+  #dados-empresa .mf-company-editor{
+    padding-left:0;
+    border-right:1px solid #e3e9f2;
+  }
+  #dados-empresa .mf-company-preview-column{
+    width:auto !important;
+    max-width:none !important;
+    min-width:0 !important;
+    position:static !important;
+    inset:auto !important;
+    transform:none !important;
+    float:none !important;
+    padding-right:0;
+  }
+  #dados-empresa .mf-company-subheading,
+  #dados-empresa .mf-preview-heading{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    min-height:38px;
+    margin:0 0 22px;
+  }
+  #dados-empresa .mf-company-subheading-icon,
+  #dados-empresa .mf-preview-heading-icon{
+    width:38px;
+    height:38px;
+    flex:0 0 38px;
+    display:grid;
+    place-items:center;
+    border-radius:50%;
+    color:#5b21d2;
+    background:#f2efff;
+    font-size:15px;
+  }
+  #dados-empresa .mf-company-subheading h3,
+  #dados-empresa .mf-preview-heading h3{
+    margin:0;
+    color:#1d1148;
+    font-size:18px;
+    font-weight:850;
+    line-height:1.25;
+  }
+  #dados-empresa .mf-company-fields{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:18px;
+  }
+  #dados-empresa .mf-company-fields .field{
+    width:100%;
+    min-width:0;
+    margin:0;
+  }
+  #dados-empresa .mf-company-fields .field label{
+    display:block;
+    margin:0 0 8px;
+    color:#111827;
+    font-size:13px;
+    font-weight:800;
+  }
+  #dados-empresa .mf-company-fields .field input,
+  #dados-empresa .mf-company-fields .field select{
+    width:100%;
+    min-height:48px;
+    box-sizing:border-box;
+    border:1px solid #d7e0ec;
+    border-radius:12px;
+    background:#fff;
+    padding:0 14px;
+    color:#101828;
+    font-size:15px;
+    box-shadow:0 1px 2px rgba(15,23,42,.02);
+  }
+  #dados-empresa .mf-company-fields .field input:focus,
+  #dados-empresa .mf-company-fields .field select:focus{
+    border-color:#7c3aed;
+    box-shadow:0 0 0 3px rgba(124,58,237,.10);
+    outline:0;
+  }
+  #dados-empresa .mf-company-fields .field small{
+    display:block;
+    margin-top:7px;
+    color:#65748b;
+    font-size:11.5px;
+    line-height:1.4;
+  }
+  #dados-empresa .mf-company-divider{
+    height:1px;
+    margin:26px 0 22px;
+    background:#e8edf5;
+  }
+  #dados-empresa .mf-logo-manager{
+    display:grid;
+    grid-template-columns:84px minmax(0,1fr);
+    gap:14px 16px;
+    align-items:center;
+    padding:14px;
+    border:1px solid #dfe6f0;
+    border-radius:14px;
+    background:#fff;
+  }
+  #dados-empresa .mf-logo-manager .logo-preview{
+    width:84px;
+    height:84px;
+    margin:0;
+    border:1px solid #e2e8f0;
+    border-radius:14px;
+    overflow:hidden;
+    display:grid;
+    place-items:center;
+    background:#f8fafc;
+  }
+  #dados-empresa .mf-logo-manager .logo-preview img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+  }
+  #dados-empresa .mf-logo-manager .logo-preview span{
+    display:grid;
+    place-items:center;
+    width:100%;
+    height:100%;
+    color:#5b21d2;
+    font-size:28px;
+    font-weight:900;
+    background:#f2efff;
+  }
+  #dados-empresa .mf-logo-info{
+    min-width:0;
+  }
+  #dados-empresa .mf-logo-info strong{
+    display:block;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    color:#15213a;
+    font-size:14px;
+    font-weight:850;
+  }
+  #dados-empresa .mf-logo-info span{
+    display:block;
+    margin-top:4px;
+    color:#718096;
+    font-size:12px;
+  }
+  #dados-empresa .mf-logo-manager .logo-actions{
+    grid-column:2;
+    display:flex;
+    flex-wrap:wrap;
+    gap:9px;
+    align-items:center;
+    margin:0;
+  }
+  #dados-empresa .mf-logo-manager .logo-file{
+    display:none !important;
+  }
+  #dados-empresa .mf-logo-manager .logo-actions button{
+    min-height:38px;
+    margin:0;
+    padding:0 14px;
+    border-radius:10px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    font-size:12px;
+    font-weight:800;
+  }
+  #dados-empresa .mf-logo-manager .btn-upload-logo{
+    color:#fff;
+    border:1px solid #3b0764;
+    background:#3b0764;
+  }
+  #dados-empresa .mf-logo-manager .btn-remover-logo{
+    color:#c62828;
+    border:1px solid #fecaca;
+    background:#fff;
+  }
+  #dados-empresa .mf-logo-manager .upload-status{
+    grid-column:1 / -1;
+    min-height:0;
+    color:#64748b;
+    font-size:12px;
+  }
+  #dados-empresa .mf-preview-heading{
+    justify-content:flex-start;
+  }
+  #dados-empresa .mf-preview-badge{
+    margin-left:auto;
+    padding:7px 11px;
+    border-radius:999px;
+    color:#5b21d2;
+    background:#f2efff;
+    font-size:11px;
+    font-weight:800;
+    white-space:nowrap;
+  }
+  #dados-empresa .mf-public-preview-card{
+    overflow:hidden;
+    border:1px solid #dce4ef;
+    border-radius:18px;
+    background:#fff;
+    box-shadow:0 12px 28px rgba(30,41,59,.06);
+  }
+  #dados-empresa .mf-public-preview-hero{
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:20px;
+    min-height:190px;
+    padding:30px;
+    overflow:hidden;
+    background:#fff;
+  }
+  #dados-empresa .mf-public-preview-hero::before,
+  #dados-empresa .mf-public-preview-hero::after{
+    display:none;
+  }
+  #dados-empresa .mf-public-preview-logo{
+    position:relative;
+    z-index:1;
+    width:120px;
+    height:120px;
+    flex:0 0 120px;
+    display:grid;
+    place-items:center;
+    overflow:hidden;
+    border-radius:50%;
+    border:4px solid rgba(255,255,255,.92);
+    background:#fff;
+    box-shadow:0 8px 24px rgba(15,23,42,.12);
+  }
+  #dados-empresa .mf-public-preview-logo img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+  }
+  #dados-empresa .mf-public-preview-logo span{
+    color:#5b21d2;
+    font-size:38px;
+    font-weight:900;
+  }
+  #dados-empresa .mf-public-preview-copy{
+    position:relative;
+    z-index:1;
+    min-width:0;
+  }
+  #dados-empresa .mf-public-preview-copy strong{
+    display:block;
+    color:#151b36;
+    font-size:30px;
+    font-weight:900;
+    line-height:1.12;
+    overflow-wrap:anywhere;
+  }
+  #dados-empresa .mf-public-preview-copy span{
+    display:block;
+    margin-top:8px;
+    color:#667085;
+    font-size:15px;
+    line-height:1.45;
+    overflow-wrap:anywhere;
+  }
+  #dados-empresa .mf-public-preview-nav{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:0 18px;
+    border-top:1px solid #edf1f6;
+    border-bottom:1px solid #edf1f6;
+    background:#fff;
+  }
+  #dados-empresa .mf-public-preview-tab{
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    min-height:54px;
+    padding:0 14px;
+    color:#667085;
+    font-size:12px;
+    font-weight:750;
+    white-space:nowrap;
+  }
+  #dados-empresa .mf-public-preview-tab.active{
+    color:#5b21d2;
+  }
+  #dados-empresa .mf-public-preview-tab.active::after{
+    content:"";
+    position:absolute;
+    left:12px;
+    right:12px;
+    bottom:0;
+    height:3px;
+    border-radius:3px 3px 0 0;
+    background:#6d28d9;
+  }
+  #dados-empresa .mf-public-preview-body{
+    display:grid;
+    gap:18px;
+    padding:24px 28px 28px;
+  }
+  #dados-empresa .mf-public-preview-row{
+    display:grid;
+    grid-template-columns:42px 1fr 72px;
+    gap:14px;
+    align-items:center;
+  }
+  #dados-empresa .mf-public-preview-dot{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:#f4f1ff;
+  }
+  #dados-empresa .mf-public-preview-lines{
+    display:grid;
+    gap:8px;
+  }
+  #dados-empresa .mf-public-preview-lines i,
+  #dados-empresa .mf-public-preview-price{
+    display:block;
+    height:9px;
+    border-radius:999px;
+    background:#eef1f6;
+  }
+  #dados-empresa .mf-public-preview-lines i:last-child{
+    width:66%;
+  }
+  #dados-empresa .mf-public-preview-price{
+    width:72px;
+    justify-self:end;
+  }
+  @media (max-width: 1180px){
+    #dados-empresa .mf-company-workspace{
+      grid-template-columns:minmax(0,1fr) minmax(380px,.88fr);
+    }
+    #dados-empresa .mf-company-editor,
+    #dados-empresa .mf-company-preview-column{
+      padding:26px 22px 24px;
+    }
+    #dados-empresa .mf-company-editor{padding-left:0;}
+    #dados-empresa .mf-company-preview-column{padding-right:0;}
+    #dados-empresa .mf-public-preview-copy strong{font-size:25px;}
+  }
+  @media (max-width: 900px){
+    #dados-empresa .mf-company-workspace{
+      grid-template-columns:1fr;
+    }
+    #dados-empresa .mf-company-editor{
+      padding:24px 0;
+      border-right:0;
+    }
+    #dados-empresa .mf-company-preview-column{
+      padding:24px 0 0;
+      border-top:1px solid #e3e9f2;
+    }
+  }
+
+  #dados-empresa .mf-company-subheading > div{min-width:0;}
+  #dados-empresa .mf-company-subheading p{
+    margin:4px 0 0;
+    color:#65748b;
+    font-size:12px;
+    line-height:1.4;
+  }
+  #dados-empresa .mf-cover-fields{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:16px;
+  }
+  #dados-empresa .mf-cover-fields .field{margin:0;}
+  #dados-empresa .mf-cover-fields label{
+    display:block;
+    margin:0 0 8px;
+    color:#111827;
+    font-size:13px;
+    font-weight:800;
+  }
+  #dados-empresa .mf-cover-fields input,
+  #dados-empresa .mf-cover-fields textarea{
+    width:100%;
+    box-sizing:border-box;
+    border:1px solid #d7e0ec;
+    border-radius:12px;
+    background:#fff;
+    color:#101828;
+    font-size:14px;
+    box-shadow:0 1px 2px rgba(15,23,42,.02);
+  }
+  #dados-empresa .mf-cover-fields input{min-height:46px;padding:0 14px;}
+  #dados-empresa .mf-cover-fields textarea{min-height:88px;padding:12px 14px;resize:vertical;}
+  #dados-empresa .mf-cover-fields input:focus,
+  #dados-empresa .mf-cover-fields textarea:focus{
+    border-color:#7c3aed;
+    box-shadow:0 0 0 3px rgba(124,58,237,.10);
+    outline:0;
+  }
+  #dados-empresa .mf-cover-fields small{
+    display:block;
+    margin-top:7px;
+    color:#65748b;
+    font-size:11.5px;
+  }
+  #dados-empresa .mf-cover-image-manager{
+    display:grid;
+    grid-template-columns:150px minmax(0,1fr);
+    gap:14px;
+    align-items:center;
+    margin-top:16px;
+    padding:14px;
+    border:1px solid #dfe6f0;
+    border-radius:14px;
+    background:#fff;
+  }
+  #dados-empresa .mf-cover-image-thumb{
+    position:relative;
+    width:150px;
+    height:88px;
+    overflow:hidden;
+    border:1px solid #e2e8f0;
+    border-radius:12px;
+    background-color:#eef2f7;
+    background-position:center;
+    background-size:var(--mf-hero-fit-size, cover);
+  }
+  #dados-empresa .mf-cover-image-thumb::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(180deg,transparent 35%,rgba(15,23,42,.55));
+  }
+  #dados-empresa .mf-cover-image-thumb span{
+    position:absolute;
+    z-index:1;
+    left:10px;
+    bottom:8px;
+    color:#fff;
+    font-size:11px;
+    font-weight:850;
+  }
+  #dados-empresa .mf-cover-image-info{min-width:0;}
+  #dados-empresa .mf-cover-image-info > strong{
+    display:block;
+    color:#15213a;
+    font-size:14px;
+    font-weight:850;
+  }
+  #dados-empresa .mf-cover-image-info > span:not(.upload-status){
+    display:block;
+    margin-top:4px;
+    color:#718096;
+    font-size:12px;
+  }
+  #dados-empresa .mf-cover-file{display:none!important;}
+  #dados-empresa .mf-cover-image-actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:12px;
+  }
+  #dados-empresa .mf-cover-image-actions button{
+    min-height:38px;
+    padding:0 13px;
+    border-radius:10px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    font-size:12px;
+    font-weight:800;
+  }
+  #dados-empresa .mf-cover-upload{
+    color:#fff;
+    border:1px solid #3b0764;
+    background:#3b0764;
+  }
+  #dados-empresa .mf-cover-remove{
+    color:#c62828;
+    border:1px solid #fecaca;
+    background:#fff;
+  }
+  #dados-empresa .mf-cover-image-info .upload-status{
+    display:block;
+    margin-top:8px;
+    color:#64748b;
+    font-size:11.5px;
+  }
+  #dados-empresa .mf-cover-guide{
+    display:flex;
+    align-items:flex-start;
+    gap:9px;
+    margin-top:12px;
+    padding:11px 12px;
+    border:1px solid #dbe7f5;
+    border-radius:12px;
+    color:#56657a;
+    background:#f8fbff;
+    font-size:11.5px;
+    line-height:1.45;
+  }
+  #dados-empresa .mf-cover-guide i{margin-top:2px;color:#1747e8;}
+  #dados-empresa .mf-cover-guide strong{color:#15213a;}
+  #dados-empresa .mf-cover-size-alert{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    margin-top:12px;
+    padding:12px 14px;
+    border:1px solid #fde68a;
+    border-radius:14px;
+    background:#fffbea;
+    color:#6b5b1c;
+    font-size:12px;
+    line-height:1.5;
+  }
+  #dados-empresa .mf-cover-size-alert i{margin-top:2px;color:#d97706;}
+  #dados-empresa .mf-cover-size-alert strong{display:block;color:#5b4708;font-size:12.5px;margin-bottom:2px;}
+  #dados-empresa .mf-cover-size-alert span{display:block;}
+#dados-empresa .mf-hero-control-label{
+  font-size:12px;
+  font-weight:900;
+  color:#13233a;
+  margin-right:2px;
+}
+#dados-empresa .mf-hero-fit-tools,
+#dados-empresa .mf-hero-zoom-tools{
+  padding:12px 14px;
+  border:1px solid #dfe7f2;
+  border-radius:14px;
+  background:#fff;
+}
+#dados-empresa .mf-hero-fit-tools{
+  display:grid;
+  gap:10px;
+}
+#dados-empresa .mf-hero-fit-tools strong{
+  color:#13233a;
+  font-size:13px;
+}
+#dados-empresa .mf-hero-fit-pills{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+#dados-empresa .mf-hero-fit-btn{
+  min-height:38px;
+  padding:0 14px;
+  border:1px solid #d7e0ef;
+  border-radius:12px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:#fff;
+  color:#31425d;
+  font-size:12px;
+  font-weight:850;
+}
+#dados-empresa .mf-hero-fit-btn.active{
+  background:#3b0764;
+  border-color:#3b0764;
+  color:#fff;
+  box-shadow:0 10px 18px rgba(59,7,100,.16);
+}
+#dados-empresa .mf-hero-fit-note{
+  display:block;
+  color:#607089;
+  font-size:11.5px;
+  line-height:1.5;
+}
+#dados-empresa .mf-hero-zoom-tools{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+  #dados-empresa .mf-menu-color-card{
+    margin-top:16px;
+    padding:15px;
+    border:1px solid #dfe7f2;
+    border-radius:16px;
+    background:#fff;
+  }
+  #dados-empresa .mf-menu-color-head{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:13px;
+  }
+  #dados-empresa .mf-menu-color-head strong{
+    display:block;
+    color:#13233a;
+    font-size:13px;
+    font-weight:900;
+  }
+  #dados-empresa .mf-menu-color-head span{
+    display:block;
+    margin-top:3px;
+    color:#607089;
+    font-size:11.5px;
+    line-height:1.4;
+  }
+  #dados-empresa .mf-menu-color-reset{
+    min-height:34px;
+    padding:0 11px;
+    border:1px solid #d7e0ef;
+    border-radius:10px;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:#fff;
+    color:#31425d;
+    font-size:11px;
+    font-weight:850;
+    white-space:nowrap;
+  }
+  #dados-empresa .mf-menu-color-swatches{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:9px;
+  }
+  #dados-empresa .mf-menu-color-swatch{
+    width:38px;
+    height:38px;
+    min-width:38px;
+    padding:0;
+    border:3px solid #fff;
+    border-radius:50%;
+    background:var(--mf-swatch);
+    box-shadow:0 0 0 1px #d3dce9,0 5px 12px rgba(15,23,42,.08);
+    position:relative;
+  }
+  #dados-empresa .mf-menu-color-swatch.active{
+    box-shadow:0 0 0 3px rgba(var(--mf-menu-rgb,18,54,181),.20),0 6px 14px rgba(15,23,42,.10);
+  }
+  #dados-empresa .mf-menu-color-swatch.active::after{
+    content:"✓";
+    position:absolute;
+    inset:0;
+    display:grid;
+    place-items:center;
+    color:#fff;
+    font-size:14px;
+    font-weight:1000;
+    text-shadow:0 1px 3px rgba(0,0,0,.42);
+  }
+  #dados-empresa .mf-menu-color-custom{
+    flex:0 0 auto;
+    width:auto;
+    min-width:108px;
+    max-width:max-content;
+    height:38px;
+    min-height:38px;
+    padding:0 12px;
+    border:1px solid #d7e0ef;
+    border-radius:999px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    box-sizing:border-box;
+    background:#fff;
+    color:#243147;
+    font-size:11.5px;
+    line-height:1;
+    font-weight:850;
+    white-space:nowrap;
+    cursor:pointer;
+    position:relative;
+    overflow:hidden;
+    box-shadow:0 4px 12px rgba(15,23,42,.06);
+    transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease;
+  }
+  #dados-empresa .mf-menu-color-custom:hover{
+    border-color:#b9c7da;
+    box-shadow:0 6px 16px rgba(15,23,42,.10);
+    transform:translateY(-1px);
+  }
+  #dados-empresa .mf-menu-color-custom:focus-within{
+    border-color:var(--mf-menu-color,#1236b5);
+    box-shadow:0 0 0 3px rgba(var(--mf-menu-rgb,18,54,181),.12);
+  }
+  #dados-empresa .mf-menu-color-custom input{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    opacity:0;
+    cursor:pointer;
+  }
+  #dados-empresa .mf-menu-color-custom-dot{
+    display:block;
+    flex:0 0 18px;
+    width:18px;
+    min-width:18px;
+    height:18px;
+    border:2px solid #fff;
+    border-radius:50%;
+    background:var(--mf-menu-color,#1236b5);
+    box-shadow:0 0 0 1px #cbd5e1;
+  }
+  #dados-empresa .mf-menu-color-note{
+    display:flex;
+    align-items:flex-start;
+    gap:8px;
+    margin-top:12px;
+    color:#607089;
+    font-size:11px;
+    line-height:1.45;
+  }
+  #dados-empresa .mf-menu-color-note i{
+    margin-top:2px;
+    color:var(--mf-menu-color,#1236b5);
+  }
+  #dados-empresa .mf-menu-color-group{
+    display:grid;
+    gap:9px;
+  }
+  #dados-empresa .mf-menu-color-group-title{
+    color:#31425d;
+    font-size:11.5px;
+    font-weight:900;
+  }
+  #dados-empresa .mf-menu-color-divider{
+    height:1px;
+    margin:14px 0;
+    background:#e8edf4;
+  }
+  #dados-empresa .mf-menu-bg-swatch{
+    width:38px;
+    height:38px;
+    min-width:38px;
+    padding:0;
+    border:3px solid #fff;
+    border-radius:50%;
+    background:var(--mf-swatch);
+    box-shadow:0 0 0 1px #d3dce9,0 5px 12px rgba(15,23,42,.08);
+    position:relative;
+  }
+  #dados-empresa .mf-menu-bg-swatch.active{
+    box-shadow:0 0 0 3px rgba(var(--mf-menu-bg-rgb,245,247,251),.65),0 6px 14px rgba(15,23,42,.10);
+  }
+  #dados-empresa .mf-menu-bg-swatch.active::after{
+    content:"✓";
+    position:absolute;
+    inset:0;
+    display:grid;
+    place-items:center;
+    color:#243147;
+    font-size:14px;
+    font-weight:1000;
+    text-shadow:0 1px 2px rgba(255,255,255,.8);
+  }
+  #dados-empresa .mf-menu-bg-custom-dot{
+    display:block;
+    flex:0 0 18px;
+    width:18px;
+    min-width:18px;
+    height:18px;
+    border:2px solid #fff;
+    border-radius:50%;
+    background:var(--mf-menu-bg,#F5F7FB);
+    box-shadow:0 0 0 1px #cbd5e1;
+  }
+
+  #dados-empresa .mf-public-preview-card{
+    --mf-menu-color:#1236b5;
+    --mf-menu-rgb:18,54,181;
+    --mf-menu-on:#fff;
+    --mf-menu-bg:#F5F7FB;
+    --mf-menu-bg-rgb:245,247,251;
+    background:var(--mf-menu-bg) !important;
+  }
+  #dados-empresa .mf-public-preview-card .mf-public-preview-body{
+    background:var(--mf-menu-bg) !important;
+  }
+  #dados-empresa .mf-public-preview-card .mf-public-preview-logo span,
+  #dados-empresa .mf-public-preview-card .mf-public-preview-cover-copy strong,
+  #dados-empresa .mf-public-preview-card .mf-public-preview-cover-action,
+  #dados-empresa .mf-public-preview-card .mf-public-preview-tab.active{
+    color:var(--mf-menu-color) !important;
+  }
+  #dados-empresa .mf-public-preview-card .mf-public-preview-tab.active::after{
+    background:var(--mf-menu-color) !important;
+  }
+  #dados-empresa .mf-public-preview-card .mf-public-preview-dot{
+    background:rgba(var(--mf-menu-rgb),.10) !important;
+  }
+  #dados-empresa .mf-public-preview-card .mf-public-preview-price{
+    background:rgba(var(--mf-menu-rgb),.20) !important;
+  }
+  #dados-empresa .mf-preview-sticky{position:sticky;top:88px;}
+  #dados-empresa .mf-public-preview-cover{
+    position:relative;
+    width:calc(100% - 28px);
+    aspect-ratio:9 / 2;
+    min-height:0;
+    margin:14px;
+    overflow:hidden;
+    border:1px solid #d8e2f1;
+    border-radius:24px;
+    background:#ffffff;
+    box-shadow:0 14px 34px rgba(15,35,90,.08);
+    cursor:grab;
+    user-select:none;
+    touch-action:none;
+  }
+  #dados-empresa .mf-public-preview-cover.is-dragging{
+    cursor:grabbing;
+  }
+  #dados-empresa .mf-public-preview-cover .mf-hero-preview-layer{
+    z-index:0;
+    pointer-events:none;
+  }
+  #dados-empresa .mf-public-preview-cover-copy,
+  #dados-empresa .mf-public-preview-cover-action,
+  #dados-empresa .mf-public-preview-cover-shade{
+    pointer-events:none;
+  }
+  #dados-empresa .mf-hero-drag-hint{
+    position:absolute;
+    z-index:4;
+    left:14px;
+    bottom:14px;
+    min-height:32px;
+    padding:0 11px;
+    border:1px solid rgba(255,255,255,.72);
+    border-radius:999px;
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    color:#24344c;
+    background:rgba(255,255,255,.88);
+    box-shadow:0 6px 18px rgba(15,23,42,.10);
+    backdrop-filter:blur(7px);
+    font-size:10.5px;
+    font-weight:800;
+    transition:opacity .18s ease;
+    pointer-events:none;
+  }
+  #dados-empresa .mf-public-preview-cover.is-dragging .mf-hero-drag-hint{
+    opacity:0;
+  }
+  #dados-empresa .mf-public-preview-cover-shade{
+    position:absolute;
+    z-index:1;
+    inset:0;
+    background:linear-gradient(90deg,rgba(var(--mf-menu-bg-rgb,245,247,251),.86) 0%,rgba(var(--mf-menu-bg-rgb,245,247,251),.91) 12%,rgba(var(--mf-menu-bg-rgb,245,247,251),.98) 24%,rgba(var(--mf-menu-bg-rgb,245,247,251),1) 35%,rgba(var(--mf-menu-bg-rgb,245,247,251),.86) 44%,rgba(var(--mf-menu-bg-rgb,245,247,251),.46) 52%,rgba(var(--mf-menu-bg-rgb,245,247,251),.18) 58%,rgba(var(--mf-menu-bg-rgb,245,247,251),.04) 63%,rgba(var(--mf-menu-bg-rgb,245,247,251),0) 68%);
+    opacity:clamp(0,calc(var(--mf-hero-overlay,100) / 100),1);
+    pointer-events:none;
+    transition:opacity .18s ease;
+  }
+  #dados-empresa .mf-public-preview-cover-shade::before,
+  #dados-empresa .mf-public-preview-cover-shade::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(90deg,rgba(var(--mf-menu-bg-rgb,245,247,251),.08) 0%,rgba(var(--mf-menu-bg-rgb,245,247,251),.22) 12%,rgba(var(--mf-menu-bg-rgb,245,247,251),.78) 26%,rgba(var(--mf-menu-bg-rgb,245,247,251),1) 38%,rgba(var(--mf-menu-bg-rgb,245,247,251),.72) 48%,rgba(var(--mf-menu-bg-rgb,245,247,251),.30) 56%,rgba(var(--mf-menu-bg-rgb,245,247,251),.08) 62%,rgba(var(--mf-menu-bg-rgb,245,247,251),0) 68%);
+    pointer-events:none;
+  }
+  #dados-empresa .mf-public-preview-cover-shade::before{
+    opacity:clamp(0,calc((var(--mf-hero-overlay,100) - 100) / 90),1);
+  }
+  #dados-empresa .mf-public-preview-cover-shade::after{
+    opacity:clamp(0,calc((var(--mf-hero-overlay,100) - 200) / 70),1);
+  }
+  #dados-empresa .mf-public-preview-cover-copy{
+    position:absolute;
+    z-index:2;
+    left:24px;
+    top:24px;
+    width:min(62%,420px);
+    transform:none;
+  }
+  #dados-empresa .mf-public-preview-cover-copy strong{
+    display:block;
+    color:#082fb9;
+    font-size:28px;
+    font-weight:900;
+    line-height:1.1;
+    overflow-wrap:anywhere;
+  }
+  #dados-empresa .mf-public-preview-cover-copy span{
+    display:block;
+    margin-top:8px;
+    color:#24344c;
+    font-size:14px;
+    font-weight:650;
+    line-height:1.42;
+    overflow-wrap:anywhere;
+  }
+  #dados-empresa .mf-public-preview-cover-action{
+    position:absolute;
+    z-index:3;
+    top:16px;
+    right:16px;
+    min-height:34px;
+    padding:0 12px;
+    border:1px solid rgba(215,224,239,.9);
+    border-radius:999px;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    color:#082b9d;
+    background:rgba(255,255,255,.94);
+    box-shadow:0 6px 18px rgba(15,23,42,.10);
+    font-size:11px;
+    font-weight:850;
+  }
+
+  /* Prévia de Produtos: título e subtítulo no centro, iguais ao menu público. */
+  #dados-empresa .mf-public-preview-card.mf-preview-produtos .mf-public-preview-cover-copy{
+    left:50%;
+    top:50%;
+    width:min(82%,760px);
+    max-width:min(82%,760px);
+    padding:0 58px;
+    transform:translate(-50%,-50%);
+    text-align:center;
+  }
+  #dados-empresa .mf-public-preview-card.mf-preview-produtos .mf-public-preview-cover-copy strong,
+  #dados-empresa .mf-public-preview-card.mf-preview-produtos .mf-public-preview-cover-copy span{
+    text-align:center;
+  }
+
+  @media (max-width: 640px){
+    /* Configurações mobile: usa a largura real da tela sem esmagar os campos. */
+    body.mf-ds-configuracoes .mf-admin-shell,
+    body.mf-ds-configuracoes .premium-main,
+    body.mf-ds-configuracoes .premium-content,
+    body.mf-ds-configuracoes .premium-content > main.container,
+    body.mf-ds-configuracoes .premium-content form{
+      width:100% !important;
+      max-width:none !important;
+      min-width:0 !important;
+      box-sizing:border-box !important;
+    }
+    body.mf-ds-configuracoes .mf-admin-shell{
+      display:block !important;
+      overflow-x:hidden !important;
+    }
+    body.mf-ds-configuracoes .premium-main{
+      margin:0 !important;
+      padding:0 !important;
+      overflow-x:hidden !important;
+    }
+    body.mf-ds-configuracoes .premium-topbar{
+      padding-left:12px !important;
+      padding-right:12px !important;
+    }
+    body.mf-ds-configuracoes .premium-content{
+      padding:10px 8px 96px !important;
+      overflow:visible !important;
+    }
+    body.mf-ds-configuracoes .premium-content > main.container{
+      margin:0 !important;
+      padding:0 !important;
+    }
+    body.mf-ds-configuracoes .premium-content .card{
+      width:100% !important;
+      max-width:none !important;
+      margin:0 0 14px !important;
+      padding:16px 12px !important;
+      border-radius:16px !important;
+      box-sizing:border-box !important;
+    }
+    body.mf-ds-configuracoes .premium-content .card > .card-title{
+      margin-bottom:16px !important;
+    }
+    body.mf-ds-configuracoes .premium-content .card > .card-title h2{
+      font-size:18px !important;
+      line-height:1.22 !important;
+    }
+    body.mf-ds-configuracoes .premium-content .card > .card-title p{
+      font-size:12px !important;
+      line-height:1.45 !important;
+    }
+
+    #dados-empresa{
+      width:100% !important;
+      max-width:none !important;
+      overflow:visible !important;
+    }
+    #dados-empresa .mf-company-workspace{
+      width:100% !important;
+      grid-template-columns:minmax(0,1fr) !important;
+      gap:0 !important;
+      margin-top:2px !important;
+      border-top:0 !important;
+    }
+    #dados-empresa .mf-company-editor,
+    #dados-empresa .mf-company-preview-column{
+      width:100% !important;
+      max-width:none !important;
+      min-width:0 !important;
+      padding-left:0 !important;
+      padding-right:0 !important;
+      box-sizing:border-box !important;
+    }
+    #dados-empresa .mf-company-editor{
+      padding-top:12px !important;
+      padding-bottom:18px !important;
+      border-right:0 !important;
+    }
+    #dados-empresa .mf-company-preview-column{
+      padding-top:20px !important;
+      border-top:1px solid #e3e9f2 !important;
+    }
+    #dados-empresa .mf-company-divider{
+      margin:22px 0 18px !important;
+    }
+    #dados-empresa .mf-company-subheading,
+    #dados-empresa .mf-preview-heading{
+      align-items:flex-start !important;
+      gap:10px !important;
+      min-height:34px !important;
+      margin-bottom:16px !important;
+    }
+    #dados-empresa .mf-company-subheading-icon,
+    #dados-empresa .mf-preview-heading-icon{
+      width:34px !important;
+      height:34px !important;
+      flex:0 0 34px !important;
+      font-size:13px !important;
+    }
+    #dados-empresa .mf-company-subheading h3,
+    #dados-empresa .mf-preview-heading h3{
+      font-size:16px !important;
+      line-height:1.25 !important;
+      overflow-wrap:anywhere !important;
+    }
+    #dados-empresa .mf-company-subheading p{
+      font-size:11.5px !important;
+      line-height:1.45 !important;
+    }
+    #dados-empresa .mf-preview-badge{display:none !important;}
+
+    #dados-empresa .mf-company-fields,
+    #dados-empresa .mf-cover-fields{
+      width:100% !important;
+      gap:15px !important;
+    }
+    #dados-empresa .mf-company-fields .field,
+    #dados-empresa .mf-cover-fields .field{
+      width:100% !important;
+      min-width:0 !important;
+    }
+    #dados-empresa .mf-company-fields .field label,
+    #dados-empresa .mf-cover-fields label{
+      margin-bottom:7px !important;
+      font-size:12.5px !important;
+    }
+    #dados-empresa .mf-company-fields .field input,
+    #dados-empresa .mf-company-fields .field select,
+    #dados-empresa .mf-cover-fields input,
+    #dados-empresa .mf-cover-fields textarea{
+      width:100% !important;
+      max-width:none !important;
+      min-width:0 !important;
+      box-sizing:border-box !important;
+      font-size:15px !important;
+      padding-left:12px !important;
+      padding-right:12px !important;
+    }
+    #dados-empresa .mf-company-fields .field input,
+    #dados-empresa .mf-company-fields .field select,
+    #dados-empresa .mf-cover-fields input{
+      min-height:46px !important;
+    }
+    #dados-empresa .mf-cover-fields textarea{
+      min-height:90px !important;
+      line-height:1.45 !important;
+    }
+    #dados-empresa .mf-company-fields .field small,
+    #dados-empresa .mf-cover-fields small{
+      margin-top:7px !important;
+      font-size:11px !important;
+      line-height:1.45 !important;
+      overflow-wrap:anywhere !important;
+    }
+
+    #dados-empresa .mf-logo-manager{
+      width:100% !important;
+      grid-template-columns:68px minmax(0,1fr) !important;
+      gap:11px 12px !important;
+      padding:12px !important;
+      border-radius:14px !important;
+      box-sizing:border-box !important;
+    }
+    #dados-empresa .mf-logo-manager .logo-preview{
+      width:68px !important;
+      height:68px !important;
+      min-width:68px !important;
+      min-height:68px !important;
+      max-width:68px !important;
+      max-height:68px !important;
+      padding:4px !important;
+      box-sizing:border-box !important;
+      border-radius:12px !important;
+      background:#fff !important;
+    }
+    #dados-empresa .mf-logo-manager .logo-preview img{
+      width:100% !important;
+      height:100% !important;
+      object-fit:contain !important;
+      border-radius:8px !important;
+    }
+    #dados-empresa .mf-logo-info strong{
+      font-size:13px !important;
+      line-height:1.3 !important;
+      white-space:normal !important;
+      overflow:visible !important;
+      text-overflow:clip !important;
+    }
+    #dados-empresa .mf-logo-info span{
+      margin-top:3px !important;
+      font-size:10.5px !important;
+      line-height:1.35 !important;
+      overflow-wrap:anywhere !important;
+    }
+    #dados-empresa .mf-logo-manager .logo-actions{
+      grid-column:1 / -1 !important;
+      display:grid !important;
+      grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+      gap:8px !important;
+      width:100% !important;
+      margin:0 !important;
+    }
+    #dados-empresa .mf-logo-manager .logo-actions > button{
+      width:100% !important;
+      min-width:0 !important;
+      min-height:40px !important;
+      height:auto !important;
+      margin:0 !important;
+      padding:8px 9px !important;
+      border-radius:10px !important;
+      gap:6px !important;
+      font-size:11.5px !important;
+      line-height:1.15 !important;
+      white-space:normal !important;
+    }
+
+    #dados-empresa .mf-cover-image-manager{
+      width:100% !important;
+      grid-template-columns:1fr !important;
+      gap:12px !important;
+      padding:12px !important;
+      box-sizing:border-box !important;
+    }
+    #dados-empresa .mf-cover-image-thumb{
+      width:100% !important;
+      height:142px !important;
+    }
+    #dados-empresa .mf-cover-image-actions{
+      display:grid !important;
+      grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+      gap:8px !important;
+      width:100% !important;
+    }
+    #dados-empresa .mf-cover-image-actions button{
+      width:100% !important;
+      min-width:0 !important;
+      min-height:42px !important;
+      height:auto !important;
+      padding:8px !important;
+      line-height:1.15 !important;
+      white-space:normal !important;
+    }
+    #dados-empresa .mf-cover-size-alert,
+    #dados-empresa .mf-cover-guide{
+      width:100% !important;
+      padding:12px !important;
+      box-sizing:border-box !important;
+      font-size:11.5px !important;
+      line-height:1.5 !important;
+    }
+
+    #dados-empresa .mf-hero-editor-controls{
+      width:100% !important;
+      padding:12px !important;
+      box-sizing:border-box !important;
+    }
+    #dados-empresa .mf-hero-editor-head{
+      gap:12px !important;
+      margin-bottom:12px !important;
+    }
+    #dados-empresa .mf-hero-editor-head-actions{
+      display:grid !important;
+      grid-template-columns:minmax(0,1fr) auto !important;
+      gap:8px !important;
+      width:100% !important;
+      align-items:center !important;
+    }
+    #dados-empresa .mf-hero-device-note{
+      min-width:0 !important;
+      justify-content:flex-start !important;
+      white-space:normal !important;
+      line-height:1.2 !important;
+    }
+    #dados-empresa .mf-hero-reset{
+      min-height:38px !important;
+      padding:0 11px !important;
+    }
+    #dados-empresa .mf-hero-direct-note,
+    #dados-empresa .mf-hero-fit-tools,
+    #dados-empresa .mf-hero-zoom-tools,
+    #dados-empresa .mf-hero-slider{
+      width:100% !important;
+      box-sizing:border-box !important;
+      padding:12px !important;
+    }
+    #dados-empresa .mf-hero-direct-note{
+      font-size:11px !important;
+      line-height:1.5 !important;
+    }
+    #dados-empresa .mf-hero-fit-pills{
+      display:grid !important;
+      grid-template-columns:1fr !important;
+      gap:8px !important;
+    }
+    #dados-empresa .mf-hero-fit-btn{
+      width:100% !important;
+      min-height:42px !important;
+      justify-content:center !important;
+      white-space:normal !important;
+      line-height:1.2 !important;
+    }
+    #dados-empresa .mf-hero-zoom-tools{
+      display:grid !important;
+      grid-template-columns:42px minmax(0,1fr) 42px !important;
+      align-items:center !important;
+      gap:8px !important;
+    }
+    #dados-empresa .mf-hero-control-label{
+      grid-column:1 / -1 !important;
+      margin:0 !important;
+    }
+    #dados-empresa .mf-hero-zoom-tools button{
+      width:42px !important;
+      min-width:42px !important;
+      min-height:40px !important;
+      padding:0 !important;
+    }
+    #dados-empresa .mf-hero-zoom-status{
+      width:100% !important;
+      min-width:0 !important;
+      min-height:40px !important;
+      justify-content:center !important;
+      padding:0 8px !important;
+      box-sizing:border-box !important;
+    }
+
+    #dados-empresa .mf-menu-color-card{
+      width:100% !important;
+      padding:13px !important;
+      box-sizing:border-box !important;
+    }
+    #dados-empresa .mf-menu-color-head{
+      display:grid !important;
+      grid-template-columns:minmax(0,1fr) auto !important;
+      align-items:start !important;
+      gap:10px !important;
+    }
+    #dados-empresa .mf-menu-color-head span{
+      font-size:10.5px !important;
+      line-height:1.4 !important;
+    }
+    #dados-empresa .mf-menu-color-reset{
+      min-height:34px !important;
+      padding:0 10px !important;
+      font-size:10.5px !important;
+    }
+    #dados-empresa .mf-menu-color-swatches{
+      width:100% !important;
+      gap:9px !important;
+    }
+    #dados-empresa .mf-menu-color-swatch,
+    #dados-empresa .mf-menu-bg-swatch{
+      width:38px !important;
+      height:38px !important;
+      min-width:38px !important;
+    }
+    #dados-empresa .mf-menu-color-custom{
+      flex:0 0 auto !important;
+      width:auto !important;
+      min-width:110px !important;
+      max-width:max-content !important;
+      height:40px !important;
+      min-height:40px !important;
+      padding:0 12px !important;
+      border-radius:999px !important;
+      display:inline-flex !important;
+      align-items:center !important;
+      justify-content:center !important;
+      gap:8px !important;
+      box-sizing:border-box !important;
+      white-space:nowrap !important;
+      line-height:1 !important;
+    }
+    #dados-empresa .mf-menu-color-custom-dot,
+    #dados-empresa .mf-menu-bg-custom-dot{
+      display:block !important;
+      flex:0 0 18px !important;
+      width:18px !important;
+      min-width:18px !important;
+      height:18px !important;
+    }
+    #dados-empresa .mf-menu-color-note{
+      font-size:11px !important;
+      line-height:1.5 !important;
+    }
+
+    #dados-empresa .mf-preview-sticky{position:static !important;}
+    #dados-empresa .mf-public-preview-card{
+      width:100% !important;
+      max-width:none !important;
+      border-radius:16px !important;
+      box-sizing:border-box !important;
+    }
+    #dados-empresa .mf-public-preview-hero{
+      min-height:136px !important;
+      padding:18px 14px !important;
+      gap:12px !important;
+    }
+    #dados-empresa .mf-public-preview-logo{
+      width:74px !important;
+      height:74px !important;
+      flex:0 0 74px !important;
+      border-width:3px !important;
+    }
+    #dados-empresa .mf-public-preview-copy strong{
+      font-size:20px !important;
+      line-height:1.12 !important;
+    }
+    #dados-empresa .mf-public-preview-copy span{
+      margin-top:5px !important;
+      font-size:12px !important;
+      line-height:1.38 !important;
+    }
+    #dados-empresa .mf-public-preview-nav{
+      justify-content:flex-start !important;
+      overflow-x:auto !important;
+      padding:0 8px !important;
+      scrollbar-width:none !important;
+    }
+    #dados-empresa .mf-public-preview-nav::-webkit-scrollbar{display:none !important;}
+    #dados-empresa .mf-public-preview-tab{
+      min-height:46px !important;
+      padding:0 10px !important;
+      font-size:10.5px !important;
+    }
+    #dados-empresa .mf-public-preview-body{
+      padding:16px !important;
+      gap:12px !important;
+    }
+    #dados-empresa .mf-public-preview-row{
+      grid-template-columns:34px minmax(0,1fr) 52px !important;
+      gap:10px !important;
+    }
+    #dados-empresa .mf-public-preview-dot{width:34px !important;height:34px !important;}
+    #dados-empresa .mf-public-preview-price{width:52px !important;}
+  }
+</style>
+<style id="mf-hero-editor-enquadramento-v87">
+#dados-empresa .mf-hero-editor-controls{
+  margin-top:14px;
+  padding:14px;
+  border:1px solid #dbe4f2;
+  border-radius:16px;
+  background:#f8fbff;
+}
+#dados-empresa .mf-hero-editor-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:14px;
+}
+#dados-empresa .mf-hero-editor-head label{margin:0 0 4px!important}
+#dados-empresa .mf-hero-reset{
+  min-height:36px;
+  padding:0 13px;
+  border:1px solid #d7e0ef;
+  border-radius:11px;
+  background:#fff;
+  color:#061b8f;
+  font-weight:900;
+  white-space:nowrap;
+}
+#dados-empresa .mf-hero-direct-tools{
+  display:grid;
+  gap:12px;
+}
+#dados-empresa .mf-hero-direct-note{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  padding:12px;
+  border:1px solid #dfe7f2;
+  border-radius:14px;
+  color:#526177;
+  background:#fff;
+  font-size:11.5px;
+  line-height:1.45;
+}
+#dados-empresa .mf-hero-direct-note i{
+  margin-top:2px;
+  color:#1747e8;
+}
+#dados-empresa .mf-hero-zoom-tools{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+#dados-empresa .mf-hero-zoom-tools button{
+  min-width:38px;
+  min-height:36px;
+  padding:0 11px;
+  border:1px solid #d7e0ef;
+  border-radius:10px;
+  color:#061b8f;
+  background:#fff;
+  font-weight:900;
+}
+#dados-empresa .mf-hero-zoom-status{
+  min-height:36px;
+  padding:0 12px;
+  border-radius:10px;
+  display:inline-flex;
+  align-items:center;
+  color:#061b8f;
+  background:#eef3ff;
+  font-size:12px;
+  font-weight:900;
+}
+#dados-empresa .mf-hero-slider{
+  display:block;
+  padding:12px;
+  border:1px solid #e0e7f2;
+  border-radius:14px;
+  background:#fff;
+}
+#dados-empresa .mf-hero-slider>span,
+#dados-empresa .mf-hero-slider>small{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+#dados-empresa .mf-hero-slider>span{margin-bottom:8px;color:#13233a}
+#dados-empresa .mf-hero-slider output{
+  min-width:48px;
+  padding:3px 7px;
+  border-radius:999px;
+  background:#eef3ff;
+  color:#061b8f;
+  text-align:center;
+  font-weight:900;
+}
+#dados-empresa .mf-hero-slider input[type="range"]{
+  width:100%;
+  height:28px;
+  padding:0;
+  accent-color:#1747e8;
+  box-shadow:none!important;
+}
+#dados-empresa .mf-hero-slider>small{margin-top:4px;color:#7a879b;font-size:11px}
+#dados-empresa .mf-hero-slider i{font-style:normal}
+.hero-config-preview-img{
+  position:relative!important;
+  overflow:hidden!important;
+  background:none!important;
+  min-height:210px;
+}
+.mf-hero-preview-layer{
+  position:absolute;
+  inset:0;
+  background-repeat:no-repeat;
+  background-size:var(--mf-hero-fit-size, contain);
+  background-position:center;
+  transform:translate(calc((50 - var(--mf-hero-x,50)) * 1%), calc((50 - var(--mf-hero-y,50)) * 1%)) scale(var(--mf-hero-scale,1));
+  transform-origin:center;
+  transition:transform .18s ease,background-position .18s ease;
+}
+#dados-empresa .mf-public-preview-cover.is-dragging .mf-hero-preview-layer{
+  transition:none;
+}
+@media(max-width:760px){
+  #dados-empresa .mf-hero-editor-head{align-items:stretch;flex-direction:column}
+  #dados-empresa .mf-hero-reset{align-self:flex-start}
+  #dados-empresa .mf-hero-sliders{grid-template-columns:1fr}
+}
+</style>
+
+<script id="mf-menu-pedidos-cores-submit-v212">
+document.addEventListener("DOMContentLoaded", function(){
+  const form = document.querySelector('form[action="/admin/{{ empresa.id }}/configuracoes"]');
+  if(!form) return;
+
+  form.addEventListener("submit", function(){
+    const corPrincipal = document.getElementById("menu_cor_principal");
+    const corFundo = document.getElementById("menu_cor_fundo");
+    const pickerPrincipal = document.getElementById("mfMenuColorPicker");
+    const pickerFundo = document.getElementById("mfMenuBgPicker");
+
+    if(corPrincipal && pickerPrincipal && /^#[0-9a-f]{6}$/i.test(pickerPrincipal.value || "")){
+      corPrincipal.value = pickerPrincipal.value.toUpperCase();
+    }
+    if(corFundo && pickerFundo && /^#[0-9a-f]{6}$/i.test(pickerFundo.value || "")){
+      corFundo.value = pickerFundo.value.toUpperCase();
+    }
+  }, true);
+});
+</script>
+
+<style id="mf-v769-encomendas-config-preview">
+#dados-empresa .mf-encomenda-visual-note{display:flex;gap:12px;align-items:flex-start;margin:4px 0 22px;padding:16px;border:1px solid rgba(91,33,210,.12);border-radius:16px;background:#fbfaff}
+#dados-empresa .mf-encomenda-visual-note .mf-company-subheading-icon{margin-top:1px}
+#dados-empresa .mf-encomenda-visual-note strong{display:block;color:#24154e;font-size:14px;font-weight:900}
+#dados-empresa .mf-encomenda-visual-note p{margin:5px 0 0;color:#687386;font-size:11px;line-height:1.5}
+#dados-empresa .mf-public-preview-card.mf-preview-encomendas{background:var(--mf-menu-bg,#F5F7FB)}
+#dados-empresa .mf-preview-encomendas .mf-encomenda-preview-area{padding:16px;background:var(--mf-menu-bg,#F5F7FB)}
+#dados-empresa .mf-encomenda-preview-showcase{display:grid;grid-template-columns:1.55fr 1fr 1fr;grid-template-rows:88px 88px;gap:8px}
+#dados-empresa .mf-encomenda-preview-showcase span{position:relative;display:flex;flex-direction:column;justify-content:flex-end;min-width:0;padding:10px;border-radius:12px;overflow:hidden;color:#fff;background:linear-gradient(145deg,rgba(var(--mf-menu-rgb,18,54,181),.25),var(--mf-menu-color,#1236B5));box-shadow:inset 0 -38px 44px rgba(0,0,0,.22)}
+#dados-empresa .mf-encomenda-preview-showcase span.main{grid-row:1 / span 2}
+#dados-empresa .mf-encomenda-preview-showcase i{position:absolute;left:8px;top:8px;padding:4px 6px;border-radius:999px;background:#fff;color:var(--mf-menu-color,#1236B5);font-size:6px;font-style:normal;font-weight:900;letter-spacing:.05em}
+#dados-empresa .mf-encomenda-preview-showcase b{font-family:Georgia,serif;font-size:12px;line-height:1.05}
+#dados-empresa .mf-encomenda-preview-showcase .main b{font-size:18px}
+#dados-empresa .mf-encomenda-preview-showcase em{margin-top:3px;font-size:7px;font-style:normal;opacity:.9}
+#dados-empresa .mf-encomenda-preview-chips{display:flex;gap:6px;overflow:hidden}
+#dados-empresa .mf-encomenda-preview-chips span,#dados-empresa .mf-encomenda-preview-chips b{flex:none;padding:6px 8px;border:1px solid rgba(var(--mf-menu-rgb,18,54,181),.13);border-radius:999px;background:#fff;color:#626d7d;font-size:7px;font-weight:800}
+#dados-empresa .mf-encomenda-preview-chips b{background:var(--mf-menu-color,#1236B5);color:var(--mf-menu-on,#fff);border-color:var(--mf-menu-color,#1236B5)}
+@media(max-width:620px){ #dados-empresa .mf-encomenda-preview-showcase{grid-template-columns:1fr 1fr;grid-template-rows:130px 74px 74px}#dados-empresa .mf-encomenda-preview-showcase span.main{grid-column:1/-1;grid-row:auto}}
+</style>
+
+
+<style id="mf-v862-encomendas-category-band-admin">
+.mf-enc-category-band-v813{margin:18px 0 22px;padding:18px;border:1px solid rgba(31,41,55,.10);border-radius:18px;background:#fff}
+.mf-enc-category-band-head-v813{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}
+.mf-enc-category-band-head-v813 h4{margin:0;color:#1f2937;font-size:15px}.mf-enc-category-band-head-v813 p{margin:5px 0 0;color:#6b7280;font-size:11px;line-height:1.45}
+.mf-enc-category-band-color-v813{margin-top:16px}.mf-enc-category-band-color-v813>.mf-menu-color-group-title{display:block;margin-bottom:9px}.mf-enc-category-band-color-v813>small{display:block;margin-top:7px;color:#7b8492;font-size:10.5px}
+.mf-enc-band-swatches-v862{margin-top:0!important}
+#dados-empresa .mf-encomenda-preview-chips{display:flex;gap:6px;overflow:hidden;margin:0;padding:8px 10px;background:var(--mf-enc-band-color,#1236B5);transition:background-color .18s ease,box-shadow .18s ease}
+#dados-empresa .mf-encomenda-preview-chips.band-off-v862{margin-top:10px;padding:0;background:transparent}
+#dados-empresa .mf-encomenda-preview-showcase + .mf-encomenda-preview-chips{margin-top:10px}
+#dados-empresa .mf-encomenda-preview-chips:not(.band-off-v862) span{border-color:rgba(255,255,255,.58);background:rgba(255,255,255,.88);color:#53606f}
+#dados-empresa .mf-encomenda-preview-chips:not(.band-off-v862) b{border-color:rgba(255,255,255,.92);background:var(--mf-menu-color,#1236B5);color:var(--mf-menu-on,#fff)}
+@media(max-width:640px){.mf-enc-category-band-head-v813{display:grid}.mf-enc-band-swatches-v862{gap:8px!important}}
+</style>
+<style id="mf-v891-category-toggle-like-history">
+/* V891 — "Mostrar faixa" usa o mesmo componente visual de "Ativar apresentação" no mobile. */
+@media(max-width:720px){
+  #dados-empresa .mf-enc-category-band-v813 .mf-enc-category-band-head-v813{
+    display:block!important;
+  }
+  #dados-empresa .mf-enc-category-band-v813 .mf-enc-category-band-head-v813 > div:first-child{
+    margin-bottom:10px!important;
+  }
+  #dados-empresa .mf-enc-category-band-v813 .mf-enc-category-toggle-v891{
+    position:relative!important;
+    width:100%!important;
+    min-height:44px!important;
+    box-sizing:border-box!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:14px!important;
+    padding:8px 10px 8px 12px!important;
+    border:1px solid #dce4ed!important;
+    border-radius:11px!important;
+    background:#fff!important;
+    box-shadow:none!important;
+  }
+  #dados-empresa .mf-enc-category-band-v813 .mf-enc-category-toggle-v891 > span:first-child{
+    flex:1 1 auto!important;
+    min-width:0!important;
+    font-size:12px!important;
+    font-weight:800!important;
+    line-height:1.2!important;
+    color:#172033!important;
+  }
+  #dados-empresa .mf-enc-category-band-v813 .mf-enc-category-toggle-v891 input{
+    position:absolute!important;
+    width:1px!important;
+    height:1px!important;
+    opacity:0!important;
+    pointer-events:none!important;
+    margin:0!important;
+  }
+  #dados-empresa .mf-enc-category-band-v813 .mf-enc-category-toggle-v891 .mf-enc-intro-switch-v812{
+    position:relative!important;
+    display:block!important;
+    flex:0 0 44px!important;
+    width:44px!important;
+    min-width:44px!important;
+    height:24px!important;
+    border:1px solid #cbd5e1!important;
+    border-radius:999px!important;
+    background:#d9e0e8!important;
+    box-shadow:inset 0 1px 2px rgba(15,23,42,.06)!important;
+    transition:background .2s ease,border-color .2s ease!important;
+  }
+  #dados-empresa .mf-enc-category-band-v813 .mf-enc-category-toggle-v891 .mf-enc-intro-switch-v812::after{
+    content:""!important;
+    position:absolute!important;
+    top:2px!important;
+    left:2px!important;
+    width:18px!important;
+    height:18px!important;
+    border:1px solid rgba(15,23,42,.08)!important;
+    border-radius:50%!important;
+    background:#fff!important;
+    box-shadow:0 2px 5px rgba(15,23,42,.18)!important;
+    transform:none!important;
+    transition:transform .2s ease!important;
+  }
+  #dados-empresa .mf-enc-category-band-v813 .mf-enc-category-toggle-v891 input:checked + .mf-enc-intro-switch-v812{
+    background:var(--mf-menu-color,#1677ff)!important;
+    border-color:var(--mf-menu-color,#1677ff)!important;
+  }
+  #dados-empresa .mf-enc-category-band-v813 .mf-enc-category-toggle-v891 input:checked + .mf-enc-intro-switch-v812::after{
+    transform:translateX(20px)!important;
+  }
+}
+</style>
+
+<script id="mf-v862-encomendas-category-band-live-preview">
+document.addEventListener('DOMContentLoaded',function(){
+  const hidden=document.getElementById('enc_faixa_categorias_cor');
+  const picker=document.getElementById('mfEncBandColorPicker');
+  const dot=document.getElementById('mfEncBandColorCustomDot');
+  const toggle=document.getElementById('enc_faixa_categorias_ativa');
+  const preview=document.getElementById('mfPublicPreviewCard');
+  const chips=preview?.querySelector('.mf-encomenda-preview-chips');
+  if(!hidden||!picker)return;
+  const valid=v=>/^#[0-9a-f]{6}$/i.test(String(v||''));
+  const normalize=v=>valid(v)?String(v).toUpperCase():'#1236B5';
+  function applyColor(value){
+    const cor=normalize(value||hidden.value);
+    hidden.value=cor; picker.value=cor;
+    if(dot)dot.style.background=cor;
+    if(preview)preview.style.setProperty('--mf-enc-band-color',cor);
+    document.querySelectorAll('#mfEncBandColorSwatches [data-enc-band-color]').forEach(btn=>{
+      const active=normalize(btn.dataset.encBandColor)===cor;
+      btn.classList.toggle('active',active);
+      btn.setAttribute('aria-pressed',active?'true':'false');
+    });
+  }
+  function applyToggle(){
+    if(!chips)return;
+    chips.classList.toggle('band-off-v862',!(toggle&&toggle.checked));
+  }
+  document.querySelectorAll('#mfEncBandColorSwatches [data-enc-band-color]').forEach(btn=>btn.addEventListener('click',()=>applyColor(btn.dataset.encBandColor)));
+  picker.addEventListener('input',e=>applyColor(e.target.value));
+  toggle?.addEventListener('change',applyToggle);
+  applyColor(hidden.value);
+  applyToggle();
+});
+</script>
+{% endblock %}
+{% block page %}
+<div class="premium-layout mf-admin-shell">
+  {% include "includes/admin_sidebar.html" %}
+
+  <main class="premium-main">
+    <header class="premium-topbar">
+<div class="premium-page-title">
+        <strong>{{ t("Configurações", idioma_painel) }}</strong>
+        <span>{{ t("Dados públicos, contato, redes e identidade", idioma_painel) }}</span>
+      </div>
+
+    </header>
+
+    <section class="premium-content">
+<main class="container">
+
+  {% set eyebrow = t("Configurações", idioma_painel) %}
+  {% set header_icon = "fa-gear" %}
+  {% set actions_html = "" %}
+  {% include "includes/admin_page_header.html" %}
+
+  <form id="mfConfiguracoesForm" method="POST" action="/admin/{{ empresa.id }}/configuracoes">
+
+    <section class="card" id="dados-empresa">
+      <div class="card-title">
+        <div>
+          <h2>Dados e identidade da empresa</h2>
+          <p>Gerencie as informações públicas e veja ao lado como elas aparecem para seus clientes.</p>
+        </div>
+      </div>
+
+      <div class="mf-company-workspace">
+        <div class="mf-company-editor">
+          <div class="mf-company-subheading">
+            <span class="mf-company-subheading-icon"><i class="fa-solid fa-globe"></i></span>
+            <h3>Dados públicos da empresa</h3>
+          </div>
+
+          <div class="mf-company-fields">
+            <div class="field">
+              <label>{{ t("Nome da empresa", idioma_painel) }}</label>
+              <input id="mfCompanyNameInput" name="nome" value="{{ empresa.nome or '' }}" placeholder="Ex: Studio Bella">
+            </div>
+
+            <div class="field">
+              <label>{{ t("Tipo de negócio", idioma_painel) }}</label>
+              <select name="tipo">
+                <option value="restaurante" {% if empresa.tipo in ['restaurante','comida','pizzaria','lanchonete','hamburgueria','padaria','cafeteria','doceria','sorveteria','acaiteria','açaiteria','outros_alimentacao'] %}selected{% endif %}>🍕 Restaurante e alimentação — Pedidos, reservas e delivery</option>
+                <option value="servicos_gerais" {% if empresa.tipo in ['servicos_gerais','outros_servicos','servicos','serviços','salao','salão','barbearia','estetica','estética','clinica','clínica','clinica_simples','consultorio','consultório','academia','oficina'] %}selected{% endif %}>💇 Serviços e outros serviços — Agenda, profissionais e pagamentos</option>
+                <option value="loja" {% if empresa.tipo in ['loja','loja_catalogo','catalogo','mercado','mercearia','adega','bebidas','farmacia','farmácia','pet_shop','petshop','floricultura','outras_lojas'] %}selected{% endif %}>🛍️ Produtos e outras lojas — Catálogo, pedidos e vendas</option>
+                <option value="encomendas" {% if empresa.tipo in ['encomendas','encomenda','sob_encomenda','confeitaria_encomendas'] %}selected{% endif %}>🎂 Encomendas — Produção por data, horário e retirada/entrega</option>
+              </select>
+              <small>{{ t("Escolha a opção que melhor representa o seu negócio.", idioma_painel) }}</small>
+            </div>
+
+            <div class="field">
+              <label>Texto abaixo do nome</label>
+              <input
+                id="mfCompanyDescriptionInput"
+                name="descricao"
+                value="{{ empresa.descricao or '' }}"
+                placeholder="Ex: Seu momento de cuidado começa aqui.">
+              <small>Esse texto aparece abaixo do nome da empresa no menu público.</small>
+            </div>
+            <input type="hidden" name="idioma" value="pt">
+          </div>
+
+          <div class="mf-company-divider"></div>
+
+          <div class="mf-company-subheading">
+            <span class="mf-company-subheading-icon"><i class="fa-regular fa-image"></i></span>
+            <h3>Identidade visual</h3>
+          </div>
+
+          <div class="mf-logo-manager">
+            <div class="logo-preview" id="logoPreview">
+              {% if empresa.logo_url %}
+                <img src="{{ empresa.logo_url }}" alt="Logo {{ empresa.nome }}">
+              {% else %}
+                <span>{{ empresa.nome[:1] }}</span>
+              {% endif %}
+            </div>
+
+            <div class="mf-logo-info">
+              <strong id="mfLogoFileName">{{ 'Logo atual' if empresa.logo_url else 'Nenhuma logo enviada' }}</strong>
+              <span>Imagem quadrada recomendada · 500×500 px</span>
+            </div>
+
+            <input type="hidden" id="logo_url" name="logo_url" value="{{ empresa.logo_url or '' }}">
+
+            <div class="logo-actions">
+              <input
+                class="logo-file"
+                id="logoFile"
+                type="file"
+                accept="image/*"
+                onchange="enviarLogoEmpresa()">
+
+              <button class="btn-upload-logo" type="button" onclick="document.getElementById('logoFile').click()">
+                <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                <span id="mfLogoUploadLabel">{{ 'Alterar logo' if empresa.logo_url else 'Enviar logo' }}</span>
+              </button>
+
+              <button class="btn-remover-logo" type="button" onclick="removerLogoEmpresa()">
+                <i class="fa-regular fa-trash-can"></i>
+                Remover
+              </button>
+            </div>
+
+            <span class="upload-status" id="uploadLogoStatus"></span>
+          </div>
+
+          <div class="mf-company-divider"></div>
+
+          {% if mf_admin_encomendas %}
+          <div class="mf-encomenda-visual-note">
+            <span class="mf-company-subheading-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
+            <div><strong>Vitrine automática de Encomendas</strong><p>As fotos da vitrine vêm dos próprios itens cadastrados. Logo abaixo você escolhe as cores que serão aplicadas ao menu real.</p></div>
+          </div>
+
+          <section class="mf-enc-category-band-v813 mf-enc-category-band-v862">
+            <div class="mf-enc-category-band-head-v813">
+              <div>
+                <h4>Faixa das categorias</h4>
+                <p>Adicione uma faixa de fundo atrás de “Todos”, “Bolos”, “Doces” e das demais categorias.</p>
+              </div>
+              <label class="mf-enc-intro-toggle-v812 mf-enc-category-toggle-v891" for="enc_faixa_categorias_ativa">
+                <span>Mostrar faixa</span>
+                <input id="enc_faixa_categorias_ativa" name="enc_faixa_categorias_ativa" type="checkbox" value="1" {% if encomendas_apresentacao.faixa_categorias_ativa %}checked{% endif %}>
+                <span class="mf-enc-intro-switch-v812" aria-hidden="true"></span>
+              </label>
+            </div>
+            <div class="mf-enc-category-band-color-v813">
+              <span class="mf-menu-color-group-title">Cor da faixa</span>
+              <input type="hidden" id="enc_faixa_categorias_cor" name="enc_faixa_categorias_cor" value="{{ encomendas_apresentacao.faixa_categorias_cor or empresa.menu_cor_principal or '#1236B5' }}">
+              <div class="mf-menu-color-swatches mf-enc-band-swatches-v862" id="mfEncBandColorSwatches" aria-label="Cores da faixa das categorias">
+                <button type="button" class="mf-menu-color-swatch" data-enc-band-color="#1236B5" style="--mf-swatch:#1236B5" aria-label="Azul"></button>
+                <button type="button" class="mf-menu-color-swatch" data-enc-band-color="#E83E7F" style="--mf-swatch:#E83E7F" aria-label="Rosa"></button>
+                <button type="button" class="mf-menu-color-swatch" data-enc-band-color="#7C3AED" style="--mf-swatch:#7C3AED" aria-label="Roxo"></button>
+                <button type="button" class="mf-menu-color-swatch" data-enc-band-color="#0E9F6E" style="--mf-swatch:#0E9F6E" aria-label="Verde"></button>
+                <button type="button" class="mf-menu-color-swatch" data-enc-band-color="#EA580C" style="--mf-swatch:#EA580C" aria-label="Laranja"></button>
+                <button type="button" class="mf-menu-color-swatch" data-enc-band-color="#111827" style="--mf-swatch:#111827" aria-label="Preto"></button>
+                <label class="mf-menu-color-custom" for="mfEncBandColorPicker">
+                  <span class="mf-menu-color-custom-dot" id="mfEncBandColorCustomDot"></span>
+                  Outra cor
+                  <input type="color" id="mfEncBandColorPicker" value="{{ encomendas_apresentacao.faixa_categorias_cor or empresa.menu_cor_principal or '#1236B5' }}">
+                </label>
+              </div>
+              <small>A prévia da faixa muda na hora para você conferir a combinação.</small>
+            </div>
+          </section>
+
+          <input type="hidden" id="hero_titulo" name="hero_titulo" value="{{ empresa.hero_titulo or '' }}">
+          <input type="hidden" id="hero_subtitulo" name="hero_subtitulo" value="{{ empresa.hero_subtitulo or '' }}">
+          <input type="hidden" id="hero_imagem_url" name="hero_imagem_url" value="{{ empresa.hero_imagem_url or '' }}">
+          <input type="hidden" id="hero_pos_x" name="hero_pos_x" value="{{ empresa.hero_pos_x if empresa.hero_pos_x is not none else 50 }}">
+          <input type="hidden" id="hero_pos_y" name="hero_pos_y" value="{{ empresa.hero_pos_y if empresa.hero_pos_y is not none else 50 }}">
+          <input type="hidden" id="hero_zoom" name="hero_zoom" value="{{ empresa.hero_zoom if empresa.hero_zoom is not none else 100 }}">
+          <input type="hidden" id="hero_overlay" name="hero_overlay" value="{{ empresa.hero_overlay if empresa.hero_overlay is not none else 100 }}">
+          <input type="hidden" id="hero_fit_mode" name="hero_fit_mode" value="{{ empresa.hero_fit_mode if empresa.hero_fit_mode in ['contain','cover','stretch'] else 'contain' }}">
+          <input type="hidden" id="hero_pos_x_mobile" name="hero_pos_x_mobile" value="{{ empresa.hero_pos_x_mobile if empresa.hero_pos_x_mobile is not none else 50 }}">
+          <input type="hidden" id="hero_pos_y_mobile" name="hero_pos_y_mobile" value="{{ empresa.hero_pos_y_mobile if empresa.hero_pos_y_mobile is not none else 50 }}">
+          <input type="hidden" id="hero_zoom_mobile" name="hero_zoom_mobile" value="{{ empresa.hero_zoom_mobile if empresa.hero_zoom_mobile is not none else 100 }}">
+          <input type="hidden" id="hero_fit_mode_mobile" name="hero_fit_mode_mobile" value="{{ empresa.hero_fit_mode_mobile if empresa.hero_fit_mode_mobile in ['contain','cover','stretch'] else 'contain' }}">
+          {% else %}
+          <div class="mf-company-subheading">
+            <span class="mf-company-subheading-icon"><i class="fa-regular fa-images"></i></span>
+            <div>
+              <h3>Aparência da capa</h3>
+              <p>Edite a capa e acompanhe o resultado na prévia ao lado.</p>
+            </div>
+          </div>
+
+          <div class="mf-cover-fields">
+            <div class="field">
+              <label>{{ {'pt': "Título da capa", 'it': "Titolo della copertina", 'en': "Cover title"}.get(idioma_painel, "Título da capa") }}</label>
+              <input
+                id="hero_titulo"
+                name="hero_titulo"
+                value="{{ empresa.hero_titulo if empresa.hero_titulo else {'pt': "Seu pedido favorito em poucos cliques.", 'it': "Il tuo ordine preferito in pochi clic.", 'en': "Your favorite order in a few clicks."}.get(idioma_painel, "Seu pedido favorito em poucos cliques.") }}"
+                placeholder="Ex: Seu estilo, sua melhor versão.">
+            </div>
+
+            <div class="field">
+              <label>{{ {'pt': "Subtítulo da capa", 'it': "Sottotitolo della copertina", 'en': "Cover subtitle"}.get(idioma_painel, "Subtítulo da capa") }}</label>
+              <textarea
+                id="hero_subtitulo"
+                name="hero_subtitulo"
+                placeholder="Ex: Cortes, barba e cuidados que realçam sua personalidade.">{{ empresa.hero_subtitulo or '' }}</textarea>
+              <small>Use um texto curto para manter a leitura clara sobre a foto.</small>
+            </div>
+          </div>
+
+          <div class="mf-cover-image-manager">
+            <div
+              class="mf-cover-image-thumb"
+              id="mfHeroImageThumb"
+              style="background-image:url('{{ empresa.hero_imagem_url or 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=900&q=80' }}');">
+              <span>Foto da capa</span>
+            </div>
+
+            <div class="mf-cover-image-info">
+              <strong id="mfHeroFileName">{{ 'Imagem atual' if empresa.hero_imagem_url else 'Imagem padrão' }}</strong>
+              <span>Ideal para esta capa: <b>1440×480 px</b> ou <b>1600×520 px</b></span>
+
+              <input type="hidden" id="hero_imagem_url" name="hero_imagem_url" value="{{ empresa.hero_imagem_url or '' }}">
+              <input class="mf-cover-file" id="heroImageFile" type="file" accept="image/*" onchange="enviarImagemCapa()">
+
+              <div class="mf-cover-image-actions">
+                <button class="mf-cover-upload" type="button" onclick="document.getElementById('heroImageFile').click()">
+                  <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                  <span id="mfHeroUploadLabel">{{ 'Alterar imagem' if empresa.hero_imagem_url else 'Enviar imagem' }}</span>
+                </button>
+                <button class="mf-cover-remove" type="button" onclick="removerImagemCapa()">
+                  <i class="fa-regular fa-trash-can"></i>
+                  Remover
+                </button>
+              </div>
+              <span class="upload-status" id="uploadHeroStatus"></span>
+            </div>
+          </div>
+
+          <div class="mf-cover-size-alert">
+            <i class="fa-solid fa-ruler-combined"></i>
+            <div>
+              <strong>Tamanho recomendado da foto da capa</strong>
+              <span><b>1440×480 px</b> ou <b>1600×520 px</b> · JPG/WebP horizontal · até 800 KB. Essas medidas encaixam melhor na capa fina.</span>
+            </div>
+          </div>
+
+          <div class="mf-cover-guide">
+            <i class="fa-regular fa-image"></i>
+            <span><strong>Dica:</strong> Se a imagem tiver outro tamanho, ainda funciona. Você pode usar <b>Mostrar foto inteira</b>, <b>Preencher capa</b> ou <b>Esticar para caber</b>.</span>
+          </div>
+
+          <div class="mf-hero-editor-controls">
+            <div class="mf-hero-editor-head">
+              <div>
+                <label>Enquadrar a foto</label>
+                <small>Faça o ajuste diretamente na capa da prévia.</small>
+              </div>
+              <div class="mf-hero-editor-head-actions">
+                <span class="mf-hero-device-note" id="mfHeroDeviceNote"><i class="fa-solid fa-laptop"></i> Ajustando notebook</span>
+                <button type="button" class="mf-hero-reset" id="mfHeroReset">
+                  <i class="fa-solid fa-arrow-rotate-left"></i> Restaurar
+                </button>
+              </div>
+            </div>
+
+            <input type="hidden" id="hero_pos_x" name="hero_pos_x" value="{{ empresa.hero_pos_x if empresa.hero_pos_x is not none else 50 }}">
+            <input type="hidden" id="hero_pos_y" name="hero_pos_y" value="{{ empresa.hero_pos_y if empresa.hero_pos_y is not none else 50 }}">
+            <input type="hidden" id="hero_zoom" name="hero_zoom" value="{{ empresa.hero_zoom if empresa.hero_zoom is not none and empresa.hero_zoom >= 60 else 100 }}">
+            <input type="hidden" id="hero_fit_mode" name="hero_fit_mode" value="{{ empresa.hero_fit_mode if empresa.hero_fit_mode in ['contain','cover','stretch'] else 'contain' }}">
+            <input type="hidden" id="hero_pos_x_mobile" name="hero_pos_x_mobile" value="{{ empresa.hero_pos_x_mobile if empresa.hero_pos_x_mobile is not none else (empresa.hero_pos_x if empresa.hero_pos_x is not none else 50) }}">
+            <input type="hidden" id="hero_pos_y_mobile" name="hero_pos_y_mobile" value="{{ empresa.hero_pos_y_mobile if empresa.hero_pos_y_mobile is not none else (empresa.hero_pos_y if empresa.hero_pos_y is not none else 50) }}">
+            <input type="hidden" id="hero_zoom_mobile" name="hero_zoom_mobile" value="{{ empresa.hero_zoom_mobile if empresa.hero_zoom_mobile is not none and empresa.hero_zoom_mobile >= 60 else (empresa.hero_zoom if empresa.hero_zoom is not none and empresa.hero_zoom >= 60 else 100) }}">
+            <input type="hidden" id="hero_fit_mode_mobile" name="hero_fit_mode_mobile" value="{{ empresa.hero_fit_mode_mobile if empresa.hero_fit_mode_mobile in ['contain','cover','stretch'] else (empresa.hero_fit_mode if empresa.hero_fit_mode in ['contain','cover','stretch'] else 'contain') }}">
+
+            <div class="mf-hero-direct-tools">
+              <div class="mf-hero-direct-note">
+                <i class="fa-solid fa-hand-pointer"></i>
+                <span><strong>Ajuste direto na prévia:</strong> arraste a foto com o mouse ou com o dedo. Use a rodinha do mouse ou a pinça para aproximar e afastar.</span>
+              </div>
+
+              <div class="mf-hero-fit-tools">
+                <strong>Como a foto deve entrar na capa</strong>
+                <div class="mf-hero-fit-pills" id="mfHeroFitPills">
+                  {% set mf_fit_mode = empresa.hero_fit_mode if empresa.hero_fit_mode in ['contain','cover','stretch'] else 'contain' %}
+                  <button type="button" class="mf-hero-fit-btn{% if mf_fit_mode == 'contain' %} active{% endif %}" data-fit-mode="contain">Mostrar foto inteira</button>
+                  <button type="button" class="mf-hero-fit-btn{% if mf_fit_mode == 'cover' %} active{% endif %}" data-fit-mode="cover">Preencher capa</button>
+                  <button type="button" class="mf-hero-fit-btn{% if mf_fit_mode == 'stretch' %} active{% endif %}" data-fit-mode="stretch">Esticar para caber</button>
+                </div>
+                <span class="mf-hero-fit-note">Para a maioria dos casos, comece em <b>Mostrar foto inteira</b>. Se quiser, depois troque para <b>Preencher capa</b> ou <b>Esticar para caber</b>.</span>
+              </div>
+
+              <div class="mf-hero-zoom-tools" aria-label="Controles de aproximação da capa">
+                <span class="mf-hero-control-label">Zoom da imagem</span>
+                <button type="button" id="mfHeroZoomOut" aria-label="Afastar imagem"><i class="fa-solid fa-minus"></i></button>
+                <span class="mf-hero-zoom-status" id="heroZoomValue">Zoom {{ ((empresa.hero_zoom if empresa.hero_zoom is not none and empresa.hero_zoom >= 60 else 100) - 100) }}%</span>
+                <button type="button" id="mfHeroZoomIn" aria-label="Aproximar imagem"><i class="fa-solid fa-plus"></i></button>
+              </div>
+
+              <label class="mf-hero-slider">
+                <span><b>Efeito branco</b><output id="heroOverlayValue">{{ empresa.hero_overlay if empresa.hero_overlay is not none else 100 }}%</output></span>
+                <input type="range" id="hero_overlay" name="hero_overlay" min="0" max="300" step="1" value="{{ empresa.hero_overlay if empresa.hero_overlay is not none else 100 }}">
+                <small><i>Sem efeito</i><i>Mais branco</i></small>
+              </label>
+            </div>
+          </div>
+
+          {% endif %}
+
+          {% set mf_tipo_cores = (empresa.tipo or '')|lower %}
+          {% set mf_menu_pedidos_cores = mf_tipo_cores in ['restaurante','comida','pizzaria','lanchonete','hamburgueria','padaria','cafeteria','doceria','sorveteria','acaiteria','outros_alimentacao','restaurante_comida','outros_estabelecimentos_de_alimentacao'] %}
+          <input type="hidden" id="menu_cor_principal" name="menu_cor_principal" value="{{ empresa.menu_cor_principal or '#1236B5' }}">
+          <input type="hidden" id="menu_cor_fundo" name="menu_cor_fundo" value="{{ empresa.menu_cor_fundo or '#F5F7FB' }}">
+          <div class="mf-menu-color-card" id="mfMenuColorCard" data-menu-pedidos-restaurante="{{ 1 if mf_menu_pedidos_cores else 0 }}" style="--mf-menu-color:{{ empresa.menu_cor_principal or '#1236B5' }};--mf-menu-rgb:{{ empresa.menu_cor_rgb or '18, 54, 181' }};--mf-menu-bg:{{ empresa.menu_cor_fundo or '#F5F7FB' }};--mf-menu-bg-rgb:{{ empresa.menu_cor_fundo_rgb or '245, 247, 251' }};">
+            <div class="mf-menu-color-head">
+              <div>
+                <strong>Cores do menu</strong>
+                <span>Escolha a cor dos botões e a cor de fundo do site.</span>
+              </div>
+              <button type="button" class="mf-menu-color-reset" id="mfMenuColorReset">
+                <i class="fa-solid fa-arrow-rotate-left"></i> Padrão
+              </button>
+            </div>
+
+            <div class="mf-menu-color-group">
+              <span class="mf-menu-color-group-title">Botões e destaques</span>
+              <div class="mf-menu-color-swatches" id="mfMenuColorSwatches" aria-label="Cores dos botões e destaques">
+                <button type="button" class="mf-menu-color-swatch" data-menu-color="#1236B5" style="--mf-swatch:#1236B5" aria-label="Azul"></button>
+                <button type="button" class="mf-menu-color-swatch" data-menu-color="#E83E7F" style="--mf-swatch:#E83E7F" aria-label="Rosa"></button>
+                <button type="button" class="mf-menu-color-swatch" data-menu-color="#7C3AED" style="--mf-swatch:#7C3AED" aria-label="Roxo"></button>
+                <button type="button" class="mf-menu-color-swatch" data-menu-color="#0E9F6E" style="--mf-swatch:#0E9F6E" aria-label="Verde"></button>
+                <button type="button" class="mf-menu-color-swatch" data-menu-color="#EA580C" style="--mf-swatch:#EA580C" aria-label="Laranja"></button>
+                <button type="button" class="mf-menu-color-swatch" data-menu-color="#111827" style="--mf-swatch:#111827" aria-label="Preto"></button>
+
+                <label class="mf-menu-color-custom" for="mfMenuColorPicker">
+                  <span class="mf-menu-color-custom-dot" id="mfMenuColorCustomDot"></span>
+                  Outra cor
+                  <input type="color" id="mfMenuColorPicker" value="{{ empresa.menu_cor_principal or '#1236B5' }}">
+                </label>
+              </div>
+            </div>
+
+            <div class="mf-menu-color-divider"></div>
+
+            <div class="mf-menu-color-group">
+              <span class="mf-menu-color-group-title">Fundo do site</span>
+              <div class="mf-menu-color-swatches" id="mfMenuBgSwatches" aria-label="Cores de fundo do site">
+                <button type="button" class="mf-menu-bg-swatch" data-menu-bg="#F5F7FB" style="--mf-swatch:#F5F7FB" aria-label="Claro"></button>
+                <button type="button" class="mf-menu-bg-swatch" data-menu-bg="#FFF1F5" style="--mf-swatch:#FFF1F5" aria-label="Rosa claro"></button>
+                <button type="button" class="mf-menu-bg-swatch" data-menu-bg="#F3E8FF" style="--mf-swatch:#F3E8FF" aria-label="Lilás claro"></button>
+                <button type="button" class="mf-menu-bg-swatch" data-menu-bg="#ECFDF5" style="--mf-swatch:#ECFDF5" aria-label="Verde claro"></button>
+                <button type="button" class="mf-menu-bg-swatch" data-menu-bg="#FFF7ED" style="--mf-swatch:#FFF7ED" aria-label="Bege claro"></button>
+                <button type="button" class="mf-menu-bg-swatch" data-menu-bg="#F3F4F6" style="--mf-swatch:#F3F4F6" aria-label="Cinza claro"></button>
+
+                <label class="mf-menu-color-custom" for="mfMenuBgPicker">
+                  <span class="mf-menu-bg-custom-dot" id="mfMenuBgCustomDot"></span>
+                  Outra cor
+                  <input type="color" id="mfMenuBgPicker" value="{{ empresa.menu_cor_fundo or '#F5F7FB' }}">
+                </label>
+              </div>
+            </div>
+
+            <div class="mf-menu-color-note">
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+              <span>A prévia muda na hora. Os cards continuam claros para manter a leitura.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mf-company-preview-column" role="region" aria-label="Prévia do menu público">
+          {% set mf_tipo_preview = (empresa.tipo or '')|lower %}
+          {% set mf_preview_servicos = mf_tipo_preview in ['salao','salão','servicos','serviços','barbearia','estetica','estética','clinica','clínica','clinica_simples','consultorio','consultório','academia','oficina','servicos_gerais','outros_servicos'] %}
+          {% set mf_preview_produtos = mf_tipo_preview in ['loja','loja_catalogo','catalogo','mercado','mercearia','adega','bebidas','farmacia','farmácia','pet_shop','petshop','floricultura','outras_lojas'] %}
+          {% set mf_preview_encomendas = mf_tipo_preview in ['encomendas','encomenda','sob_encomenda','confeitaria_encomendas'] %}
+
+          <div class="mf-preview-sticky">
+            <div class="mf-preview-heading">
+              <span class="mf-preview-heading-icon"><i class="fa-regular fa-eye"></i></span>
+              <h3>Prévia do menu público</h3>
+              <span class="mf-preview-badge">Atualização em tempo real</span>
+            </div>
+
+            <div class="mf-public-preview-card{% if mf_preview_produtos %} mf-preview-produtos{% endif %}{% if mf_preview_encomendas %} mf-preview-encomendas{% endif %}" id="mfPublicPreviewCard" style="--mf-menu-color:{{ empresa.menu_cor_principal or '#1236B5' }};--mf-menu-rgb:{{ empresa.menu_cor_rgb or '18, 54, 181' }};--mf-menu-on:{{ empresa.menu_cor_texto or '#FFFFFF' }};--mf-menu-bg:{{ empresa.menu_cor_fundo or '#F5F7FB' }};--mf-menu-bg-rgb:{{ empresa.menu_cor_fundo_rgb or '245, 247, 251' }};--mf-enc-band-color:{{ encomendas_apresentacao.faixa_categorias_cor or empresa.menu_cor_principal or '#1236B5' }};">
+              <div class="mf-public-preview-hero">
+                <div class="mf-public-preview-logo" id="mfPublicPreviewLogo">
+                  {% if empresa.logo_url %}
+                    <img src="{{ empresa.logo_url }}" alt="">
+                  {% else %}
+                    <span>{{ empresa.nome[:1] }}</span>
+                  {% endif %}
+                </div>
+                <div class="mf-public-preview-copy">
+                  <strong id="mfPublicPreviewName">{{ empresa.nome or 'Nome da empresa' }}</strong>
+                  <span id="mfPublicPreviewDescription">{{ empresa.descricao or 'Seu momento de cuidado começa aqui.' }}</span>
+                </div>
+              </div>
+
+              {% if mf_preview_encomendas %}
+              <div class="mf-encomenda-preview-area" aria-hidden="true">
+                <div class="mf-encomenda-preview-showcase">
+                  <span class="main"><i></i><b></b><em></em></span>
+                  <span><i></i><b></b><em></em></span>
+                  <span><i></i><b></b><em></em></span>
+                  <span><i></i><b></b><em></em></span>
+                  <span><i></i><b></b><em></em></span>
+                </div>
+                <div class="mf-encomenda-preview-chips{% if not encomendas_apresentacao.faixa_categorias_ativa %} band-off-v862{% endif %}"><b>Todos</b><span>Bolos e tortas</span><span>Salgados e festas</span><span>Doces</span><span>Sazonais</span></div>
+              </div>
+              {% else %}
+              <div class="mf-public-preview-cover" id="heroPreviewImagem">
+                <div
+                  class="mf-hero-preview-layer"
+                  id="heroPreviewImagemLayer"
+                  style="background-image:url('{{ empresa.hero_imagem_url or 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=900&q=80' }}'); --mf-hero-x:{{ empresa.hero_pos_x if empresa.hero_pos_x is not none else 50 }}; --mf-hero-y:{{ empresa.hero_pos_y if empresa.hero_pos_y is not none else 50 }}; --mf-hero-scale:{{ (empresa.hero_zoom if empresa.hero_zoom is not none and empresa.hero_zoom >= 60 else 100) / 100 }}; --mf-hero-fit-size:{% if mf_fit_mode == 'stretch' %}100% 100%{% elif mf_fit_mode == 'cover' %}cover{% else %}contain{% endif %};">
+                </div>
+                <div class="mf-public-preview-cover-shade" id="heroPreviewShade" style="--mf-hero-overlay:{{ empresa.hero_overlay if empresa.hero_overlay is not none else 100 }}"></div>
+                <div class="mf-public-preview-cover-copy">
+                  <strong id="heroPreviewTitulo">{{ empresa.hero_titulo or 'Seu negócio online de forma simples e profissional.' }}</strong>
+                  <span id="heroPreviewSubtitulo">{{ empresa.hero_subtitulo or 'Apresente seus produtos ou serviços em poucos cliques.' }}</span>
+                </div>
+                <span class="mf-public-preview-cover-action">
+                  <i class="fa-regular fa-clock"></i>
+                  {{ 'Horários' if (mf_preview_servicos or mf_preview_produtos) else 'Ver cardápio' }}
+                </span>
+                <span class="mf-hero-drag-hint"><i class="fa-solid fa-up-down-left-right"></i> Arraste em qualquer direção · role ou use pinça para aproximar e afastar</span>
+              </div>
+
+              <div class="mf-public-preview-nav" aria-hidden="true">
+                <span class="mf-public-preview-tab active"><i class="fa-solid fa-list"></i> {{ 'Serviços' if mf_preview_servicos else ('Produtos' if mf_preview_produtos else 'Cardápio') }}</span>
+                <span class="mf-public-preview-tab"><i class="fa-solid fa-tag"></i> Promoções</span>
+                <span class="mf-public-preview-tab"><i class="fa-regular fa-circle-info"></i> Informações</span>
+                <span class="mf-public-preview-tab"><i class="fa-regular fa-star"></i> Avaliações</span>
+              </div>
+
+              <div class="mf-public-preview-body" aria-hidden="true">
+                <div class="mf-public-preview-row">
+                  <span class="mf-public-preview-dot"></span>
+                  <span class="mf-public-preview-lines"><i></i><i></i></span>
+                  <span class="mf-public-preview-price"></span>
+                </div>
+                <div class="mf-public-preview-row">
+                  <span class="mf-public-preview-dot"></span>
+                  <span class="mf-public-preview-lines"><i></i><i></i></span>
+                  <span class="mf-public-preview-price"></span>
+                </div>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card mf-history-card-v817" id="nossa-historia">
+      <div class="card-title">
+        <div>
+          <h2>Nossa história</h2>
+          <p>Título, texto e fotos da apresentação da sua marca.</p>
+        </div>
+      </div>
+
+      <section class="mf-enc-intro-editor-v812{% if not encomendas_apresentacao.ativo %} is-off-v812{% endif %}" data-enc-intro-editor-v812>
+          <div class="mf-enc-intro-head-v812">
+            <div>
+              <h4>Apresentação da marca</h4>
+              <p>Conte sua história de forma simples e elegante. Você pode usar 1, 2 ou 3 fotos.</p>
+            </div>
+            <label class="mf-enc-intro-toggle-v812" for="enc_intro_ativo">
+              <span>Ativar apresentação</span>
+              <input id="enc_intro_ativo" name="enc_intro_ativo" type="checkbox" value="1" {% if encomendas_apresentacao.ativo %}checked{% endif %}>
+              <span class="mf-enc-intro-switch-v812" aria-hidden="true"></span>
+            </label>
+          </div>
+
+          <div class="mf-enc-intro-fields-v812">
+            <div class="field">
+              <label for="enc_intro_titulo">Título</label>
+              <input id="enc_intro_titulo" name="enc_intro_titulo" maxlength="140" value="{{ encomendas_apresentacao.titulo or 'Conheça nossa história' }}" placeholder="Ex: Conheça nossa história">
+            </div>
+            <div class="field">
+              <label for="enc_intro_texto">Texto</label>
+              <textarea id="enc_intro_texto" name="enc_intro_texto" maxlength="2500" placeholder="Conte em poucas linhas como nasceu a sua marca, o que torna seu trabalho especial e o que deseja apresentar aos clientes.">{{ encomendas_apresentacao.texto or '' }}</textarea>
+            </div>
+            <input type="hidden" name="enc_intro_botao_texto" value="Acessar nosso menu">
+          </div>
+
+          <div class="mf-enc-intro-help-v812">
+            <i class="fa-solid fa-palette"></i>
+            <span>Os detalhes visuais aproveitam a <strong>cor principal</strong> escolhida para o seu menu.</span>
+          </div>
+
+          <div class="mf-enc-intro-photos-title-v812">
+            <strong>Fotos da história</strong>
+            <span>Use 1, 2 ou 3 fotos. O layout se adapta sozinho.</span>
+          </div>
+
+          <div class="mf-enc-intro-photos-v812">
+            {% for slot, foto in [(1,encomendas_apresentacao.foto1_url),(2,encomendas_apresentacao.foto2_url),(3,encomendas_apresentacao.foto3_url)] %}
+            <div class="mf-enc-intro-photo-v812">
+              <div class="mf-enc-intro-photo-preview-v812" data-enc-intro-preview-v812="{{ slot }}">
+                {% if foto %}<img src="{{ foto }}" alt="Foto {{ slot }} da nossa história">{% else %}<span class="mf-enc-intro-empty-v812"><i class="fa-regular fa-image"></i>Foto opcional</span>{% endif %}
+              </div>
+              <div class="mf-enc-intro-photo-meta-v812">
+                <b>Foto {{ slot }}{% if slot == 1 %} · principal{% endif %}</b>
+                <div class="mf-enc-intro-photo-actions-v812">
+                  <button type="button" data-enc-intro-upload-v812 data-slot="{{ slot }}"><i class="fa-solid fa-arrow-up-from-bracket"></i> Enviar</button>
+                  <button type="button" data-enc-intro-remove-v812 data-slot="{{ slot }}" aria-label="Remover foto {{ slot }}"><i class="fa-regular fa-trash-can"></i></button>
+                </div>
+              </div>
+              <input type="hidden" id="enc_intro_foto{{ slot }}_url" name="enc_intro_foto{{ slot }}_url" value="{{ foto or '' }}">
+              <input hidden id="enc_intro_foto{{ slot }}_file" type="file" accept="image/jpeg,image/png,image/webp" data-enc-intro-file-v812 data-slot="{{ slot }}">
+              <span class="mf-enc-intro-upload-status-v812" data-enc-intro-status-v812="{{ slot }}"></span>
+            </div>
+            {% endfor %}
+          </div>
+      </section>
+    </section>
+
+    <section class="card">
+      <div class="card-title">
+        <div>
+          <h2>
+            {{ {
+              'pt':'Contato e redes sociais',
+              'it':'Contatti e social network',
+              'en':'Contact and social media'
+            }.get(idioma_painel, 'Contato e redes sociais') }}
+          </h2>
+          <p>
+            {{ {
+              'pt':'Esses dados aparecem nos botões de WhatsApp, contato e redes sociais do menu.',
+              'it':'Questi dati appaiono nei pulsanti WhatsApp, contatto e social del menu.',
+              'en':'This data appears in the WhatsApp, contact and social buttons on the menu.'
+            }.get(idioma_painel, 'Esses dados aparecem nos botões de WhatsApp, contato e redes sociais do menu.') }}
+          </p>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="field">
+          <label>{{ t("WhatsApp", idioma_painel) }}</label>
+          <input name="telefone_whatsapp" value="{{ empresa.telefone_whatsapp or '' }}" placeholder="Ex.: +55 11 99999-9999">
+        </div>
+
+        <div class="field">
+          <label>{{ {'pt': "Telefone principal", 'it': "Telefono principale", 'en': "Main phone"}.get(idioma_painel, "Telefone principal") }}</label>
+          <input name="telefone_fixo" value="{{ empresa.telefone_fixo or '' }}" placeholder="Ex.: +55 11 3333-3333">
+        </div>
+
+        <div class="field">
+          <label>{{ {'pt': "Telefone alternativo", 'it': "Telefono alternativo", 'en': "Alternative phone"}.get(idioma_painel, "Telefone alternativo") }}</label>
+          <input name="telefone_secundario" value="{{ empresa.telefone_secundario or '' }}" placeholder="Ex.: +55 11 98888-8888">
+        </div>
+
+        <div class="field">
+          <label>{{ t("E-mail", idioma_painel) }}</label>
+          <input name="email" value="{{ empresa.email or '' }}" placeholder="contato@empresa.com">
+        </div>
+
+        <div class="field">
+          <label>{{ t("Instagram", idioma_painel) }}</label>
+          <input name="instagram" value="{{ empresa.instagram or '' }}" placeholder="https://instagram.com/seuperfil ou @seuperfil">
+          <small>{{ {'pt': "Pode usar link completo ou @perfil.", 'it': "Puoi usare il link completo o @profilo.", 'en': "You can use the full link or @profile."}.get(idioma_painel, "Pode usar link completo ou @perfil.") }}</small>
+        </div>
+
+        <div class="field">
+          <label>{{ t("Facebook", idioma_painel) }}</label>
+          <input name="facebook" value="{{ empresa.facebook or '' }}" placeholder="https://facebook.com/suapagina ou @suapagina">
+          <small>{{ {'pt': "Pode usar link completo ou @perfil.", 'it': "Puoi usare il link completo o @profilo.", 'en': "You can use the full link or @profile."}.get(idioma_painel, "Pode usar link completo ou @perfil.") }}</small>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-title">
+        <div>
+          <h2>{{ t("Localização", idioma_painel) }}</h2>
+          <p>{{ t("Esses dados podem ser usados na área de localização do menu público.", idioma_painel) }}</p>
+        </div>
+      </div>
+
+      {% if mf_admin_encomendas %}
+      <div class="grid">
+        <div class="field">
+          <label>CEP</label>
+          <div class="mf-cep-row-v872" style="display:flex;gap:8px;align-items:center;">
+            <input id="cep_publico" name="cep_fiscal" value="{{ empresa.cep_fiscal or '' }}" inputmode="numeric" maxlength="9" placeholder="00000-000" style="min-width:0;flex:1;">
+            <button class="btn-secondary" type="button" id="buscarCepPublico" onclick="buscarCepPublicoV776()" style="white-space:nowrap;padding-left:14px;padding-right:14px;">Buscar CEP</button>
+          </div>
+          <small id="cepPublicoStatus">No Brasil, o CEP pode preencher rua, bairro, cidade e UF automaticamente.</small>
+        </div>
+
+        <div class="field">
+          <label>UF</label>
+          <input id="uf_publica" name="uf_fiscal" value="{{ empresa.uf_fiscal or '' }}" maxlength="2" placeholder="SP">
+        </div>
+
+        <div class="field full">
+          <label>{{ t("Endereço", idioma_painel) }}</label>
+          <input id="endereco" name="endereco" value="{{ empresa.endereco or '' }}" placeholder="Rua / avenida">
+        </div>
+
+        <div class="field">
+          <label>Número</label>
+          <input id="numero_publico" name="numero_fiscal" value="{{ empresa.numero_fiscal or '' }}" placeholder="Ex.: 120">
+        </div>
+
+        <div class="field">
+          <label>Bairro</label>
+          <input id="bairro_publico" name="bairro_fiscal" value="{{ empresa.bairro_fiscal or '' }}" placeholder="Ex.: Centro">
+        </div>
+
+        <div class="field">
+          <label>Complemento</label>
+          <input id="complemento_publico" name="complemento_fiscal" value="{{ empresa.complemento_fiscal or '' }}" placeholder="Apto, loja, bloco...">
+        </div>
+
+        <div class="field">
+          <label>{{ t("Cidade", idioma_painel) }}</label>
+          <input id="cidade" name="cidade" value="{{ empresa.cidade or '' }}" placeholder="Ex.: São Paulo">
+        </div>
+
+        <div class="field">
+          <label>{{ t("País", idioma_painel) }}</label>
+          <input id="pais" name="pais" value="{{ empresa.pais or 'Brasil' }}" placeholder="Brasil">
+        </div>
+      </div>
+      {% else %}
+      <div class="grid">
+        <div class="field full">
+          <label>{{ t("Endereço", idioma_painel) }}</label>
+          <input id="endereco" name="endereco" value="{{ empresa.endereco or '' }}" placeholder="Rua, número, bairro">
+        </div>
+
+        <div class="field">
+          <label>{{ t("Cidade", idioma_painel) }}</label>
+          <input id="cidade" name="cidade" value="{{ empresa.cidade or '' }}" placeholder="Ex.: São Paulo">
+        </div>
+
+        <div class="field">
+          <label>{{ t("País", idioma_painel) }}</label>
+          <input id="pais" name="pais" value="{{ empresa.pais or 'Brasil' }}" placeholder="Brasil">
+        </div>
+      </div>
+      {% endif %}
+
+      <div style="margin-top:18px;">
+        <button class="btn-secondary" type="button" onclick="testarLocalizacao()">
+          {{ {
+                  'pt':'Testar localização no Google Maps',
+                  'it':'Testa posizione su Google Maps',
+                  'en':'Test location on Google Maps'
+                }.get(idioma_painel,'Testar localização no Google Maps') }}
+        </button>
+      </div>
+    </section>
+
+    
+
+    <section class="card hours-config-card" id="horario-funcionamento">
+      <style>
+        .hours-master-control{display:flex;align-items:center;justify-content:space-between;gap:20px;margin:18px 0;padding:16px 18px;border:1px solid #d9e2f0;border-radius:16px;background:#f8fafc}
+        .hours-master-copy{display:flex;align-items:center;gap:13px;min-width:0}
+        .hours-master-icon{width:42px;height:42px;display:grid;place-items:center;flex:0 0 42px;border-radius:13px;color:#fff;background:#3b0066;font-size:17px}
+        .hours-master-copy strong{display:block;color:#15233b;font-size:15px;margin-bottom:3px}
+        .hours-master-copy>div>span{display:block;color:#657087;font-size:13px;line-height:1.35}
+        .hours-master-control .hours-switch{position:relative;display:flex!important;align-items:center!important;justify-content:flex-end;gap:11px;flex:0 0 auto;width:auto!important;margin:0!important;cursor:pointer;font-weight:800;color:#27344d}
+        .hours-switch input{position:absolute;opacity:0;pointer-events:none}
+        .hours-master-control .hours-switch-track{position:relative;display:block!important;flex:0 0 54px;width:54px!important;height:30px!important;margin:0!important;padding:0!important;border-radius:999px;background:#aab3c2;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08);transition:.2s ease}
+        .hours-switch-track::after{content:'';position:absolute;left:4px;top:4px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 2px 7px rgba(0,0,0,.22);transition:.2s ease}
+        .hours-switch input:checked + .hours-switch-track{background:#138a50}
+        .hours-switch input:checked + .hours-switch-track::after{transform:translateX(24px)}
+        .hours-switch input:focus-visible + .hours-switch-track{outline:3px solid rgba(41,98,255,.25);outline-offset:3px}
+        .hours-switch-label{min-width:112px;white-space:nowrap;text-align:left}.hours-switch-off{display:inline}.hours-switch-on{display:none}
+        .hours-switch input:checked ~ .hours-switch-label .hours-switch-off{display:none}
+        .hours-switch input:checked ~ .hours-switch-label .hours-switch-on{display:inline}
+        @media(max-width:700px){.hours-master-control{align-items:flex-start;flex-direction:column}.hours-switch{width:100%;justify-content:space-between}}
+      </style>
+      <div class="card-title">
+        <div>
+          <h2>{{ t("Horário de funcionamento", idioma_painel) }}</h2>
+          <p>{{ {'pt': "Cadastre os horários que aparecem no botão Horários do menu público e bloqueie pedidos quando estiver fechado.", 'it': "Registra gli orari che appaiono nel pulsante Orari del menu pubblico e blocca gli ordini quando è chiuso.", 'en': "Set the hours shown in the Hours button on the public menu and block orders when closed."}.get(idioma_painel, "Cadastre os horários que aparecem no botão Horários do menu público e bloqueie pedidos quando estiver fechado.") }}</p>
+        </div>
+      </div>
+
+      <div class="hours-master-control">
+        <div class="hours-master-copy">
+          <span class="hours-master-icon"><i class="fa-regular fa-clock"></i></span>
+          <div>
+            <strong>Controle de horário dos pedidos</strong>
+            <span>Ative para respeitar a agenda abaixo. Desative para receber pedidos 24 horas por dia.</span>
+          </div>
+        </div>
+        <label class="hours-switch">
+          <input type="checkbox" name="restricao_horarios_ativa" value="1" {% if restricao_horarios_ativa %}checked{% endif %}>
+          <span class="hours-switch-track" aria-hidden="true"></span>
+          <span class="hours-switch-label">
+            <span class="hours-switch-off">24 horas</span>
+            <span class="hours-switch-on">Horários ativos</span>
+          </span>
+        </label>
+      </div>
+
+      <div class="hours-config-intro">
+        {{ {'pt': "O cliente continua vendo o cardápio, mas o sistema não deixa enviar pedido se o dia estiver marcado como fechado ou se o horário atual estiver fora do intervalo cadastrado.", 'it': "Il cliente continua a vedere il menu, ma il sistema non consente di inviare ordini se il giorno è segnato come chiuso o se l’orario attuale è fuori dall’intervallo registrato.", 'en': "The customer can still view the menu, but the system will not allow orders if the day is marked as closed or the current time is outside the configured range."}.get(idioma_painel, "O cliente continua vendo o cardápio, mas o sistema não deixa enviar pedido se o dia estiver marcado como fechado ou se o horário atual estiver fora do intervalo cadastrado.") }}
+      </div>
+
+      <div class="hours-table">
+        {% for horario in horarios_funcionamento %}
+        <div class="hours-row">
+          <div class="hours-day">
+              {{ {
+                'segunda-feira': {'pt':'Segunda-feira','it':'Lunedì','en':'Monday'},
+                'terça-feira': {'pt':'Terça-feira','it':'Martedì','en':'Tuesday'},
+                'terca-feira': {'pt':'Terça-feira','it':'Martedì','en':'Tuesday'},
+                'quarta-feira': {'pt':'Quarta-feira','it':'Mercoledì','en':'Wednesday'},
+                'quinta-feira': {'pt':'Quinta-feira','it':'Giovedì','en':'Thursday'},
+                'sexta-feira': {'pt':'Sexta-feira','it':'Venerdì','en':'Friday'},
+                'sábado': {'pt':'Sábado','it':'Sabato','en':'Saturday'},
+                'sabado': {'pt':'Sábado','it':'Sabato','en':'Saturday'},
+                'domingo': {'pt':'Domingo','it':'Domenica','en':'Sunday'}
+              }.get((horario.dia_nome or '')|lower, {}).get(idioma_painel, horario.dia_nome) }}
+            </div>
+
+          <div class="hours-mini-field">
+            <label>Status</label>
+            <select name="horario_aberto_{{ horario.dia_semana }}">
+              <option value="1" {% if horario.aberto %}selected{% endif %}>{{ {'pt': "Aberto", 'it': "Aperto", 'en': "Open"}.get(idioma_painel, "Aberto") }}</option>
+              <option value="0" {% if not horario.aberto %}selected{% endif %}>{{ {'pt': "Fechado", 'it': "Chiuso", 'en': "Closed"}.get(idioma_painel, "Fechado") }}</option>
+            </select>
+          </div>
+
+          <div class="hours-mini-field">
+  <label>
+    {{ {
+      'pt':'Abre',
+      'it':'Apre',
+      'en':'Opens'
+    }.get(idioma_painel,'Abre') }}
+  </label>
+  <input type="time" name="horario_inicio_{{ horario.dia_semana }}" value="{{ horario.hora_inicio or '' }}">
+</div>
+
+<div class="hours-mini-field">
+  <label>
+    {{ {
+      'pt':'Fecha',
+      'it':'Chiude',
+      'en':'Closes'
+    }.get(idioma_painel,'Fecha') }}
+  </label>
+  <input type="time" name="horario_fim_{{ horario.dia_semana }}" value="{{ horario.hora_fim or '' }}">
+</div>
+          <div class="hours-mini-field hours-free">
+            <label>{{ {
+                          'pt':'TEXTO QUE APARECE NO MENU',
+                          'it':'TESTO CHE APPARE NEL MENU',
+                          'en':'TEXT SHOWN ON THE MENU'
+                        }.get(idioma_painel,'TEXTO QUE APARECE NO MENU') }}</label>
+            <input name="horario_texto_{{ horario.dia_semana }}" value="{{ horario.texto_exibicao or '' }}" placeholder="Ex: 09:00 até 18:00 / Almoço e jantar / {{ {'pt': "Fechado", 'it': "Chiuso", 'en': "Closed"}.get(idioma_painel, "Fechado") }}">
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="hours-note">
+          {{ {
+            'pt':'Dica: o campo de texto é livre para aparecer bonito no site. Para bloquear pedido, o sistema usa o status Aberto/Fechado e os campos Abre/Fecha. Se deixar Abre/Fecha vazios com status Aberto, o sistema não bloqueia por horário naquele dia.',
+            'it':'Suggerimento: il campo di testo è libero e serve per apparire bene sul sito. Per bloccare gli ordini, il sistema usa lo stato Aperto/Chiuso e i campi Apre/Chiude. Se lasci Apre/Chiude vuoti con stato Aperto, il sistema non blocca gli ordini per orario in quel giorno.',
+            'en':'Tip: the text field is free and is used to look nice on the site. To block orders, the system uses the Open/Closed status and the Opens/Closes fields. If Opens/Closes are empty with status Open, the system does not block orders by time on that day.'
+          }.get(idioma_painel,'Dica: o campo de texto é livre para aparecer bonito no site. Para bloquear pedido, o sistema usa o status Aberto/Fechado e os campos Abre/Fecha. Se deixar Abre/Fecha vazios com status Aberto, o sistema não bloqueia por horário naquele dia.') }}      </div>
+    </section>
+
+    {% if mf_mostrar_cardapio_qr %}
+    <section class="card" id="v99-cardapio-digital">
+      <div class="card-title">
+        <div>
+          <h2>{{ t("Cardápio digital", idioma_painel) }} / QR Code</h2>
+          <p>{{ {'pt': "Seu menu público já funciona como cardápio digital. Use o link ou QR Code para divulgar seu cardápio.", 'it': "Il tuo menu pubblico funziona già come menu digitale. Usa il link o il QR Code per condividere il menu.", 'en': "Your public menu already works as a digital menu. Use the link or QR Code to share your menu."}.get(idioma_painel, "Seu menu público já funciona como cardápio digital. Use o link ou QR Code para divulgar seu cardápio.") }}</p>
+        </div>
+      </div>
+
+      <div class="v110-cardapio-wrap">
+        <div class="v110-cardapio-grid">
+          <div class="v110-box white">
+            <h3>{{ {'pt':'Cardápio principal','it':'Menu principale','en':'Main menu'}.get(idioma_painel,'Cardápio principal') }}</h3>
+            <p>{{ {'pt':'Link geral para WhatsApp, Instagram, Google, balcão e vitrine.','it':'Link generale per WhatsApp, Instagram, Google, banco e vetrina.','en':'General link for WhatsApp, Instagram, Google, counter and showcase.'}.get(idioma_painel,'Link geral para WhatsApp, Instagram, Google, balcão e vitrine.') }}</p>
+
+            <div class="v110-link-line">
+              <input id="v99MenuLink" type="text" readonly value="/menu/{{ empresa.slug }}">
+              <button type="button" onclick="v99{{ {'pt': "Copiar", 'it': "Copia", 'en': "Copy"}.get(idioma_painel, "Copiar") }}LinkMenu()">
+                <i class="fa-regular fa-copy"></i> {{ {'pt': "Copiar", 'it': "Copia", 'en': "Copy"}.get(idioma_painel, "Copiar") }}
+              </button>
+            </div>
+
+            <div class="v110-btns">
+              <a class="primary" href="/menu/{{ empresa.slug }}" target="_blank">
+                <i class="fa-solid fa-globe"></i> {{ {'pt':'Abrir cardápio','it':'Apri menu','en':'Open menu'}.get(idioma_painel,'Abrir cardápio') }}
+              </a>
+              <button class="green" type="button" onclick="v99BaixarQrCode()">
+                <i class="fa-solid fa-download"></i> {{ {'pt': "Baixar QR Code", 'it': "Scarica QR Code", 'en': "Download QR Code"}.get(idioma_painel, "Baixar QR Code") }}
+              </button>
+              <button type="button" onclick="v99{{ {'pt': "Imprimir", 'it': "Stampa", 'en': "Print"}.get(idioma_painel, "Imprimir") }}QrCode()">
+                <i class="fa-solid fa-print"></i> {{ {'pt': "Imprimir QR Code", 'it': "Stampa QR Code", 'en': "Print QR Code"}.get(idioma_painel, "Imprimir QR Code") }}
+              </button>
+            </div>
+
+            
+              <input type="hidden" name="menu_pedidos_online" id="menu_pedidos_online" value="{{ 1 if menu_config is not defined or menu_config.pedidos_online else 0 }}">
+              <input type="hidden" name="menu_retirada" id="menu_retirada" value="{{ 1 if menu_config is not defined or menu_config.retirada else 0 }}">
+              <input type="hidden" name="menu_entrega" id="menu_entrega" value="{{ 1 if menu_config is not defined or menu_config.entrega else 0 }}">
+              <input type="hidden" name="menu_reservas" id="menu_reservas" value="{{ 1 if menu_config is not defined or menu_config.reservas else 0 }}">
+              <input type="hidden" name="menu_modo_mesa" id="menu_modo_mesa" value="0">
+              <input type="hidden" name="menu_modo_tablet" id="menu_modo_tablet" value="0">
+
+           <div class="v110-status-grid" style="display:none;">
+              <button class="v110-status-item v111-toggle" type="button" data-hidden="menu_pedidos_online">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <div><strong>{{ t("Pedidos", idioma_painel) }}</strong><span>{{ {'pt': "Ativo", 'it': "Attivo", 'en': "Active"}.get(idioma_painel, "Ativo") }}</span></div>
+              </button>
+              <button class="v110-status-item v111-toggle" type="button" data-hidden="menu_retirada">
+                <i class="fa-solid fa-bag-shopping"></i>
+                <div><strong>{{ {'pt': "Retirada", 'it': "Ritiro", 'en': "Pickup"}.get(idioma_painel, "Retirada") }}</strong><span>{{ {'pt': "Ativo", 'it': "Attivo", 'en': "Active"}.get(idioma_painel, "Ativo") }}</span></div>
+              </button>
+              <button class="v110-status-item v111-toggle" type="button" data-hidden="menu_entrega">
+                <i class="fa-solid fa-truck"></i>
+                <div><strong>Entrega</strong><span>{{ {'pt': "Ativo", 'it': "Attivo", 'en': "Active"}.get(idioma_painel, "Ativo") }}</span></div>
+              </button>
+              <button class="v110-status-item v111-toggle" type="button" data-hidden="menu_reservas">
+                <i class="fa-solid fa-calendar-check"></i>
+                <div><strong>Reservas</strong><span>{{ {'pt': "Ativo", 'it': "Attivo", 'en': "Active"}.get(idioma_painel, "Ativo") }}</span></div>
+              </button>
+            </div>
+<div class="v111-help-save" style="display:none;">
+              {{ {'pt': "Clique para ativar/desativar somente as opções do Cardápio Digital/QR Code. O menu principal público continua completo.", 'it': "Clicca per attivare/disattivare solo le opzioni del Menu Digitale/QR Code. Il menu pubblico principale rimane completo.", 'en': "Click to enable/disable only Digital Menu/QR Code options. The main public menu remains complete."}.get(idioma_painel, "Clique para ativar/desativar somente as opções do Cardápio Digital/QR Code. O menu principal público continua completo.") }}
+            </div>
+          </div>
+
+          <div class="v110-box white">
+            <h3>{{ {'pt': "QR Code principal", 'it': "QR Code principale", 'en': "Main QR Code"}.get(idioma_painel, "QR Code principal") }}</h3>
+            <p>{{ {'pt': "QR geral para balcão, vitrine, cartão ou redes sociais.", 'it': "QR generale per banco, vetrina, biglietto o social network.", 'en': "General QR for counter, showcase, card or social media."}.get(idioma_painel, "QR geral para balcão, vitrine, cartão ou redes sociais.") }}</p>
+
+            <div class="v110-qr-box">
+              <img id="v99QrCodeImg" alt="QR Code do cardápio digital">
+              <div>
+                <strong style="color:#061b8f;display:block;margin-bottom:5px">{{ t("Cardápio digital", idioma_painel) }}</strong>
+                <span style="color:#667085;font-size:12px;font-weight:850;line-height:1.4;display:block">{{ {'pt': "Escaneie para abrir o menu público da empresa.", 'it': "Scansiona per aprire il menu pubblico dell’azienda.", 'en': "Scan to open the company's public menu."}.get(idioma_painel, "Escaneie para abrir o menu público da empresa.") }}</span>
+                <div class="v110-btns">
+                  <button type="button" onclick="v99{{ {'pt': "Imprimir", 'it': "Stampa", 'en': "Print"}.get(idioma_painel, "Imprimir") }}QrCode()">
+                    <i class="fa-solid fa-print"></i> {{ {'pt': "Imprimir", 'it': "Stampa", 'en': "Print"}.get(idioma_painel, "Imprimir") }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- v816: recursos antigos removidos do Restaurante -->
+
+      </div>
+
+      <div id="v99PrintQrArea">
+        <h1>{{ empresa.nome }}</h1>
+        <p>Escaneie e acesse nosso cardápio digital</p>
+        <img id="v99PrintQrImg" alt="QR Code">
+        <div class="url" id="v99PrintQrUrl"></div>
+      </div>
+
+      
+    </section>
+    {% else %}
+    {# Produtos e serviços mantêm os valores atuais no salvamento, mas não exibem o card de QR na tela principal. #}
+    <input type="hidden" name="menu_pedidos_online" value="{{ 1 if menu_config is not defined or menu_config.pedidos_online else 0 }}">
+    <input type="hidden" name="menu_retirada" value="{{ 1 if menu_config is not defined or menu_config.retirada else 0 }}">
+    <input type="hidden" name="menu_entrega" value="{{ 1 if menu_config is not defined or menu_config.entrega else 0 }}">
+    <input type="hidden" name="menu_reservas" value="{{ 1 if menu_config is not defined or menu_config.reservas else 0 }}">
+    <input type="hidden" name="menu_modo_mesa" value="{{ 1 if menu_config is not defined or menu_config.modo_mesa else 0 }}">
+    <input type="hidden" name="menu_modo_tablet" value="{{ 1 if menu_config is not defined or menu_config.modo_tablet else 0 }}">
+    <input type="hidden" name="menu_qtd_mesas" value="{{ menu_config.qtd_mesas if menu_config is defined else 10 }}">
+    <input type="hidden" name="menu_prefixo_mesa" value="{{ menu_config.prefixo_mesa if menu_config is defined else 'Mesa' }}">
+    {% endif %}
+
+    <div class="actions">
+      <a class="btn-secondary" href="/admin/{{ empresa.id }}">
+        {{ {'pt':'Cancelar alterações','it':'Annulla modifiche','en':'Cancel changes'}.get(idioma_painel,'Cancelar alterações') }}
+      </a>
+
+      <button class="btn-primary" type="submit">
+        {{ t("Salvar configurações", idioma_painel) }}
+      </button>
+    </div>
+
+  </form>
+
+</main>
+    </section>
+  </main>
+</div>
+
+<script>
+async function enviarLogoEmpresa(){
+  const input = document.getElementById("logoFile");
+  const status = document.getElementById("uploadLogoStatus");
+
+  if(!input.files || !input.files[0]){
+    return;
+  }
+
+  const arquivo = input.files[0];
+
+  if(!arquivo.type.startsWith("image/")){
+    mfAlert({{ {'pt':'Escolha um arquivo de imagem.','it':'Scegli un file immagine.','en':'Choose an image file.'}.get(idioma_painel,'Escolha um arquivo de imagem.')|tojson }});
+    input.value = "";
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("file", arquivo);
+
+  status.textContent = {{ {'pt':'Enviando logo...','it':'Caricamento logo...','en':'Uploading logo...'}.get(idioma_painel,'Enviando logo...')|tojson }};
+
+  try{
+    const resposta = await fetch("/upload-imagem", {
+      method: "POST",
+      credentials: "same-origin",
+      body: formData
+    });
+
+    const dados = await resposta.json();
+
+    if(!resposta.ok || dados.error){
+      status.textContent = "";
+      mfAlert(dados.error || {{ {'pt':'Erro ao enviar logo.','it':'Errore durante il caricamento del logo.','en':'Error uploading logo.'}.get(idioma_painel,'Erro ao enviar logo.')|tojson }});
+      return;
+    }
+
+    document.getElementById("logo_url").value = dados.url;
+
+    const preview = document.getElementById("logoPreview");
+    preview.innerHTML = `<img src="${dados.url}" alt="Logo">`;
+
+    status.textContent = {{ {'pt':'Logo enviada. Clique em Salvar configurações.','it':'Logo caricato. Clicca su Salva impostazioni.','en':'Logo uploaded. Click Save settings.'}.get(idioma_painel,'Logo enviada. Clique em Salvar configurações.')|tojson }};
+  }catch(erro){
+    status.textContent = "";
+    mfAlert({{ {'pt':'Não foi possível enviar a logo.','it':'Non è stato possibile caricare il logo.','en':'Could not upload the logo.'}.get(idioma_painel,'Não foi possível enviar a logo.')|tojson }});
+  }
+}
+
+function removerLogoEmpresa(){
+  document.getElementById("logo_url").value = "";
+  document.getElementById("logoPreview").innerHTML = `<span>{{ empresa.nome[:1] }}</span>`;
+  document.getElementById("uploadLogoStatus").textContent = {{ {'pt':'Logo removida. Clique em Salvar configurações.','it':'Logo rimosso. Clicca su Salva impostazioni.','en':'Logo removed. Click Save settings.'}.get(idioma_painel,'Logo removida. Clique em Salvar configurações.')|tojson }};
+}
+
+function testarLogoAtual(){
+  const url = document.getElementById("logo_url").value;
+  if(!url){
+    mfAlert({{ {'pt':'Nenhuma logo cadastrada.','it':'Nessun logo registrato.','en':'No logo registered.'}.get(idioma_painel,'Nenhuma logo cadastrada.')|tojson }});
+    return;
+  }
+  window.open(url, "_blank");
+}
+
+async function buscarCepPublicoV776(){
+  const input = document.getElementById("cep_publico");
+  const status = document.getElementById("cepPublicoStatus");
+  if(!input) return;
+  const cep = String(input.value || "").replace(/\D/g, "");
+  if(cep.length !== 8){
+    if(status) status.textContent = "Informe um CEP com 8 dígitos.";
+    input.focus();
+    return;
+  }
+  if(status) status.textContent = "Buscando endereço...";
+  try{
+    const resposta = await fetch("https://viacep.com.br/ws/" + cep + "/json/");
+    const dados = await resposta.json();
+    if(!resposta.ok || dados.erro) throw new Error("CEP não encontrado");
+    const endereco = document.getElementById("endereco");
+    const bairro = document.getElementById("bairro_publico");
+    const cidade = document.getElementById("cidade");
+    const uf = document.getElementById("uf_publica");
+    if(endereco && dados.logradouro) endereco.value = dados.logradouro;
+    if(bairro && dados.bairro) bairro.value = dados.bairro;
+    if(cidade && dados.localidade) cidade.value = dados.localidade;
+    if(uf && dados.uf) uf.value = dados.uf;
+    input.value = cep.slice(0,5) + "-" + cep.slice(5);
+    if(status) status.textContent = "Endereço encontrado. Complete o número e confira os dados.";
+    const numero = document.getElementById("numero_publico");
+    if(numero) numero.focus();
+  }catch(erro){
+    if(status) status.textContent = "Não foi possível localizar esse CEP. Você pode preencher o endereço manualmente.";
+  }
+}
+
+(function(){
+  const cep = document.getElementById("cep_publico");
+  if(!cep) return;
+  cep.addEventListener("input", function(){
+    const digitos = String(this.value || "").replace(/\D/g, "").slice(0,8);
+    this.value = digitos.length > 5 ? digitos.slice(0,5) + "-" + digitos.slice(5) : digitos;
+  });
+  cep.addEventListener("blur", function(){
+    if(String(this.value || "").replace(/\D/g, "").length === 8 && !document.getElementById("endereco").value.trim()) buscarCepPublicoV776();
+  });
+})();
+
+function testarLocalizacao(){
+  const endereco = document.getElementById("endereco").value || "";
+  const numero = document.getElementById("numero_publico")?.value || "";
+  const bairro = document.getElementById("bairro_publico")?.value || "";
+  const cidade = document.getElementById("cidade").value || "";
+  const uf = document.getElementById("uf_publica")?.value || "";
+  const cep = document.getElementById("cep_publico")?.value || "";
+  const pais = document.getElementById("pais").value || "";
+  const busca = [endereco, numero, bairro, cidade, uf, cep, pais].filter(Boolean).join(", ");
+
+  if(!busca.trim()){
+    mfAlert({{ {'pt':'Preencha endereço, cidade ou país para testar.','it':'Inserisci indirizzo, città o paese per testare.','en':'Fill in address, city or country to test.'}.get(idioma_painel,'Preencha endereço, cidade ou país para testar.')|tojson }});
+    return;
+  }
+
+  window.open("https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(busca), "_blank");
+}
+
+async function enviarImagemCapa(){
+  const input = document.getElementById("heroImageFile");
+  const status = document.getElementById("uploadHeroStatus");
+  if(!input || !input.files || !input.files[0]) return;
+
+  const arquivo = input.files[0];
+  if(!arquivo.type.startsWith("image/")){
+    mfAlert("Escolha um arquivo de imagem.");
+    input.value = "";
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("file", arquivo);
+  if(status) status.textContent = "Enviando imagem...";
+
+  try{
+    const resposta = await fetch("/upload-imagem", {
+      method: "POST",
+      credentials: "same-origin",
+      body: formData
+    });
+    const dados = await resposta.json();
+    if(!resposta.ok || dados.error){
+      if(status) status.textContent = "";
+      mfAlert(dados.error || "Erro ao enviar a imagem da capa.");
+      return;
+    }
+
+    const urlInput = document.getElementById("hero_imagem_url");
+    if(urlInput) urlInput.value = dados.url;
+    const fileName = document.getElementById("mfHeroFileName");
+    const uploadLabel = document.getElementById("mfHeroUploadLabel");
+    if(fileName) fileName.textContent = arquivo.name || "Imagem atual";
+    if(uploadLabel) uploadLabel.textContent = "Alterar imagem";
+    if(status) status.textContent = "Imagem enviada. Clique em Salvar configurações.";
+    atualizarPreviewHero();
+  }catch(erro){
+    if(status) status.textContent = "";
+    mfAlert("Não foi possível enviar a imagem da capa.");
+  }
+}
+
+function removerImagemCapa(){
+  const input = document.getElementById("hero_imagem_url");
+  const fileName = document.getElementById("mfHeroFileName");
+  const uploadLabel = document.getElementById("mfHeroUploadLabel");
+  const status = document.getElementById("uploadHeroStatus");
+  if(input) input.value = "";
+  if(fileName) fileName.textContent = "Imagem padrão";
+  if(uploadLabel) uploadLabel.textContent = "Enviar imagem";
+  if(status) status.textContent = "Imagem removida. Clique em Salvar configurações.";
+  atualizarPreviewHero();
+}
+
+function mfHeroClamp(value, min, max){
+  return Math.max(min, Math.min(max, Number(value) || 0));
+}
+
+function mfHeroEhMobile(){
+  return window.matchMedia("(max-width: 720px)").matches;
+}
+
+function mfHeroCampos(mobile = mfHeroEhMobile()){
+  const sufixo = mobile ? "_mobile" : "";
+  return {
+    mobile,
+    posX: document.getElementById(`hero_pos_x${sufixo}`),
+    posY: document.getElementById(`hero_pos_y${sufixo}`),
+    zoom: document.getElementById(`hero_zoom${sufixo}`),
+    fitMode: document.getElementById(`hero_fit_mode${sufixo}`)
+  };
+}
+
+function mfHeroAtualizarIndicadorDispositivo(){
+  const indicador = document.getElementById("mfHeroDeviceNote");
+  if(!indicador) return;
+  if(mfHeroEhMobile()){
+    indicador.innerHTML = '<i class="fa-solid fa-mobile-screen-button"></i> Ajustando celular';
+  }else{
+    indicador.innerHTML = '<i class="fa-solid fa-laptop"></i> Ajustando notebook';
+  }
+}
+
+function atualizarPreviewHero(){
+  const titulo = document.getElementById("hero_titulo");
+  const subtitulo = document.getElementById("hero_subtitulo");
+  const imagem = document.getElementById("hero_imagem_url");
+  const overlay = document.getElementById("hero_overlay");
+  const campos = mfHeroCampos();
+
+  const previewTitulo = document.getElementById("heroPreviewTitulo");
+  const previewSubtitulo = document.getElementById("heroPreviewSubtitulo");
+  const previewImagem = document.getElementById("heroPreviewImagemLayer");
+  const miniatura = document.getElementById("mfHeroImageThumb");
+  const previewShade = document.getElementById("heroPreviewShade");
+
+  mfHeroAtualizarIndicadorDispositivo();
+
+  if(previewTitulo){
+    previewTitulo.textContent = (titulo?.value || "").trim() || "Seu negócio online de forma simples e profissional.";
+  }
+
+  if(previewSubtitulo){
+    previewSubtitulo.textContent = (subtitulo?.value || "").trim() || "{{ {'pt': "Apresente seus produtos ou serviços, receba pedidos e organize atendimentos em poucos cliques.", 'it': "Presenta prodotti o servizi, ricevi ordini e organizza appuntamenti in pochi clic.", 'en': "Show your products or services, receive orders and organize appointments in a few clicks."}.get(idioma_painel, "Apresente seus produtos ou serviços, receba pedidos e organize atendimentos em poucos cliques.") }}";
+  }
+
+  if(previewImagem){
+    const url = (imagem?.value || "").trim() || "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=900&q=80";
+    const x = mfHeroClamp(campos.posX?.value ?? 50, 0, 100);
+    const y = mfHeroClamp(campos.posY?.value ?? 50, 0, 100);
+    const z = mfHeroClamp(campos.zoom?.value ?? 100, 60, 400);
+    const overlayValue = mfHeroClamp(overlay?.value ?? 100, 0, 300);
+
+    if(campos.posX) campos.posX.value = String(Math.round(x));
+    if(campos.posY) campos.posY.value = String(Math.round(y));
+    if(campos.zoom) campos.zoom.value = String(Math.round(z));
+
+    previewImagem.style.backgroundImage = `url('${url}')`;
+    if(miniatura) miniatura.style.backgroundImage = `url('${url}')`;
+
+    const fitMode = String(campos.fitMode?.value || "contain").toLowerCase();
+    const fitSize = fitMode === "stretch" ? "100% 100%" : (fitMode === "cover" ? "cover" : "contain");
+
+    previewImagem.style.setProperty("--mf-hero-x", String(x));
+    previewImagem.style.setProperty("--mf-hero-y", String(y));
+    previewImagem.style.setProperty("--mf-hero-scale", String(z / 100));
+    previewImagem.style.setProperty("--mf-hero-fit-size", fitSize);
+    previewImagem.dataset.heroDevice = campos.mobile ? "mobile" : "desktop";
+    if(miniatura) miniatura.style.backgroundSize = fitSize;
+    if(previewShade) previewShade.style.setProperty("--mf-hero-overlay", String(overlayValue));
+
+    document.querySelectorAll("#mfHeroFitPills .mf-hero-fit-btn").forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.fitMode === fitMode);
+    });
+
+    const zOut = document.getElementById("heroZoomValue");
+    const overlayOut = document.getElementById("heroOverlayValue");
+    if(zOut) zOut.textContent = `Zoom ${Math.round(z - 100)}%`;
+    if(overlayOut) overlayOut.textContent = `${Math.round(overlayValue)}%`;
+  }
+}
+
+function configurarEditorDiretoDaCapa(){
+  const area = document.getElementById("heroPreviewImagem");
+  if(!area) return;
+
+  const pointers = new Map();
+  let dragStart = null;
+  let pinchStart = null;
+
+  function setZoom(next, campos = mfHeroCampos()){
+    if(!campos.zoom) return;
+    campos.zoom.value = String(Math.round(mfHeroClamp(next, 60, 400)));
+    atualizarPreviewHero();
+  }
+
+  function pointerDistance(){
+    const pts = Array.from(pointers.values());
+    if(pts.length < 2) return 0;
+    return Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+  }
+
+  area.addEventListener("pointerdown", function(event){
+    if(event.pointerType === "mouse" && event.button !== 0) return;
+    const campos = mfHeroCampos();
+    if(!campos.posX || !campos.posY || !campos.zoom) return;
+
+    area.setPointerCapture?.(event.pointerId);
+    pointers.set(event.pointerId, {x:event.clientX, y:event.clientY});
+    area.classList.add("is-dragging");
+
+    if(pointers.size === 1){
+      dragStart = {
+        x:event.clientX,
+        y:event.clientY,
+        posX:Number(campos.posX.value || 50),
+        posY:Number(campos.posY.value || 50),
+        campos
+      };
+      pinchStart = null;
+    }else if(pointers.size === 2){
+      pinchStart = {
+        distance:pointerDistance(),
+        zoom:Number(campos.zoom.value || 100),
+        campos
+      };
+      dragStart = null;
+    }
+    event.preventDefault();
+  });
+
+  area.addEventListener("pointermove", function(event){
+    if(!pointers.has(event.pointerId)) return;
+    pointers.set(event.pointerId, {x:event.clientX, y:event.clientY});
+
+    if(pointers.size >= 2 && pinchStart){
+      const distance = pointerDistance();
+      if(pinchStart.distance > 0){
+        setZoom(pinchStart.zoom * (distance / pinchStart.distance), pinchStart.campos);
+      }
+      event.preventDefault();
+      return;
+    }
+
+    if(pointers.size === 1 && dragStart){
+      const rect = area.getBoundingClientRect();
+      if(rect.width && rect.height){
+        const dx = event.clientX - dragStart.x;
+        const dy = event.clientY - dragStart.y;
+        dragStart.campos.posX.value = String(Math.round(mfHeroClamp(dragStart.posX - (dx / rect.width) * 100, 0, 100)));
+        dragStart.campos.posY.value = String(Math.round(mfHeroClamp(dragStart.posY - (dy / rect.height) * 100, 0, 100)));
+        atualizarPreviewHero();
+      }
+      event.preventDefault();
+    }
+  });
+
+  function finishPointer(event){
+    pointers.delete(event.pointerId);
+    try{ area.releasePointerCapture?.(event.pointerId); }catch(_){ }
+    if(pointers.size === 0){
+      area.classList.remove("is-dragging");
+      dragStart = null;
+      pinchStart = null;
+    }else if(pointers.size === 1){
+      const remaining = Array.from(pointers.values())[0];
+      const campos = mfHeroCampos();
+      dragStart = {
+        x:remaining.x,
+        y:remaining.y,
+        posX:Number(campos.posX?.value || 50),
+        posY:Number(campos.posY?.value || 50),
+        campos
+      };
+      pinchStart = null;
+    }
+  }
+
+  area.addEventListener("pointerup", finishPointer);
+  area.addEventListener("pointercancel", finishPointer);
+
+  area.addEventListener("wheel", function(event){
+    event.preventDefault();
+    const campos = mfHeroCampos();
+    const step = event.deltaY < 0 ? 5 : -5;
+    setZoom(Number(campos.zoom?.value || 100) + step, campos);
+  }, {passive:false});
+
+  document.getElementById("mfHeroZoomOut")?.addEventListener("click", function(){
+    const campos = mfHeroCampos();
+    setZoom(Number(campos.zoom?.value || 100) - 5, campos);
+  });
+  document.getElementById("mfHeroZoomIn")?.addEventListener("click", function(){
+    const campos = mfHeroCampos();
+    setZoom(Number(campos.zoom?.value || 100) + 5, campos);
+  });
+
+  document.querySelectorAll("#mfHeroFitPills .mf-hero-fit-btn").forEach((btn) => {
+    btn.addEventListener("click", function(){
+      const campos = mfHeroCampos();
+      if(campos.fitMode){
+        campos.fitMode.value = String(btn.dataset.fitMode || "contain");
+        atualizarPreviewHero();
+      }
+    });
+  });
+}
+
+function mfNormalizarCorMenu(valor, padrao = "#1236B5"){
+  const cor = String(valor || "").trim().toUpperCase();
+  return /^#[0-9A-F]{6}$/.test(cor) ? cor : padrao;
+}
+
+function mfCorMenuRgb(cor, padrao = "#1236B5"){
+  const limpa = mfNormalizarCorMenu(cor, padrao).slice(1);
+  return [parseInt(limpa.slice(0,2),16), parseInt(limpa.slice(2,4),16), parseInt(limpa.slice(4,6),16)];
+}
+
+
+function mfAtualizarCorMenu(corInformada){
+  const input = document.getElementById("menu_cor_principal");
+  const picker = document.getElementById("mfMenuColorPicker");
+  const card = document.getElementById("mfMenuColorCard");
+  const preview = document.getElementById("mfPublicPreviewCard");
+  const dot = document.getElementById("mfMenuColorCustomDot");
+  const cor = mfNormalizarCorMenu(corInformada ?? input?.value, "#1236B5");
+  const rgb = mfCorMenuRgb(cor, "#1236B5");
+  const luminancia = (0.299 * rgb[0]) + (0.587 * rgb[1]) + (0.114 * rgb[2]);
+  const corTexto = luminancia >= 174 ? "#111827" : "#FFFFFF";
+
+  if(input) input.value = cor;
+  if(picker) picker.value = cor;
+  if(dot) dot.style.background = cor;
+
+  [card, preview].forEach((el) => {
+    if(!el) return;
+    el.style.setProperty("--mf-menu-color", cor);
+    el.style.setProperty("--mf-menu-rgb", rgb.join(","));
+    el.style.setProperty("--mf-menu-on", corTexto);
+  });
+
+  document.querySelectorAll("#mfMenuColorSwatches .mf-menu-color-swatch").forEach((btn) => {
+    const ativa = mfNormalizarCorMenu(btn.dataset.menuColor, "#1236B5") === cor;
+    btn.classList.toggle("active", ativa);
+    btn.setAttribute("aria-pressed", ativa ? "true" : "false");
+  });
+
+}
+
+function mfAtualizarCorFundo(corInformada){
+  const input = document.getElementById("menu_cor_fundo");
+  const picker = document.getElementById("mfMenuBgPicker");
+  const card = document.getElementById("mfMenuColorCard");
+  const preview = document.getElementById("mfPublicPreviewCard");
+  const dot = document.getElementById("mfMenuBgCustomDot");
+  const cor = mfNormalizarCorMenu(corInformada ?? input?.value, "#F5F7FB");
+  const rgb = mfCorMenuRgb(cor, "#F5F7FB");
+
+  if(input) input.value = cor;
+  if(picker) picker.value = cor;
+  if(dot) dot.style.background = cor;
+
+  [card, preview].forEach((el) => {
+    if(!el) return;
+    el.style.setProperty("--mf-menu-bg", cor);
+    el.style.setProperty("--mf-menu-bg-rgb", rgb.join(","));
+  });
+
+  document.querySelectorAll("#mfMenuBgSwatches .mf-menu-bg-swatch").forEach((btn) => {
+    const ativa = mfNormalizarCorMenu(btn.dataset.menuBg, "#F5F7FB") === cor;
+    btn.classList.toggle("active", ativa);
+    btn.setAttribute("aria-pressed", ativa ? "true" : "false");
+  });
+}
+
+function mfConfigurarCorMenu(){
+  const input = document.getElementById("menu_cor_principal");
+  const inputFundo = document.getElementById("menu_cor_fundo");
+  if(!input || !inputFundo) return;
+
+  document.querySelectorAll("#mfMenuColorSwatches .mf-menu-color-swatch").forEach((btn) => {
+    btn.addEventListener("click", function(){
+      mfAtualizarCorMenu(btn.dataset.menuColor);
+    });
+  });
+
+  document.querySelectorAll("#mfMenuBgSwatches .mf-menu-bg-swatch").forEach((btn) => {
+    btn.addEventListener("click", function(){
+      mfAtualizarCorFundo(btn.dataset.menuBg);
+    });
+  });
+
+  document.getElementById("mfMenuColorPicker")?.addEventListener("input", function(event){
+    mfAtualizarCorMenu(event.target.value);
+  });
+
+  document.getElementById("mfMenuBgPicker")?.addEventListener("input", function(event){
+    mfAtualizarCorFundo(event.target.value);
+  });
+
+  document.getElementById("mfMenuColorReset")?.addEventListener("click", function(){
+    mfAtualizarCorMenu("#1236B5");
+    mfAtualizarCorFundo("#F5F7FB");
+  });
+
+  /* V216: somente os campos ocultos oficiais são enviados ao servidor.
+     Os pickers servem apenas para a interface e nunca podem sobrescrever
+     a cor escolhida nos botões de fundo. */
+  document.getElementById("mfConfiguracoesForm")?.addEventListener("submit", function(){
+    mfAtualizarCorMenu(document.getElementById("menu_cor_principal")?.value);
+    mfAtualizarCorFundo(document.getElementById("menu_cor_fundo")?.value);
+  });
+
+  mfAtualizarCorMenu(input.value);
+  mfAtualizarCorFundo(inputFundo.value);
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+  ["hero_titulo", "hero_subtitulo", "hero_imagem_url", "hero_overlay"].forEach(id => {
+    const campo = document.getElementById(id);
+    if(campo){
+      campo.addEventListener("input", atualizarPreviewHero);
+    }
+  });
+
+  const reset = document.getElementById("mfHeroReset");
+  if(reset){
+    reset.addEventListener("click", function(){
+      const campos = mfHeroCampos();
+      if(campos.posX) campos.posX.value = "50";
+      if(campos.posY) campos.posY.value = "50";
+      if(campos.zoom) campos.zoom.value = "100";
+      if(campos.fitMode) campos.fitMode.value = "contain";
+      atualizarPreviewHero();
+    });
+  }
+
+  configurarEditorDiretoDaCapa();
+  mfConfigurarCorMenu();
+  atualizarPreviewHero();
+
+  let mfHeroResizeTimer = null;
+  window.addEventListener("resize", function(){
+    clearTimeout(mfHeroResizeTimer);
+    mfHeroResizeTimer = setTimeout(atualizarPreviewHero, 100);
+  });
+});
+
+</script>
+
+<script id="v99-cardapio-digital-js">
+/* V99 — Cardápio Digital / QR Code */
+(function(){
+  function getMenuUrl(){
+    const input = document.getElementById("v99MenuLink");
+    let url = input ? input.value : "";
+
+    if(url.startsWith("/")){
+      url = window.location.origin + url;
+    }
+
+    return url;
+  }
+
+  function qrUrl(size){
+    const url = getMenuUrl();
+    return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(url)}`;
+  }
+
+  function atualizarQr(){
+    const img = document.getElementById("v99QrCodeImg");
+    const printImg = document.getElementById("v99PrintQrImg");
+    const printUrl = document.getElementById("v99PrintQrUrl");
+
+    if(img) img.src = qrUrl(320);
+    if(printImg) printImg.src = qrUrl(600);
+    if(printUrl) printUrl.textContent = getMenuUrl();
+  }
+
+  window.v99{{ {'pt': "Copiar", 'it': "Copia", 'en': "Copy"}.get(idioma_painel, "Copiar") }}LinkMenu = async function(){
+    const url = getMenuUrl();
+
+    try{
+      await navigator.clipboard.writeText(url);
+      mfAlert("Link do cardápio copiado.");
+    }catch(e){
+      const input = document.getElementById("v99MenuLink");
+      if(input){
+        input.select();
+        document.execCommand("copy");
+        mfAlert("Link do cardápio copiado.");
+      }
+    }
+  };
+
+  window.v99BaixarQrCode = function(){
+    const link = document.createElement("a");
+    link.href = qrUrl(800);
+    link.download = "qrcode-cardapio-digital.png";
+    link.target = "_blank";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  };
+
+  window.v99{{ {'pt': "Imprimir", 'it': "Stampa", 'en': "Print"}.get(idioma_painel, "Imprimir") }}QrCode = function(){
+    atualizarQr();
+    document.body.classList.add("v99-print-qr");
+    window.print();
+    setTimeout(() => document.body.classList.remove("v99-print-qr"), 800);
+  };
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", atualizarQr);
+  }else{
+    atualizarQr();
+  }
+})();
+</script>
+
+<script id="v103-config-ferramentas-organizadas-js">
+(function(){
+  const EMPRESA_KEY = "{{ empresa.id }}";
+  const KEY_PREFIX = `v103_config_tool_open_${EMPRESA_KEY}_`;
+  const tools=[
+    {id:"v99-cardapio-digital",key:"cardapio",icon:"fa-solid fa-qrcode",title:"{{ t("Cardápio digital", idioma_painel) }}",sub:"Link, QR Code e impressão",openDefault:true},
+  ];
+
+  function setOpen(section,key,open){
+    section.classList.toggle("v103-collapsed",!open);
+    try{localStorage.setItem(KEY_PREFIX+key,open?"1":"0")}catch(e){}
+  }
+
+  function isOpen(key,def){
+    try{
+      const val=localStorage.getItem(KEY_PREFIX+key);
+      if(val==="1")return true;
+      if(val==="0")return false;
+    }catch(e){}
+    return !!def;
+  }
+
+  function wrapBody(section){
+    if(section.querySelector(":scope > .v103-tool-body"))return;
+    const title=section.querySelector(":scope > .card-title");
+    if(!title)return;
+    const body=document.createElement("div");
+    body.className="v103-tool-body";
+    Array.from(section.children).filter(child=>child!==title).forEach(child=>body.appendChild(child));
+    section.appendChild(body);
+  }
+
+  function createSummary(){
+    if(document.getElementById("v103ToolsSummary"))return;
+    const first=document.getElementById("v99-cardapio-digital");
+    if(!first)return;
+    const summary=document.createElement("div");
+    summary.id="v103ToolsSummary";
+    summary.className="v103-tools-summary";
+    tools.forEach(tool=>{
+      const section=document.getElementById(tool.id);
+      if(!section)return;
+      const card=document.createElement("button");
+      card.type="button";
+      card.className="v103-summary-card";
+      card.innerHTML=`<div class="v103-summary-icon"><i class="${tool.icon}"></i></div><div><strong>${tool.title}</strong><span>${tool.sub}</span></div>`;
+      card.onclick=function(){
+        section.scrollIntoView({behavior:"smooth",block:"start"});
+        setOpen(section,tool.key,true);
+      };
+      summary.appendChild(card);
+    });
+    first.parentElement.insertBefore(summary,first);
+  }
+
+  function init(){
+    createSummary();
+    tools.forEach(tool=>{
+      const section=document.getElementById(tool.id);
+      if(!section)return;
+      section.classList.add("v103-tool-card");
+      wrapBody(section);
+      setOpen(section,tool.key,isOpen(tool.key,tool.openDefault));
+      const title=section.querySelector(":scope > .card-title");
+      if(title&&!title.dataset.v103Ready){
+        title.dataset.v103Ready="1";
+        title.addEventListener("click",function(){
+          setOpen(section,tool.key,section.classList.contains("v103-collapsed"));
+        });
+      }
+    });
+  }
+
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);
+  else init();
+})();
+</script>
+
+<script id="v104-config-submenu-js">
+/* V104 — abre submenu de {{ t("Configurações", idioma_painel) }} e destaca seção */
+(function(){
+  function init(){
+    const path = window.location.pathname;
+    const isConfig = path.includes("/configuracoes");
+    document.body.classList.toggle("v104-config-open", isConfig);
+
+    const hash = window.location.hash || "";
+    document.querySelectorAll(".v104-config-submenu a").forEach(a => {
+      const h = a.getAttribute("href") || "";
+      a.classList.toggle("active", !!hash && h.endsWith(hash));
+    });
+  }
+
+  window.addEventListener("hashchange", init);
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", init);
+  }else{
+    init();
+  }
+})();
+</script>
+
+<script id="v111-opcoes-cardapio-js">
+(function(){
+  function renderToggle(btn){
+    const hidden = document.getElementById(btn.dataset.hidden);
+    if(!hidden) return;
+
+    const active = hidden.value === "1";
+    btn.classList.toggle("desativado", !active);
+
+    const span = btn.querySelector("span");
+    if(span){
+      span.textContent = active ? "{{ {'pt': "Ativo", 'it': "Attivo", 'en': "Active"}.get(idioma_painel, "Ativo") }}" : "Desativado";
+      span.classList.toggle("optional", !active);
+    }
+  }
+
+  function init(){
+    document.querySelectorAll(".v111-toggle").forEach(btn => {
+      renderToggle(btn);
+
+      if(!btn.dataset.ready){
+        btn.dataset.ready = "1";
+        btn.addEventListener("click", function(){
+          const hidden = document.getElementById(btn.dataset.hidden);
+          if(!hidden) return;
+
+          hidden.value = hidden.value === "1" ? "0" : "1";
+          renderToggle(btn);
+        });
+      }
+    });
+  }
+
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+
+<script id="v137-config-recolhido-responsivo-js">
+/* V63 — accordion real: além da classe, oculta/restaura o conteúdo diretamente. */
+(function(){
+  "use strict";
+
+  const STORAGE_KEY = "v137_config_cards_abertos";
+
+  function readState(){
+    try{
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+    }catch(error){
+      return {};
+    }
+  }
+
+  function writeState(state){
+    try{
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }catch(error){}
+  }
+
+  function cardId(card, index){
+    const heading = card.querySelector(":scope > .card-title h2");
+    return card.id || (heading ? heading.textContent.trim() : "") || ("card-" + index);
+  }
+
+  function contentChildren(card, title){
+    return Array.from(card.children).filter(function(child){
+      return child !== title && child.tagName !== "STYLE" && child.tagName !== "SCRIPT";
+    });
+  }
+
+  function hideElement(element){
+    if(!element.dataset.v63DisplaySaved){
+      element.dataset.v63DisplaySaved = "1";
+      element.dataset.v63DisplayValue = element.style.getPropertyValue("display") || "";
+      element.dataset.v63DisplayPriority = element.style.getPropertyPriority("display") || "";
+    }
+    element.hidden = true;
+    element.setAttribute("aria-hidden", "true");
+    element.style.setProperty("display", "none", "important");
+  }
+
+  function showElement(element){
+    element.hidden = false;
+    element.removeAttribute("aria-hidden");
+    const value = element.dataset.v63DisplayValue || "";
+    const priority = element.dataset.v63DisplayPriority || "";
+    if(value){
+      element.style.setProperty("display", value, priority);
+    }else{
+      element.style.removeProperty("display");
+    }
+  }
+
+  function applyOpenState(card, title, icon, open){
+    card.classList.toggle("v137-open", open);
+    card.setAttribute("data-v63-open", open ? "1" : "0");
+    title.setAttribute("aria-expanded", open ? "true" : "false");
+    icon.setAttribute("aria-expanded", open ? "true" : "false");
+    icon.setAttribute("aria-label", open ? "Fechar seção" : "Abrir seção");
+
+    contentChildren(card, title).forEach(function(child){
+      if(open) showElement(child);
+      else hideElement(child);
+    });
+  }
+
+  function initAccordions(){
+    const cards = Array.from(document.querySelectorAll("section.card, .card")).filter(function(card){
+      return !!card.querySelector(":scope > .card-title");
+    });
+    const state = readState();
+    const hasSavedState = !!localStorage.getItem(STORAGE_KEY);
+
+    cards.forEach(function(card, index){
+      const title = card.querySelector(":scope > .card-title");
+      const id = cardId(card, index);
+
+      card.classList.add("v137-collapsible");
+      card.dataset.v137Ready = "1";
+      title.setAttribute("role", "button");
+      title.setAttribute("tabindex", "0");
+
+      title.querySelectorAll(":scope > .v137-collapse-icon").forEach(function(oldIcon){
+        oldIcon.remove();
+      });
+
+      const icon = document.createElement("button");
+      icon.type = "button";
+      icon.className = "v137-collapse-icon";
+      icon.dataset.mfV61Ready = "1";
+      icon.innerHTML = '<i class="fa-solid fa-chevron-down" aria-hidden="true"></i>';
+      title.appendChild(icon);
+
+      const shouldOpen =
+        state[id] === true ||
+        (!hasSavedState && index === 0) ||
+        (!!window.location.hash && card.matches(window.location.hash));
+
+      applyOpenState(card, title, icon, shouldOpen);
+
+      function toggle(event){
+        if(event){
+          event.preventDefault();
+          event.stopPropagation();
+          if(event.stopImmediatePropagation) event.stopImmediatePropagation();
+        }
+        const open = card.getAttribute("data-v63-open") !== "1";
+        applyOpenState(card, title, icon, open);
+        const nextState = readState();
+        nextState[id] = open;
+        writeState(nextState);
+      }
+
+      icon.addEventListener("click", toggle, true);
+      icon.addEventListener("keydown", function(event){
+        if(event.key === "Enter" || event.key === " " || event.key === "Spacebar") toggle(event);
+      }, true);
+
+      title.addEventListener("click", function(event){
+        if(event.target.closest("button,a,input,select,textarea,label")) return;
+        toggle(event);
+      }, true);
+
+      title.addEventListener("keydown", function(event){
+        if(event.target !== title) return;
+        if(event.key === "Enter" || event.key === " " || event.key === "Spacebar") toggle(event);
+      }, true);
+    });
+
+    if(window.location.hash){
+      const target = document.querySelector(window.location.hash);
+      if(target){
+        const card = target.matches("section.card, .card") ? target : target.closest("section.card, .card");
+        if(card){
+          const title = card.querySelector(":scope > .card-title");
+          const icon = title && title.querySelector(":scope > .v137-collapse-icon");
+          if(title && icon) applyOpenState(card, title, icon, true);
+          setTimeout(function(){ card.scrollIntoView({behavior:"smooth", block:"start"}); }, 100);
+        }
+      }
+    }
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", initAccordions, {once:true});
+  }else{
+    initAccordions();
+  }
+})();
+</script>
+
+<script id="v139-seta-unica-config-js">
+/* V139 — limpeza de setas duplicadas após carregamento */
+(function(){
+  function limparSetasDuplicadas(){
+    document.querySelectorAll(".card-title").forEach(title => {
+      const icons = Array.from(title.querySelectorAll(".v137-collapse-icon"));
+      icons.slice(0, -1).forEach(icon => icon.remove());
+    });
+
+    document.querySelectorAll(".v103-tools-summary,.v98-shortcuts,.v98-quick-cards,.v98-config-tabs,.v98-top-tabs").forEach(el => {
+      el.style.display = "none";
+    });
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", limparSetasDuplicadas);
+  }else{
+    limparSetasDuplicadas();
+  }
+
+  setTimeout(limparSetasDuplicadas, 400);
+  setTimeout(limparSetasDuplicadas, 1200);
+})();
+</script>
+
+<script id="v149-remove-textos-aparencia-js">
+/* V149 — esconde os cards: Salão/{{ t("Barbearia", idioma_painel) }}, Restaurante e Genérico */
+(function(){
+  function limparTextosAparencia(){
+    const secao =
+      document.getElementById("aparencia-menu") ||
+      Array.from(document.querySelectorAll(".card, section")).find(el =>
+        (el.textContent || "").includes("{{ t("Aparência do menu público", idioma_painel) }}")
+      );
+
+    if(!secao) return;
+
+    const textos = [
+      "Salão / {{ t("Barbearia", idioma_painel) }}",
+      "Seu estilo, sua melhor versão.",
+      "Restaurante",
+      "{{ {'pt': "Seu pedido favorito em poucos cliques.", 'it': "Il tuo ordine preferito in pochi clic.", 'en': "Your favorite order in a few clicks."}.get(idioma_painel, "Seu pedido favorito em poucos cliques.") }}",
+      "Genérico",
+      "Seu negócio online de forma simples e profissional."
+    ];
+
+    Array.from(secao.querySelectorAll("*")).forEach(el => {
+      const txt = (el.textContent || "").replace(/\s+/g, " ").trim();
+
+      const ehBlocoPresets =
+        txt.includes("Salão / {{ t("Barbearia", idioma_painel) }}") &&
+        txt.includes("Restaurante") &&
+        txt.includes("Genérico") &&
+        txt.length < 350;
+
+      const ehCardIndividual =
+        (
+          txt.includes("Salão / {{ t("Barbearia", idioma_painel) }}") ||
+          txt.includes("Restaurante") ||
+          txt.includes("Genérico")
+        ) &&
+        (
+          txt.includes("Seu estilo") ||
+          txt.includes("Seu pedido favorito") ||
+          txt.includes("Seu negócio online")
+        ) &&
+        txt.length < 180;
+
+      if(ehBlocoPresets || ehCardIndividual){
+        el.classList.add("v149-hide-aparencia-textos");
+        el.style.setProperty("display", "none", "important");
+      }
+    });
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", limparTextosAparencia);
+  }else{
+    limparTextosAparencia();
+  }
+
+  setTimeout(limparTextosAparencia, 300);
+  setTimeout(limparTextosAparencia, 1000);
+})();
+</script>
+
+<script id="v150-descricao-imagem-capa-js">
+/* V150 — adiciona instrução curta sobre tamanho ideal da imagem de capa */
+(function(){
+  function inserirAjudaImagemCapa(){
+    const secao =
+      document.getElementById("aparencia-menu") ||
+      Array.from(document.querySelectorAll(".card, section")).find(el =>
+        (el.textContent || "").includes("{{ t("Aparência do menu público", idioma_painel) }}")
+      );
+
+    if(!secao || secao.dataset.v150CoverHelp) return;
+    secao.dataset.v150CoverHelp = "1";
+
+    // Procura o texto antigo de imagem horizontal ou um campo provável de capa/banner.
+    const alvoTexto = Array.from(secao.querySelectorAll("p, small, .info, label, div")).find(el => {
+      const t = (el.textContent || "").toLowerCase();
+      return t.includes("imagem horizontal") || t.includes("foto do salão") || t.includes("comida");
+    });
+
+    const campoImagem = Array.from(secao.querySelectorAll("input")).find(input => {
+      const name = (input.name || input.id || input.placeholder || "").toLowerCase();
+      return name.includes("capa") || name.includes("banner") || name.includes("hero") || name.includes("imagem");
+    });
+
+    const ajuda = document.createElement("div");
+    ajuda.className = "v150-cover-help";
+    ajuda.innerHTML = `
+      <i class="fa-solid fa-image"></i>
+      <div>
+        <strong>{{ {'pt': "Imagem de capa recomendada:", 'it': "Immagine di copertina consigliata:", 'en': "Recommended cover image:"}.get(idioma_painel, "Imagem de capa recomendada:") }}</strong>
+        1600×520 px. {{ {'pt': "Também funciona bem com", 'it': "Funziona bene anche con", 'en': "Also works well with"}.get(idioma_painel, "Também funciona bem com") }} 1440×480 px. {{ {'pt': "Use foto horizontal, sem texto, com o assunto principal no centro e espaço nas bordas.", 'it': "Usa una foto orizzontale, senza testo, con il soggetto principale al centro e spazio ai bordi.", 'en': "Use a horizontal photo, without text, with the main subject centered and space around the edges."}.get(idioma_painel, "Use foto horizontal, sem texto, com o assunto principal no centro e espaço nas bordas.") }}
+        <br>
+        <span class="v150-cover-safe-note"><i class="fa-solid fa-check"></i> {{ {'pt': "Ideal: JPG/WebP até 800 KB", 'it': "Ideale: JPG/WebP fino a 800 KB", 'en': "Ideal: JPG/WebP up to 800 KB"}.get(idioma_painel, "Ideal: JPG/WebP até 800 KB") }}</span>
+      </div>
+    `;
+
+    if(alvoTexto){
+      alvoTexto.insertAdjacentElement("afterend", ajuda);
+    }else if(campoImagem){
+      const field = campoImagem.closest(".field") || campoImagem.parentElement;
+      field.insertAdjacentElement("afterend", ajuda);
+    }else{
+      const titulo = secao.querySelector(".card-title, h2");
+      if(titulo) titulo.insertAdjacentElement("afterend", ajuda);
+    }
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", inserirAjudaImagemCapa);
+  }else{
+    inserirAjudaImagemCapa();
+  }
+
+  setTimeout(inserirAjudaImagemCapa, 400);
+  setTimeout(inserirAjudaImagemCapa, 1200);
+})();
+</script>
+
+
+<!-- INICIO v181: modo mesa e terminais padronizados -->
+
+<!-- FIM v181: modo mesa e terminais padronizados -->
+
+<script id="mf-hours-sync-v1">
+(function(){
+  if(window.__MF_HOURS_SYNC_V1__) return;
+  window.__MF_HOURS_SYNC_V1__ = true;
+
+  function normalizeName(name){
+    return String(name || "")
+      .toLowerCase()
+      .replaceAll("-", "_")
+      .replaceAll("ç","c")
+      .replaceAll("á","a").replaceAll("à","a").replaceAll("ã","a").replaceAll("â","a")
+      .replaceAll("é","e").replaceAll("ê","e")
+      .replaceAll("í","i")
+      .replaceAll("ó","o").replaceAll("ô","o").replaceAll("õ","o")
+      .replaceAll("ú","u");
+  }
+
+  function isStatus(el){
+    const n = normalizeName(el.name || el.id);
+    return n.includes("status") || n.includes("aberto_fechado") || n.includes("funcionamento");
+  }
+
+  function isOpenTime(el){
+    const n = normalizeName(el.name || el.id);
+    return n.includes("abre") || n.includes("abertura") || n.endsWith("_inicio") || n.includes("hora_inicio");
+  }
+
+  function isCloseTime(el){
+    const n = normalizeName(el.name || el.id);
+    return n.includes("fecha") || n.includes("fechamento") || n.endsWith("_fim") || n.includes("hora_fim");
+  }
+
+  function isTextField(el){
+    const n = normalizeName(el.name || el.id);
+    return n.includes("texto") || n.includes("menu") || n.includes("label") || n.includes("observacao");
+  }
+
+  function updateRow(row){
+    const status = Array.from(row.querySelectorAll("select,input")).find(isStatus);
+    const open = Array.from(row.querySelectorAll("input")).find(isOpenTime);
+    const close = Array.from(row.querySelectorAll("input")).find(isCloseTime);
+    const text = Array.from(row.querySelectorAll("input[type='text'],textarea")).find(isTextField);
+
+    if(!text) return;
+
+    const statusValue = status ? String(status.value || "").toLowerCase() : "aberto";
+    const openValue = open ? open.value : "";
+    const closeValue = close ? close.value : "";
+
+    if(statusValue.includes("fechado") || statusValue.includes("chiuso") || statusValue === "closed"){
+      if(!text.value || text.value.includes("alle") || text.value.includes("às") || text.value.includes("to")){
+        text.value = "Chiuso";
+      }
+      return;
+    }
+
+    if(openValue && closeValue){
+      text.value = `${openValue} alle ${closeValue}`;
+    }
+  }
+
+  function bind(){
+    document.querySelectorAll(".hours-row").forEach(row=>{
+      row.querySelectorAll("input,select").forEach(el=>{
+        el.addEventListener("change", ()=>updateRow(row));
+        el.addEventListener("input", ()=>updateRow(row));
+      });
+      updateRow(row);
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", bind);
+})();
+</script>
+
+<!-- FIX MenuFacile: esconder opções sem uso e corrigir Ver tablets -->
+
+<script id="mf-v73-preview-identidade-js">
+(function(){
+  "use strict";
+
+  function cleanText(value, fallback){
+    const text = (value || "").trim();
+    return text || fallback;
+  }
+
+  function syncTextPreview(){
+    const nameInput = document.getElementById("mfCompanyNameInput");
+    const descriptionInput = document.getElementById("mfCompanyDescriptionInput");
+    const previewName = document.getElementById("mfPublicPreviewName");
+    const previewDescription = document.getElementById("mfPublicPreviewDescription");
+
+    if(previewName){
+      previewName.textContent = cleanText(nameInput && nameInput.value, "Nome da empresa");
+    }
+    if(previewDescription){
+      previewDescription.textContent = cleanText(descriptionInput && descriptionInput.value, "Seu momento de cuidado começa aqui.");
+    }
+  }
+
+  function syncLogoPreview(){
+    const source = document.getElementById("logoPreview");
+    const target = document.getElementById("mfPublicPreviewLogo");
+    const nameInput = document.getElementById("mfCompanyNameInput");
+    const logoUrlInput = document.getElementById("logo_url");
+    const fileName = document.getElementById("mfLogoFileName");
+    const uploadLabel = document.getElementById("mfLogoUploadLabel");
+    if(!source || !target) return;
+
+    const image = source.querySelector("img");
+    const hasLogo = !!image;
+    target.innerHTML = "";
+
+    if(hasLogo){
+      const clone = document.createElement("img");
+      clone.src = image.currentSrc || image.src;
+      clone.alt = "";
+      target.appendChild(clone);
+    }else{
+      const letter = document.createElement("span");
+      letter.textContent = cleanText(nameInput && nameInput.value, "N").charAt(0).toUpperCase();
+      target.appendChild(letter);
+    }
+
+    if(fileName){
+      fileName.textContent = hasLogo ? "Logo atual" : "Nenhuma logo enviada";
+    }
+    if(uploadLabel){
+      uploadLabel.textContent = hasLogo ? "Alterar logo" : "Enviar logo";
+    }
+    if(logoUrlInput && !hasLogo && !logoUrlInput.value){
+      logoUrlInput.value = "";
+    }
+  }
+
+  function init(){
+    const nameInput = document.getElementById("mfCompanyNameInput");
+    const descriptionInput = document.getElementById("mfCompanyDescriptionInput");
+    const fileInput = document.getElementById("logoFile");
+    const source = document.getElementById("logoPreview");
+    const fileName = document.getElementById("mfLogoFileName");
+
+    [nameInput, descriptionInput].forEach(function(input){
+      if(!input || input.dataset.mfV73Ready) return;
+      input.dataset.mfV73Ready = "1";
+      input.addEventListener("input", function(){
+        syncTextPreview();
+        if(input === nameInput && !source.querySelector("img")) syncLogoPreview();
+      });
+    });
+
+    if(fileInput && !fileInput.dataset.mfV73Ready){
+      fileInput.dataset.mfV73Ready = "1";
+      fileInput.addEventListener("change", function(){
+        if(fileName && fileInput.files && fileInput.files[0]){
+          fileName.textContent = fileInput.files[0].name;
+        }
+      });
+    }
+
+    if(source && !source.dataset.mfV73Observer){
+      source.dataset.mfV73Observer = "1";
+      new MutationObserver(syncLogoPreview).observe(source, {
+        childList:true,
+        subtree:true,
+        attributes:true,
+        attributeFilter:["src"]
+      });
+    }
+
+    syncTextPreview();
+    syncLogoPreview();
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", init, {once:true});
+  }else{
+    init();
+  }
+})();
+</script>
+
+
+
+<style id="mf-v106-preview-nome-cor">
+/* V106 — o nome da empresa na prévia usa a mesma cor escolhida para botões e destaques. */
+#dados-empresa #mfPublicPreviewCard .mf-public-preview-copy strong,
+#dados-empresa #mfPublicPreviewCard #mfPublicPreviewName{
+  color:var(--mf-menu-color,#1236B5) !important;
+}
+</style>
+
+
+<style id="mf-v132-enquadramento-separado-dispositivo">
+#dados-empresa .mf-hero-editor-head-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+#dados-empresa .mf-hero-device-note{display:inline-flex;align-items:center;gap:7px;min-height:34px;padding:0 11px;border:1px solid #dbe4f0;border-radius:10px;background:#f8fafc;color:#475569;font-size:12px;font-weight:800;white-space:nowrap}
+#dados-empresa .mf-hero-device-note i{color:var(--mf-menu-color,#1236B5)}
+@media(max-width:720px){
+  #dados-empresa .mf-hero-editor-head{align-items:flex-start}
+  #dados-empresa .mf-hero-editor-head-actions{width:100%;justify-content:stretch}
+  #dados-empresa .mf-hero-device-note{font-size:11px;min-height:36px;padding:7px 9px}
+}
+</style>
+
+<style id="mf-v131-preview-capa-mobile-horizontal-real">
+/* V131 — a prévia mobile do editor reproduz a mesma capa horizontal 3:1 do menu público. */
+@media(max-width:640px){
+  #dados-empresa #mfPublicPreviewCard .mf-public-preview-cover{
+    position:relative !important;
+    display:block !important;
+    width:calc(100% - 20px) !important;
+    height:auto !important;
+    min-height:0 !important;
+    max-height:none !important;
+    aspect-ratio:3 / 1 !important;
+    margin:10px !important;
+    padding:0 !important;
+    overflow:hidden !important;
+    border-radius:17px !important;
+  }
+
+  #dados-empresa #mfPublicPreviewCard .mf-public-preview-cover .mf-hero-preview-layer,
+  #dados-empresa #mfPublicPreviewCard .mf-public-preview-cover .mf-public-preview-cover-shade{
+    position:absolute !important;
+    inset:0 !important;
+  }
+
+  #dados-empresa #mfPublicPreviewCard .mf-public-preview-cover .mf-hero-preview-layer{
+    background-size:var(--mf-hero-fit-size,contain) !important;
+    background-position:center !important;
+    transform:translate(calc((50 - var(--mf-hero-x,50)) * 1%), calc((50 - var(--mf-hero-y,50)) * 1%)) scale(var(--mf-hero-scale,1)) !important;
+    transform-origin:center !important;
+  }
+
+  #dados-empresa #mfPublicPreviewCard .mf-public-preview-cover-copy{
+    position:absolute !important;
+    z-index:2 !important;
+    left:14px !important;
+    top:50% !important;
+    width:57% !important;
+    max-width:57% !important;
+    margin:0 !important;
+    padding:0 !important;
+    padding-right:0 !important;
+    transform:translateY(-50%) !important;
+  }
+
+  #dados-empresa #mfPublicPreviewCard .mf-public-preview-cover-copy strong{
+    display:block !important;
+    max-width:100% !important;
+    margin:0 0 4px !important;
+    font-size:clamp(15px,4.25vw,21px) !important;
+    line-height:1.04 !important;
+    letter-spacing:-.3px !important;
+    overflow-wrap:break-word !important;
+  }
+
+  #dados-empresa #mfPublicPreviewCard .mf-public-preview-cover-copy span{
+    display:-webkit-box !important;
+    -webkit-box-orient:vertical !important;
+    -webkit-line-clamp:2 !important;
+    overflow:hidden !important;
+    max-width:100% !important;
+    margin:0 !important;
+    font-size:clamp(8.5px,2.3vw,11.5px) !important;
+    line-height:1.22 !important;
+  }
+
+  #dados-empresa #mfPublicPreviewCard.mf-preview-produtos .mf-public-preview-cover-copy{
+    left:50% !important;
+    top:52% !important;
+    width:62% !important;
+    max-width:62% !important;
+    padding:0 !important;
+    transform:translate(-50%,-50%) !important;
+    text-align:center !important;
+  }
+  #dados-empresa #mfPublicPreviewCard.mf-preview-produtos .mf-public-preview-cover-copy strong,
+  #dados-empresa #mfPublicPreviewCard.mf-preview-produtos .mf-public-preview-cover-copy span{
+    text-align:center !important;
+  }
+  #dados-empresa #mfPublicPreviewCard.mf-preview-produtos .mf-public-preview-cover-copy strong{
+    font-size:clamp(12px,3.9vw,16px) !important;
+    line-height:1.05 !important;
+  }
+  #dados-empresa #mfPublicPreviewCard.mf-preview-produtos .mf-public-preview-cover-copy span{
+    font-size:clamp(7.5px,2.2vw,10px) !important;
+  }
+
+  #dados-empresa #mfPublicPreviewCard .mf-public-preview-cover-action{
+    top:7px !important;
+    right:7px !important;
+    min-height:27px !important;
+    padding:0 9px !important;
+    font-size:9.5px !important;
+  }
+
+  #dados-empresa #mfPublicPreviewCard .mf-hero-drag-hint{
+    left:8px !important;
+    bottom:7px !important;
+    min-height:21px !important;
+    max-width:52% !important;
+    padding:0 7px !important;
+    gap:4px !important;
+    font-size:7.5px !important;
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+  }
+}
+
+@media(max-width:390px){
+  #dados-empresa #mfPublicPreviewCard .mf-public-preview-cover-copy{
+    left:11px !important;
+    width:58% !important;
+    max-width:58% !important;
+  }
+  #dados-empresa #mfPublicPreviewCard .mf-public-preview-cover-copy strong{
+    font-size:14px !important;
+  }
+  #dados-empresa #mfPublicPreviewCard .mf-public-preview-cover-copy span{
+    font-size:8px !important;
+  }
+  #dados-empresa #mfPublicPreviewCard.mf-preview-produtos .mf-public-preview-cover-copy{
+    left:50% !important;
+    width:58% !important;
+    max-width:58% !important;
+  }
+  #dados-empresa .mf-logo-manager .logo-actions,
+  #dados-empresa .mf-cover-image-actions{
+    grid-template-columns:1fr !important;
+  }
+}
+</style>
+
+<style id="mf-v872-admin-config-mobile-polish">
+/* V872 — refinamento mobile do admin de Encomendas/configurações. Desktop preservado. */
+@media(max-width:720px){
+  /* Evita qualquer grid/campo comprimido nas seções editáveis. */
+  #dados-empresa .card{min-width:0!important}
+  #dados-empresa .grid{grid-template-columns:1fr!important;gap:11px!important}
+  #dados-empresa .field,#dados-empresa .field.full{grid-column:auto!important;min-width:0!important}
+  #dados-empresa .field input,#dados-empresa .field select,#dados-empresa .field textarea{width:100%!important;max-width:100%!important;box-sizing:border-box!important}
+  #dados-empresa .card-title{gap:9px!important;align-items:flex-start!important}
+  #dados-empresa .card-title h2{font-size:17px!important;line-height:1.15!important}
+  #dados-empresa .card-title p{font-size:10.5px!important;line-height:1.35!important}
+
+  /* Nossa história: switch nítido e com estado visual claro. */
+  :is(#dados-empresa,.mf-history-card-v817) .mf-enc-intro-toggle-v812{
+    min-height:44px!important;
+    padding:8px 10px!important;
+    border:1px solid #d7e0ea!important;
+    background:#f8fafc!important;
+    box-shadow:0 2px 8px rgba(15,23,42,.035)!important;
+  }
+  :is(#dados-empresa,.mf-history-card-v817) .mf-enc-intro-toggle-v812 > span:first-child{font-size:11px!important;color:#263244!important}
+  :is(#dados-empresa,.mf-history-card-v817) .mf-enc-intro-switch-v812{
+    width:48px!important;height:28px!important;min-width:48px!important;
+    border:1px solid #b8c3d0!important;background:#cbd5df!important;
+    box-shadow:inset 0 1px 2px rgba(15,23,42,.08)!important;
+  }
+  :is(#dados-empresa,.mf-history-card-v817) .mf-enc-intro-switch-v812::after{
+    top:3px!important;left:3px!important;width:20px!important;height:20px!important;
+    border:1px solid rgba(15,23,42,.08)!important;
+  }
+  :is(#dados-empresa,.mf-history-card-v817) .mf-enc-intro-toggle-v812 input:checked + .mf-enc-intro-switch-v812{
+    border-color:var(--mf-menu-color,#1236B5)!important;background:var(--mf-menu-color,#1236B5)!important;
+  }
+  :is(#dados-empresa,.mf-history-card-v817) .mf-enc-intro-toggle-v812 input:checked + .mf-enc-intro-switch-v812::after{transform:translateX(20px)!important}
+
+  /* Fotos: imagem menor e botões sem quebrar palavras. */
+  :is(#dados-empresa,.mf-history-card-v817) .mf-enc-intro-photos-v812{gap:9px!important}
+  :is(#dados-empresa,.mf-history-card-v817) .mf-enc-intro-photo-v812{
+    grid-template-columns:86px minmax(0,1fr)!important;
+    gap:9px!important;padding:9px!important;border-radius:12px!important;
+  }
+  :is(#dados-empresa,.mf-history-card-v817) .mf-enc-intro-photo-preview-v812{width:86px!important;height:86px!important;aspect-ratio:1!important}
+  :is(#dados-empresa,.mf-history-card-v817) .mf-enc-intro-photo-meta-v812{min-width:0!important;width:100%!important}
+  :is(#dados-empresa,.mf-history-card-v817) .mf-enc-intro-photo-meta-v812 b{font-size:9.5px!important;line-height:1.2!important}
+  :is(#dados-empresa,.mf-history-card-v817) .mf-enc-intro-photo-actions-v812{
+    width:100%!important;display:grid!important;grid-template-columns:minmax(72px,1fr) 36px!important;gap:6px!important;margin-top:7px!important;
+  }
+  :is(#dados-empresa,.mf-history-card-v817) .mf-enc-intro-photo-actions-v812 button{
+    width:100%!important;min-width:0!important;min-height:34px!important;height:34px!important;
+    padding:0 8px!important;border-radius:9px!important;font-size:9.5px!important;white-space:nowrap!important;line-height:1!important;
+  }
+  :is(#dados-empresa,.mf-history-card-v817) .mf-enc-intro-photo-actions-v812 button:last-child{padding:0!important}
+  :is(#dados-empresa,.mf-history-card-v817) .mf-enc-intro-upload-status-v812{grid-column:2!important;margin-top:0!important;font-size:8.5px!important}
+
+  /* Localização: CEP com campo útil e Buscar CEP proporcional. */
+  #dados-empresa .mf-cep-row-v872{
+    display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:8px!important;align-items:center!important;width:100%!important;
+  }
+  #dados-empresa .mf-cep-row-v872 #cep_publico{
+    width:100%!important;min-width:0!important;height:44px!important;padding:0 12px!important;
+  }
+  #dados-empresa .mf-cep-row-v872 #buscarCepPublico{
+    width:auto!important;min-width:96px!important;max-width:112px!important;height:44px!important;min-height:44px!important;
+    padding:0 12px!important;margin:0!important;white-space:nowrap!important;font-size:10.5px!important;border-radius:11px!important;
+  }
+  #dados-empresa #cepPublicoStatus{font-size:9.5px!important;line-height:1.35!important}
+
+  /* Botões/ações auxiliares que ficavam espremidos em outras partes desta página. */
+  #dados-empresa .btn-secondary,#dados-empresa button{max-width:100%;box-sizing:border-box}
+  #dados-empresa .mf-hero-editor-head-actions{gap:7px!important}
+  #dados-empresa .mf-hero-device-note{white-space:normal!important;line-height:1.25!important}
+}
+
+@media(max-width:390px){
+  :is(#dados-empresa,.mf-history-card-v817) .mf-enc-intro-photo-v812{grid-template-columns:76px minmax(0,1fr)!important}
+  :is(#dados-empresa,.mf-history-card-v817) .mf-enc-intro-photo-preview-v812{width:76px!important;height:76px!important}
+  #dados-empresa .mf-cep-row-v872{grid-template-columns:minmax(0,1fr) 92px!important}
+  #dados-empresa .mf-cep-row-v872 #buscarCepPublico{min-width:92px!important;max-width:92px!important;padding:0 8px!important;font-size:9.5px!important}
+}
+</style>
+
+
+<style id="mf-v873-history-mobile-fix">
+/* V873 — Nossa história mobile: switch real à direita, campos confortáveis e ações pequenas. */
+@media(max-width:720px){
+  .mf-history-card-v817 .mf-enc-intro-head-v812{
+    display:block!important;
+    margin-bottom:14px!important;
+  }
+  .mf-history-card-v817 .mf-enc-intro-head-v812 > div:first-child{
+    margin-bottom:10px!important;
+  }
+  .mf-history-card-v817 .mf-enc-intro-toggle-v812{
+    position:relative!important;
+    width:100%!important;
+    min-height:44px!important;
+    box-sizing:border-box!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:14px!important;
+    padding:8px 10px 8px 12px!important;
+    border:1px solid #dce4ed!important;
+    border-radius:11px!important;
+    background:#fff!important;
+    box-shadow:none!important;
+  }
+  .mf-history-card-v817 .mf-enc-intro-toggle-v812 > span:first-child{
+    flex:1 1 auto!important;
+    min-width:0!important;
+    font-size:12px!important;
+    font-weight:800!important;
+    line-height:1.2!important;
+    color:#172033!important;
+  }
+  .mf-history-card-v817 .mf-enc-intro-toggle-v812 input{
+    position:absolute!important;
+    width:1px!important;
+    height:1px!important;
+    opacity:0!important;
+    pointer-events:none!important;
+    margin:0!important;
+  }
+  .mf-history-card-v817 .mf-enc-intro-switch-v812{
+    position:relative!important;
+    display:block!important;
+    flex:0 0 44px!important;
+    width:44px!important;
+    min-width:44px!important;
+    height:24px!important;
+    border:1px solid #cbd5e1!important;
+    border-radius:999px!important;
+    background:#d9e0e8!important;
+    box-shadow:inset 0 1px 2px rgba(15,23,42,.06)!important;
+    transition:background .2s ease,border-color .2s ease!important;
+  }
+  .mf-history-card-v817 .mf-enc-intro-switch-v812::after{
+    content:""!important;
+    position:absolute!important;
+    top:2px!important;
+    left:2px!important;
+    width:18px!important;
+    height:18px!important;
+    border:1px solid rgba(15,23,42,.08)!important;
+    border-radius:50%!important;
+    background:#fff!important;
+    box-shadow:0 2px 5px rgba(15,23,42,.18)!important;
+    transform:none!important;
+    transition:transform .2s ease!important;
+  }
+  .mf-history-card-v817 .mf-enc-intro-toggle-v812 input:checked + .mf-enc-intro-switch-v812{
+    background:var(--mf-menu-color,#1677ff)!important;
+    border-color:var(--mf-menu-color,#1677ff)!important;
+  }
+  .mf-history-card-v817 .mf-enc-intro-toggle-v812 input:checked + .mf-enc-intro-switch-v812::after{
+    transform:translateX(20px)!important;
+  }
+
+  /* Campos onde o usuário digita. */
+  .mf-history-card-v817 .mf-enc-intro-fields-v812{
+    gap:11px!important;
+  }
+  .mf-history-card-v817 .mf-enc-intro-fields-v812 .field label{
+    display:block!important;
+    margin-bottom:5px!important;
+    font-size:11px!important;
+    font-weight:800!important;
+  }
+  .mf-history-card-v817 #enc_intro_titulo,
+  .mf-history-card-v817 #enc_intro_texto{
+    width:100%!important;
+    max-width:100%!important;
+    box-sizing:border-box!important;
+    border:1px solid #d8e1ec!important;
+    border-radius:10px!important;
+    background:#fff!important;
+    color:#182235!important;
+    font-size:13px!important;
+    line-height:1.4!important;
+    outline:none!important;
+  }
+  .mf-history-card-v817 #enc_intro_titulo{
+    height:42px!important;
+    padding:0 11px!important;
+  }
+  .mf-history-card-v817 #enc_intro_texto{
+    min-height:128px!important;
+    height:128px!important;
+    padding:10px 11px!important;
+    resize:vertical!important;
+  }
+  .mf-history-card-v817 #enc_intro_titulo:focus,
+  .mf-history-card-v817 #enc_intro_texto:focus{
+    border-color:var(--mf-menu-color,#1677ff)!important;
+    box-shadow:0 0 0 3px rgba(var(--mf-menu-rgb,22,119,255),.09)!important;
+  }
+
+  /* Fotos: Enviar não ocupa a linha inteira. */
+  .mf-history-card-v817 .mf-enc-intro-photo-v812{
+    grid-template-columns:72px minmax(0,1fr)!important;
+    gap:9px!important;
+    padding:9px!important;
+    align-items:center!important;
+  }
+  .mf-history-card-v817 .mf-enc-intro-photo-preview-v812{
+    width:72px!important;
+    height:72px!important;
+  }
+  .mf-history-card-v817 .mf-enc-intro-photo-meta-v812{
+    width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+  }
+  .mf-history-card-v817 .mf-enc-intro-photo-actions-v812{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    gap:6px!important;
+    width:auto!important;
+    margin-top:6px!important;
+  }
+  .mf-history-card-v817 .mf-enc-intro-photo-actions-v812 button{
+    flex:0 0 auto!important;
+    width:auto!important;
+    min-width:0!important;
+    height:32px!important;
+    min-height:32px!important;
+    padding:0 10px!important;
+    border-radius:8px!important;
+    font-size:9.5px!important;
+    line-height:1!important;
+    white-space:nowrap!important;
+  }
+  .mf-history-card-v817 .mf-enc-intro-photo-actions-v812 button:first-child{
+    min-width:68px!important;
+  }
+  .mf-history-card-v817 .mf-enc-intro-photo-actions-v812 button:last-child{
+    width:34px!important;
+    min-width:34px!important;
+    padding:0!important;
+    display:grid!important;
+    place-items:center!important;
+  }
+  .mf-history-card-v817 .mf-enc-intro-upload-status-v812{
+    grid-column:2!important;
+    font-size:8.5px!important;
+  }
+}
+@media(max-width:390px){
+  .mf-history-card-v817 .mf-enc-intro-photo-v812{
+    grid-template-columns:66px minmax(0,1fr)!important;
+  }
+  .mf-history-card-v817 .mf-enc-intro-photo-preview-v812{
+    width:66px!important;
+    height:66px!important;
+  }
+  .mf-history-card-v817 #enc_intro_texto{
+    min-height:120px!important;
+    height:120px!important;
+  }
+}
+</style>
+
+<script src="/static/js/encomendas-apresentacao-admin-v812.js?v=819"></script>
+
+<style id="mf-v874-mobile-actions-cep-hard-fix">
+/* V874 — correção forte: ações de fotos compactas + CEP com campo largo. */
+@media (max-width:720px){
+  /* Nossa história: botões realmente pequenos, sem herdar width:100%. */
+  .mf-history-card-v817 .mf-enc-intro-photo-actions-v812,
+  [data-enc-intro-editor-v812] .mf-enc-intro-photo-actions-v812{
+    display:flex!important;
+    width:auto!important;
+    max-width:100%!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    gap:6px!important;
+  }
+  .mf-history-card-v817 .mf-enc-intro-photo-actions-v812 button[data-enc-intro-upload-v812],
+  [data-enc-intro-editor-v812] .mf-enc-intro-photo-actions-v812 button[data-enc-intro-upload-v812]{
+    flex:0 0 72px!important;
+    width:72px!important;
+    min-width:72px!important;
+    max-width:72px!important;
+    height:31px!important;
+    min-height:31px!important;
+    padding:0 7px!important;
+    font-size:9px!important;
+    border-radius:8px!important;
+    white-space:nowrap!important;
+  }
+  .mf-history-card-v817 .mf-enc-intro-photo-actions-v812 button[data-enc-intro-remove-v812],
+  [data-enc-intro-editor-v812] .mf-enc-intro-photo-actions-v812 button[data-enc-intro-remove-v812]{
+    flex:0 0 31px!important;
+    width:31px!important;
+    min-width:31px!important;
+    max-width:31px!important;
+    height:31px!important;
+    min-height:31px!important;
+    padding:0!important;
+    border-radius:8px!important;
+    display:grid!important;
+    place-items:center!important;
+  }
+
+  /* Localização: campo CEP é o principal; botão fica curto ao lado. */
+  .mf-cep-row-v872{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) 88px!important;
+    gap:7px!important;
+    align-items:center!important;
+    width:100%!important;
+    max-width:100%!important;
+  }
+  .mf-cep-row-v872 #cep_publico{
+    display:block!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:42px!important;
+    padding:0 11px!important;
+    margin:0!important;
+    box-sizing:border-box!important;
+  }
+  .mf-cep-row-v872 #buscarCepPublico{
+    display:block!important;
+    width:88px!important;
+    min-width:88px!important;
+    max-width:88px!important;
+    height:42px!important;
+    min-height:42px!important;
+    padding:0 7px!important;
+    margin:0!important;
+    box-sizing:border-box!important;
+    font-size:9px!important;
+    line-height:1!important;
+    white-space:nowrap!important;
+    border-radius:10px!important;
+  }
+}
+@media (max-width:390px){
+  .mf-cep-row-v872{grid-template-columns:minmax(0,1fr) 82px!important;gap:6px!important}
+  .mf-cep-row-v872 #buscarCepPublico{width:82px!important;min-width:82px!important;max-width:82px!important;font-size:8.5px!important}
+  .mf-history-card-v817 .mf-enc-intro-photo-actions-v812 button[data-enc-intro-upload-v812],
+  [data-enc-intro-editor-v812] .mf-enc-intro-photo-actions-v812 button[data-enc-intro-upload-v812]{
+    flex-basis:68px!important;width:68px!important;min-width:68px!important;max-width:68px!important;
+  }
+}
+</style>
+
+{% endblock %}
+

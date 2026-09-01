@@ -1,0 +1,485 @@
+{% extends "base.html" %}
+{% block body_attrs %} class="mf-saas-control"{% endblock %}
+{% block title %}Central de Controle MenuFacile{% endblock %}
+
+{% macro status_nome(status) -%}
+  {%- if status == 'ativo' -%}Ativo
+  {%- elif status == 'teste' -%}Teste grátis
+  {%- elif status == 'vencido' -%}Vencido
+  {%- elif status == 'bloqueado' -%}Bloqueado
+  {%- elif status == 'cancelado' -%}Cancelado
+  {%- else -%}{{ status|capitalize }}
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro segmento_nome(tipo) -%}
+  {%- if tipo in ['salao', 'servicos'] -%}Serviços
+  {%- elif tipo == 'loja' -%}Produtos
+  {%- else -%}Restaurante
+  {%- endif -%}
+{%- endmacro %}
+
+{% block head %}
+<style id="mf-saas-control-v365">
+:root{
+  --saas-navy:#101828;
+  --saas-blue:#1d4ed8;
+  --saas-blue-strong:#1236b4;
+  --saas-purple:#5b21b6;
+  --saas-bg:#f3f6fb;
+  --saas-card:#fff;
+  --saas-line:#e1e8f2;
+  --saas-muted:#667085;
+  --saas-soft:#f8faff;
+  --saas-green:#087a4f;
+  --saas-green-bg:#eaf8f0;
+  --saas-amber:#a75b00;
+  --saas-amber-bg:#fff6e5;
+  --saas-red:#c72c41;
+  --saas-red-bg:#fff0f2;
+  --saas-shadow:0 16px 42px rgba(16,24,40,.07);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body.mf-saas-control{margin:0;background:var(--saas-bg);color:var(--saas-navy);font-family:Inter,Arial,sans-serif;overflow-x:hidden}
+body.mf-saas-control button,body.mf-saas-control input,body.mf-saas-control select,body.mf-saas-control textarea{font:inherit}
+body.mf-saas-control a{text-decoration:none;color:inherit}
+.saas-shell{min-height:100vh;display:grid;grid-template-columns:260px minmax(0,1fr)}
+.saas-sidebar{position:sticky;top:0;height:100vh;background:#0b1736;color:#fff;padding:22px 16px;overflow-y:auto;z-index:20}
+.saas-brand{display:flex;align-items:center;gap:12px;padding:2px 7px 22px;border-bottom:1px solid rgba(255,255,255,.11)}
+.saas-brand-mark{width:46px;height:46px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(145deg,#3167ff,#5b21b6);font-size:20px;font-weight:950;box-shadow:0 14px 30px rgba(29,78,216,.35)}
+.saas-brand strong{display:block;font-size:15px;line-height:1.15}.saas-brand small{display:block;margin-top:4px;color:#aab7d5;font-size:11px;font-weight:750}
+.saas-nav-group{margin-top:21px}.saas-nav-label{padding:0 11px 8px;color:#7f91bb;text-transform:uppercase;font-size:10px;font-weight:900;letter-spacing:.11em}
+.saas-nav{display:grid;gap:5px}.saas-nav-item{min-height:46px;border-radius:13px;padding:0 12px;display:grid;grid-template-columns:32px 1fr auto;align-items:center;gap:8px;color:#cdd7ec;font-size:12px;font-weight:850;transition:.18s ease}
+.saas-nav-item i{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,.07);font-size:13px}.saas-nav-item .nav-count{min-width:22px;height:22px;border-radius:999px;display:grid;place-items:center;padding:0 6px;background:rgba(255,255,255,.1);font-size:10px}.saas-nav-item:hover,.saas-nav-item.active{color:#fff;background:rgba(255,255,255,.1)}.saas-nav-item.active i{background:#fff;color:#1d4ed8}
+.saas-sidebar-footer{margin-top:24px;padding:15px 10px;border-radius:15px;background:rgba(255,255,255,.06)}.saas-sidebar-footer strong{display:block;font-size:12px}.saas-sidebar-footer small{display:block;color:#9aabd0;margin-top:4px;font-size:10px;line-height:1.4;word-break:break-word}
+.saas-main{padding:24px;min-width:0}.saas-content{max-width:1560px;margin:0 auto}
+.saas-hero{display:flex;justify-content:space-between;align-items:center;gap:20px;background:linear-gradient(135deg,#fff 0%,#f7faff 64%,#eef3ff 100%);border:1px solid var(--saas-line);border-radius:24px;padding:22px 24px;box-shadow:var(--saas-shadow)}
+.saas-eyebrow{display:inline-flex;align-items:center;gap:7px;border-radius:999px;background:#eaf0ff;color:#2446a8;padding:6px 10px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.06em}.saas-hero h1{font-size:28px;line-height:1.1;letter-spacing:-.035em;margin:10px 0 0}.saas-hero p{color:var(--saas-muted);font-size:12px;font-weight:680;line-height:1.55;margin:7px 0 0;max-width:720px}
+.hero-actions,.inline-actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.btn{border:1px solid var(--saas-line);background:#fff;color:#344054;border-radius:12px;min-height:40px;padding:0 13px;display:inline-flex;align-items:center;justify-content:center;gap:7px;font-size:11px;font-weight:900;cursor:pointer;white-space:nowrap}.btn:hover{transform:translateY(-1px);box-shadow:0 8px 18px rgba(16,24,40,.08)}.btn.primary{background:var(--saas-blue);border-color:var(--saas-blue);color:#fff}.btn.dark{background:#101828;border-color:#101828;color:#fff}.btn.green{background:var(--saas-green-bg);border-color:#ccebd9;color:var(--saas-green)}.btn.amber{background:var(--saas-amber-bg);border-color:#ffe0a6;color:var(--saas-amber)}.btn.red{background:var(--saas-red-bg);border-color:#ffcdd5;color:var(--saas-red)}.btn.soft{background:#f2f5fb}.btn.small{min-height:34px;padding:0 10px;font-size:10px}.btn.icon-only{width:40px;padding:0}
+.flash{margin-top:14px;border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px;font-size:12px;font-weight:800}.flash.success{background:var(--saas-green-bg);border:1px solid #c8ead6;color:var(--saas-green)}.flash.error{background:var(--saas-red-bg);border:1px solid #ffcbd4;color:var(--saas-red)}
+.saas-section{scroll-margin-top:20px;margin-top:20px}.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:11px}.section-head h2{margin:0;font-size:18px;letter-spacing:-.025em}.section-head p{margin:4px 0 0;color:var(--saas-muted);font-size:11px;font-weight:680;line-height:1.45}.section-link{font-size:11px;font-weight:900;color:var(--saas-blue)}
+.kpi-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px}.kpi-card{background:#fff;border:1px solid var(--saas-line);border-radius:18px;padding:15px;min-width:0;box-shadow:0 10px 28px rgba(16,24,40,.04)}.kpi-top{display:flex;justify-content:space-between;align-items:center;gap:8px}.kpi-icon{width:35px;height:35px;border-radius:11px;display:grid;place-items:center;background:#edf2ff;color:#2454d8;font-size:14px}.kpi-card.green .kpi-icon{background:var(--saas-green-bg);color:var(--saas-green)}.kpi-card.amber .kpi-icon{background:var(--saas-amber-bg);color:var(--saas-amber)}.kpi-card.red .kpi-icon{background:var(--saas-red-bg);color:var(--saas-red)}.kpi-card strong{display:block;margin-top:13px;font-size:23px;line-height:1;letter-spacing:-.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.kpi-card span{display:block;margin-top:6px;color:var(--saas-muted);font-size:10px;font-weight:800}
+.dashboard-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:12px}.panel{background:#fff;border:1px solid var(--saas-line);border-radius:20px;box-shadow:0 10px 28px rgba(16,24,40,.04);overflow:hidden}.panel-head{padding:15px 17px;border-bottom:1px solid var(--saas-line);display:flex;justify-content:space-between;align-items:center;gap:12px}.panel-head h3{margin:0;font-size:14px}.panel-head small{color:var(--saas-muted);font-size:10px;font-weight:750}.panel-body{padding:14px 17px}.attention-list,.recent-list{display:grid;gap:9px}.attention-item,.recent-item{display:grid;grid-template-columns:38px minmax(0,1fr) auto;align-items:center;gap:10px;padding:10px;border:1px solid #edf1f7;border-radius:13px;background:#fbfcff}.attention-item i,.recent-item i{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;background:#eef3ff;color:#3156b8}.attention-item.warn i{background:var(--saas-amber-bg);color:var(--saas-amber)}.attention-item strong,.recent-item strong{display:block;font-size:11px}.attention-item small,.recent-item small{display:block;margin-top:3px;color:var(--saas-muted);font-size:9.5px;font-weight:700;line-height:1.35}.mini-badge{border-radius:999px;padding:5px 8px;background:#eef3ff;color:#2147ae;font-size:9px;font-weight:900}.empty-state{padding:20px;border:1px dashed #ccd7e7;border-radius:14px;text-align:center;color:var(--saas-muted);font-size:11px;font-weight:750}
+.company-toolbar{display:grid;grid-template-columns:minmax(240px,1fr) auto;gap:10px;align-items:center;background:#fff;border:1px solid var(--saas-line);border-radius:17px;padding:10px;position:sticky;top:8px;z-index:12;box-shadow:0 10px 24px rgba(16,24,40,.05)}.search-box{position:relative}.search-box i{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#98a2b3;font-size:12px}.search-box input{width:100%;height:42px;border:1px solid #d7e0ec;border-radius:12px;padding:0 12px 0 36px;color:#101828;font-size:11px;font-weight:750;outline:none}.search-box input:focus{border-color:#88a7ff;box-shadow:0 0 0 3px rgba(29,78,216,.08)}.filter-row{display:flex;align-items:center;gap:6px;overflow-x:auto;scrollbar-width:none}.filter-row::-webkit-scrollbar{display:none}.filter-btn{border:0;border-radius:11px;height:38px;padding:0 11px;background:#f1f4f9;color:#475467;font-size:10px;font-weight:900;cursor:pointer;white-space:nowrap}.filter-btn.active{background:#142f8f;color:#fff}
+.company-table{margin-top:10px;border:1px solid var(--saas-line);background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 12px 30px rgba(16,24,40,.04)}.company-table-head,.company-summary{display:grid;grid-template-columns:minmax(190px,1.4fr) 110px 130px 120px 130px 150px 38px;gap:10px;align-items:center}.company-table-head{padding:10px 16px;background:#f8faff;border-bottom:1px solid var(--saas-line);color:#667085;text-transform:uppercase;font-size:9px;font-weight:900;letter-spacing:.045em}.company-record{border-bottom:1px solid var(--saas-line)}.company-record:last-child{border-bottom:0}.company-summary{list-style:none;cursor:pointer;padding:13px 16px;min-height:72px;transition:.15s ease}.company-summary::-webkit-details-marker{display:none}.company-summary:hover{background:#fbfcff}.company-record[open]>.company-summary{background:#f7f9ff;border-bottom:1px solid var(--saas-line)}.company-name{display:grid;grid-template-columns:39px minmax(0,1fr);align-items:center;gap:10px;min-width:0}.company-avatar{width:39px;height:39px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(145deg,#edf2ff,#f7edff);color:#3f36b4;font-weight:950;font-size:13px}.company-name strong{display:block;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.company-name small{display:block;margin-top:3px;color:var(--saas-muted);font-size:9.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.status-pill{display:inline-flex;align-items:center;gap:5px;justify-content:center;border-radius:999px;min-height:26px;padding:0 8px;background:#eef3ff;color:#274ab1;font-size:9px;font-weight:900}.status-pill.ativo{background:var(--saas-green-bg);color:var(--saas-green)}.status-pill.teste{background:#fff2e8;color:#c35a13}.status-pill.vencido,.status-pill.bloqueado,.status-pill.cancelado{background:var(--saas-red-bg);color:var(--saas-red)}.company-cell{font-size:10px;font-weight:800;color:#344054}.company-cell small{display:block;color:var(--saas-muted);font-size:9px;margin-top:3px}.usage-inline{display:flex;gap:5px;flex-wrap:wrap}.usage-chip{border-radius:999px;background:#f1f4f9;color:#475467;padding:5px 7px;font-size:8.5px;font-weight:900}.summary-arrow{width:32px;height:32px;border-radius:10px;background:#f0f3f8;display:grid;place-items:center;color:#53617a;transition:.18s}.company-record[open] .summary-arrow{transform:rotate(180deg);background:#e8eeff;color:#214bd0}
+.company-detail{padding:16px;background:#fbfcff}.company-detail-top{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:13px}.company-detail-title h3{margin:0;font-size:17px}.company-detail-title p{margin:4px 0 0;color:var(--saas-muted);font-size:10px;font-weight:700}.tab-row{display:flex;gap:5px;overflow-x:auto;border-bottom:1px solid var(--saas-line);padding-bottom:8px;scrollbar-width:none}.tab-row::-webkit-scrollbar{display:none}.company-tab{border:0;border-radius:10px;height:34px;padding:0 11px;background:transparent;color:#667085;font-size:9.5px;font-weight:900;cursor:pointer;white-space:nowrap}.company-tab.active{background:#eaf0ff;color:#2147b0}.company-panel{display:none;padding-top:13px}.company-panel.active{display:block}.detail-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.data-card{border:1px solid #e5eaf2;background:#fff;border-radius:13px;padding:11px;min-width:0}.data-card small{display:block;color:#7b879c;font-size:8.5px;font-weight:900;text-transform:uppercase;letter-spacing:.04em}.data-card strong{display:block;margin-top:5px;font-size:10.5px;word-break:break-word}.metric-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:9px}.metric{border:1px solid #e5eaf2;background:#fff;border-radius:12px;padding:10px;text-align:center}.metric strong{display:block;font-size:16px}.metric span{display:block;margin-top:4px;color:var(--saas-muted);font-size:8.5px;font-weight:800}.form-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.field{display:grid;gap:6px}.field label{color:#475467;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.035em}.field input,.field select,.field textarea{width:100%;border:1px solid #d5deea;background:#fff;border-radius:11px;color:#101828;font-size:11px;font-weight:700;outline:none}.field input,.field select{height:41px;padding:0 11px}.field textarea{min-height:92px;padding:10px 11px;resize:vertical}.field input:focus,.field select:focus,.field textarea:focus{border-color:#85a5ff;box-shadow:0 0 0 3px rgba(29,78,216,.07)}.form-card{border:1px solid #e2e8f2;background:#fff;border-radius:15px;padding:13px}.form-card h4{margin:0 0 4px;font-size:12px}.form-card>p{margin:0 0 12px;color:var(--saas-muted);font-size:9.5px;font-weight:700;line-height:1.45}.form-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:11px}.split-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.danger-box{border:1px solid #ffccd5;background:#fff7f8;border-radius:14px;padding:12px}.danger-box summary{cursor:pointer;color:var(--saas-red);font-size:10px;font-weight:900}.danger-box form{display:grid;gap:8px;margin-top:10px}
+.preview-section-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(300px,.6fr);gap:12px}.preview-card{border:1px solid var(--saas-line);background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 10px 28px rgba(16,24,40,.04)}.preview-toolbar{min-height:55px;padding:9px 13px;border-bottom:1px solid var(--saas-line);display:flex;justify-content:space-between;align-items:center;gap:10px;background:#fbfcff}.preview-toolbar strong{display:block;font-size:11px}.preview-toolbar small{display:block;color:var(--saas-muted);font-size:9px;margin-top:2px}.device-buttons{display:flex;gap:5px}.device-btn{border:0;border-radius:9px;width:32px;height:32px;background:#eef2f7;color:#667085;cursor:pointer}.device-btn.active{background:#1d4ed8;color:#fff}.preview-stage{height:480px;background:#e9eef6;padding:16px;display:grid;place-items:center;overflow:hidden}.preview-frame{width:100%;height:100%;border:0;background:#fff;border-radius:14px;box-shadow:0 10px 28px rgba(16,24,40,.16);transition:.2s}.preview-stage.mobile .preview-frame{width:390px;max-width:100%;border-radius:24px}.preview-control{padding:15px}.preview-control .field+.field{margin-top:10px}.status-stack{display:grid;gap:9px}.status-card{display:grid;grid-template-columns:40px minmax(0,1fr) auto;align-items:center;gap:10px;border:1px solid #e4e9f2;background:#fff;border-radius:14px;padding:11px}.status-card i{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:var(--saas-green-bg);color:var(--saas-green)}.status-card strong{display:block;font-size:11px}.status-card small{display:block;margin-top:3px;color:var(--saas-muted);font-size:9px;font-weight:700}.status-dot-live{width:9px;height:9px;border-radius:999px;background:#12b76a;box-shadow:0 0 0 5px rgba(18,183,106,.1)}
+.account-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(320px,.9fr);gap:12px}.account-card{border:1px solid var(--saas-line);background:#fff;border-radius:20px;padding:16px;box-shadow:0 10px 28px rgba(16,24,40,.04)}.account-card h3{margin:0;font-size:14px}.account-card>p{color:var(--saas-muted);font-size:10px;font-weight:700;line-height:1.5;margin:5px 0 14px}.support-preview{border:1px solid #dce5f0;background:linear-gradient(145deg,#f7fbff,#eef9f3);border-radius:17px;padding:15px}.support-preview-badge{display:inline-flex;align-items:center;gap:7px;border-radius:999px;background:#e5f8ec;color:#087a4f;padding:6px 9px;font-size:9px;font-weight:900}.support-preview h4{font-size:15px;margin:13px 0 0}.support-preview p{font-size:10px;color:#667085;line-height:1.5;font-weight:700}.support-meta{display:grid;gap:7px;margin-top:13px}.support-meta div{display:flex;justify-content:space-between;gap:10px;padding-top:7px;border-top:1px solid rgba(0,0,0,.06);font-size:9px}.support-meta span{color:#667085}.support-meta strong{word-break:break-word;text-align:right}
+dialog{border:0;padding:0;background:transparent;max-width:none;max-height:none}dialog::backdrop{background:rgba(10,20,40,.66);backdrop-filter:blur(5px)}.modal-card{width:min(760px,calc(100vw - 28px));max-height:calc(100vh - 30px);overflow:auto;background:#fff;border-radius:22px;box-shadow:0 28px 80px rgba(0,0,0,.28)}.modal-head{position:sticky;top:0;z-index:2;background:#fff;border-bottom:1px solid var(--saas-line);padding:15px 17px;display:flex;justify-content:space-between;align-items:center}.modal-head h3{margin:0;font-size:15px}.modal-close{width:36px;height:36px;border:0;border-radius:11px;background:#f1f4f8;color:#475467;cursor:pointer}.modal-body{padding:16px}.preview-modal-card{width:min(1180px,calc(100vw - 26px))}.preview-modal-body{padding:0;height:calc(100vh - 100px);background:#e9eef6}.preview-modal-body iframe{width:100%;height:100%;border:0;background:#fff}
+.control-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}.limit-overview{display:grid;grid-template-columns:1fr 1fr;gap:10px}.limit-card{border:1px solid var(--saas-line);border-radius:16px;padding:14px;background:#fbfcff}.limit-card-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.limit-card-head span{font-size:10px;font-weight:900;color:var(--saas-muted)}.limit-card-head strong{font-size:18px;letter-spacing:-.03em}.usage-bar{height:8px;border-radius:999px;background:#e8edf5;overflow:hidden;margin-top:11px}.usage-bar span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#2563eb,#5b21b6)}.limit-card small{display:block;margin-top:8px;color:var(--saas-muted);font-size:9.5px;font-weight:750}.switch-stack{display:grid;gap:9px;margin-top:12px}.switch-row{display:grid;grid-template-columns:22px minmax(0,1fr);gap:10px;align-items:start;padding:11px;border:1px solid #e6ebf3;border-radius:13px;background:#fff;cursor:pointer}.switch-row input{width:18px;height:18px;margin:1px 0 0;accent-color:var(--saas-blue)}.switch-row strong{display:block;font-size:11px}.switch-row small{display:block;margin-top:3px;color:var(--saas-muted);font-size:9.5px;font-weight:700;line-height:1.4}.security-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0}.security-card{border:1px solid var(--saas-line);border-radius:14px;padding:12px;background:#fbfcff}.security-card small{display:block;color:var(--saas-muted);font-size:9px;font-weight:850;text-transform:uppercase;letter-spacing:.04em}.security-card strong{display:block;margin-top:5px;font-size:11px;word-break:break-word}.activity-list{display:grid;gap:8px;margin-top:10px}.activity-item{display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;padding:10px;border:1px solid #e9edf4;border-radius:13px;background:#fff}.activity-item i{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:#eef3ff;color:#3156b8;font-size:12px}.activity-item strong{display:block;font-size:10.5px}.activity-item p{margin:3px 0 0;color:var(--saas-muted);font-size:9.5px;font-weight:680;line-height:1.4}.activity-item time{display:block;margin-top:4px;color:#98a2b3;font-size:8.5px;font-weight:800}.owner-note{padding:10px 12px;border:1px solid #dbe7ff;background:#f4f7ff;border-radius:12px;color:#3156b8;font-size:10px;font-weight:800;line-height:1.45}.limit-alert{display:inline-flex;align-items:center;gap:5px;margin-top:5px;color:var(--saas-red);font-size:8.5px;font-weight:900}.form-card .check-inline{display:flex;align-items:flex-start;gap:9px;margin-top:11px;padding:10px;border:1px solid #e1e8f2;border-radius:12px;background:#f8faff;cursor:pointer}.form-card .check-inline input{width:17px;height:17px;margin:1px 0 0;accent-color:var(--saas-blue)}.form-card .check-inline strong{display:block;font-size:10.5px}.form-card .check-inline small{display:block;margin-top:3px;color:var(--saas-muted);font-size:9px;font-weight:700;line-height:1.4}
+@media(max-width:1350px){.kpi-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.company-table-head,.company-summary{grid-template-columns:minmax(180px,1.3fr) 100px 120px 110px 120px 38px}.company-table-head> :nth-child(6),.company-summary> :nth-child(6){display:none}.detail-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:1050px){.saas-shell{grid-template-columns:1fr}.saas-sidebar{position:relative;height:auto;padding:14px}.saas-brand{padding-bottom:13px}.saas-nav-group{margin-top:12px}.saas-nav{grid-template-columns:repeat(4,minmax(0,1fr));overflow-x:auto}.saas-nav-item{grid-template-columns:30px minmax(100px,1fr);min-width:150px}.saas-nav-item .nav-count{display:none}.saas-sidebar-footer{display:none}.dashboard-grid,.preview-section-grid,.account-grid{grid-template-columns:1fr}.company-table-head,.company-summary{grid-template-columns:minmax(180px,1fr) 105px 115px 120px 38px}.company-table-head> :nth-child(5),.company-summary> :nth-child(5){display:none}.detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:720px){.saas-main{padding:12px}.saas-hero{padding:17px;display:block}.saas-hero h1{font-size:23px}.hero-actions{margin-top:13px}.hero-actions .btn{flex:1}.kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-grid{grid-template-columns:1fr}.section-head{align-items:flex-start}.company-toolbar{position:relative;top:auto;grid-template-columns:1fr}.company-table-head{display:none}.company-table{background:transparent;border:0;box-shadow:none;overflow:visible}.company-record{background:#fff;border:1px solid var(--saas-line);border-radius:17px;margin-bottom:9px;overflow:hidden}.company-summary{grid-template-columns:minmax(0,1fr) 32px;padding:13px}.company-summary>.company-cell,.company-summary>.status-pill,.company-summary>.company-plan-cell,.company-summary>.company-usage-cell{display:none}.company-detail{padding:12px}.company-detail-top{display:block}.company-detail-top .inline-actions{margin-top:11px}.detail-grid,.form-grid,.metric-grid,.split-grid,.control-grid,.limit-overview,.security-summary{grid-template-columns:1fr}.metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.preview-stage{height:410px;padding:9px}.preview-stage.mobile .preview-frame{width:100%}.preview-toolbar{align-items:flex-start}.account-card{padding:14px}.saas-nav{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(145px,1fr)}.saas-sidebar{overflow:hidden}.saas-brand-mark{width:40px;height:40px}.modal-card{border-radius:18px}.modal-body{padding:13px}}
+</style>
+{% endblock %}
+
+{% block page %}
+{% set error_messages = {
+  'nome_empresa':'Informe o nome da empresa.',
+  'email_obrigatorio':'Informe o e-mail de acesso da empresa.',
+  'empresa_nao_encontrada':'Empresa não encontrada.',
+  'email_em_uso':'Este e-mail já está sendo usado por outra empresa.',
+  'senha_obrigatoria_primeiro_acesso':'Defina uma senha para o primeiro acesso.',
+  'confirmacao_excluir':'Digite EXCLUIR para confirmar.',
+  'erro_excluir':'Não foi possível excluir a empresa.',
+  'email_owner_invalido':'Informe um e-mail válido para sua conta.',
+  'senha_atual_invalida':'A senha atual do dono do SaaS está incorreta.',
+  'senhas_owner_nao_coincidem':'A nova senha e a confirmação não coincidem.',
+  'senha_owner_curta':'A nova senha precisa ter pelo menos 8 caracteres.',
+  'erro_salvar_owner':'Não foi possível salvar as configurações da sua conta.',
+  'limites_invalidos':'Informe limites numéricos válidos.'
+} %}
+{% set success_messages = {
+  'acesso_salvo':'Acesso da empresa atualizado.',
+  'preco_salvo':'Valor mensal atualizado.',
+  'empresa_excluida':'Empresa excluída.',
+  'conta_owner_salva':'Sua conta e os dados de suporte foram atualizados.',
+  'empresa_criada':'Empresa criada e controles iniciais configurados.',
+  'controles_salvos':'Limites e bloqueios da empresa foram atualizados.',
+  'plano_salvo':'Plano e assinatura atualizados.'
+} %}
+<div class="saas-shell">
+  <aside class="saas-sidebar">
+    <div class="saas-brand">
+      <div class="saas-brand-mark">M</div>
+      <div><strong>MenuFacile</strong><small>Central administrativa</small></div>
+    </div>
+
+    <div class="saas-nav-group">
+      <div class="saas-nav-label">Gestão</div>
+      <nav class="saas-nav">
+        <a class="saas-nav-item active" href="#visao-geral"><i class="fa-solid fa-chart-pie"></i><span>Visão geral</span></a>
+        <a class="saas-nav-item" href="#empresas"><i class="fa-solid fa-building"></i><span>Empresas</span><span class="nav-count">{{ total_empresas }}</span></a>
+        <a class="saas-nav-item" href="#empresas" data-filter-link="vencendo"><i class="fa-solid fa-credit-card"></i><span>Assinaturas</span><span class="nav-count">{{ total_vencendo }}</span></a>
+        <a class="saas-nav-item" href="/admin-saas/whatsapp"><i class="fa-brands fa-whatsapp"></i><span>Chamados</span><span class="nav-count">{{ total_whatsapp_solicitado }}</span></a>
+        <a class="saas-nav-item" href="#visualizacoes"><i class="fa-solid fa-display"></i><span>Visualizações</span></a>
+      </nav>
+    </div>
+
+    <div class="saas-nav-group">
+      <div class="saas-nav-label">Sua conta</div>
+      <nav class="saas-nav">
+        <a class="saas-nav-item" href="#minha-conta"><i class="fa-solid fa-user-shield"></i><span>Minha conta</span></a>
+        <a class="saas-nav-item" href="#suporte"><i class="fa-solid fa-headset"></i><span>Suporte</span></a>
+        <a class="saas-nav-item" href="/saas-logout"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Sair</span></a>
+      </nav>
+    </div>
+
+    <div class="saas-sidebar-footer">
+      <strong>{{ saas_owner_name or 'Dono do SaaS' }}</strong>
+      <small>{{ saas_owner_email or 'E-mail não configurado' }}</small>
+    </div>
+  </aside>
+
+  <main class="saas-main">
+    <div class="saas-content">
+      <header class="saas-hero" id="visao-geral">
+        <div>
+          <span class="saas-eyebrow"><i class="fa-solid fa-shield-halved"></i> Gestão central</span>
+          <h1>Central de Controle MenuFacile</h1>
+          <p>Administre clientes, acessos, assinaturas, suporte e visualizações públicas em uma única central.</p>
+        </div>
+        <div class="hero-actions">
+          <a class="btn" href="{{ site_url }}/" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square"></i>Abrir site</a>
+          <a class="btn green" href="/admin-saas/whatsapp"><i class="fa-brands fa-whatsapp"></i>Chamados</a>
+          <button class="btn primary" type="button" data-open-dialog="novaEmpresaDialog"><i class="fa-solid fa-plus"></i>Nova empresa</button>
+        </div>
+      </header>
+
+      {% if mensagem_erro %}<div class="flash error"><i class="fa-solid fa-circle-exclamation"></i>{{ error_messages.get(mensagem_erro, 'Não foi possível concluir a operação.') }}</div>{% endif %}
+      {% if mensagem_sucesso %}<div class="flash success"><i class="fa-solid fa-circle-check"></i>{{ success_messages.get(mensagem_sucesso, 'Operação concluída com sucesso.') }}</div>{% endif %}
+
+      <section class="saas-section">
+        <div class="kpi-grid">
+          <article class="kpi-card"><div class="kpi-top"><span class="kpi-icon"><i class="fa-solid fa-building"></i></span></div><strong>{{ total_empresas }}</strong><span>Empresas cadastradas</span></article>
+          <article class="kpi-card green"><div class="kpi-top"><span class="kpi-icon"><i class="fa-solid fa-circle-check"></i></span></div><strong>{{ total_ativas }}</strong><span>Contas operacionais</span></article>
+          <article class="kpi-card"><div class="kpi-top"><span class="kpi-icon"><i class="fa-solid fa-hourglass-half"></i></span></div><strong>{{ total_testes }}</strong><span>Em teste grátis</span></article>
+          <article class="kpi-card amber"><div class="kpi-top"><span class="kpi-icon"><i class="fa-solid fa-clock"></i></span></div><strong>{{ total_vencendo }}</strong><span>Vencem em até 7 dias</span></article>
+          <article class="kpi-card red"><div class="kpi-top"><span class="kpi-icon"><i class="fa-solid fa-triangle-exclamation"></i></span></div><strong>{{ total_vencidas + total_bloqueadas }}</strong><span>Vencidas ou bloqueadas</span></article>
+          <article class="kpi-card"><div class="kpi-top"><span class="kpi-icon"><i class="fa-brands fa-whatsapp"></i></span></div><strong>{{ total_whatsapp_solicitado }}</strong><span>Chamados aguardando</span></article>
+          <article class="kpi-card green"><div class="kpi-top"><span class="kpi-icon"><i class="fa-solid fa-coins"></i></span></div><strong>R$ {{ "%.2f"|format(receita_mensal_prevista + receita_whatsapp_prevista) }}</strong><span>Receita mensal prevista</span></article>
+        </div>
+      </section>
+
+      <section class="saas-section dashboard-grid">
+        <article class="panel">
+          <div class="panel-head"><div><h3>Empresas que exigem atenção</h3><small>Vencimentos, bloqueios e chamados pendentes</small></div><a class="section-link" href="#empresas">Ver empresas</a></div>
+          <div class="panel-body attention-list">
+            {% set ns = namespace(total=0) %}
+            {% for empresa in empresas %}
+              {% if ns.total < 5 and (empresa.plano_status in ['vencido','bloqueado','cancelado'] or (empresa.dias_restantes is not none and empresa.dias_restantes <= 7) or empresa.whatsapp_status == 'solicitado') %}
+                {% set ns.total = ns.total + 1 %}
+                <a class="attention-item {% if empresa.plano_status in ['vencido','bloqueado','cancelado'] or (empresa.dias_restantes is not none and empresa.dias_restantes <= 7) %}warn{% endif %}" href="#empresa-{{ empresa.id }}">
+                  <i class="fa-solid {% if empresa.whatsapp_status == 'solicitado' %}fa-headset{% else %}fa-clock{% endif %}"></i>
+                  <span><strong>{{ empresa.nome }}</strong><small>{% if empresa.whatsapp_status == 'solicitado' %}Chamado de WhatsApp aguardando atendimento{% elif empresa.plano_status in ['vencido','bloqueado','cancelado'] %}Conta {{ status_nome(empresa.plano_status)|lower }}{% else %}Vence em {{ empresa.dias_restantes }} dia(s){% endif %}</small></span>
+                  <span class="mini-badge">Abrir</span>
+                </a>
+              {% endif %}
+            {% endfor %}
+            {% if ns.total == 0 %}<div class="empty-state"><i class="fa-solid fa-circle-check"></i><br><br>Nenhuma pendência importante neste momento.</div>{% endif %}
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head"><div><h3>Cadastros recentes</h3><small>Últimas empresas adicionadas</small></div><button class="btn small" type="button" data-open-dialog="novaEmpresaDialog">Adicionar</button></div>
+          <div class="panel-body recent-list">
+            {% for empresa in empresas[:5] %}
+              <a class="recent-item" href="#empresa-{{ empresa.id }}">
+                <i class="fa-solid fa-building"></i>
+                <span><strong>{{ empresa.nome }}</strong><small>{{ segmento_nome(empresa.tipo) }} · cadastrado {% if empresa.dias_desde_cadastro is not none %}há {{ empresa.dias_desde_cadastro }} dia(s){% else %}recentemente{% endif %}</small></span>
+                <span class="status-pill {{ empresa.plano_status }}">{{ status_nome(empresa.plano_status) }}</span>
+              </a>
+            {% else %}<div class="empty-state">Nenhuma empresa cadastrada.</div>{% endfor %}
+          </div>
+        </article>
+      </section>
+
+      <section class="saas-section" id="empresas">
+        <div class="section-head"><div><h2>Empresas</h2><p>Abra uma empresa para gerenciar acessos, limites, segurança, plano, suporte e visualizações.</p></div><button class="btn primary" type="button" data-open-dialog="novaEmpresaDialog"><i class="fa-solid fa-plus"></i>Nova empresa</button></div>
+        <div class="company-toolbar">
+          <label class="search-box"><i class="fa-solid fa-magnifying-glass"></i><input id="companySearch" placeholder="Buscar por empresa, responsável, e-mail ou segmento"></label>
+          <div class="filter-row">
+            <button class="filter-btn active" type="button" data-company-filter="todos">Todas</button>
+            <button class="filter-btn" type="button" data-company-filter="ativo">Ativas</button>
+            <button class="filter-btn" type="button" data-company-filter="teste">Teste</button>
+            <button class="filter-btn" type="button" data-company-filter="vencendo">Vencendo</button>
+            <button class="filter-btn" type="button" data-company-filter="vencido">Vencidas</button>
+            <button class="filter-btn" type="button" data-company-filter="bloqueado">Bloqueadas</button>
+            <button class="filter-btn" type="button" data-company-filter="whatsapp">Chamados</button>
+          </div>
+        </div>
+
+        <div class="company-table">
+          <div class="company-table-head"><span>Empresa</span><span>Segmento</span><span>Plano</span><span>Vencimento</span><span>Uso</span><span>Responsável</span><span></span></div>
+          {% for empresa in empresas %}
+          <details class="company-record" id="empresa-{{ empresa.id }}" data-status="{{ empresa.plano_status }}" data-days="{{ empresa.dias_restantes if empresa.dias_restantes is not none else '' }}" data-whatsapp="{{ empresa.whatsapp_status }}" data-search="{{ empresa.nome }} {{ empresa.slug }} {{ empresa.tipo }} {{ empresa.admin_nome or '' }} {{ empresa.admin_email or '' }} {{ empresa.email or '' }}">
+            <summary class="company-summary">
+              <div class="company-name"><span class="company-avatar">{{ empresa.nome[:1]|upper }}</span><span><strong>{{ empresa.nome }}</strong><small>/menu/{{ empresa.slug }}</small></span></div>
+              <span class="company-cell">{{ segmento_nome(empresa.tipo) }}</span>
+              <span class="company-plan-cell"><span class="status-pill {{ empresa.plano_status }}">{{ status_nome(empresa.plano_status) }}</span><small class="company-cell">R$ {{ "%.2f"|format(empresa.plano_valor_mensal) }}</small></span>
+              <span class="company-cell">{{ empresa.assinatura_vencimento.strftime('%d/%m/%Y') if empresa.assinatura_vencimento else 'Sem data' }}<small>{% if empresa.dias_restantes is not none %}{{ empresa.dias_restantes }} dia(s){% endif %}</small></span>
+              <span class="usage-inline company-usage-cell"><span class="usage-chip">{{ empresa.total_funcionarios }}/{{ empresa.limite_funcionarios_label }} funcionário(s)</span><span class="usage-chip">{{ empresa.total_profissionais }}/{{ empresa.limite_profissionais_label }} profissional(is)</span></span>
+              <span class="company-cell">{{ empresa.admin_nome or empresa.nome }}<small>{{ empresa.admin_email or empresa.email or 'Sem e-mail' }}</small></span>
+              <span class="summary-arrow"><i class="fa-solid fa-chevron-down"></i></span>
+            </summary>
+
+            <div class="company-detail">
+              <div class="company-detail-top">
+                <div class="company-detail-title"><h3>{{ empresa.nome }}</h3><p>ID {{ empresa.id }} · {{ segmento_nome(empresa.tipo) }} · {{ empresa.plano_nome }}</p></div>
+                <div class="inline-actions">
+                  <form method="POST" action="/admin-saas/empresas/{{ empresa.id }}/entrar"><input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}"><button class="btn primary small" type="submit"><i class="fa-solid fa-right-to-bracket"></i>Entrar no painel</button></form>
+                  <button class="btn small" type="button" data-preview-url="{{ site_url }}/menu/{{ empresa.slug }}" data-preview-title="Menu público · {{ empresa.nome }}"><i class="fa-solid fa-mobile-screen"></i>Prévia</button>
+                  <a class="btn small" href="{{ site_url }}/menu/{{ empresa.slug }}" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square"></i>Menu público</a>
+                  <button class="btn soft small" type="button" data-copy="{{ site_url }}/menu/{{ empresa.slug }}"><i class="fa-regular fa-copy"></i>Copiar link</button>
+                </div>
+              </div>
+
+              <div class="tab-row" role="tablist">
+                <button class="company-tab active" type="button" data-tab="resumo">Resumo</button>
+                <button class="company-tab" type="button" data-tab="acesso">Acesso e senha</button>
+                <button class="company-tab" type="button" data-tab="controle">Limites e segurança</button>
+                <button class="company-tab" type="button" data-tab="plano">Plano e cobrança</button>
+                <button class="company-tab" type="button" data-tab="suporte">Suporte</button>
+                <button class="company-tab" type="button" data-tab="visual">Visualização</button>
+              </div>
+
+              <div class="company-panel active" data-panel="resumo">
+                <div class="detail-grid">
+                  <div class="data-card"><small>Empresa</small><strong>{{ empresa.nome }}</strong></div>
+                  <div class="data-card"><small>Responsável</small><strong>{{ empresa.admin_nome or '-' }}</strong></div>
+                  <div class="data-card"><small>E-mail de acesso</small><strong>{{ empresa.admin_email or '-' }}</strong></div>
+                  <div class="data-card"><small>WhatsApp</small><strong>{{ empresa.telefone_whatsapp or empresa.whatsapp_numero_empresa or '-' }}</strong></div>
+                  <div class="data-card"><small>E-mail público</small><strong>{{ empresa.email or '-' }}</strong></div>
+                  <div class="data-card"><small>Cidade / País</small><strong>{{ empresa.cidade or '-' }}{% if empresa.pais %} · {{ empresa.pais }}{% endif %}</strong></div>
+                  <div class="data-card"><small>Cadastro</small><strong>{{ empresa.criado_em.strftime('%d/%m/%Y') if empresa.criado_em else '-' }}</strong></div>
+                  <div class="data-card"><small>Último acesso</small><strong>{{ empresa.ultimo_acesso_formatado }}</strong></div>
+                  <div class="data-card"><small>Limites da conta</small><strong>{{ empresa.limite_funcionarios_label }} funcionário(s) · {{ empresa.limite_profissionais_label }} profissional(is)</strong></div>
+                  <div class="data-card"><small>Acesso ao painel</small><strong>{% if empresa.bloquear_acesso_painel %}Bloqueado para o cliente{% else %}Liberado{% endif %}</strong></div>
+                  <div class="data-card"><small>WhatsApp automático</small><strong>{% if empresa.whatsapp_status == 'ativo' or empresa.whatsapp_plano_ativo %}Ativo{% elif empresa.whatsapp_status == 'solicitado' %}Solicitado{% else %}Não contratado{% endif %}</strong></div>
+                </div>
+                <div class="metric-grid">
+                  <div class="metric"><strong>{{ empresa.total_pedidos }}</strong><span>Pedidos</span></div>
+                  <div class="metric"><strong>{{ empresa.total_reservas }}</strong><span>Reservas</span></div>
+                  <div class="metric"><strong>{{ empresa.total_itens }}</strong><span>Itens</span></div>
+                  <div class="metric"><strong>{{ empresa.total_usuarios }}</strong><span>Acessos totais</span></div>
+                  <div class="metric"><strong>{{ empresa.total_profissionais }}</strong><span>Profissionais</span></div>
+                </div>
+              </div>
+
+              <div class="company-panel" data-panel="acesso">
+                <div class="split-grid">
+                  <div class="form-card">
+                    <h4>Login principal da empresa</h4><p>Corrija o nome, troque o e-mail ou defina uma senha temporária. A senha atual nunca é exibida.</p>
+                    <form method="POST" action="/admin-saas/empresas/{{ empresa.id }}/acesso" autocomplete="off"><input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}">
+                      <div class="form-grid"><div class="field"><label>Nome do administrador</label><input name="admin_nome" value="{{ empresa.admin_nome or empresa.nome }}" required></div><div class="field"><label>E-mail de login</label><input type="email" name="admin_email" value="{{ empresa.admin_email or '' }}" required></div><div class="field"><label>Nova senha temporária</label><input type="password" name="admin_senha" autocomplete="new-password" placeholder="Deixe vazio para manter"></div></div>
+                      <label class="check-inline"><input type="checkbox" name="forcar_troca_senha" value="1" {% if empresa.forcar_troca_senha %}checked{% endif %}><span><strong>Exigir nova senha no próximo login</strong><small>Após entrar, o administrador ficará preso na tela de troca de senha até criar uma senha própria.</small></span></label>
+                      <div class="form-actions"><button class="btn primary" type="submit"><i class="fa-solid fa-floppy-disk"></i>Salvar acesso</button></div>
+                    </form>
+                  </div>
+                  <div class="form-card">
+                    <h4>Segurança do acesso</h4><p>Informações de controle do login principal desta empresa.</p>
+                    <div class="security-summary"><div class="security-card"><small>Último acesso</small><strong>{{ empresa.ultimo_acesso_formatado }}</strong></div><div class="security-card"><small>Último IP</small><strong>{{ empresa.ultimo_ip or 'Não registrado' }}</strong></div><div class="security-card"><small>Troca obrigatória</small><strong>{% if empresa.forcar_troca_senha %}Pendente{% else %}Não{% endif %}</strong></div><div class="security-card"><small>Acessos cadastrados</small><strong>{{ empresa.total_usuarios }}</strong></div></div>
+                    <div class="owner-note"><i class="fa-solid fa-shield-halved"></i> O primeiro acesso é tratado como dono da conta e não consome vaga de funcionário.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="company-panel" data-panel="controle">
+                <div class="control-grid">
+                  <div class="form-card">
+                    <h4>Limites da empresa</h4><p>Esses limites são validados no servidor. Não basta alterar a tela ou acessar a rota diretamente.</p>
+                    <div class="limit-overview">
+                      <div class="limit-card"><div class="limit-card-head"><span>Funcionários</span><strong>{{ empresa.total_funcionarios }} / {{ empresa.limite_funcionarios_label }}</strong></div><div class="usage-bar"><span style="width:{{ empresa.percentual_funcionarios }}%"></span></div><small>O dono da conta não entra nesta contagem.</small>{% if empresa.bloquear_novos_funcionarios %}<span class="limit-alert"><i class="fa-solid fa-lock"></i>Novos cadastros bloqueados</span>{% endif %}</div>
+                      <div class="limit-card"><div class="limit-card-head"><span>Profissionais</span><strong>{{ empresa.total_profissionais }} / {{ empresa.limite_profissionais_label }}</strong></div><div class="usage-bar"><span style="width:{{ empresa.percentual_profissionais }}%"></span></div><small>Conta somente profissionais ativos na agenda.</small>{% if empresa.bloquear_novos_profissionais %}<span class="limit-alert"><i class="fa-solid fa-lock"></i>Novos cadastros bloqueados</span>{% endif %}</div>
+                    </div>
+                    <form method="POST" action="/admin-saas/empresas/{{ empresa.id }}/controles"><input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}">
+                      <div class="form-grid" style="margin-top:12px"><div class="field"><label>Limite de funcionários</label><input type="number" min="0" max="9999" name="limite_funcionarios" value="{{ empresa.limite_funcionarios }}"></div><div class="field"><label>Limite de profissionais</label><input type="number" min="0" max="9999" name="limite_profissionais" value="{{ empresa.limite_profissionais }}"></div></div>
+                      <div class="switch-stack">
+                        <label class="switch-row"><input type="checkbox" name="funcionarios_ilimitados" value="1" {% if empresa.funcionarios_ilimitados %}checked{% endif %}><span><strong>Funcionários ilimitados</strong><small>Ignora o número definido acima.</small></span></label>
+                        <label class="switch-row"><input type="checkbox" name="profissionais_ilimitados" value="1" {% if empresa.profissionais_ilimitados %}checked{% endif %}><span><strong>Profissionais ilimitados</strong><small>Ignora o número definido acima.</small></span></label>
+                        <label class="switch-row"><input type="checkbox" name="bloquear_novos_funcionarios" value="1" {% if empresa.bloquear_novos_funcionarios %}checked{% endif %}><span><strong>Bloquear novos funcionários</strong><small>Os acessos existentes continuam funcionando, mas novos cadastros são recusados.</small></span></label>
+                        <label class="switch-row"><input type="checkbox" name="bloquear_novos_profissionais" value="1" {% if empresa.bloquear_novos_profissionais %}checked{% endif %}><span><strong>Bloquear novos profissionais</strong><small>Os profissionais existentes continuam ativos, mas novos cadastros ou reativações são recusados.</small></span></label>
+                        <label class="switch-row"><input type="checkbox" name="bloquear_acesso_painel" value="1" {% if empresa.bloquear_acesso_painel %}checked{% endif %}><span><strong>Bloquear acesso da empresa ao painel</strong><small>O cliente não consegue entrar nem usar as rotas administrativas. Você continua podendo abrir a empresa pelo Admin SaaS.</small></span></label>
+                      </div>
+                      <div class="form-actions"><button class="btn primary" type="submit"><i class="fa-solid fa-floppy-disk"></i>Salvar limites e bloqueios</button></div>
+                    </form>
+                  </div>
+                  <div class="form-card">
+                    <h4>Histórico administrativo</h4><p>Últimas alterações realizadas por você nesta empresa.</p>
+                    <div class="activity-list">
+                      {% for atividade in empresa.atividades_saas %}<div class="activity-item"><i class="fa-solid fa-clock-rotate-left"></i><span><strong>{{ atividade.acao }}</strong>{% if atividade.detalhes %}<p>{{ atividade.detalhes }}</p>{% endif %}<time>{{ atividade.criado_em_formatado }}</time></span></div>{% else %}<div class="empty-state">Nenhuma atividade administrativa registrada ainda.</div>{% endfor %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="company-panel" data-panel="plano">
+                <div class="split-grid">
+                  <div class="form-card"><h4>Valor da assinatura</h4><p>Altere o valor mensal sem modificar o status ou o vencimento.</p><form method="POST" action="/admin-saas/empresas/{{ empresa.id }}/preco"><input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}"><div class="field"><label>Valor mensal R$</label><input name="plano_valor_mensal" value="{{ '%.2f'|format(empresa.plano_valor_mensal) }}"></div><div class="form-actions"><button class="btn primary" type="submit">Salvar valor</button></div></form></div>
+                  <div class="form-card"><h4>Status e vencimento</h4><p>Libere, bloqueie, renove ou ajuste manualmente a assinatura.</p><form method="POST" action="/admin-saas/empresas/{{ empresa.id }}/plano"><input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}"><input type="hidden" name="plano_valor_mensal" value="{{ empresa.plano_valor_mensal }}"><div class="form-grid"><div class="field"><label>Status</label><select name="plano_status"><option value="ativo" {% if empresa.plano_status == 'ativo' %}selected{% endif %}>Ativo</option><option value="teste" {% if empresa.plano_status == 'teste' %}selected{% endif %}>Teste grátis</option><option value="vencido" {% if empresa.plano_status == 'vencido' %}selected{% endif %}>Vencido</option><option value="bloqueado" {% if empresa.plano_status == 'bloqueado' %}selected{% endif %}>Bloqueado</option><option value="cancelado" {% if empresa.plano_status == 'cancelado' %}selected{% endif %}>Cancelado</option></select></div><div class="field"><label>Ajustar dias</label><input name="ajuste_dias" placeholder="Ex.: +10 ou -5"></div><div class="field"><label>Vencimento manual</label><input type="date" name="vencimento_manual"></div></div><div class="form-actions"><button class="btn" name="acao" value="salvar_status" type="submit">Salvar status</button><button class="btn amber" name="acao" value="teste_10_dias" type="submit">Teste 10 dias</button><button class="btn green" name="acao" value="renovar" type="submit">Renovar 30 dias</button><button class="btn" name="acao" value="aplicar_ajuste" type="submit">Aplicar dias</button><button class="btn" name="acao" value="definir_data" type="submit">Definir data</button><button class="btn red" name="acao" value="bloquear" type="submit">Bloquear</button><button class="btn primary" name="acao" value="ativar" type="submit">Liberar acesso</button></div></form></div>
+                </div>
+                <details class="danger-box" style="margin-top:10px"><summary>Área de exclusão permanente</summary><form method="POST" action="/admin-saas/empresas/{{ empresa.id }}/excluir"><input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}"><div class="field"><label>Digite EXCLUIR</label><input name="confirmacao" placeholder="EXCLUIR"></div><button class="btn red" type="submit">Excluir empresa e dados</button></form></details>
+              </div>
+
+              <div class="company-panel" data-panel="suporte">
+                <div class="split-grid"><div class="form-card"><h4>Contato do cliente</h4><div class="detail-grid" style="grid-template-columns:1fr 1fr"><div class="data-card"><small>Responsável</small><strong>{{ empresa.whatsapp_responsavel_nome or empresa.admin_nome or '-' }}</strong></div><div class="data-card"><small>E-mail</small><strong>{{ empresa.whatsapp_responsavel_email or empresa.admin_email or '-' }}</strong></div><div class="data-card"><small>WhatsApp</small><strong>{{ empresa.whatsapp_numero_empresa or empresa.telefone_whatsapp or '-' }}</strong></div><div class="data-card"><small>Status do chamado</small><strong>{{ empresa.whatsapp_status|replace('_',' ')|capitalize }}</strong></div></div></div><div class="form-card"><h4>WhatsApp automático</h4><p>{% if empresa.whatsapp_status == 'solicitado' %}Há uma solicitação aguardando sua análise.{% elif empresa.whatsapp_status == 'ativo' or empresa.whatsapp_plano_ativo %}Módulo ativo para esta empresa.{% else %}Ainda não contratado.{% endif %}</p><div class="metric-grid" style="grid-template-columns:1fr 1fr"><div class="metric"><strong>{{ empresa.whatsapp_mensagens_usadas }}</strong><span>Mensagens usadas</span></div><div class="metric"><strong>{{ empresa.whatsapp_limite_mensal }}</strong><span>Limite mensal</span></div></div><div class="form-actions"><a class="btn green" href="/admin-saas/whatsapp#empresa-{{ empresa.id }}"><i class="fa-brands fa-whatsapp"></i>Abrir central de chamados</a></div></div></div>
+              </div>
+
+              <div class="company-panel" data-panel="visual">
+                <div class="split-grid"><div class="form-card"><h4>Menu público</h4><p>Veja exatamente o que o cliente final acessa no celular ou no computador.</p><div class="field"><label>Link público</label><input readonly value="{{ site_url }}/menu/{{ empresa.slug }}"></div><div class="form-actions"><button class="btn primary" type="button" data-preview-url="{{ site_url }}/menu/{{ empresa.slug }}" data-preview-title="Menu público · {{ empresa.nome }}">Abrir prévia</button><button class="btn" type="button" data-copy="{{ site_url }}/menu/{{ empresa.slug }}">Copiar link</button></div></div><div class="form-card"><h4>Painel administrativo</h4><p>Entre no ambiente da empresa usando sua sessão de dono do SaaS.</p><form method="POST" action="/admin-saas/empresas/{{ empresa.id }}/entrar"><input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}"><button class="btn dark" type="submit"><i class="fa-solid fa-right-to-bracket"></i>Abrir painel administrativo</button></form></div></div>
+              </div>
+            </div>
+          </details>
+          {% else %}<div class="empty-state" style="margin:16px">Nenhuma empresa cadastrada.</div>{% endfor %}
+        </div>
+      </section>
+
+      <section class="saas-section" id="visualizacoes">
+        <div class="section-head"><div><h2>Site e visualizações</h2><p>Confira a página principal e os menus públicos sem sair da central.</p></div><a class="section-link" href="{{ site_url }}/" target="_blank" rel="noopener">Abrir em nova aba</a></div>
+        <div class="preview-section-grid">
+          <article class="preview-card">
+            <div class="preview-toolbar"><div><strong id="mainPreviewTitle">Site MenuFacile</strong><small id="mainPreviewUrl">{{ site_url }}/</small></div><div class="device-buttons"><button class="device-btn active" type="button" data-device="desktop" title="Desktop"><i class="fa-solid fa-desktop"></i></button><button class="device-btn" type="button" data-device="mobile" title="Celular"><i class="fa-solid fa-mobile-screen"></i></button></div></div>
+            <div class="preview-stage" id="mainPreviewStage"><iframe class="preview-frame" id="mainPreviewFrame" src="{{ site_url }}/" title="Prévia do MenuFacile" loading="lazy"></iframe></div>
+          </article>
+          <aside class="preview-card">
+            <div class="preview-control">
+              <div class="field"><label>Conteúdo da prévia</label><select id="previewSelect"><option value="{{ site_url }}/" data-title="Site MenuFacile">Site principal</option>{% for empresa in empresas %}<option value="{{ site_url }}/menu/{{ empresa.slug }}" data-title="Menu público · {{ empresa.nome }}">{{ empresa.nome }}</option>{% endfor %}</select></div>
+              <div class="form-actions"><button class="btn primary" type="button" id="loadPreviewButton">Carregar prévia</button><a class="btn" id="openPreviewLink" href="{{ site_url }}/" target="_blank" rel="noopener">Abrir em nova aba</a></div>
+            </div>
+            <div class="panel-body status-stack">
+              <div class="status-card"><i class="fa-solid fa-globe"></i><span><strong>Site principal</strong><small>{{ site_url }}</small></span><span class="status-dot-live"></span></div>
+              <div class="status-card"><i class="fa-solid fa-server"></i><span><strong>Painel respondendo</strong><small>Esta central foi carregada corretamente</small></span><span class="status-dot-live"></span></div>
+              <div class="status-card"><i class="fa-solid fa-database"></i><span><strong>Dados disponíveis</strong><small>{{ total_empresas }} empresa(s), {{ total_usuarios }} acesso(s) e {{ total_profissionais }} profissional(is)</small></span><span class="status-dot-live"></span></div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="saas-section" id="minha-conta">
+        <div class="section-head"><div><h2>Minha conta e suporte</h2><p>Controle seu próprio login e o contato que aparece para os clientes do MenuFacile.</p></div></div>
+        <form method="POST" action="/admin-saas/minha-conta" class="account-grid" autocomplete="off"><input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}">
+          <input type="text" name="saas_fake_username" autocomplete="username" tabindex="-1" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+          <input type="password" name="saas_fake_password" autocomplete="current-password" tabindex="-1" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+          <article class="account-card"><h3>Seu acesso ao Admin SaaS</h3><p>O e-mail e a senha abaixo são usados somente para entrar nesta central. Alterar e-mail ou senha exige a senha atual.</p><div class="form-grid"><div class="field"><label>Seu nome</label><input name="owner_name" value="{{ saas_owner_name }}"></div><div class="field"><label>E-mail de acesso</label><input type="email" name="owner_email" value="{{ saas_owner_email }}" required></div><div class="field"><label>Seu telefone</label><input name="owner_phone" value="{{ saas_owner_phone }}"></div><div class="field"><label>Senha atual</label><input type="password" name="senha_atual" autocomplete="current-password" placeholder="Necessária para trocar e-mail ou senha"></div><div class="field"><label>Nova senha</label><input type="password" name="nova_senha" autocomplete="new-password" placeholder="Mínimo de 8 caracteres"></div><div class="field"><label>Confirmar nova senha</label><input type="password" name="confirmar_senha" autocomplete="new-password"></div></div></article>
+          <article class="account-card" id="suporte"><h3>Atendimento aos clientes</h3><p>Este WhatsApp será usado pelos botões de suporte e pelas empresas que precisam falar com você.</p><div class="form-grid" style="grid-template-columns:1fr 1fr"><div class="field"><label>WhatsApp de suporte</label><input name="support_whatsapp" value="{{ saas_support_whatsapp }}" placeholder="Ex.: 5515999999999"></div><div class="field"><label>E-mail de suporte</label><input type="email" name="support_email" value="{{ saas_support_email }}"></div><div class="field" style="grid-column:1/-1"><label>Horário de atendimento</label><input name="support_hours" value="{{ saas_support_hours }}"></div><div class="field" style="grid-column:1/-1"><label>Mensagem inicial do WhatsApp</label><textarea name="support_message">{{ saas_support_message }}</textarea></div></div></article>
+          <article class="account-card"><h3>Prévia do suporte</h3><p>Veja como suas informações serão apresentadas e teste o atendimento configurado.</p><div class="support-preview"><span class="support-preview-badge"><i class="fa-brands fa-whatsapp"></i>Suporte MenuFacile</span><h4>Como podemos ajudar?</h4><p>{{ saas_support_message or 'Olá! Preciso de ajuda com o MenuFacile.' }}</p><div class="support-meta"><div><span>WhatsApp</span><strong>{{ saas_support_whatsapp or 'Não configurado' }}</strong></div><div><span>E-mail</span><strong>{{ saas_support_email or 'Não configurado' }}</strong></div><div><span>Horário</span><strong>{{ saas_support_hours or 'Não configurado' }}</strong></div></div>{% if saas_support_url %}<a class="btn green" style="margin-top:13px;width:100%" href="{{ saas_support_url }}" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i>Testar conversa</a>{% endif %}</div></article>
+          <article class="account-card"><h3>Salvar configurações</h3><p>Os dados ficam protegidos em um arquivo privado do servidor. A nova senha é armazenada apenas como hash.</p><div class="status-stack"><div class="status-card"><i class="fa-solid fa-lock"></i><span><strong>Senha protegida</strong><small>A senha atual nunca é exibida no painel.</small></span><span class="status-dot-live"></span></div><div class="status-card"><i class="fa-solid fa-headset"></i><span><strong>Contato central</strong><small>O mesmo WhatsApp pode ser usado no site e nos avisos de suporte.</small></span><span class="status-dot-live"></span></div></div><button class="btn primary" style="width:100%;margin-top:13px" type="submit"><i class="fa-solid fa-floppy-disk"></i>Salvar minha conta e suporte</button></article>
+        </form>
+      </section>
+    </div>
+  </main>
+</div>
+
+<dialog id="novaEmpresaDialog">
+  <div class="modal-card">
+    <div class="modal-head"><h3>Nova empresa</h3><button class="modal-close" type="button" data-close-dialog><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <form method="POST" action="/admin-saas/empresas/nova"><input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}">
+        <div class="form-grid"><div class="field"><label>Nome da empresa</label><input name="nome" placeholder="Ex.: Restaurante Aurora" required></div><div class="field"><label>Slug</label><input name="slug" placeholder="restaurante-aurora"></div><div class="field"><label>Segmento</label><select name="tipo"><option value="restaurante">Restaurante e alimentação</option><option value="servicos">Serviços e outros serviços</option><option value="loja">Produtos e outras lojas</option><option value="encomendas">Encomendas e produção sob medida</option></select></div><div class="field"><label>Valor mensal R$</label><input name="plano_valor_mensal" value="25.99"></div><div class="field"><label>E-mail da empresa</label><input type="email" name="email_empresa"></div><div class="field"><label>WhatsApp da empresa</label><input name="telefone_whatsapp"></div><div class="field"><label>Nome do responsável</label><input name="admin_nome"></div><div class="field"><label>E-mail de login</label><input type="email" name="admin_email"></div><div class="field"><label>Senha temporária</label><input type="password" name="admin_senha" autocomplete="new-password"></div></div><div class="owner-note" style="margin-top:12px"><i class="fa-solid fa-gauge-high"></i> A empresa começa com 3 funcionário(s) e 10 profissional(is). Você poderá alterar na aba Limites e segurança.</div>
+        <div class="form-actions"><button class="btn primary" type="submit"><i class="fa-solid fa-plus"></i>Criar empresa</button><button class="btn" type="button" data-close-dialog>Cancelar</button></div>
+      </form>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="previewDialog">
+  <div class="modal-card preview-modal-card">
+    <div class="modal-head"><h3 id="previewDialogTitle">Prévia</h3><button class="modal-close" type="button" data-close-dialog><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="preview-modal-body"><iframe id="previewDialogFrame" title="Prévia pública"></iframe></div>
+  </div>
+</dialog>
+
+<script id="mf-saas-control-v365-js">
+(function(){
+  var currentFilter='todos';
+  var search=document.getElementById('companySearch');
+  var records=[].slice.call(document.querySelectorAll('.company-record'));
+  function applyCompanyFilter(){
+    var q=String((search&&search.value)||'').trim().toLowerCase();
+    records.forEach(function(record){
+      var status=String(record.dataset.status||'');
+      var days=parseInt(record.dataset.days||'',10);
+      var whatsapp=String(record.dataset.whatsapp||'');
+      var text=String(record.dataset.search||'').toLowerCase();
+      var matches=text.indexOf(q)>=0;
+      if(currentFilter==='ativo') matches=matches&&status==='ativo';
+      else if(currentFilter==='teste') matches=matches&&status==='teste';
+      else if(currentFilter==='vencendo') matches=matches&&!isNaN(days)&&days>=0&&days<=7&&(status==='ativo'||status==='teste');
+      else if(currentFilter==='vencido') matches=matches&&status==='vencido';
+      else if(currentFilter==='bloqueado') matches=matches&&(status==='bloqueado'||status==='cancelado');
+      else if(currentFilter==='whatsapp') matches=matches&&whatsapp==='solicitado';
+      record.style.display=matches?'':'none';
+    });
+  }
+  if(search) search.addEventListener('input',applyCompanyFilter);
+  document.querySelectorAll('[data-company-filter]').forEach(function(button){
+    button.addEventListener('click',function(){
+      currentFilter=button.dataset.companyFilter||'todos';
+      document.querySelectorAll('[data-company-filter]').forEach(function(item){item.classList.toggle('active',item===button)});
+      applyCompanyFilter();
+    });
+  });
+  document.querySelectorAll('[data-filter-link]').forEach(function(link){
+    link.addEventListener('click',function(){
+      var filter=link.dataset.filterLink;
+      var button=document.querySelector('[data-company-filter="'+filter+'"]');
+      if(button) setTimeout(function(){button.click()},80);
+    });
+  });
+
+  document.querySelectorAll('.company-tab').forEach(function(tab){
+    tab.addEventListener('click',function(event){
+      event.preventDefault();event.stopPropagation();
+      var detail=tab.closest('.company-detail');
+      if(!detail)return;
+      detail.querySelectorAll('.company-tab').forEach(function(item){item.classList.toggle('active',item===tab)});
+      detail.querySelectorAll('.company-panel').forEach(function(panel){panel.classList.toggle('active',panel.dataset.panel===tab.dataset.tab)});
+    });
+  });
+
+  function openDialog(id){var dialog=document.getElementById(id);if(dialog&&!dialog.open)dialog.showModal()}
+  function closeDialog(dialog){if(dialog&&dialog.open)dialog.close()}
+  document.querySelectorAll('[data-open-dialog]').forEach(function(button){button.addEventListener('click',function(){openDialog(button.dataset.openDialog)})});
+  document.querySelectorAll('[data-close-dialog]').forEach(function(button){button.addEventListener('click',function(){closeDialog(button.closest('dialog'))})});
+  document.querySelectorAll('dialog').forEach(function(dialog){dialog.addEventListener('click',function(event){if(event.target===dialog)closeDialog(dialog)})});
+
+  var previewDialog=document.getElementById('previewDialog');
+  var previewDialogFrame=document.getElementById('previewDialogFrame');
+  var previewDialogTitle=document.getElementById('previewDialogTitle');
+  document.querySelectorAll('[data-preview-url]').forEach(function(button){button.addEventListener('click',function(){if(previewDialogFrame)previewDialogFrame.src=button.dataset.previewUrl||'';if(previewDialogTitle)previewDialogTitle.textContent=button.dataset.previewTitle||'Prévia';openDialog('previewDialog')})});
+  if(previewDialog)previewDialog.addEventListener('close',function(){if(previewDialogFrame)previewDialogFrame.src='about:blank'});
+
+  document.querySelectorAll('[data-copy]').forEach(function(button){button.addEventListener('click',function(){var value=button.dataset.copy||'';navigator.clipboard.writeText(value).then(function(){var old=button.innerHTML;button.innerHTML='<i class="fa-solid fa-check"></i>Copiado';setTimeout(function(){button.innerHTML=old},1400)}).catch(function(){window.prompt('Copie o link:',value)})})});
+
+  var stage=document.getElementById('mainPreviewStage');
+  document.querySelectorAll('[data-device]').forEach(function(button){button.addEventListener('click',function(){document.querySelectorAll('[data-device]').forEach(function(item){item.classList.toggle('active',item===button)});if(stage)stage.classList.toggle('mobile',button.dataset.device==='mobile')})});
+  var previewSelect=document.getElementById('previewSelect');
+  var mainFrame=document.getElementById('mainPreviewFrame');
+  var mainTitle=document.getElementById('mainPreviewTitle');
+  var mainUrl=document.getElementById('mainPreviewUrl');
+  var openLink=document.getElementById('openPreviewLink');
+  var loadButton=document.getElementById('loadPreviewButton');
+  function loadSelectedPreview(){if(!previewSelect)return;var option=previewSelect.options[previewSelect.selectedIndex];var url=option.value;if(mainFrame)mainFrame.src=url;if(mainTitle)mainTitle.textContent=option.dataset.title||option.textContent;if(mainUrl)mainUrl.textContent=url;if(openLink)openLink.href=url}
+  if(loadButton)loadButton.addEventListener('click',loadSelectedPreview);
+  if(previewSelect)previewSelect.addEventListener('change',loadSelectedPreview);
+
+  document.querySelectorAll('.saas-nav-item[href^="#"]').forEach(function(link){link.addEventListener('click',function(){document.querySelectorAll('.saas-nav-item').forEach(function(item){item.classList.remove('active')});link.classList.add('active')})});
+
+  var routeParams=new URLSearchParams(window.location.search);
+  var requestedCompany=routeParams.get('empresa');
+  var requestedTab=routeParams.get('aba');
+  if(requestedCompany){
+    var requestedRecord=document.getElementById('empresa-'+requestedCompany);
+    if(requestedRecord){
+      requestedRecord.open=true;
+      if(requestedTab){
+        var requestedButton=requestedRecord.querySelector('.company-tab[data-tab="'+requestedTab+'"]');
+        if(requestedButton)requestedButton.click();
+      }
+      setTimeout(function(){requestedRecord.scrollIntoView({behavior:'smooth',block:'start'})},120);
+    }
+  }
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,199 @@
+/* MenuFacile v776 — refinamento final do menu público de Encomendas. */
+
+/* 1) Ícones sociais menores e mais delicados. */
+.mf-encomendas-v761 .enc-header-actions-v772{gap:7px!important}
+.mf-encomendas-v761 .enc-social-icon-v773,
+.mf-encomendas-v761 .enc-hours-v772 .enc-social-icon-v773{
+  width:38px!important;
+  height:38px!important;
+  min-width:38px!important;
+  min-height:38px!important;
+  border-width:1px!important;
+  box-shadow:0 4px 12px rgba(53,38,28,.045),inset 0 0 0 1px rgba(255,255,255,.16)!important;
+}
+.mf-encomendas-v761 .enc-social-icon-v773 i{font-size:16px!important}
+.mf-encomendas-v761 .enc-social-icon-v773:hover,
+.mf-encomendas-v761 .enc-social-icon-v773:focus-visible{
+  transform:translateY(-1px)!important;
+  box-shadow:0 7px 16px rgba(53,38,28,.07),inset 0 0 0 1px rgba(255,255,255,.18)!important;
+}
+
+/* 2) Catálogo mais direto. */
+.mf-encomendas-v761 .enc-product-card{
+  cursor:pointer;
+  transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;
+}
+.mf-encomendas-v761 .enc-product-card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 13px 30px rgba(55,39,28,.085);
+}
+.mf-encomendas-v761 .enc-product-card:focus-visible{
+  outline:2px solid rgba(var(--enc-brand-rgb),.38);
+  outline-offset:3px;
+}
+
+/* 3) Contato + localização no mesmo padrão limpo dos outros menus. */
+.mf-encomendas-v761 .enc-info-nav-v776{
+  width:min(1180px,calc(100% - 28px));
+  margin:28px auto 0;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  overflow:hidden;
+  border:1px solid rgba(75,57,44,.12);
+  border-radius:16px;
+  background:rgba(255,255,255,.58);
+  box-shadow:0 6px 22px rgba(57,40,29,.035);
+}
+.mf-encomendas-v761 .enc-info-nav-v776 button{
+  min-height:52px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  border:0;
+  background:transparent;
+  color:#554b45;
+  font-size:12px;
+  font-weight:850;
+  cursor:pointer;
+  transition:background .16s ease,color .16s ease;
+}
+.mf-encomendas-v761 .enc-info-nav-v776 button+button{border-left:1px solid rgba(75,57,44,.12)}
+.mf-encomendas-v761 .enc-info-nav-v776 button:hover{background:rgba(255,255,255,.76);color:var(--enc-brand)}
+.mf-encomendas-v761 .enc-info-nav-v776 i{font-size:14px}
+
+/* 4) Rodapé fiscal e institucional dinâmico. */
+.mf-encomendas-v761 .enc-public-footer-v776{
+  width:min(1180px,calc(100% - 28px));
+  margin:18px auto 0;
+  padding:0 0 30px;
+}
+.mf-encomendas-v761 .enc-public-footer-inner-v776{
+  padding:18px 2px 0;
+  border-top:1px solid rgba(75,57,44,.13);
+  color:#70665f;
+}
+.mf-encomendas-v761 .enc-public-footer-inner-v776 p,
+.mf-encomendas-v761 .enc-public-footer-inner-v776 strong,
+.mf-encomendas-v761 .enc-public-footer-inner-v776 span{
+  display:block;
+  margin:0;
+}
+.mf-encomendas-v761 .enc-public-footer-inner-v776 p{font-size:10px;line-height:1.45}
+.mf-encomendas-v761 .enc-public-footer-inner-v776 strong{
+  margin-top:7px;
+  color:#403833;
+  font-size:10px;
+  line-height:1.45;
+  font-weight:900;
+}
+.mf-encomendas-v761 .enc-public-footer-inner-v776 span{margin-top:11px;font-size:9.5px}
+
+/* 5) Modais de contato e localização. */
+.enc-info-backdrop-v776{
+  position:fixed;
+  inset:0;
+  z-index:1200;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  background:rgba(24,20,17,.38);
+  backdrop-filter:blur(5px);
+  -webkit-backdrop-filter:blur(5px);
+}
+.enc-info-backdrop-v776.open{display:flex}
+.enc-info-modal-v776{
+  width:min(520px,100%);
+  max-height:min(82vh,680px);
+  overflow:auto;
+  border:1px solid rgba(75,57,44,.12);
+  border-radius:24px;
+  background:#fffdfa;
+  box-shadow:0 26px 80px rgba(34,25,20,.20);
+}
+.enc-info-modal-v776>header{
+  position:sticky;
+  top:0;
+  z-index:2;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:20px 21px 17px;
+  border-bottom:1px solid #eee7e1;
+  background:rgba(255,253,250,.96);
+  backdrop-filter:blur(10px);
+}
+.enc-info-modal-v776>header span{
+  display:block;
+  margin-bottom:5px;
+  color:#9a735d;
+  font-size:7px;
+  letter-spacing:.14em;
+  font-weight:900;
+}
+.enc-info-modal-v776>header h2{
+  margin:0;
+  color:#342d29;
+  font:500 24px/1.05 Georgia,'Times New Roman',serif;
+}
+.enc-info-modal-v776>header button{
+  width:38px;height:38px;flex:0 0 38px;
+  display:grid;place-items:center;
+  border:1px solid #e6ded8;border-radius:13px;
+  background:#fff;color:#5d5149;cursor:pointer;
+}
+.enc-info-list-v776{display:grid;gap:8px;padding:16px}
+.enc-info-list-v776>a{
+  min-height:62px;
+  display:grid;
+  grid-template-columns:38px minmax(0,1fr) 18px;
+  align-items:center;
+  gap:11px;
+  padding:10px 12px;
+  border:1px solid #eee6e0;
+  border-radius:15px;
+  background:#fff;
+  color:#4c423c;
+  text-decoration:none;
+  transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease;
+}
+.enc-info-list-v776>a:hover{transform:translateY(-1px);border-color:#daccc2;box-shadow:0 7px 18px rgba(55,39,28,.055)}
+.enc-info-list-v776>a>i:first-child{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:#f6f0eb;color:#755947;font-size:15px}
+.enc-info-list-v776>a span{min-width:0}
+.enc-info-list-v776>a strong,.enc-info-list-v776>a small{display:block;overflow:hidden;text-overflow:ellipsis}
+.enc-info-list-v776>a strong{font-size:11px;font-weight:900;color:#3d3530}
+.enc-info-list-v776>a small{margin-top:3px;color:#887c73;font-size:9px;white-space:nowrap}
+.enc-info-list-v776>a>i:last-child{color:#baa99d;font-size:10px}
+.enc-location-card-v776{display:grid;grid-template-columns:44px minmax(0,1fr);gap:12px;margin:17px 17px 10px;padding:15px;border:1px solid #eee6e0;border-radius:16px;background:#fff}
+.enc-location-icon-v776{width:44px;height:44px;display:grid;place-items:center;border-radius:14px;background:#f5eee9;color:#795c49;font-size:17px}
+.enc-location-card-v776 strong{display:block;color:#3c342f;font-size:12px;font-weight:900}
+.enc-location-card-v776 p{margin:5px 0 0;color:#80746c;font-size:10px;line-height:1.55}
+.enc-maps-btn-v776{margin:0 17px 18px;min-height:46px;display:flex;align-items:center;justify-content:center;gap:9px;border-radius:14px;background:var(--enc-brand,#6f4d3b);color:var(--enc-brand-on,#fff);font-size:11px;font-weight:900;text-decoration:none}
+.enc-info-empty-v776{margin:17px;padding:18px;border:1px dashed #ddd2ca;border-radius:16px;color:#80746c;background:#fcfaf8;font-size:10px;line-height:1.5}
+
+@media(max-width:760px){
+  .mf-encomendas-v761 .enc-social-icon-v773,
+  .mf-encomendas-v761 .enc-hours-v772 .enc-social-icon-v773{
+    width:34px!important;height:34px!important;min-width:34px!important;min-height:34px!important;
+  }
+  .mf-encomendas-v761 .enc-social-icon-v773 i{font-size:14px!important}
+  .mf-encomendas-v761 .enc-header-actions-v772{gap:6px!important}
+  .mf-encomendas-v761 .enc-info-nav-v776,
+  .mf-encomendas-v761 .enc-public-footer-v776{width:calc(100% - 20px)}
+  .mf-encomendas-v761 .enc-info-nav-v776{margin-top:20px;border-radius:14px}
+  .mf-encomendas-v761 .enc-info-nav-v776 button{min-height:48px;font-size:10.5px}
+  .enc-info-modal-v776{border-radius:20px}
+}
+
+@media(max-width:430px){
+  .mf-encomendas-v761 .enc-social-icon-v773,
+  .mf-encomendas-v761 .enc-hours-v772 .enc-social-icon-v773{
+    width:32px!important;height:32px!important;min-width:32px!important;min-height:32px!important;
+  }
+  .mf-encomendas-v761 .enc-social-icon-v773 i{font-size:13px!important}
+  .mf-encomendas-v761 .enc-public-footer-v776{padding-bottom:22px}
+  .enc-info-backdrop-v776{align-items:flex-end;padding:0}
+  .enc-info-modal-v776{width:100%;max-height:82dvh;border-radius:22px 22px 0 0}
+}

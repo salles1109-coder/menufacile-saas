@@ -1,0 +1,554 @@
+/* MenuFacile — etapa 1 mobile da Agenda. Sem alterar regras dos agendamentos. */
+.mf-stage1-mobile-only{display:none!important}
+@media (max-width:768px){
+  :root{--mf1-blue:#1647d8;--mf1-bg:#f5f7fb;--mf1-text:#182238;--mf1-muted:#7a879b;--mf1-line:#e1e7f0;--mf1-nav:72px}
+  body{background:var(--mf1-bg)!important;padding-bottom:calc(var(--mf1-nav) + 14px)!important}
+  .mf-stage1-mobile-only{display:flex!important}
+  body .side,body .mf-admin-sidebar,body .mf-admin-sidebar-overlay,body .fullscreen-toggle{display:none!important}
+  body .layout,body .main{display:block!important;width:100%!important;min-width:0!important}
+  body .topbar{min-height:56px!important;padding:10px 14px!important;position:sticky!important;top:0!important;z-index:20!important;background:rgba(255,255,255,.96)!important}
+  body .top-title span{display:none!important}
+  body .top-title strong{font-size:17px!important;color:var(--mf1-text)!important}
+  body .content{width:100%!important;max-width:none!important;padding:12px 12px 22px!important;margin:0!important}
+  body .admin-page-header,body .mf-admin-page-header,body .page-title,body .subtitle{display:none!important}
+
+  .mf-stage1-date-strip{display:block!important;border:1px solid var(--mf1-line);border-radius:18px;background:#fff;overflow:hidden;box-shadow:0 8px 22px rgba(24,34,56,.05);margin:0 0 10px}
+  .mf-stage1-date-month{height:24px;display:flex;align-items:center;justify-content:center;background:#eef2f7;color:#8792a4;font-size:11px;font-weight:800}
+  .mf-stage1-date-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));padding:5px 4px 7px}
+  .mf-stage1-date-day{border:0;background:transparent;border-radius:11px;min-height:52px;padding:4px 1px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--mf1-text);font-family:inherit}
+  .mf-stage1-date-day span{font-size:8px;line-height:1;font-weight:800;color:#7f8999}
+  .mf-stage1-date-day strong{font-size:19px;line-height:1;font-weight:850}
+  .mf-stage1-date-day.is-active{background:var(--mf1-blue);color:#fff;box-shadow:0 7px 16px rgba(22,71,216,.23)}
+  .mf-stage1-date-day.is-active span{color:#fff}
+  .mf-stage1-date-title{align-items:center;justify-content:space-between;gap:8px;margin:0 2px 10px}
+  .mf-stage1-date-title strong{font-size:17px;line-height:1.15;color:var(--mf1-text)}
+  .mf-stage1-date-title button{height:34px;border:1px solid #dce5f6;border-radius:11px;background:#edf3ff;color:var(--mf1-blue);padding:0 10px;display:flex;align-items:center;gap:6px;font-size:10px;font-weight:900}
+
+  #agendaDia{margin:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;overflow:visible!important}
+  #agendaDia>.card-head{display:none!important}
+  #agendaDia>.prof-tabs{display:flex!important;visibility:visible!important;opacity:1!important;margin:0 0 10px!important;padding:0 0 4px!important;border:0!important;background:transparent!important;gap:7px!important;overflow-x:auto!important;min-height:40px!important}
+  #agendaDia .prof-tab{height:36px!important;min-height:36px!important;padding:0 12px!important;border:1px solid var(--mf1-line)!important;border-radius:999px!important;background:#fff!important;color:#66758c!important;font-size:11px!important;font-weight:900!important;white-space:nowrap!important}
+  #agendaDia .prof-tab.active{background:var(--mf1-blue)!important;color:#fff!important;border-color:var(--mf1-blue)!important}
+  #agendaDia>.card-body,#agendaDia.collapsed>.card-body{display:block!important}
+
+  #setupCard{display:none!important}
+  #agendamentosCard{display:none!important}
+  body.mf-stage1-setup-open #setupCard{display:block!important}
+  body.mf-stage1-setup-open #agendaDia,body.mf-stage1-setup-open .mf-stage1-date-strip,body.mf-stage1-setup-open .mf-stage1-date-title{display:none!important}
+  body.mf-stage1-history-open #agendamentosCard{display:block!important}
+  body.mf-stage1-history-open #agendaDia,body.mf-stage1-history-open .mf-stage1-date-strip,body.mf-stage1-history-open .mf-stage1-date-title{display:none!important}
+  body.mf-stage1-setup-open #setupCard.collapsed .card-body{display:block!important}
+
+  .mf-stage1-fab-wrap{position:fixed;right:16px;bottom:calc(var(--mf1-nav) + 18px);z-index:105;display:block!important}
+  .mf-stage1-fab{width:56px;height:56px;border:0;border-radius:50%;background:var(--mf1-blue);color:#fff;display:grid;place-items:center;font-size:21px;box-shadow:0 14px 30px rgba(22,71,216,.34);transition:.18s ease}
+  .mf-stage1-fab-wrap.is-open .mf-stage1-fab{transform:rotate(45deg)}
+  .mf-stage1-fab-menu{position:absolute;right:0;bottom:65px;display:grid;gap:8px;min-width:230px;opacity:0;pointer-events:none;transform:translateY(7px);transition:.18s ease}
+  .mf-stage1-fab-wrap.is-open .mf-stage1-fab-menu{opacity:1;pointer-events:auto;transform:none}
+  .mf-stage1-fab-menu button{border:0;background:transparent;padding:0;min-height:42px;display:flex;align-items:center;justify-content:flex-end;gap:8px;font-family:inherit}
+  .mf-stage1-fab-menu button span{padding:9px 11px;border-radius:10px;background:#fff;color:var(--mf1-text);font-size:11px;font-weight:900;box-shadow:0 7px 20px rgba(23,35,58,.15);white-space:nowrap}
+  .mf-stage1-fab-menu button i{width:42px;height:42px;border-radius:50%;background:#fff;color:var(--mf1-blue);display:grid;place-items:center;box-shadow:0 7px 20px rgba(23,35,58,.17)}
+  .mf-stage1-back-agenda{display:none!important}
+  body.mf-stage1-setup-open .mf-stage1-back-agenda,body.mf-stage1-history-open .mf-stage1-back-agenda{display:flex!important}
+
+  .mf-stage1-bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:100;height:var(--mf1-nav);padding:7px 7px calc(7px + env(safe-area-inset-bottom,0px));display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px;background:rgba(255,255,255,.98);border-top:1px solid var(--mf1-line);box-shadow:0 -8px 26px rgba(23,35,58,.08)}
+  .mf-stage1-bottom-nav a,.mf-stage1-bottom-nav button{border:0;background:transparent;border-radius:14px;color:#8390a4;text-decoration:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:0;padding:4px 2px;font-family:inherit;font-size:9px;font-weight:900}
+  .mf-stage1-bottom-nav i{font-size:17px}
+  .mf-stage1-bottom-nav .is-active{background:#eaf1ff;color:var(--mf1-blue)}
+
+  .mf-stage1-more-sheet{position:fixed;inset:0;z-index:120;background:rgba(15,25,45,.4);align-items:flex-end;padding:12px;display:none!important}
+  .mf-stage1-more-sheet.is-open{display:flex!important}
+  .mf-stage1-more-panel{width:100%;max-height:78vh;overflow:auto;border-radius:23px;background:#fff;padding:15px;box-shadow:0 22px 60px rgba(10,20,40,.28)}
+  .mf-stage1-more-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+  .mf-stage1-more-head strong{font-size:17px;color:var(--mf1-text)}
+  .mf-stage1-more-head button{width:35px;height:35px;border:0;border-radius:50%;background:#edf1f6;color:var(--mf1-text)}
+  .mf-stage1-more-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .mf-stage1-more-grid a{min-height:58px;padding:10px;border:1px solid var(--mf1-line);border-radius:15px;background:#fafbfd;color:var(--mf1-text);display:flex;align-items:center;gap:9px;text-decoration:none;font-size:11px;font-weight:900}
+  .mf-stage1-more-grid a i{width:32px;height:32px;border-radius:10px;background:#eaf1ff;color:var(--mf1-blue);display:grid;place-items:center}
+}
+
+
+/* v2 — ordem final e correção da barra inferior */
+@media (max-width:768px){
+  body #agendaDia > .card-head{display:none!important}
+  body #agendaDia > .prof-tabs{display:flex!important;margin:0 0 10px!important}
+  body #agendaDia > .card-body,
+  body #agendaDia.collapsed > .card-body{display:block!important}
+
+  body nav.mf-stage1-bottom-nav{
+    display:grid!important;
+    grid-template-columns:repeat(5,minmax(0,1fr))!important;
+    grid-template-rows:1fr!important;
+    grid-auto-flow:column!important;
+    align-items:stretch!important;
+    width:100%!important;
+    max-width:none!important;
+    min-height:72px!important;
+    overflow:visible!important;
+  }
+  body nav.mf-stage1-bottom-nav > a,
+  body nav.mf-stage1-bottom-nav > button{
+    display:flex!important;
+    position:relative!important;
+    visibility:visible!important;
+    opacity:1!important;
+    width:auto!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:auto!important;
+    margin:0!important;
+    grid-row:1!important;
+  }
+  body nav.mf-stage1-bottom-nav > :nth-child(1){grid-column:1!important}
+  body nav.mf-stage1-bottom-nav > :nth-child(2){grid-column:2!important}
+  body nav.mf-stage1-bottom-nav > :nth-child(3){grid-column:3!important}
+  body nav.mf-stage1-bottom-nav > :nth-child(4){grid-column:4!important}
+  body nav.mf-stage1-bottom-nav > :nth-child(5){grid-column:5!important}
+
+  body #agendaDia .card-head + .prof-tabs{margin-top:0!important}
+  body #agendaDia .imprimir-dia-btn,
+  body #agendaDia #formDataAgenda,
+  body #agendaDia > .card-head .collapse-btn{display:none!important}
+
+  body .auto-update-indicator{bottom:calc(var(--mf1-nav) + 84px)!important}
+  body .mf-stage1-fab-wrap{bottom:calc(var(--mf1-nav) + 18px)!important}
+}
+
+
+/* v25 — rótulos curtos sem quebra e profissionais sempre visíveis */
+@media (max-width:768px){
+  body nav.mf-stage1-bottom-nav > a,
+  body nav.mf-stage1-bottom-nav > button{
+    font-size:8px!important;
+    letter-spacing:-.035em!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+  }
+  body nav.mf-stage1-bottom-nav span{
+    display:block!important;
+    width:100%!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:clip!important;
+    text-align:center!important;
+    line-height:1.05!important;
+  }
+  body #profTabsAgenda{
+    display:flex!important;
+    visibility:visible!important;
+    opacity:1!important;
+    min-height:40px!important;
+    overflow-x:auto!important;
+  }
+}
+
+
+/* v26 — barra inferior segura e profissionais fixos independentes da data */
+@media (max-width:768px){
+  :root{--mf1-nav:86px!important}
+  body{padding-bottom:calc(102px + env(safe-area-inset-bottom,0px))!important}
+
+  body #agendaDia>.card-head,
+  body #agendaDia>.prof-tabs{display:none!important}
+
+  body .mf-stage1-fixed-professionals{
+    display:flex!important;
+    visibility:visible!important;
+    opacity:1!important;
+    gap:7px!important;
+    min-height:42px!important;
+    margin:0 0 12px!important;
+    padding:0 0 5px!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    scrollbar-width:thin;
+  }
+  body .mf-stage1-fixed-prof{
+    flex:0 0 auto!important;
+    height:36px!important;
+    min-width:max-content!important;
+    padding:0 10px 0 12px!important;
+    border:1px solid var(--mf1-line)!important;
+    border-radius:999px!important;
+    background:#fff!important;
+    color:#66758c!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    gap:7px!important;
+    font:900 10px/1 inherit!important;
+    white-space:nowrap!important;
+  }
+  body .mf-stage1-fixed-prof b{
+    min-width:21px!important;
+    height:21px!important;
+    padding:0 5px!important;
+    border-radius:999px!important;
+    background:#eef3fb!important;
+    color:#1647d8!important;
+    display:grid!important;
+    place-items:center!important;
+    font-size:9px!important;
+  }
+  body .mf-stage1-fixed-prof.is-active{
+    background:var(--mf1-blue)!important;
+    border-color:var(--mf1-blue)!important;
+    color:#fff!important;
+  }
+  body .mf-stage1-fixed-prof.is-active b{background:#fff!important;color:var(--mf1-blue)!important}
+
+  body nav.mf-stage1-bottom-nav{
+    height:calc(86px + env(safe-area-inset-bottom,0px))!important;
+    min-height:calc(86px + env(safe-area-inset-bottom,0px))!important;
+    padding:8px 6px calc(10px + env(safe-area-inset-bottom,0px))!important;
+    box-sizing:border-box!important;
+    align-items:center!important;
+    overflow:visible!important;
+  }
+  body nav.mf-stage1-bottom-nav>a,
+  body nav.mf-stage1-bottom-nav>button{
+    min-height:58px!important;
+    height:58px!important;
+    padding:5px 1px!important;
+    gap:5px!important;
+    overflow:visible!important;
+    font-size:8px!important;
+    line-height:1!important;
+  }
+  body nav.mf-stage1-bottom-nav i{font-size:17px!important;line-height:1!important}
+  body nav.mf-stage1-bottom-nav span{
+    display:block!important;
+    width:100%!important;
+    max-width:64px!important;
+    white-space:nowrap!important;
+    overflow:visible!important;
+    text-align:center!important;
+    line-height:1!important;
+    font-size:8px!important;
+    letter-spacing:-.04em!important;
+  }
+  body .mf-stage1-fab-wrap{bottom:calc(100px + env(safe-area-inset-bottom,0px))!important}
+  body .auto-update-indicator{bottom:calc(164px + env(safe-area-inset-bottom,0px))!important}
+}
+
+/* v51 — calendário semanal arrastável e troca de dia sem recarregar a tela */
+@media (max-width:768px){
+  .mf-stage1-date-strip{
+    overflow:hidden!important;
+  }
+  .mf-stage1-date-days{
+    display:flex!important;
+    grid-template-columns:none!important;
+    gap:6px!important;
+    padding:7px 8px 9px!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    scroll-snap-type:x proximity!important;
+    scroll-behavior:smooth!important;
+    overscroll-behavior-x:contain!important;
+    touch-action:pan-x!important;
+    -webkit-overflow-scrolling:touch!important;
+    scrollbar-width:none!important;
+  }
+  .mf-stage1-date-days::-webkit-scrollbar{display:none!important}
+  .mf-stage1-date-day{
+    flex:0 0 58px!important;
+    width:58px!important;
+    min-width:58px!important;
+    min-height:54px!important;
+    scroll-snap-align:center!important;
+  }
+  .mf-stage1-date-day span{font-size:9px!important}
+  .mf-stage1-date-day strong{font-size:20px!important}
+  #agendaDia .card-body,
+  #agendaDia .agenda-grid{
+    transition:opacity .16s ease,transform .16s ease!important;
+  }
+  #agendaDia.mf-stage1-date-loading .card-body{
+    opacity:.42!important;
+    transform:translateY(2px)!important;
+    pointer-events:none!important;
+  }
+  .mf-stage1-date-strip.is-loading .mf-stage1-date-day.is-active{
+    animation:mfStage1Pulse 1s ease-in-out infinite!important;
+  }
+}
+@keyframes mfStage1Pulse{
+  0%,100%{filter:brightness(1)}
+  50%{filter:brightness(1.18)}
+}
+
+
+/* v57 — contador discreto por dia e ação de finalizar atendimento */
+@media (max-width:768px){
+  .mf-stage1-date-day{position:relative!important;overflow:visible!important}
+  .mf-stage1-day-count{
+    position:absolute!important;
+    top:4px!important;
+    right:5px!important;
+    min-width:18px!important;
+    height:18px!important;
+    padding:0 5px!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    border-radius:999px!important;
+    background:#e8efff!important;
+    color:#1748d8!important;
+    border:1px solid #cbd9ff!important;
+    font-size:10px!important;
+    line-height:1!important;
+    font-weight:1000!important;
+    box-shadow:0 2px 7px rgba(22,71,215,.12)!important;
+    pointer-events:none!important;
+  }
+  .mf-stage1-date-day.is-active .mf-stage1-day-count{
+    background:#fff!important;
+    color:#1748d8!important;
+    border-color:rgba(255,255,255,.8)!important;
+  }
+  #modalAgendaReserva .mf-finalizar-atendimento,
+  #reservasGrid .mf-finalizar-atendimento{
+    background:#1748d8!important;
+    color:#fff!important;
+    border-color:#1748d8!important;
+  }
+  #modalAgendaReserva .mf-finalizar-atendimento span,
+  #reservasGrid .mf-finalizar-atendimento span{white-space:normal!important}
+}
+
+
+/* v76 — título da data clicável e calendário mensal azul */
+@media (max-width:768px){
+  body .mf-stage1-date-title{
+    display:flex!important;
+    width:100%!important;
+    min-height:44px!important;
+    padding:4px 6px 4px 4px!important;
+    border-radius:13px!important;
+    cursor:pointer!important;
+    user-select:none!important;
+    -webkit-tap-highlight-color:transparent!important;
+    transition:background .16s ease,transform .16s ease!important;
+  }
+  body .mf-stage1-date-title:active{
+    background:#edf3ff!important;
+    transform:scale(.995)!important;
+  }
+  body .mf-stage1-date-title strong{
+    flex:1 1 auto!important;
+    min-width:0!important;
+    font-size:17px!important;
+    line-height:1.2!important;
+  }
+  body .mf-stage1-date-title>[data-mf-stage1-open-picker]{display:none!important}
+  .mf-stage1-calendar-trigger-icon{
+    flex:0 0 34px!important;
+    width:34px!important;
+    height:34px!important;
+    border-radius:11px!important;
+    background:#eaf1ff!important;
+    color:#1748d8!important;
+    display:grid!important;
+    place-items:center!important;
+    font-size:14px!important;
+  }
+  body.mf-stage1-calendar-open{overflow:hidden!important}
+  .mf-stage1-calendar-modal{
+    position:fixed!important;
+    inset:0!important;
+    z-index:160000!important;
+    display:none!important;
+    align-items:center!important;
+    justify-content:center!important;
+    padding:18px!important;
+    background:rgba(8,20,45,.56)!important;
+    backdrop-filter:blur(4px)!important;
+  }
+  .mf-stage1-calendar-modal.is-open{display:flex!important}
+  .mf-stage1-calendar-card{
+    width:min(360px,100%)!important;
+    max-height:calc(100vh - 36px)!important;
+    overflow:auto!important;
+    border-radius:22px!important;
+    background:#fff!important;
+    box-shadow:0 26px 70px rgba(10,25,60,.32)!important;
+  }
+  .mf-stage1-calendar-head{
+    min-height:78px!important;
+    padding:15px 16px!important;
+    background:linear-gradient(135deg,#1748d8,#0d36b7)!important;
+    color:#fff!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:12px!important;
+  }
+  .mf-stage1-calendar-head div{display:grid!important;gap:3px!important}
+  .mf-stage1-calendar-head small{
+    font-size:10px!important;
+    line-height:1!important;
+    font-weight:850!important;
+    opacity:.82!important;
+    text-transform:uppercase!important;
+    letter-spacing:.05em!important;
+  }
+  .mf-stage1-calendar-head strong{
+    font-size:18px!important;
+    line-height:1.15!important;
+    font-weight:950!important;
+  }
+  .mf-stage1-calendar-head button{
+    flex:0 0 36px!important;
+    width:36px!important;
+    height:36px!important;
+    border:1px solid rgba(255,255,255,.24)!important;
+    border-radius:12px!important;
+    background:rgba(255,255,255,.12)!important;
+    color:#fff!important;
+    display:grid!important;
+    place-items:center!important;
+  }
+  .mf-stage1-calendar-nav{
+    display:grid!important;
+    grid-template-columns:38px minmax(0,1fr) 38px!important;
+    align-items:center!important;
+    gap:8px!important;
+    padding:14px 14px 9px!important;
+  }
+  .mf-stage1-calendar-nav strong{
+    text-align:center!important;
+    color:#10234b!important;
+    font-size:14px!important;
+    font-weight:950!important;
+  }
+  .mf-stage1-calendar-nav button{
+    width:38px!important;
+    height:38px!important;
+    border:1px solid #dce5f5!important;
+    border-radius:12px!important;
+    background:#f3f7ff!important;
+    color:#1748d8!important;
+    display:grid!important;
+    place-items:center!important;
+  }
+  .mf-stage1-calendar-weekdays,
+  .mf-stage1-calendar-days{
+    display:grid!important;
+    grid-template-columns:repeat(7,minmax(0,1fr))!important;
+  }
+  .mf-stage1-calendar-weekdays{
+    padding:0 14px 5px!important;
+  }
+  .mf-stage1-calendar-weekdays span{
+    text-align:center!important;
+    color:#7f8ba0!important;
+    font-size:9px!important;
+    font-weight:900!important;
+    text-transform:uppercase!important;
+  }
+  .mf-stage1-calendar-days{
+    gap:4px!important;
+    padding:4px 14px 14px!important;
+  }
+  .mf-stage1-calendar-day{
+    aspect-ratio:1!important;
+    min-width:0!important;
+    border:0!important;
+    border-radius:12px!important;
+    background:transparent!important;
+    color:#17233b!important;
+    font-size:13px!important;
+    font-weight:900!important;
+    display:grid!important;
+    place-items:center!important;
+  }
+  .mf-stage1-calendar-day.is-other-month{color:#b6bfcc!important}
+  .mf-stage1-calendar-day.is-today{
+    box-shadow:inset 0 0 0 2px #b9caff!important;
+    color:#1748d8!important;
+  }
+  .mf-stage1-calendar-day.is-selected{
+    background:#1748d8!important;
+    color:#fff!important;
+    box-shadow:0 7px 16px rgba(23,72,216,.28)!important;
+  }
+  .mf-stage1-calendar-day:active{background:#eaf1ff!important;color:#1748d8!important}
+  .mf-stage1-calendar-day.is-selected:active{background:#123dc0!important;color:#fff!important}
+  .mf-stage1-calendar-foot{
+    display:flex!important;
+    justify-content:flex-end!important;
+    gap:8px!important;
+    padding:12px 14px 15px!important;
+    border-top:1px solid #e6edf7!important;
+  }
+  .mf-stage1-calendar-foot button{
+    min-height:38px!important;
+    padding:0 14px!important;
+    border:1px solid #dce5f5!important;
+    border-radius:12px!important;
+    background:#fff!important;
+    color:#526078!important;
+    font-size:11px!important;
+    font-weight:950!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:6px!important;
+  }
+  .mf-stage1-calendar-foot [data-mf-calendar-today]{
+    background:#1748d8!important;
+    border-color:#1748d8!important;
+    color:#fff!important;
+  }
+}
+
+/* v81 — cor do horário, borda e status acompanhando o estado real do agendamento */
+#agendaGrid .slot.busy[data-slot-status="pendente"]{
+  background:#fff8ed!important;
+  border-color:#f59e0b!important;
+  box-shadow:inset 3px 0 0 #f59e0b;
+}
+#agendaGrid .slot.busy[data-slot-status="pendente"] .time{color:#a65600!important}
+#agendaGrid .slot.busy[data-slot-status="pendente"] .chip{background:#ffedc7!important;color:#9a4d00!important}
+
+#agendaGrid .slot.busy[data-slot-status="cancelada"]{
+  background:#f7f9fc!important;
+  border-color:#98a2b3!important;
+  box-shadow:inset 3px 0 0 #98a2b3;
+}
+#agendaGrid .slot.busy[data-slot-status="cancelada"] .time{color:#667085!important}
+#agendaGrid .slot.busy[data-slot-status="cancelada"] .chip{background:#e9edf3!important;color:#596579!important}
+
+#agendaGrid .slot.busy[data-slot-status="recusada"]{
+  background:#fff5f5!important;
+  border-color:#ef4444!important;
+  box-shadow:inset 3px 0 0 #ef4444;
+}
+#agendaGrid .slot.busy[data-slot-status="recusada"] .time{color:#d92d20!important}
+#agendaGrid .slot.busy[data-slot-status="recusada"] .chip{background:#fee4e2!important;color:#b42318!important}
+
+#agendaGrid .slot.busy[data-slot-status="confirmada"]{
+  background:#f3f7ff!important;
+  border-color:#2f66f3!important;
+  box-shadow:inset 3px 0 0 #2f66f3;
+}
+#agendaGrid .slot.busy[data-slot-status="confirmada"] .time{color:#1647d8!important}
+#agendaGrid .slot.busy[data-slot-status="confirmada"] .chip{background:#dce8ff!important;color:#1647d8!important}
+
+#agendaGrid .slot.busy[data-slot-status="concluida"],
+#agendaGrid .slot.busy[data-slot-status="paga"]{
+  background:#f2fcf6!important;
+  border-color:#16a34a!important;
+  box-shadow:inset 3px 0 0 #16a34a;
+}
+#agendaGrid .slot.busy[data-slot-status="concluida"] .time,
+#agendaGrid .slot.busy[data-slot-status="paga"] .time{color:#087443!important}
+#agendaGrid .slot.busy[data-slot-status="concluida"] .chip,
+#agendaGrid .slot.busy[data-slot-status="paga"] .chip{background:#d9fae8!important;color:#087443!important}
+
+
+/* v738 — o calendário customizado pertence somente ao mobile.
+   Evita que sua estrutura sem estilos apareça solta no desktop. */
+@media (min-width:769px){
+  .mf-stage1-calendar-modal{display:none!important}
+  body.mf-stage1-calendar-open{overflow:auto!important}
+}

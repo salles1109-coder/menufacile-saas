@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0f9f55">
+  <title>Sem conexão | MenuFacile Gestor</title>
+  <style>
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f3fbf6;color:#102033}
+    body{min-height:100dvh;display:grid;place-items:center;padding:24px}
+    main{width:min(100%,440px);background:#fff;border:1px solid #d6eadc;border-radius:28px;padding:30px;text-align:center;box-shadow:0 24px 70px rgba(16,32,51,.12)}
+    img{width:92px;height:92px;border-radius:24px;box-shadow:0 14px 34px rgba(6,78,59,.18)}
+    h1{margin:20px 0 8px;font-size:28px;line-height:1.08;letter-spacing:-.7px}p{margin:0;color:#667085;font-weight:650;line-height:1.55}
+    button{width:100%;margin-top:24px;border:0;border-radius:15px;padding:15px;background:linear-gradient(135deg,#0f9f55,#22c55e);color:#fff;font-size:16px;font-weight:900;cursor:pointer}
+    small{display:block;margin-top:15px;color:#7b8799;font-weight:700;line-height:1.4}
+  </style>
+</head>
+<body>
+  <main>
+    <img src="/static/pwa/icons/icon-192.png?v=717" alt="MenuFacile Gestor">
+    <h1>Você está sem conexão</h1>
+    <p>O painel administrativo precisa de internet para proteger e atualizar os dados da empresa.</p>
+    <button type="button" onclick="location.reload()">Tentar novamente</button>
+    <small>Nenhum pedido, cadastro ou dado administrativo foi armazenado nesta tela.</small>
+  </main>
+</body>
+</html>

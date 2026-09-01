@@ -1,0 +1,230 @@
+<link rel="stylesheet" href="/static/css/meus-pedidos.css?v=1">
+
+<style id="mf-orders-layout-component">
+.mf-orders-overlay[hidden]{
+  display:none !important;
+}
+
+.mf-orders-overlay:not([hidden]){
+  position:fixed !important;
+  inset:0 !important;
+  z-index:1000000 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:18px !important;
+  background:rgba(15,23,42,.58) !important;
+  backdrop-filter:blur(5px) !important;
+}
+
+.mf-orders-overlay .mf-orders-modal{
+  position:relative !important;
+  inset:auto !important;
+  top:auto !important;
+  right:auto !important;
+  bottom:auto !important;
+  left:auto !important;
+  transform:none !important;
+  width:min(460px,calc(100vw - 36px)) !important;
+  max-width:460px !important;
+  min-width:0 !important;
+  height:auto !important;
+  min-height:0 !important;
+  max-height:calc(100dvh - 36px) !important;
+  margin:auto !important;
+  display:flex !important;
+  flex-direction:column !important;
+  overflow:hidden !important;
+  border:0 !important;
+  border-radius:22px !important;
+  background:#fff !important;
+  box-shadow:0 25px 70px rgba(0,0,0,.28) !important;
+}
+
+.mf-orders-overlay .mf-orders-header{
+  flex:0 0 auto !important;
+  display:flex !important;
+  align-items:flex-start !important;
+  justify-content:space-between !important;
+  gap:16px !important;
+  padding:22px 24px 16px !important;
+  border-bottom:1px solid #eef2f7 !important;
+}
+
+.mf-orders-overlay .mf-orders-kicker{
+  margin:0 0 3px !important;
+  color:#64748b !important;
+  font-size:11px !important;
+  line-height:1.2 !important;
+  font-weight:800 !important;
+  letter-spacing:.07em !important;
+  text-transform:uppercase !important;
+}
+
+.mf-orders-overlay .mf-orders-header h2{
+  margin:0 !important;
+  color:#111827 !important;
+  font-size:24px !important;
+  line-height:1.1 !important;
+  font-weight:900 !important;
+}
+
+.mf-orders-overlay .mf-orders-close{
+  position:static !important;
+  flex:0 0 38px !important;
+  width:38px !important;
+  height:38px !important;
+  margin:0 !important;
+  padding:0 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  border:0 !important;
+  border-radius:50% !important;
+  background:#f3f4f6 !important;
+  color:#64748b !important;
+  font-size:20px !important;
+  line-height:1 !important;
+}
+
+.mf-orders-overlay .mf-orders-search,
+.mf-orders-overlay .mf-orders-results{
+  position:static !important;
+  flex:0 1 auto !important;
+  width:auto !important;
+  height:auto !important;
+  min-height:0 !important;
+  max-height:calc(100dvh - 150px) !important;
+  overflow-y:auto !important;
+  padding:22px 24px 24px !important;
+}
+
+.mf-orders-overlay .mf-orders-search > p{
+  margin:0 0 20px !important;
+}
+
+@media(max-width:720px){
+  .mf-orders-overlay:not([hidden]){
+    align-items:center !important;
+    justify-content:center !important;
+    padding:16px !important;
+  }
+
+  .mf-orders-overlay .mf-orders-modal{
+    position:relative !important;
+    inset:auto !important;
+    transform:none !important;
+    width:min(430px,calc(100vw - 32px)) !important;
+    height:auto !important;
+    min-height:0 !important;
+    max-height:calc(100dvh - 32px) !important;
+    margin:auto !important;
+    border-radius:22px !important;
+  }
+
+  .mf-orders-overlay .mf-orders-header{
+    padding:20px 20px 15px !important;
+  }
+
+  .mf-orders-overlay .mf-orders-header h2{
+    font-size:23px !important;
+  }
+
+  .mf-orders-overlay .mf-orders-search,
+  .mf-orders-overlay .mf-orders-results{
+    height:auto !important;
+    min-height:0 !important;
+    max-height:calc(100dvh - 130px) !important;
+    padding:20px !important;
+  }
+}
+</style>
+
+<style id="mf-orders-produtos-actions-v916">
+.mf-order-actions-v916{display:grid;gap:7px;margin-top:12px}
+.mf-order-action-v916{width:100%;min-height:38px;border-radius:11px;font-size:12px;font-weight:900;cursor:pointer;transition:.15s ease}
+.mf-order-action-v916.is-cancel{border:1px solid #fecaca;background:#fff;color:#b42318}
+.mf-order-action-v916.is-cancel:hover{background:#fff7f7}
+.mf-order-action-v916.is-whatsapp{border:1px solid #bbf7d0;background:#f0fdf4;color:#087443}
+.mf-order-action-v916.is-whatsapp:hover{background:#e8faef}
+.mf-orders-result-message-v916{display:none;margin:0 0 10px;padding:9px 11px;border:1px solid #bbf7d0;border-radius:10px;background:#f0fdf4;color:#166534;font-size:11px;font-weight:800;line-height:1.35}
+.mf-orders-result-message-v916.is-visible{display:block}
+.mf-product-cancel-overlay-v916[hidden]{display:none!important}
+.mf-product-cancel-overlay-v916:not([hidden]){position:fixed;inset:0;z-index:1000010;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(15,23,42,.64);backdrop-filter:blur(5px)}
+.mf-product-cancel-card-v916{width:min(390px,calc(100vw - 36px));padding:18px;border-radius:20px;background:#fff;box-shadow:0 24px 70px rgba(15,23,42,.28)}
+.mf-product-cancel-icon-v916{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;background:#fff1f2;color:#b42318;font-size:18px;font-weight:900}
+.mf-product-cancel-card-v916 h3{margin:0 0 7px;color:#17233b;font-size:18px;line-height:1.15;font-weight:900}
+.mf-product-cancel-card-v916 p{margin:0;color:#667085;font-size:12px;line-height:1.45;font-weight:700}
+.mf-product-cancel-info-v916{margin-top:12px;padding:10px 11px;border:1px solid #e5e7eb;border-radius:11px;background:#f8fafc;color:#475467;font-size:11px;font-weight:800;line-height:1.4}
+.mf-product-cancel-buttons-v916{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:15px}
+.mf-product-cancel-buttons-v916 button{min-height:39px;border-radius:11px;font-size:12px;font-weight:900;cursor:pointer}
+#mfProductCancelBack{border:1px solid #d0d5dd;background:#fff;color:#344054}
+#mfProductCancelConfirm{border:1px solid #b42318;background:#b42318;color:#fff}
+#mfProductCancelConfirm:disabled{opacity:.55;cursor:wait}
+@media(max-width:520px){.mf-product-cancel-card-v916{padding:16px;border-radius:18px}.mf-product-cancel-buttons-v916{grid-template-columns:1fr}.mf-order-action-v916{min-height:36px}}
+</style>
+
+<button type="button" class="mf-orders-trigger" id="mfOrdersTrigger" style="display:none !important;" hidden aria-hidden="true" tabindex="-1"></button>
+
+<div class="mf-orders-overlay" id="mfOrdersOverlay" hidden>
+  <section class="mf-orders-modal" role="dialog" aria-modal="true" aria-labelledby="mfOrdersTitle">
+    <header class="mf-orders-header">
+      <div>
+        <p class="mf-orders-kicker">Acompanhe sem criar conta</p>
+        <h2 id="mfOrdersTitle">Meus pedidos</h2>
+      </div>
+      <button type="button" class="mf-orders-close" id="mfOrdersClose" aria-label="Fechar">×</button>
+    </header>
+
+    <div class="mf-orders-search" id="mfOrdersSearch">
+      {% if meus_pedidos_so_cpf|default(false) %}
+      <p>Digite o CPF usado no pedido.</p>
+      <label>CPF
+        <input id="mfOrdersCpf" type="text" inputmode="numeric" autocomplete="off" maxlength="14" placeholder="000.000.000-00">
+      </label>
+      {% else %}
+      <p>Use os mesmos dados informados no pedido.</p>
+      <label>Primeiro nome
+        <input id="mfOrdersName" type="text" autocomplete="given-name" maxlength="60" placeholder="Ex.: Maria">
+      </label>
+      <label>Telefone
+        <input id="mfOrdersPhone" type="tel" autocomplete="tel" maxlength="24" placeholder="(11) 99999-9999">
+      </label>
+      {% endif %}
+      <button type="button" class="mf-orders-primary" id="mfOrdersSearchBtn">Buscar pedidos</button>
+      <div class="mf-orders-message" id="mfOrdersMessage" aria-live="polite"></div>
+    </div>
+
+    <div class="mf-orders-results" id="mfOrdersResults" hidden>
+      <div class="mf-orders-results-top">
+        <button type="button" class="mf-orders-back" id="mfOrdersBack">← Nova busca</button>
+        <span id="mfOrdersCount"></span>
+      </div>
+      <div class="mf-orders-result-message-v916" id="mfOrdersResultMessage" aria-live="polite"></div>
+      <div id="mfOrdersList"></div>
+    </div>
+  </section>
+</div>
+
+<div class="mf-product-cancel-overlay-v916" id="mfProductCancelOverlay" hidden>
+  <section class="mf-product-cancel-card-v916" role="dialog" aria-modal="true" aria-labelledby="mfProductCancelTitle">
+    <div class="mf-product-cancel-icon-v916">×</div>
+    <h3 id="mfProductCancelTitle">Cancelar pedido?</h3>
+    <p id="mfProductCancelText">Este pedido ainda está aguardando pagamento.</p>
+    <div class="mf-product-cancel-info-v916" id="mfProductCancelInfo">Ao confirmar, o pedido será encerrado e o estabelecimento será avisado.</div>
+    <div class="mf-product-cancel-buttons-v916">
+      <button type="button" id="mfProductCancelBack">Voltar</button>
+      <button type="button" id="mfProductCancelConfirm">Cancelar pedido</button>
+    </div>
+  </section>
+</div>
+
+<script>
+window.MF_ORDERS_CONFIG = {
+  slug: {{ empresa.slug|tojson }},
+  empresaId: {{ empresa.id|tojson }},
+  cpfOnly: {{ 'true' if meus_pedidos_so_cpf|default(false) else 'false' }},
+  whatsapp: {{ (empresa.telefone_whatsapp or '')|tojson }}
+};
+</script>
+<script src="/static/js/meus-pedidos.js?v=917" defer></script>

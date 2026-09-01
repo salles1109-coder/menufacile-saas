@@ -1,0 +1,682 @@
+/* MenuFacile — acabamento mobile das áreas restantes v58 */
+@media (max-width:768px){
+  body:is(.mf-ds-fiscal,.mf-ds-pagamentos-online,.mf-ds-configuracoes,.mf-ds-funcionarios,.mf-ds-integracoes){
+    --v58-bg:#f4f7fb;
+    --v58-card:#fff;
+    --v58-text:#17233b;
+    --v58-muted:#69758a;
+    --v58-line:#dde6f1;
+    --v58-primary:#1747d1;
+    --v58-primary-soft:#edf3ff;
+    --v58-radius:18px;
+    background:var(--v58-bg)!important;
+    overflow-x:hidden!important;
+  }
+
+  body:is(.mf-ds-fiscal,.mf-ds-pagamentos-online,.mf-ds-configuracoes,.mf-ds-funcionarios,.mf-ds-integracoes) :is(.premium-content,.content,.mf-admin-standard-content,.mf-funcionarios-content){
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+    padding:14px 12px 110px!important;
+    overflow:visible!important;
+  }
+
+  body:is(.mf-ds-fiscal,.mf-ds-pagamentos-online,.mf-ds-configuracoes,.mf-ds-funcionarios,.mf-ds-integracoes) :is(.premium-topbar,.topbar){
+    position:sticky!important;
+    top:0!important;
+    z-index:80!important;
+    min-height:60px!important;
+    padding:10px 14px!important;
+    display:flex!important;
+    align-items:center!important;
+    gap:9px!important;
+    background:rgba(255,255,255,.97)!important;
+    border-bottom:1px solid var(--v58-line)!important;
+    box-shadow:none!important;
+    backdrop-filter:blur(14px)!important;
+  }
+  body:is(.mf-ds-fiscal,.mf-ds-pagamentos-online,.mf-ds-configuracoes,.mf-ds-funcionarios,.mf-ds-integracoes) :is(.premium-menu-btn,.mobile-nav-toggle,.mf-sidebar-toggle){display:none!important}
+  body:is(.mf-ds-fiscal,.mf-ds-pagamentos-online,.mf-ds-configuracoes,.mf-ds-funcionarios,.mf-ds-integracoes) :is(.premium-page-title,.top-title){
+    min-width:0!important;
+    flex:1!important;
+    display:block!important;
+  }
+  body:is(.mf-ds-fiscal,.mf-ds-pagamentos-online,.mf-ds-configuracoes,.mf-ds-funcionarios,.mf-ds-integracoes) :is(.premium-page-title,.top-title) strong{
+    display:block!important;
+    color:var(--v58-text)!important;
+    font-size:20px!important;
+    line-height:1.15!important;
+    font-weight:950!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+  body:is(.mf-ds-fiscal,.mf-ds-pagamentos-online,.mf-ds-configuracoes,.mf-ds-funcionarios,.mf-ds-integracoes) :is(.premium-page-title,.top-title) span{display:none!important}
+  body:is(.mf-ds-fiscal,.mf-ds-pagamentos-online,.mf-ds-configuracoes,.mf-ds-funcionarios,.mf-ds-integracoes) .admin-page-header{display:none!important}
+
+  body:is(.mf-ds-fiscal,.mf-ds-pagamentos-online,.mf-ds-configuracoes,.mf-ds-funcionarios,.mf-ds-integracoes) :is(.card,.panel,.mp-guide,.v153-fiscal-note,.v156-iva-note,.login-note,.employee-card,.v160-int-card,.v160-webhook-card,.v161-delivery-card,.v163-manual-quick,.v164-tech-card,.v162-collapsible){
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    margin-left:0!important;
+    margin-right:0!important;
+    border:1px solid var(--v58-line)!important;
+    border-radius:var(--v58-radius)!important;
+    background:var(--v58-card)!important;
+    box-shadow:0 8px 24px rgba(23,35,59,.055)!important;
+    box-sizing:border-box!important;
+  }
+  body:is(.mf-ds-fiscal,.mf-ds-pagamentos-online,.mf-ds-configuracoes,.mf-ds-funcionarios,.mf-ds-integracoes) :is(.card,.panel){padding:15px!important;margin-bottom:12px!important}
+  body:is(.mf-ds-fiscal,.mf-ds-pagamentos-online,.mf-ds-configuracoes,.mf-ds-funcionarios,.mf-ds-integracoes) :is(.card-h,.card-head,.card-title,.v160-card-title,.v161-delivery-head,.v163-manual-quick-head,.v164-partner-head){
+    display:flex!important;
+    align-items:flex-start!important;
+    justify-content:space-between!important;
+    gap:10px!important;
+    width:100%!important;
+    min-width:0!important;
+    margin:0 0 12px!important;
+  }
+  body:is(.mf-ds-fiscal,.mf-ds-pagamentos-online,.mf-ds-configuracoes,.mf-ds-funcionarios,.mf-ds-integracoes) :is(h1,h2,h3,strong,p,span,small,label){overflow-wrap:anywhere}
+  body:is(.mf-ds-fiscal,.mf-ds-pagamentos-online,.mf-ds-configuracoes,.mf-ds-funcionarios,.mf-ds-integracoes) h1{font-size:22px!important;line-height:1.2!important}
+  body:is(.mf-ds-fiscal,.mf-ds-pagamentos-online,.mf-ds-configuracoes,.mf-ds-funcionarios,.mf-ds-integracoes) h2{font-size:18px!important;line-height:1.25!important}
+  body:is(.mf-ds-fiscal,.mf-ds-pagamentos-online,.mf-ds-configuracoes,.mf-ds-funcionarios,.mf-ds-integracoes) h3{font-size:16px!important;line-height:1.28!important}
+
+  body:is(.mf-ds-fiscal,.mf-ds-pagamentos-online,.mf-ds-configuracoes,.mf-ds-funcionarios,.mf-ds-integracoes) :is(.grid,.grid-2,.grid-3,.form-grid,.mf-form-grid,.payments-grid,.v160-integration-grid,.v160-webhook-grid,.v161-clean-grid,.v161-delivery-grid,.v161-provider-grid,.print-grid-2,.print-universal-grid,.wa-simple-grid,.wa-choice-grid,.wa-package-grid,.v110-cardapio-grid,.v110-fields){
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:12px!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+  }
+  body:is(.mf-ds-fiscal,.mf-ds-pagamentos-online,.mf-ds-configuracoes,.mf-ds-funcionarios,.mf-ds-integracoes) :is(.field,.full,.stack,.card-b,.card-body){
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    box-sizing:border-box!important;
+  }
+  body:is(.mf-ds-fiscal,.mf-ds-pagamentos-online,.mf-ds-configuracoes,.mf-ds-funcionarios,.mf-ds-integracoes) label{
+    display:block!important;
+    margin-bottom:6px!important;
+    color:#344054!important;
+    font-size:13px!important;
+    line-height:1.25!important;
+    font-weight:850!important;
+  }
+  body:is(.mf-ds-fiscal,.mf-ds-pagamentos-online,.mf-ds-configuracoes,.mf-ds-funcionarios,.mf-ds-integracoes) :is(input:not([type=checkbox]):not([type=radio]),select,textarea){
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    min-height:46px!important;
+    padding:11px 12px!important;
+    border:1px solid #d7e1ed!important;
+    border-radius:13px!important;
+    background:#fff!important;
+    color:var(--v58-text)!important;
+    font-size:16px!important;
+    box-shadow:none!important;
+    box-sizing:border-box!important;
+  }
+  body:is(.mf-ds-fiscal,.mf-ds-pagamentos-online,.mf-ds-configuracoes,.mf-ds-funcionarios,.mf-ds-integracoes) textarea{min-height:108px!important;resize:vertical!important}
+  body:is(.mf-ds-fiscal,.mf-ds-pagamentos-online,.mf-ds-configuracoes,.mf-ds-funcionarios,.mf-ds-integracoes) :is(input,select,textarea):focus{
+    border-color:var(--v58-primary)!important;
+    outline:3px solid rgba(23,71,209,.12)!important;
+  }
+
+  body:is(.mf-ds-fiscal,.mf-ds-pagamentos-online,.mf-ds-configuracoes,.mf-ds-funcionarios,.mf-ds-integracoes) :is(button,.btn,a.btn,.premium-btn,.mp-help-btn,.v153-fiscal-link,.v160-actions a,.v161-actions a){
+    min-height:42px!important;
+    max-width:100%!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:7px!important;
+    padding:9px 12px!important;
+    border-radius:12px!important;
+    box-sizing:border-box!important;
+    font-size:13px!important;
+    line-height:1.15!important;
+    font-weight:900!important;
+    text-align:center!important;
+    white-space:normal!important;
+  }
+  body:is(.mf-ds-fiscal,.mf-ds-pagamentos-online,.mf-ds-configuracoes,.mf-ds-funcionarios,.mf-ds-integracoes) :is(.actions,.mp-guide-actions,.mp-help-footer,.employee-actions,.mf-modal-actions,.logo-actions,.wa-actions,.print-actions-row,.v160-actions,.v161-actions,.v110-btns,.v180-terminal-links){
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:8px!important;
+    width:100%!important;
+    min-width:0!important;
+  }
+  body:is(.mf-ds-fiscal,.mf-ds-pagamentos-online,.mf-ds-configuracoes,.mf-ds-funcionarios,.mf-ds-integracoes) :is(.actions,.mp-guide-actions,.mp-help-footer,.employee-actions,.mf-modal-actions,.logo-actions,.wa-actions,.print-actions-row,.v160-actions,.v161-actions,.v110-btns,.v180-terminal-links)>*{
+    width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+  }
+
+  /* Fiscal */
+  body.mf-ds-fiscal .v153-fiscal-note,
+  body.mf-ds-fiscal .v156-iva-note{
+    display:grid!important;
+    grid-template-columns:42px minmax(0,1fr)!important;
+    gap:11px!important;
+    padding:14px!important;
+    margin-bottom:12px!important;
+  }
+  body.mf-ds-fiscal :is(.v153-fiscal-note-icon,.v156-iva-note>i){
+    width:42px!important;
+    height:42px!important;
+    display:grid!important;
+    place-items:center!important;
+    border-radius:13px!important;
+    background:var(--v58-primary-soft)!important;
+    color:var(--v58-primary)!important;
+    margin:0!important;
+  }
+  body.mf-ds-fiscal .v154-piva-row{display:grid!important;grid-template-columns:1fr!important;gap:8px!important}
+  body.mf-ds-fiscal .v154-piva-row button{width:100%!important}
+  body.mf-ds-fiscal .grid-3>.card{margin-bottom:0!important}
+  body.mf-ds-fiscal .v153-fiscal-card{grid-column:auto!important}
+  body.mf-ds-fiscal .v153-fiscal-link{width:100%!important;margin-top:10px!important}
+
+  /* Pagamentos online */
+  body.mf-ds-pagamentos-online .payments-grid{display:block!important}
+  body.mf-ds-pagamentos-online .gateway{
+    display:grid!important;
+    grid-template-columns:48px minmax(0,1fr)!important;
+    gap:11px!important;
+    align-items:center!important;
+  }
+  body.mf-ds-pagamentos-online .gateway-logo{width:48px!important;height:48px!important;grid-row:1/3!important}
+  body.mf-ds-pagamentos-online .gateway .soon{grid-column:2!important;justify-self:start!important;margin:0!important}
+  body.mf-ds-pagamentos-online .mp-guide{padding:14px!important;margin-top:12px!important}
+  body.mf-ds-pagamentos-online .mp-guide-top{display:grid!important;grid-template-columns:1fr!important;gap:10px!important}
+  body.mf-ds-pagamentos-online .mp-connection-status{justify-self:start!important}
+  body.mf-ds-pagamentos-online .mp-guide-actions{grid-template-columns:1fr!important}
+  body.mf-ds-pagamentos-online .mp-guide-security{display:grid!important;grid-template-columns:36px minmax(0,1fr)!important;gap:9px!important}
+  body.mf-ds-pagamentos-online .switch-row{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    align-items:center!important;
+    gap:12px!important;
+    padding:13px 0!important;
+    border-bottom:1px solid #edf1f6!important;
+  }
+  body.mf-ds-pagamentos-online .switch-row:last-child{border-bottom:0!important}
+  body.mf-ds-pagamentos-online .switch{justify-self:end!important}
+  body.mf-ds-pagamentos-online form>.actions{grid-template-columns:1fr!important;position:sticky!important;bottom:82px!important;z-index:55!important;padding:8px!important;border:1px solid var(--v58-line)!important;border-radius:15px!important;background:rgba(255,255,255,.96)!important;box-shadow:0 8px 24px rgba(23,35,59,.09)!important}
+  body.mf-ds-pagamentos-online .mp-help-modal{padding:10px!important;align-items:flex-end!important}
+  body.mf-ds-pagamentos-online .mp-help-card{width:100%!important;max-width:100%!important;max-height:88vh!important;border-radius:22px 22px 16px 16px!important;overflow:hidden!important}
+  body.mf-ds-pagamentos-online .mp-help-head{position:sticky!important;top:0!important;z-index:5!important;background:#fff!important;padding:14px!important;border-bottom:1px solid var(--v58-line)!important}
+  body.mf-ds-pagamentos-online .mp-help-body{padding:14px!important;overflow:auto!important}
+  body.mf-ds-pagamentos-online .mp-webhook-copy{display:grid!important;grid-template-columns:1fr!important;gap:8px!important}
+  body.mf-ds-pagamentos-online .mp-help-footer{grid-template-columns:1fr!important;padding:12px!important}
+
+
+  /* Configurações — padrão mobile uniforme v60 */
+  body.mf-ds-configuracoes{
+    --mf-cfg-bg:#f3f6fb;
+    --mf-cfg-card:#ffffff;
+    --mf-cfg-text:#17213a;
+    --mf-cfg-muted:#647087;
+    --mf-cfg-border:#dce5f0;
+    --mf-cfg-accent:#3b0066;
+    --mf-cfg-accent-soft:#f5effa;
+    --mf-cfg-radius:17px;
+    --mf-cfg-inner-radius:13px;
+    background:var(--mf-cfg-bg)!important;
+  }
+
+  body.mf-ds-configuracoes .premium-content{
+    padding:14px 12px calc(148px + env(safe-area-inset-bottom))!important;
+    background:var(--mf-cfg-bg)!important;
+  }
+
+  body.mf-ds-configuracoes main.container{
+    box-sizing:border-box!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+    padding:0!important;
+    overflow:visible!important;
+  }
+
+  body.mf-ds-configuracoes main.container>form{
+    box-sizing:border-box!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+    padding:0 0 34px!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:12px!important;
+  }
+
+  body.mf-ds-configuracoes section.card{
+    box-sizing:border-box!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+    padding:0!important;
+    border:1px solid var(--mf-cfg-border)!important;
+    border-radius:var(--mf-cfg-radius)!important;
+    background:var(--mf-cfg-card)!important;
+    box-shadow:0 8px 22px rgba(23,33,58,.055)!important;
+    overflow:hidden!important;
+    scroll-margin-top:74px!important;
+    scroll-margin-bottom:112px!important;
+  }
+
+  body.mf-ds-configuracoes section.card>.card-title{
+    box-sizing:border-box!important;
+    position:relative!important;
+    width:100%!important;
+    min-width:0!important;
+    min-height:58px!important;
+    margin:0!important;
+    padding:13px 54px 13px 15px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    gap:8px!important;
+    border-bottom:1px solid transparent!important;
+    background:#fff!important;
+    cursor:pointer!important;
+  }
+
+  body.mf-ds-configuracoes section.card.v137-open{
+    padding-bottom:14px!important;
+  }
+
+  body.mf-ds-configuracoes section.card.v137-open>.card-title{
+    border-bottom-color:var(--mf-cfg-border)!important;
+  }
+
+  body.mf-ds-configuracoes section.card>.card-title>div{
+    box-sizing:border-box!important;
+    width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+  }
+
+  body.mf-ds-configuracoes section.card>.card-title h2{
+    margin:0!important;
+    color:var(--mf-cfg-accent)!important;
+    font-size:16px!important;
+    line-height:1.25!important;
+    font-weight:900!important;
+    letter-spacing:-.015em!important;
+  }
+
+  body.mf-ds-configuracoes section.card>.card-title p{
+    display:none!important;
+  }
+
+  body.mf-ds-configuracoes .mf-v58-collapse-btn{
+    display:none!important;
+  }
+
+  body.mf-ds-configuracoes section.card.v137-collapsible>.card-title>.v137-collapse-icon{
+    box-sizing:border-box!important;
+    position:absolute!important;
+    right:13px!important;
+    top:50%!important;
+    width:32px!important;
+    min-width:32px!important;
+    max-width:32px!important;
+    height:32px!important;
+    min-height:32px!important;
+    max-height:32px!important;
+    margin:0!important;
+    padding:0!important;
+    display:grid!important;
+    place-items:center!important;
+    border:0!important;
+    border-radius:10px!important;
+    background:var(--mf-cfg-accent-soft)!important;
+    color:var(--mf-cfg-accent)!important;
+    box-shadow:none!important;
+    transform:translateY(-50%)!important;
+    font-size:11px!important;
+    line-height:1!important;
+  }
+
+  body.mf-ds-configuracoes section.card.v137-collapsible.v137-open>.card-title>.v137-collapse-icon{
+    background:var(--mf-cfg-accent)!important;
+    color:#fff!important;
+    transform:translateY(-50%) rotate(180deg)!important;
+  }
+
+  body.mf-ds-configuracoes .card-title>.v137-collapse-icon:not(:last-of-type){
+    display:none!important;
+  }
+
+  body.mf-ds-configuracoes :is(
+    #v99-cardapio-digital,
+    #v98-notificacoes,
+    #v98-impressao
+  )>.card-title::after{
+    content:none!important;
+    display:none!important;
+  }
+
+  /* Todo conteúdo aberto recebe a mesma margem interna real.
+     O width calc evita que inputs de 100% ultrapassem o card e sejam cortados. */
+  body.mf-ds-configuracoes section.card.v137-open>:not(.card-title):not(style):not(script){
+    box-sizing:border-box!important;
+    width:calc(100% - 28px)!important;
+    max-width:calc(100% - 28px)!important;
+    min-width:0!important;
+    margin-left:14px!important;
+    margin-right:14px!important;
+  }
+
+  body.mf-ds-configuracoes section.card.v137-open>.card-title+:not(style):not(script){
+    margin-top:14px!important;
+  }
+
+  body.mf-ds-configuracoes section.card :is(.grid,.form-grid,.settings-grid,.v98-section-grid,.v110-cardapio-wrap){
+    box-sizing:border-box!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:13px!important;
+  }
+
+  body.mf-ds-configuracoes section.card :is(.field,.full,.stack,.hours-mini-field){
+    box-sizing:border-box!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+  }
+
+  body.mf-ds-configuracoes section.card label{
+    margin:0 0 7px!important;
+    color:var(--mf-cfg-text)!important;
+    font-size:13px!important;
+    line-height:1.25!important;
+    font-weight:850!important;
+  }
+
+  body.mf-ds-configuracoes section.card :is(input:not([type=checkbox]):not([type=radio]),select,textarea){
+    box-sizing:border-box!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    min-height:46px!important;
+    margin:0!important;
+    padding:11px 12px!important;
+    border:1px solid #d6e0ec!important;
+    border-radius:12px!important;
+    background:#fff!important;
+    color:var(--mf-cfg-text)!important;
+    font-size:16px!important;
+    line-height:1.3!important;
+    box-shadow:none!important;
+  }
+
+  body.mf-ds-configuracoes section.card textarea{
+    min-height:104px!important;
+    resize:vertical!important;
+  }
+
+  body.mf-ds-configuracoes section.card :is(input,select,textarea):focus{
+    border-color:var(--mf-cfg-accent)!important;
+    outline:3px solid rgba(59,0,102,.10)!important;
+  }
+
+  body.mf-ds-configuracoes section.card small,
+  body.mf-ds-configuracoes section.card .info,
+  body.mf-ds-configuracoes section.card .help-text{
+    display:block!important;
+    margin-top:6px!important;
+    color:var(--mf-cfg-muted)!important;
+    font-size:11.5px!important;
+    line-height:1.45!important;
+    font-weight:650!important;
+  }
+
+  body.mf-ds-configuracoes :is(.hours-master-control,.hours-row,.print-panel,.wa-choice,.wa-package,.v110-box,.v180-terminal-config){
+    box-sizing:border-box!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    border:1px solid var(--mf-cfg-border)!important;
+    border-radius:var(--mf-cfg-inner-radius)!important;
+    background:#f9fbfe!important;
+    box-shadow:none!important;
+  }
+
+  body.mf-ds-configuracoes .hours-master-control{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    align-items:stretch!important;
+    gap:12px!important;
+    margin-top:14px!important;
+    margin-bottom:14px!important;
+    padding:13px!important;
+  }
+
+  body.mf-ds-configuracoes .hours-master-copy{
+    display:grid!important;
+    grid-template-columns:42px minmax(0,1fr)!important;
+    align-items:start!important;
+    gap:11px!important;
+    min-width:0!important;
+  }
+
+  body.mf-ds-configuracoes .hours-master-icon{
+    width:42px!important;
+    height:42px!important;
+    min-width:42px!important;
+    margin:0!important;
+    border-radius:12px!important;
+    background:var(--mf-cfg-accent)!important;
+    color:#fff!important;
+  }
+
+  body.mf-ds-configuracoes .hours-master-copy strong{
+    color:var(--mf-cfg-text)!important;
+    font-size:14px!important;
+    line-height:1.25!important;
+  }
+
+  body.mf-ds-configuracoes .hours-master-copy>div>span{
+    color:var(--mf-cfg-muted)!important;
+    font-size:12px!important;
+    line-height:1.4!important;
+  }
+
+  body.mf-ds-configuracoes .hours-master-control .hours-switch{
+    box-sizing:border-box!important;
+    width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+    padding:0!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:10px!important;
+  }
+
+  body.mf-ds-configuracoes .hours-switch-label{
+    min-width:0!important;
+    color:var(--mf-cfg-text)!important;
+    font-size:12px!important;
+    white-space:normal!important;
+  }
+
+  body.mf-ds-configuracoes .hours-config-intro{
+    box-sizing:border-box!important;
+    width:100%!important;
+    max-width:100%!important;
+    margin-top:0!important;
+    margin-bottom:12px!important;
+    padding:11px 12px!important;
+    border:1px solid #cfe9d8!important;
+    border-radius:12px!important;
+    background:#effaf3!important;
+    color:#075333!important;
+    font-size:11.5px!important;
+    line-height:1.4!important;
+    font-weight:750!important;
+  }
+
+  body.mf-ds-configuracoes .hours-table{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:10px!important;
+  }
+
+  body.mf-ds-configuracoes .hours-row{
+    box-sizing:border-box!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+    padding:12px!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:10px!important;
+    border:1px solid var(--mf-cfg-border)!important;
+    border-radius:13px!important;
+    background:#f9fbfe!important;
+  }
+
+  body.mf-ds-configuracoes .hours-day{
+    color:var(--mf-cfg-accent)!important;
+    font-size:13px!important;
+    line-height:1.25!important;
+    font-weight:900!important;
+  }
+
+  body.mf-ds-configuracoes :is(.logo-area,.hero-config-preview,.wa-notify-layout){
+    box-sizing:border-box!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:12px!important;
+  }
+
+  body.mf-ds-configuracoes .logo-preview{
+    max-width:100%!important;
+    margin:0 auto!important;
+  }
+
+  body.mf-ds-configuracoes section.card button,
+  body.mf-ds-configuracoes section.card .btn,
+  body.mf-ds-configuracoes section.card a.btn{
+    box-sizing:border-box!important;
+    max-width:100%!important;
+    min-height:44px!important;
+    border-radius:12px!important;
+    font-size:12.5px!important;
+    line-height:1.2!important;
+    font-weight:900!important;
+  }
+
+  body.mf-ds-configuracoes main.container>form>.actions,
+  body.mf-ds-configuracoes main.container>form>.premium-actions{
+    box-sizing:border-box!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+    padding:9px!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+    gap:8px!important;
+    position:sticky!important;
+    bottom:calc(78px + env(safe-area-inset-bottom))!important;
+    z-index:55!important;
+    border:1px solid var(--mf-cfg-border)!important;
+    border-radius:15px!important;
+    background:rgba(255,255,255,.97)!important;
+    box-shadow:0 10px 28px rgba(23,33,58,.12)!important;
+    backdrop-filter:blur(12px)!important;
+  }
+
+  body.mf-ds-configuracoes main.container>form>.actions>*,
+  body.mf-ds-configuracoes main.container>form>.premium-actions>*{
+    width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+  }
+
+  body.mf-ds-configuracoes .btn-primary[type=submit]{
+    position:static!important;
+    bottom:auto!important;
+    z-index:auto!important;
+    width:100%!important;
+    box-shadow:none!important;
+  }
+
+  /* Funcionários */
+  body.mf-ds-funcionarios .mf-funcionarios-grid{display:block!important}
+  body.mf-ds-funcionarios .employee-card-head{align-items:center!important}
+  body.mf-ds-funcionarios .employee-new-btn{width:100%!important}
+  body.mf-ds-funcionarios .login-note{display:grid!important;grid-template-columns:38px minmax(0,1fr)!important;gap:10px!important;padding:13px!important;margin-bottom:12px!important}
+  body.mf-ds-funcionarios .employee-list{display:grid!important;grid-template-columns:1fr!important;gap:10px!important}
+  body.mf-ds-funcionarios .employee-card{display:grid!important;grid-template-columns:1fr!important;gap:11px!important;padding:14px!important;margin:0!important}
+  body.mf-ds-funcionarios .employee-main{display:grid!important;grid-template-columns:46px minmax(0,1fr)!important;gap:10px!important;align-items:center!important}
+  body.mf-ds-funcionarios .employee-avatar{width:46px!important;height:46px!important;border-radius:14px!important}
+  body.mf-ds-funcionarios .employee-email{white-space:normal!important;word-break:break-word!important}
+  body.mf-ds-funcionarios .employee-actions{grid-template-columns:minmax(0,1fr) 48px!important}
+  body.mf-ds-funcionarios .employee-actions .inline-form{width:48px!important}
+  body.mf-ds-funcionarios .employee-actions .btn-danger{width:48px!important;padding:0!important}
+  body.mf-ds-funcionarios .permission-preview{display:flex!important;gap:5px!important;overflow-x:auto!important;scrollbar-width:none!important}
+  body.mf-ds-funcionarios .permission-preview::-webkit-scrollbar{display:none!important}
+  body.mf-ds-funcionarios .mf-modal{padding:0!important;align-items:flex-end!important}
+  body.mf-ds-funcionarios .mf-modal-dialog{width:100%!important;max-width:100%!important;max-height:92vh!important;margin:0!important;border-radius:24px 24px 0 0!important;overflow:hidden!important}
+  body.mf-ds-funcionarios .mf-modal-head{position:sticky!important;top:0!important;z-index:8!important;padding:14px!important;background:#fff!important;border-bottom:1px solid var(--v58-line)!important}
+  body.mf-ds-funcionarios .mf-modal-body{padding:14px!important;overflow:auto!important;max-height:calc(92vh - 70px)!important}
+  body.mf-ds-funcionarios .mf-modal-close{width:40px!important;min-width:40px!important;height:40px!important;min-height:40px!important;padding:0!important}
+  body.mf-ds-funcionarios .mf-permission-groups{display:grid!important;grid-template-columns:1fr!important;gap:8px!important}
+  body.mf-ds-funcionarios .perm-check{display:grid!important;grid-template-columns:22px 40px minmax(0,1fr)!important;align-items:center!important;gap:9px!important;padding:11px!important;border:1px solid var(--v58-line)!important;border-radius:14px!important}
+  body.mf-ds-funcionarios .mf-password-box{display:grid!important;grid-template-columns:minmax(0,1fr) 42px 42px 42px!important;gap:5px!important}
+  body.mf-ds-funcionarios .password-row{display:grid!important;grid-template-columns:1fr!important;gap:8px!important}
+
+  /* Integrações */
+  body.mf-ds-integracoes .notice{padding:13px!important;border-radius:15px!important}
+  body.mf-ds-integracoes .v160-integration-grid{grid-template-columns:1fr!important}
+  body.mf-ds-integracoes :is(.v160-int-card,.v160-webhook-card,.v161-delivery-card,.v163-manual-quick,.v164-tech-card){padding:14px!important;margin-bottom:12px!important}
+  body.mf-ds-integracoes .v160-market-table{display:block!important;width:100%!important;overflow:visible!important}
+  body.mf-ds-integracoes .v160-market-table thead{display:none!important}
+  body.mf-ds-integracoes .v160-market-table tbody{display:grid!important;grid-template-columns:1fr!important;gap:9px!important}
+  body.mf-ds-integracoes .v160-market-table tr{display:grid!important;grid-template-columns:1fr!important;gap:7px!important;padding:12px!important;border:1px solid var(--v58-line)!important;border-radius:15px!important;background:#fff!important}
+  body.mf-ds-integracoes .v160-market-table td{display:grid!important;grid-template-columns:minmax(95px,38%) minmax(0,1fr)!important;gap:8px!important;padding:0!important;border:0!important;background:transparent!important}
+  body.mf-ds-integracoes .v160-market-table td:before{content:attr(data-mf-label);color:var(--v58-muted);font-size:11px;font-weight:900;text-transform:uppercase}
+  body.mf-ds-integracoes .v162-summary{display:grid!important;grid-template-columns:42px minmax(0,1fr) 36px!important;gap:10px!important;align-items:center!important;padding:13px!important}
+  body.mf-ds-integracoes .v162-summary-actions{display:none!important}
+  body.mf-ds-integracoes .v162-summary-icon{width:42px!important;height:42px!important;border-radius:13px!important}
+  body.mf-ds-integracoes .v162-collapsible[open]>.v162-summary{border-bottom:1px solid var(--v58-line)!important}
+  body.mf-ds-integracoes .v162-collapsible>*:not(.v162-summary){margin-left:13px!important;margin-right:13px!important}
+  body.mf-ds-integracoes .v161-provider-title{margin:14px 0 8px!important;padding:9px 11px!important;border-radius:12px!important;background:#f3f6fb!important}
+  body.mf-ds-integracoes :is(.v164-partner-row,.v160-event){display:grid!important;grid-template-columns:1fr!important;gap:9px!important;padding:12px!important;border:1px solid var(--v58-line)!important;border-radius:14px!important}
+  body.mf-ds-integracoes .v161-actions{grid-template-columns:1fr!important}
+
+  /* Tabelas auxiliares em cartões */
+  body:is(.mf-ds-fiscal,.mf-ds-configuracoes,.mf-ds-integracoes) table.mf-v58-mobile-table{display:block!important;width:100%!important;overflow:visible!important}
+  body:is(.mf-ds-fiscal,.mf-ds-configuracoes,.mf-ds-integracoes) table.mf-v58-mobile-table thead{display:none!important}
+  body:is(.mf-ds-fiscal,.mf-ds-configuracoes,.mf-ds-integracoes) table.mf-v58-mobile-table tbody{display:grid!important;gap:9px!important}
+  body:is(.mf-ds-fiscal,.mf-ds-configuracoes,.mf-ds-integracoes) table.mf-v58-mobile-table tr{display:grid!important;gap:7px!important;padding:12px!important;border:1px solid var(--v58-line)!important;border-radius:14px!important;background:#fff!important}
+  body:is(.mf-ds-fiscal,.mf-ds-configuracoes,.mf-ds-integracoes) table.mf-v58-mobile-table td{display:grid!important;grid-template-columns:minmax(96px,38%) minmax(0,1fr)!important;gap:8px!important;padding:0!important;border:0!important;background:transparent!important}
+  body:is(.mf-ds-fiscal,.mf-ds-configuracoes,.mf-ds-integracoes) table.mf-v58-mobile-table td:before{content:attr(data-mf-label);color:var(--v58-muted);font-size:11px;font-weight:900;text-transform:uppercase}
+
+  /* Menu público dentro do Mais */
+  .mf-global-more-grid a.mf-v58-public-menu-link{grid-column:1/-1!important;background:linear-gradient(135deg,#eef3ff,#fff)!important;border-color:#cddcff!important;color:#173a9e!important}
+  .mf-global-more-grid a.mf-v58-public-menu-link i{background:#1747d1!important;color:#fff!important}
+}
+
+@media (max-width:390px){
+  body:is(.mf-ds-fiscal,.mf-ds-pagamentos-online,.mf-ds-configuracoes,.mf-ds-funcionarios,.mf-ds-integracoes) :is(.actions,.employee-actions,.mf-modal-actions,.logo-actions,.wa-actions,.print-actions-row,.v160-actions,.v110-btns,.v180-terminal-links){grid-template-columns:1fr!important}
+  body.mf-ds-funcionarios .employee-actions{grid-template-columns:1fr 48px!important}
+}
+
+

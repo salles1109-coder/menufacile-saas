@@ -1,0 +1,196 @@
+/* v771 — checkout de encomendas: retirada/entrega simples, endereço por CEP e sinal separado. */
+.mf-encomendas-v761 .enc-checkout-section-title small{
+  max-width:520px;
+}
+
+/* Escolhas principais com aparência de checkout, sem textos redundantes. */
+.mf-encomendas-v761 .enc-receive-options,
+.mf-encomendas-v761 .enc-payment-options{
+  gap:10px;
+}
+.mf-encomendas-v761 .enc-check-option{
+  min-height:58px;
+  padding:10px 13px;
+  border-radius:15px;
+  border-color:#e7e0da;
+  box-shadow:none;
+}
+.mf-encomendas-v761 .enc-check-option .icon{
+  width:34px;
+  height:34px;
+  flex-basis:34px;
+  border-radius:11px;
+  background:#f6f1ed;
+  color:#796b61;
+}
+.mf-encomendas-v761 .enc-check-option strong{
+  font-size:10.5px;
+  letter-spacing:-.01em;
+}
+.mf-encomendas-v761 .enc-check-option small{
+  font-size:8px;
+}
+.mf-encomendas-v761 .enc-option-check{
+  width:22px;
+  height:22px;
+  margin-left:auto;
+  flex:0 0 22px;
+  display:grid;
+  place-items:center;
+  border:1px solid #e4ddd7;
+  border-radius:999px;
+  color:transparent;
+  font-size:8px;
+  transition:.16s ease;
+}
+.mf-encomendas-v761 .enc-check-option:has(input:checked){
+  border-color:rgba(var(--enc-brand-rgb,18,54,181),.46);
+  background:rgba(var(--enc-brand-rgb,18,54,181),.035);
+  box-shadow:0 0 0 2px rgba(var(--enc-brand-rgb,18,54,181),.025);
+}
+.mf-encomendas-v761 .enc-check-option:has(input:checked) .icon{
+  background:rgba(var(--enc-brand-rgb,18,54,181),.1);
+  color:var(--enc-brand,#1236B5);
+}
+.mf-encomendas-v761 .enc-check-option:has(input:checked) .enc-option-check{
+  border-color:var(--enc-brand,#1236B5);
+  background:var(--enc-brand,#1236B5);
+  color:var(--enc-brand-on,#fff);
+}
+
+/* Endereço só existe quando o cliente escolhe Entrega. */
+.mf-encomendas-v761 .enc-delivery-address{
+  margin-top:13px;
+  padding:15px;
+  border:1px solid #e9e3de;
+  border-radius:16px;
+  background:#fcfbfa;
+}
+.mf-encomendas-v761 .enc-delivery-address[hidden]{display:none!important}
+.mf-encomendas-v761 .enc-address-heading{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:8px;
+}
+.mf-encomendas-v761 .enc-address-heading strong{
+  display:block;
+  color:#37312d;
+  font-size:10.5px;
+}
+.mf-encomendas-v761 .enc-address-heading small{
+  display:block;
+  margin-top:2px;
+  color:#968b83;
+  font-size:8px;
+}
+.mf-encomendas-v761 .enc-cep-status{
+  flex:none;
+  padding-top:2px;
+  color:#8e837b;
+  font-size:7.8px;
+  font-weight:800;
+  white-space:nowrap;
+}
+.mf-encomendas-v761 .enc-cep-status.ok{color:#16814b}
+.mf-encomendas-v761 .enc-cep-status.error{color:#b54747}
+.mf-encomendas-v761 .enc-cep-status.loading{color:var(--enc-brand,#1236B5)}
+.mf-encomendas-v761 .enc-address-grid{
+  display:grid;
+  grid-template-columns:150px minmax(240px,1fr) 100px;
+  gap:8px 10px;
+}
+.mf-encomendas-v761 .enc-address-grid .enc-checkout-field{margin-top:0}
+.mf-encomendas-v761 .enc-street-field{grid-column:2/3}
+.mf-encomendas-v761 .enc-complement-field{grid-column:1/2}
+.mf-encomendas-v761 .enc-neighborhood-field{grid-column:2/3}
+.mf-encomendas-v761 .enc-city-field{grid-column:1/3}
+.mf-encomendas-v761 .enc-state-field{grid-column:3/4}
+.mf-encomendas-v761 .enc-address-grid input{
+  height:42px;
+  background:#fff;
+}
+
+/* Sinal: uma informação própria, separada da forma de pagar o saldo. */
+.mf-encomendas-v761 .enc-payment-balance-label{
+  margin:0 0 8px;
+  color:#5f554e;
+  font-size:9px;
+  font-weight:850;
+}
+.mf-encomendas-v761 .enc-payment-balance-label[hidden]{display:none!important}
+.mf-encomendas-v761 .enc-signal-box{
+  position:relative;
+  margin-top:13px;
+  padding:14px 15px;
+  border-color:rgba(var(--enc-brand-rgb,18,54,181),.18);
+  background:linear-gradient(135deg,rgba(var(--enc-brand-rgb,18,54,181),.055),rgba(var(--enc-brand-rgb,18,54,181),.018));
+}
+.mf-encomendas-v761 .enc-signal-title{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:10px!important;
+  margin-bottom:10px!important;
+  padding-bottom:10px;
+  border-bottom:1px solid rgba(var(--enc-brand-rgb,18,54,181),.1);
+}
+.mf-encomendas-v761 .enc-signal-title span{
+  color:#403833!important;
+  font-size:10px!important;
+  font-weight:900!important;
+}
+.mf-encomendas-v761 .enc-signal-title span i{
+  margin-right:6px;
+  color:var(--enc-brand,#1236B5);
+}
+.mf-encomendas-v761 .enc-signal-title b{
+  padding:5px 8px;
+  border-radius:999px;
+  background:#fff;
+  color:var(--enc-brand,#1236B5);
+  font-size:8px;
+  box-shadow:0 2px 8px rgba(0,0,0,.04);
+}
+.mf-encomendas-v761 .enc-inline-payment-error{
+  grid-column:1/-1;
+  margin-top:0;
+}
+
+@media (max-width:760px){
+  .mf-encomendas-v761 .enc-address-heading{display:block}
+  .mf-encomendas-v761 .enc-cep-status{display:block;margin-top:5px;white-space:normal}
+  .mf-encomendas-v761 .enc-address-grid{
+    grid-template-columns:1fr 100px;
+  }
+  .mf-encomendas-v761 .enc-cep-field{grid-column:1/2}
+  .mf-encomendas-v761 .enc-street-field{grid-column:1/-1}
+  .mf-encomendas-v761 .enc-number-field{grid-column:1/2}
+  .mf-encomendas-v761 .enc-complement-field{grid-column:1/-1}
+  .mf-encomendas-v761 .enc-neighborhood-field{grid-column:1/-1}
+  .mf-encomendas-v761 .enc-city-field{grid-column:1/2}
+  .mf-encomendas-v761 .enc-state-field{grid-column:2/3}
+  .mf-encomendas-v761 .enc-receive-options,
+  .mf-encomendas-v761 .enc-payment-options{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  .mf-encomendas-v761 .enc-check-option{
+    min-height:54px;
+    padding:9px 10px;
+    gap:8px;
+  }
+  .mf-encomendas-v761 .enc-check-option .icon{
+    width:30px;height:30px;flex-basis:30px;
+  }
+}
+
+@media (max-width:430px){
+  .mf-encomendas-v761 .enc-receive-options,
+  .mf-encomendas-v761 .enc-payment-options{
+    grid-template-columns:1fr 1fr!important;
+  }
+  .mf-encomendas-v761 .enc-check-option strong{font-size:9.6px}
+  .mf-encomendas-v761 .enc-option-check{width:20px;height:20px;flex-basis:20px}
+  .mf-encomendas-v761 .enc-address-grid{grid-template-columns:1fr 82px}
+}

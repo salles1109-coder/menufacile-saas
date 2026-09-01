@@ -1,0 +1,970 @@
+{% extends "base.html" %}
+
+{% block body_attrs %} class="mf-ds-admin mf-ds-payment mf-pix-only"{% endblock %}
+
+{% block title %}Pagamento via PIX - {{ empresa.nome }}{% endblock %}
+
+{% block head %}
+<style>
+:root{
+  --pix:#00a884;
+  --pix-dark:#087f68;
+  --pix-soft:#eafaf6;
+  --ink:#172033;
+  --muted:#667085;
+  --line:#e4e9f0;
+  --surface:#ffffff;
+  --page:#f5f7fb;
+  --primary:#2d0057;
+  --primary-soft:#f5eff9;
+  --warning:#fff7e8;
+  --warning-text:#8a5a00;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:
+    radial-gradient(circle at 10% 0%,rgba(0,168,132,.09),transparent 28%),
+    linear-gradient(180deg,#fafcff 0%,var(--page) 100%);
+  color:var(--ink);
+  font-family:Inter,Arial,sans-serif;
+}
+
+.pix-page{
+  width:min(1180px,calc(100% - 32px));
+  margin:0 auto;
+  padding:26px 0 64px;
+}
+
+.pix-topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+  margin-bottom:22px;
+}
+
+.pix-brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.pix-brand-icon{
+  width:44px;
+  height:44px;
+  border-radius:14px;
+  display:grid;
+  place-items:center;
+  color:#fff;
+  background:linear-gradient(135deg,var(--pix-dark),var(--pix));
+  box-shadow:0 10px 24px rgba(0,168,132,.22);
+}
+
+.pix-brand strong{
+  display:block;
+  color:var(--primary);
+  font-size:17px;
+  font-weight:950;
+}
+
+.pix-brand span{
+  display:block;
+  margin-top:2px;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:700;
+}
+
+.pix-back{
+  min-height:42px;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:0 14px;
+  color:var(--primary);
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:13px;
+  text-decoration:none;
+  font-weight:850;
+}
+
+.pix-layout{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 360px;
+  gap:22px;
+  align-items:start;
+}
+
+.pix-checkout,
+.pix-summary{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:22px;
+  box-shadow:0 18px 46px rgba(16,24,40,.07);
+}
+
+.pix-checkout{padding:30px}
+.pix-summary{padding:24px;position:sticky;top:20px}
+
+.pix-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 11px;
+  color:var(--pix-dark);
+  background:var(--pix-soft);
+  border-radius:999px;
+  font-size:12px;
+  font-weight:950;
+}
+
+.pix-title{
+  margin:16px 0 7px;
+  color:var(--primary);
+  font-size:32px;
+  line-height:1.08;
+  letter-spacing:-.035em;
+}
+
+.pix-subtitle{
+  margin:0;
+  color:var(--muted);
+  font-size:15px;
+  line-height:1.55;
+  font-weight:650;
+}
+
+.pix-plan{
+  margin-top:22px;
+  padding:17px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  border:1px solid #dfe7e4;
+  border-radius:17px;
+  background:linear-gradient(180deg,#fcfffe,#f7fcfa);
+}
+
+.pix-plan-main{
+  display:flex;
+  align-items:center;
+  gap:13px;
+}
+
+.pix-plan-icon{
+  width:46px;
+  height:46px;
+  border-radius:14px;
+  display:grid;
+  place-items:center;
+  color:var(--pix-dark);
+  background:#fff;
+  border:1px solid #dcebe6;
+}
+
+.pix-plan strong{
+  display:block;
+  font-size:16px;
+  font-weight:950;
+}
+
+.pix-plan span{
+  display:block;
+  margin-top:3px;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:700;
+}
+
+.pix-price{text-align:right}
+.pix-price small{
+  display:block;
+  color:var(--muted);
+  font-size:10px;
+  font-weight:900;
+  text-transform:uppercase;
+}
+.pix-price strong{
+  margin-top:2px;
+  color:var(--primary);
+  font-size:27px;
+}
+
+.pix-payment-area{
+  margin-top:24px;
+  padding-top:24px;
+  border-top:1px solid var(--line);
+}
+
+.pix-section-title{
+  text-align:center;
+}
+
+.pix-section-title h2{
+  margin:0;
+  font-size:21px;
+  color:var(--ink);
+}
+
+.pix-section-title p{
+  margin:6px 0 0;
+  color:var(--muted);
+  font-size:13px;
+  font-weight:650;
+}
+
+.pix-qr{
+  width:min(280px,82vw);
+  margin:20px auto 14px;
+  padding:12px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:20px;
+  box-shadow:0 12px 30px rgba(16,24,40,.08);
+}
+
+.pix-qr img{
+  width:100%;
+  display:block;
+  border-radius:10px;
+}
+
+.pix-receiver{
+  text-align:center;
+  color:var(--muted);
+  font-size:13px;
+  font-weight:700;
+}
+
+.pix-receiver strong{color:var(--ink)}
+
+.pix-or{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:20px 0;
+  color:#98a2b3;
+  font-size:11px;
+  font-weight:900;
+  text-transform:uppercase;
+}
+.pix-or::before,.pix-or::after{
+  content:"";
+  height:1px;
+  background:var(--line);
+  flex:1;
+}
+
+.pix-copy-box{
+  padding:14px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:#fbfcfe;
+}
+
+.pix-copy-box label{
+  display:block;
+  margin-bottom:7px;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:900;
+  text-transform:uppercase;
+}
+
+.pix-copy-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:9px;
+}
+
+.pix-code{
+  min-height:48px;
+  max-height:88px;
+  overflow:auto;
+  padding:12px 13px;
+  border:1px solid var(--line);
+  border-radius:13px;
+  background:#fff;
+  color:#344054;
+  font-size:12px;
+  line-height:1.45;
+  font-weight:700;
+  word-break:break-all;
+}
+
+.pix-copy-btn{
+  min-height:48px;
+  padding:0 15px;
+  border:0;
+  border-radius:13px;
+  color:#fff;
+  background:var(--pix-dark);
+  font-weight:950;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+}
+
+.pix-steps{
+  margin-top:18px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:9px;
+}
+
+.pix-step{
+  padding:11px;
+  border:1px solid var(--line);
+  border-radius:13px;
+  background:#fff;
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.4;
+  font-weight:750;
+}
+
+.pix-step strong{
+  display:block;
+  margin-bottom:3px;
+  color:var(--ink);
+}
+
+.pix-notice{
+  margin-top:16px;
+  padding:13px;
+  display:flex;
+  gap:9px;
+  border:1px solid #f2d49d;
+  border-radius:14px;
+  background:var(--warning);
+  color:var(--warning-text);
+  font-size:12px;
+  line-height:1.45;
+  font-weight:750;
+}
+
+.pix-confirm{
+  width:100%;
+  min-height:52px;
+  margin-top:17px;
+  border-radius:15px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  color:#fff;
+  background:linear-gradient(135deg,#0b8f73,var(--pix));
+  text-decoration:none;
+  font-size:14px;
+  font-weight:950;
+  box-shadow:0 12px 25px rgba(0,168,132,.22);
+}
+
+.pix-support{
+  margin-top:11px;
+  text-align:center;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:700;
+}
+
+.pix-support a{
+  color:var(--primary);
+  text-decoration:none;
+  font-weight:900;
+}
+
+.pix-summary h3{
+  margin:0;
+  color:var(--primary);
+  font-size:19px;
+}
+
+.pix-summary>p{
+  margin:6px 0 19px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.5;
+  font-weight:650;
+}
+
+.pix-summary-list{
+  display:grid;
+  gap:13px;
+}
+
+.pix-summary-row{
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+  padding-bottom:13px;
+  border-bottom:1px solid var(--line);
+}
+
+.pix-summary-row:last-child{border-bottom:0}
+
+.pix-summary-row span{
+  color:var(--muted);
+  font-size:12px;
+  font-weight:750;
+}
+
+.pix-summary-row strong{
+  color:var(--ink);
+  font-size:13px;
+  font-weight:900;
+  text-align:right;
+}
+
+.pix-total{
+  margin-top:17px;
+  padding:16px;
+  border-radius:16px;
+  color:#fff;
+  background:linear-gradient(135deg,var(--primary),#53118a);
+}
+
+.pix-total span{
+  display:block;
+  font-size:10px;
+  font-weight:850;
+  text-transform:uppercase;
+  opacity:.8;
+}
+
+.pix-total strong{
+  display:block;
+  margin-top:3px;
+  font-size:29px;
+}
+
+.pix-secure{
+  margin-top:15px;
+  display:flex;
+  gap:9px;
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.5;
+  font-weight:650;
+}
+.pix-secure i{color:var(--pix-dark);margin-top:2px}
+
+.pix-only-note{
+  margin-top:14px;
+  padding:11px;
+  color:var(--pix-dark);
+  background:var(--pix-soft);
+  border-radius:12px;
+  font-size:11px;
+  line-height:1.45;
+  font-weight:750;
+}
+
+.pix-toast{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  padding:12px 15px;
+  border-radius:13px;
+  color:#fff;
+  background:#101828;
+  font-weight:850;
+  box-shadow:0 14px 30px rgba(16,24,40,.2);
+  opacity:0;
+  transform:translateY(10px);
+  pointer-events:none;
+  transition:.2s ease;
+}
+
+.pix-toast.show{opacity:1;transform:translateY(0)}
+
+@media(max-width:900px){
+  .pix-layout{grid-template-columns:1fr}
+  .pix-summary{position:static}
+}
+
+@media(max-width:640px){
+  .pix-page{width:min(100% - 20px,1180px);padding-top:15px}
+  .pix-checkout,.pix-summary{border-radius:18px}
+  .pix-checkout{padding:21px 15px}
+  .pix-summary{padding:20px 15px}
+  .pix-title{font-size:27px}
+  .pix-plan{align-items:flex-start;flex-direction:column}
+  .pix-price{text-align:left}
+  .pix-copy-row{grid-template-columns:1fr}
+  .pix-copy-btn{width:100%;justify-content:center}
+  .pix-steps{grid-template-columns:1fr}
+  .pix-brand span{display:none}
+  .pix-back{width:42px;padding:0;justify-content:center}
+  .pix-back span{display:none}
+}
+</style>
+
+<style id="mf-pix-final-v2">
+.pix-page{
+  width:min(1260px,calc(100% - 32px))!important;
+}
+.pix-layout{
+  grid-template-columns:minmax(0,1fr) 430px!important;
+  gap:28px!important;
+}
+.pix-checkout{
+  padding:34px!important;
+}
+.pix-summary{
+  width:430px!important;
+  min-width:430px!important;
+  padding:28px!important;
+}
+.pix-qr{
+  width:min(330px,86vw)!important;
+  padding:14px!important;
+}
+.pix-title{
+  font-size:35px!important;
+}
+.pix-plan{
+  padding:20px!important;
+}
+.pix-price strong{
+  font-size:31px!important;
+}
+.pix-copy-btn{
+  min-width:150px!important;
+  justify-content:center!important;
+}
+.pix-summary-row{
+  align-items:flex-start!important;
+}
+.pix-summary-row span{
+  max-width:48%!important;
+}
+.pix-summary-row strong{
+  max-width:52%!important;
+  word-break:normal!important;
+}
+.pix-total{
+  display:flex!important;
+  align-items:end!important;
+  justify-content:space-between!important;
+  gap:18px!important;
+}
+.pix-total span{
+  margin-bottom:5px!important;
+}
+.pix-total strong{
+  margin-top:0!important;
+}
+@media(max-width:980px){
+  .pix-layout{
+    grid-template-columns:1fr!important;
+  }
+  .pix-summary{
+    width:100%!important;
+    min-width:0!important;
+  }
+}
+@media(max-width:640px){
+  .pix-checkout{padding:22px 16px!important}
+  .pix-summary{padding:21px 16px!important}
+  .pix-title{font-size:28px!important}
+  .pix-qr{width:min(300px,88vw)!important}
+  .pix-copy-btn{min-width:0!important}
+  .pix-total{display:block!important}
+  .pix-total strong{margin-top:4px!important}
+}
+</style>
+
+<style id="mf-v307-plano-mobile-final">
+/* V307 — checkout do Plano: acabamento exclusivamente mobile. Desktop preservado. */
+@media(max-width:640px){
+  html,body{
+    width:100% !important;
+    max-width:100% !important;
+    overflow-x:hidden !important;
+  }
+
+  .pix-page{
+    width:100% !important;
+    margin:0 !important;
+    padding:10px 10px 28px !important;
+  }
+
+  .pix-topbar{
+    min-height:48px !important;
+    margin:0 0 10px !important;
+    padding:0 2px !important;
+    gap:10px !important;
+  }
+
+  .pix-brand{gap:9px !important}
+  .pix-brand-icon{
+    width:38px !important;
+    height:38px !important;
+    border-radius:12px !important;
+    box-shadow:none !important;
+  }
+  .pix-brand strong{font-size:15px !important}
+  .pix-back{
+    width:38px !important;
+    min-width:38px !important;
+    min-height:38px !important;
+    border-radius:12px !important;
+  }
+
+  .pix-layout{
+    display:flex !important;
+    flex-direction:column !important;
+    gap:12px !important;
+  }
+
+  .pix-checkout,
+  .pix-summary{
+    width:100% !important;
+    min-width:0 !important;
+    margin:0 !important;
+    border-radius:17px !important;
+    box-shadow:0 8px 24px rgba(16,24,40,.06) !important;
+  }
+
+  .pix-checkout{padding:17px 13px !important}
+  .pix-summary{
+    position:static !important;
+    padding:17px 13px !important;
+    order:2 !important;
+  }
+
+  .pix-badge{
+    padding:7px 9px !important;
+    font-size:10px !important;
+  }
+
+  .pix-title{
+    margin:12px 0 5px !important;
+    font-size:24px !important;
+    line-height:1.08 !important;
+  }
+  .pix-subtitle{
+    font-size:12px !important;
+    line-height:1.45 !important;
+  }
+
+  .pix-plan{
+    margin-top:14px !important;
+    padding:12px !important;
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) auto !important;
+    align-items:center !important;
+    gap:10px !important;
+    border-radius:14px !important;
+  }
+  .pix-plan-main{gap:9px !important;min-width:0 !important}
+  .pix-plan-icon{
+    width:38px !important;
+    height:38px !important;
+    min-width:38px !important;
+    border-radius:11px !important;
+  }
+  .pix-plan strong{font-size:13px !important}
+  .pix-plan span{font-size:10px !important}
+  .pix-price{text-align:right !important}
+  .pix-price small{font-size:8px !important}
+  .pix-price strong{font-size:20px !important;white-space:nowrap !important}
+
+  .pix-payment-area{
+    margin-top:16px !important;
+    padding-top:16px !important;
+  }
+  .pix-section-title h2{font-size:17px !important}
+  .pix-section-title p{font-size:11px !important}
+
+  .pix-qr{
+    width:min(230px,72vw) !important;
+    margin:14px auto 10px !important;
+    padding:9px !important;
+    border-radius:15px !important;
+    box-shadow:none !important;
+  }
+  .pix-receiver{font-size:11px !important}
+  .pix-or{margin:14px 0 !important}
+
+  .pix-copy-box{
+    padding:10px !important;
+    border-radius:14px !important;
+  }
+  .pix-copy-box label{font-size:10px !important}
+  .pix-copy-row{display:block !important}
+  .pix-code{
+    width:100% !important;
+    min-height:0 !important;
+    max-height:none !important;
+    padding:10px !important;
+    overflow:visible !important;
+    border-radius:11px !important;
+    font-size:10px !important;
+    line-height:1.4 !important;
+    word-break:break-all !important;
+  }
+  .pix-copy-btn{
+    width:100% !important;
+    min-height:42px !important;
+    margin-top:8px !important;
+    border-radius:11px !important;
+    justify-content:center !important;
+    font-size:12px !important;
+  }
+
+  .pix-steps{
+    margin-top:12px !important;
+    gap:7px !important;
+  }
+  .pix-step{
+    padding:10px !important;
+    border-radius:11px !important;
+    font-size:10px !important;
+  }
+  .pix-step strong{font-size:11px !important}
+
+  .pix-notice{
+    margin-top:12px !important;
+    padding:11px !important;
+    border-radius:12px !important;
+    font-size:10.5px !important;
+  }
+  .pix-confirm{
+    min-height:46px !important;
+    margin-top:12px !important;
+    border-radius:13px !important;
+    padding:0 10px !important;
+    font-size:11.5px !important;
+    text-align:center !important;
+    box-shadow:none !important;
+  }
+  .pix-support{margin:9px 0 0 !important;font-size:10.5px !important}
+
+  .pix-summary h3{font-size:16px !important}
+  .pix-summary>p{margin:4px 0 12px !important;font-size:10.5px !important}
+  .pix-summary-list{gap:9px !important}
+  .pix-summary-row{
+    padding-bottom:9px !important;
+    align-items:flex-start !important;
+  }
+  .pix-summary-row span{font-size:10.5px !important;max-width:45% !important}
+  .pix-summary-row strong{font-size:11px !important;max-width:55% !important}
+  .pix-total{
+    margin-top:12px !important;
+    padding:13px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:space-between !important;
+    border-radius:13px !important;
+  }
+  .pix-total span{margin:0 !important;font-size:9px !important}
+  .pix-total strong{margin:0 !important;font-size:22px !important}
+  .pix-only-note{margin-top:11px !important;padding:10px !important;font-size:10px !important}
+  .pix-secure{margin-top:11px !important;font-size:10px !important}
+  .pix-toast{
+    left:10px !important;
+    right:10px !important;
+    bottom:12px !important;
+    text-align:center !important;
+  }
+}
+</style>
+
+{% endblock %}
+
+{% block page %}
+<div class="pix-page">
+  <div class="pix-topbar">
+    <div class="pix-brand">
+      <div class="pix-brand-icon"><i class="fa-brands fa-pix"></i></div>
+      <div>
+        <strong>MenuFacile</strong>
+        <span>Pagamento seguro via PIX</span>
+      </div>
+    </div>
+
+    <a class="pix-back" href="/admin/{{ empresa.id }}">
+      <i class="fa-solid fa-arrow-left"></i>
+      <span>Voltar ao painel</span>
+    </a>
+  </div>
+
+  <main class="pix-layout">
+    <section class="pix-checkout">
+      <span class="pix-badge">
+        <i class="fa-brands fa-pix"></i>
+        Pagamento exclusivo por PIX
+      </span>
+
+      <h1 class="pix-title">Finalizar pagamento</h1>
+      <p class="pix-subtitle">
+        Sua assinatura será ativada após a confirmação do pagamento da conta
+        <strong>{{ empresa.nome }}</strong>.
+      </p>
+
+      <div class="pix-plan">
+        <div class="pix-plan-main">
+          <div class="pix-plan-icon"><i class="fa-solid fa-store"></i></div>
+          <div>
+            <strong>MenuFacile Premium</strong>
+            <span>Assinatura mensal do sistema</span>
+          </div>
+        </div>
+
+        <div class="pix-price">
+          <small>Valor a pagar</small>
+          <strong>R$ 25,99</strong>
+        </div>
+      </div>
+
+      <div class="pix-payment-area">
+        <div class="pix-section-title">
+          <h2>Pague com o aplicativo do seu banco</h2>
+          <p>Escaneie o QR Code ou copie o código PIX.</p>
+        </div>
+
+        <div class="pix-qr">
+          <img src="/static/im/pix_c6_2599.png" alt="QR Code PIX MenuFacile">
+        </div>
+
+        <p class="pix-receiver">
+          Recebedor:
+          <strong>VINICIUS AUGUSTO SALES ME</strong>
+        </p>
+
+        <div class="pix-or">ou copie o código</div>
+
+        <div class="pix-copy-box">
+          <label for="pixCopiaCola">PIX Copia e Cola</label>
+          <div class="pix-copy-row">
+            <div class="pix-code" id="pixCopiaCola">
+              00020101021126420014br.gov.bcb.pix0120salles1109@gmail.com520400005303986540525.995802BR5925VINICIUS AUGUSTO SALES ME6009SAO PAULO622905251KY61N4W3S22D8WVSP340NRY56304DEF3
+            </div>
+            <button type="button" class="pix-copy-btn" data-copy-target="pixCopiaCola">
+              <i class="fa-regular fa-copy"></i>
+              Copiar PIX
+            </button>
+          </div>
+        </div>
+
+        <div class="pix-steps">
+          <div class="pix-step"><strong>1. Abra seu banco</strong>Acesse a área PIX do aplicativo.</div>
+          <div class="pix-step"><strong>2. Faça o pagamento</strong>Use o QR Code ou o código copia e cola.</div>
+          <div class="pix-step"><strong>3. Envie o comprovante</strong>A confirmação será realizada pelo suporte.</div>
+        </div>
+
+        <div class="pix-notice">
+          <i class="fa-solid fa-clock"></i>
+          <span>
+            Após o pagamento, envie o comprovante. A ativação será realizada depois da conferência.
+          </span>
+        </div>
+
+        <a class="pix-confirm" href="{{ comprovante_url }}" target="_blank" rel="noopener">
+          <i class="fa-brands fa-whatsapp"></i>
+          Já fiz o pagamento — enviar comprovante
+        </a>
+
+        <p class="pix-support">
+          Precisa de ajuda?
+          <a href="{{ suporte_pagamento_url }}" target="_blank" rel="noopener">Falar com o suporte</a>
+        </p>
+      </div>
+    </section>
+
+    <aside class="pix-summary">
+      <h3>Resumo do pagamento</h3>
+      <p>Confira os dados antes de pagar.</p>
+
+      <div class="pix-summary-list">
+        <div class="pix-summary-row">
+          <span>Empresa</span>
+          <strong>{{ empresa.nome }}</strong>
+        </div>
+
+        <div class="pix-summary-row">
+          <span>Plano</span>
+          <strong>MenuFacile Premium</strong>
+        </div>
+
+        <div class="pix-summary-row">
+          <span>Cobrança</span>
+          <strong>Mensal</strong>
+        </div>
+
+        <div class="pix-summary-row">
+          <span>Forma de pagamento</span>
+          <strong>PIX</strong>
+        </div>
+
+        <div class="pix-summary-row">
+          <span>Confirmação</span>
+          <strong>Após envio do comprovante</strong>
+        </div>
+      </div>
+
+      <div class="pix-total">
+        <span>Total</span>
+        <strong>R$ 25,99</strong>
+      </div>
+
+      <div class="pix-only-note">
+        Pagamento exclusivo por PIX. A assinatura será ativada após a conferência do comprovante.
+      </div>
+
+      <div class="pix-secure">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span>
+          Nunca informe senha, token ou código do aplicativo bancário. O suporte solicitará apenas o comprovante.
+        </span>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<div class="pix-toast" id="pixToast">Código PIX copiado!</div>
+
+<script>
+(function(){
+  function mostrarToast(texto){
+    const toast = document.getElementById("pixToast");
+    if(!toast) return;
+    toast.textContent = texto || "Código PIX copiado!";
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 1800);
+  }
+
+  async function copiarTexto(texto){
+    try{
+      await navigator.clipboard.writeText(texto);
+      mostrarToast();
+    }catch(e){
+      const area = document.createElement("textarea");
+      area.value = texto;
+      area.style.position = "fixed";
+      area.style.opacity = "0";
+      document.body.appendChild(area);
+      area.select();
+      document.execCommand("copy");
+      area.remove();
+      mostrarToast();
+    }
+  }
+
+  document.querySelectorAll("[data-copy-target]").forEach((botao) => {
+    botao.addEventListener("click", () => {
+      const alvo = document.getElementById(botao.dataset.copyTarget);
+      if(alvo) copiarTexto(alvo.innerText.trim());
+    });
+  });
+})();
+</script>
+{% endblock %}

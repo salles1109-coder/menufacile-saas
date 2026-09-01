@@ -1,0 +1,1172 @@
+{% extends "base.html" %}
+{% block body_attrs %} class="mf-ds-admin mf-ds-employee mf-ds-employee-caixa"{% endblock %}
+{% block title %}Caixa funcionário - {{ empresa.nome }}{% endblock %}
+{% block head %}
+<style>
+:root{
+  --blue:#1025a8;--green:#075333;--red:#ff5148;--orange:#f97316;
+  --text:#101828;--muted:#667085;--bg:#eef4fb;--card:#fff;--line:#dbe6f5;
+  --shadow:0 16px 38px rgba(15,23,42,.07);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--text)}
+a{text-decoration:none;color:inherit}button,input,select,textarea{font-family:inherit}
+.app{min-height:100vh;display:grid;grid-template-columns:250px 1fr}
+.side{background:linear-gradient(180deg,#063f2d,#03291d);color:#fff;padding:22px 15px;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:24px}.brand-icon{width:42px;height:42px;border-radius:14px;background:rgba(255,255,255,.13);display:grid;place-items:center}.brand strong{display:block;font-size:16px;font-weight:950}.brand span{font-size:12px;opacity:.75;font-weight:800}
+.nav{display:grid;gap:8px}.nav a{min-height:44px;border-radius:13px;display:flex;align-items:center;gap:11px;padding:0 12px;font-size:13px;font-weight:900;color:rgba(255,255,255,.82)}.nav a.active,.nav a:hover{background:rgba(255,255,255,.14);color:#fff}.nav i{width:18px;text-align:center}
+.main{padding:22px;min-width:0}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}.hello h1{margin:0;font-size:28px;letter-spacing:-.04em}.hello p{margin:5px 0 0;color:var(--muted);font-size:13px;font-weight:850}.pill{background:#fff;border:1px solid var(--line);border-radius:999px;padding:10px 13px;display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:950;color:#344054}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid.three{grid-template-columns:repeat(3,1fr)}.card{background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);padding:16px;margin-bottom:14px}.card h2{margin:0 0 12px;font-size:19px;letter-spacing:-.03em}.card h3{margin:0 0 7px;font-size:15px}.muted{color:var(--muted);font-size:12px;font-weight:850;line-height:1.35}
+.section-head{display:flex;align-items:center;gap:10px}.section-head .ico{width:36px;height:36px;border-radius:13px;background:#eef4ff;color:var(--blue);display:grid;place-items:center}.section-head button{margin-left:auto}
+.form{display:grid;gap:10px}.form-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.form-line{display:flex;gap:10px;flex-wrap:wrap;align-items:end}label{font-size:12px;color:#344054;font-weight:950;display:block;margin-bottom:5px}input,select,textarea{height:42px;border:1px solid var(--line);border-radius:13px;background:#fff;padding:0 12px;font-weight:850;color:#172033}textarea{height:auto;padding:10px 12px}
+.btn{border:0;border-radius:13px;min-height:40px;padding:0 13px;font-weight:950;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px}.btn.green{background:var(--green);color:#fff}.btn.blue{background:var(--blue);color:#fff}.btn.red{background:var(--red);color:#fff}.btn.orange{background:var(--orange);color:#fff}.btn.soft{background:#fff;color:#344054;border:1px solid var(--line)}.btn.whats{background:#eaf8ef;color:#0d5b3a;border:1px solid #cfe8d8}.btn.small{min-height:32px;font-size:11px;border-radius:10px;padding:0 9px}
+.tabs{display:flex;gap:8px;overflow:auto;margin:10px 0 14px}.tab{border:1px solid var(--line);background:#fff;color:#667085;border-radius:999px;min-height:38px;padding:0 13px;font-size:12px;font-weight:950}.tab.active{background:var(--blue);border-color:var(--blue);color:#fff}
+.list{display:grid;gap:10px}.agenda-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}.slot{background:#f7fffb;border:1px solid #cfe8d8;border-radius:16px;padding:12px;position:relative}.slot.off{background:#fff5f5;border-color:#ffc9c4}.slot.busy{background:#fff8ed;border-color:#ffd7a3}.slot .time{font-size:22px;font-weight:1000;color:var(--blue);line-height:1}.slot.busy .time{color:#b54708}.slot.off .time{color:#d92d20}.status{display:inline-flex;border-radius:999px;padding:5px 8px;font-size:10px;font-weight:1000;margin:7px 0;background:#eaf8ef;color:#0d5b3a;text-transform:uppercase}.status.wait{background:#fff7ed;color:#c2410c}.status.bad{background:#fff1f2;color:#be123c}.slot .x{position:absolute;right:8px;top:8px;width:24px;height:24px;min-height:24px;border-radius:50%;padding:0;background:#eef2f6;color:#667085}
+.row{background:#fff;border:1px solid var(--line);border-radius:16px;padding:13px;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start}.row-time{font-weight:1000;color:var(--blue);min-width:54px}.row h3{margin:0;font-size:15px}.row p{margin:4px 0 0;color:var(--muted);font-size:12px;font-weight:850}.badge{border-radius:999px;padding:6px 9px;font-size:11px;font-weight:950;background:#eef4ff;color:var(--blue);white-space:nowrap}.badge.ok{background:#eaf8ef;color:var(--green)}.badge.wait{background:#fff7ed;color:#c2410c}.badge.bad{background:#fff1f2;color:#be123c}
+.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.preview{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:950;color:var(--blue);cursor:pointer}.chip.selected{background:#eef4ff;border-color:#1025a8}
+.table{width:100%;border-collapse:collapse}.table th,.table td{text-align:left;padding:12px;border-bottom:1px solid #edf2f7;font-size:13px}.table th{font-size:11px;text-transform:uppercase;color:#667085;font-weight:950}
+.mobilebar{display:none}.collapse-body{display:block}.collapsed .collapse-body{display:none}
+@media(max-width:1100px){.grid,.grid.three{grid-template-columns:1fr}.form-row{grid-template-columns:1fr 1fr}}
+@media(max-width:800px){.app{grid-template-columns:1fr}.side{display:none}.main{padding:14px 12px 78px}.top{align-items:flex-start}.hello h1{font-size:24px}.grid,.grid.three{grid-template-columns:1fr}.form-row{grid-template-columns:1fr}.agenda-grid{grid-template-columns:1fr}.row{grid-template-columns:1fr}.mobilebar{display:grid;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);grid-template-columns:repeat(4,1fr);z-index:50}.mobilebar a{min-height:62px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;font-size:11px;font-weight:900;color:#667085}.mobilebar a.active{color:var(--blue)}}
+
+/* v380 - sidebar fixo padronizado em todas as telas */
+.side,
+.sidebar,
+.premium-sidebar,
+aside.side,
+aside.sidebar{
+  width:230px !important;
+  min-width:230px !important;
+  max-width:230px !important;
+  flex:0 0 230px !important;
+  background:#fff !important;
+  border-right:1px solid #d9e4f4 !important;
+  padding:18px 14px !important;
+  overflow-x:hidden !important;
+}
+
+.app{
+  display:grid !important;
+  grid-template-columns:230px minmax(0,1fr) !important;
+}
+
+.brand,
+.logo-area,
+.sidebar-brand,
+.side-brand{
+  min-height:74px !important;
+  padding:0 0 16px 0 !important;
+  margin:0 0 14px 0 !important;
+  border-bottom:1px solid #edf2f7 !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:12px !important;
+}
+
+.brand .logo,
+.brand-icon,
+.store-icon,
+.sidebar-logo{
+  width:40px !important;
+  height:40px !important;
+  min-width:40px !important;
+  border-radius:14px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+
+.brand strong,
+.brand-title,
+.sidebar-title{
+  font-size:18px !important;
+  line-height:1.05 !important;
+  font-weight:1000 !important;
+  color:#061b8f !important;
+  display:block !important;
+  white-space:normal !important;
+}
+
+.brand small,
+.brand-subtitle,
+.sidebar-subtitle{
+  font-size:12px !important;
+  line-height:1.1 !important;
+  font-weight:900 !important;
+  color:#667085 !important;
+  display:block !important;
+  margin-top:3px !important;
+}
+
+.nav,
+.side-nav,
+.sidebar-nav{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:8px !important;
+}
+
+.nav a,
+.side a,
+.sidebar a,
+.premium-sidebar a,
+.side-link,
+.nav-link{
+  min-height:42px !important;
+  height:auto !important;
+  padding:10px 13px !important;
+  border-radius:13px !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:12px !important;
+  font-size:13px !important;
+  line-height:1.12 !important;
+  font-weight:950 !important;
+  color:#344054 !important;
+  text-decoration:none !important;
+  white-space:normal !important;
+  word-break:normal !important;
+  overflow-wrap:normal !important;
+}
+
+.nav a i,
+.side a i,
+.sidebar a i,
+.premium-sidebar a i,
+.side-link i,
+.nav-link i{
+  width:18px !important;
+  min-width:18px !important;
+  text-align:center !important;
+  font-size:14px !important;
+  color:#667085 !important;
+}
+
+.nav a.active,
+.side a.active,
+.sidebar a.active,
+.premium-sidebar a.active,
+.side-link.active,
+.nav-link.active{
+  background:#061b8f !important;
+  color:#fff !important;
+  box-shadow:0 12px 24px rgba(6,27,143,.18) !important;
+}
+
+.nav a.active i,
+.side a.active i,
+.sidebar a.active i,
+.premium-sidebar a.active i,
+.side-link.active i,
+.nav-link.active i{
+  color:#fff !important;
+}
+
+.nav-title,
+.sidebar-section-title,
+.side-section-title{
+  margin:18px 0 8px !important;
+  padding:0 6px !important;
+  font-size:12px !important;
+  line-height:1 !important;
+  letter-spacing:.04em !important;
+  font-weight:1000 !important;
+  color:#98a2b3 !important;
+  text-transform:uppercase !important;
+}
+
+/* evita que "Reservas / Agendamentos" aumente o menu ou mude largura */
+.nav a span,
+.side a span,
+.sidebar a span,
+.premium-sidebar a span,
+.side-link span,
+.nav-link span{
+  display:inline-block !important;
+  max-width:160px !important;
+}
+
+/* mobile: mantém comportamento responsivo sem quebrar */
+@media(max-width:900px){
+  .app{
+    display:block !important;
+  }
+  .side,
+  .sidebar,
+  .premium-sidebar,
+  aside.side,
+  aside.sidebar{
+    width:100% !important;
+    max-width:none !important;
+    min-width:0 !important;
+    border-right:0 !important;
+    border-bottom:1px solid #d9e4f4 !important;
+  }
+}
+
+</style>
+
+
+<style id="mf-v19-i18n-css">
+.mf-lang-switch{display:inline-flex;align-items:center;gap:4px;background:#fff;border:1px solid #dbe6f3;border-radius:999px;padding:4px;box-shadow:0 8px 18px rgba(15,35,90,.04)}
+.mf-lang-switch button{border:0;background:transparent;min-width:38px;height:34px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:1000;color:#075333;cursor:pointer}
+.mf-lang-switch button.active{background:#075333;color:#fff}
+.mf-lang-switch button:hover{background:#eaf8ef}
+.mf-lang-switch button.active:hover{background:#075333;color:#fff}
+@media(max-width:560px){.mf-lang-switch button{min-width:34px;height:30px;font-size:11px}.mf-lang-switch{padding:3px}}
+</style>
+<style id="v396-funcionario-mobile-padrao">
+/* v396 — padrão mobile funcionário alinhado. Desktop intacto. */
+@media(max-width:900px){
+
+  html, body{
+    width:100%!important;
+    max-width:100%!important;
+    overflow-x:hidden!important;
+    background:#eef4fb!important;
+  }
+
+  .app,
+  .layout{
+    display:block!important;
+    width:100%!important;
+    min-height:100vh!important;
+    background:#eef4fb!important;
+  }
+
+  .side,
+  .sidebar,
+  aside.side{
+    display:none!important;
+  }
+
+  .main{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    padding:12px 10px 84px!important;
+    overflow-x:hidden!important;
+  }
+
+  .content{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    padding:0!important;
+    margin:0!important;
+    overflow-x:hidden!important;
+  }
+
+  .top,
+  .topbar{
+    width:100%!important;
+    max-width:100%!important;
+    min-height:auto!important;
+    padding:0!important;
+    margin:0 0 12px!important;
+    display:block!important;
+    background:transparent!important;
+    border:0!important;
+    position:relative!important;
+  }
+
+  .hello,
+  .top-title{
+    min-width:0!important;
+    width:100%!important;
+    margin:0 0 8px!important;
+  }
+
+  .hello h1,
+  .top-title strong,
+  .page-title{
+    font-size:22px!important;
+    line-height:24px!important;
+    margin:0 0 4px!important;
+    letter-spacing:-.04em!important;
+    color:#061b8f!important;
+    word-break:normal!important;
+  }
+
+  .hello p,
+  .top-title span,
+  .subtitle{
+    font-size:12px!important;
+    line-height:15px!important;
+    margin:0!important;
+    color:#667085!important;
+    font-weight:850!important;
+  }
+
+  .top-actions{
+    width:100%!important;
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    gap:7px!important;
+    overflow-x:auto!important;
+    padding:2px 0 4px!important;
+    justify-content:flex-start!important;
+    align-items:center!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+
+  .top-buttons{
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    gap:7px!important;
+    flex:0 0 auto!important;
+  }
+
+  .pill,
+  .top-actions .pill,
+  .btn,
+  button{
+    min-height:36px!important;
+    height:36px!important;
+    max-height:36px!important;
+    padding:0 10px!important;
+    border-radius:12px!important;
+    font-size:11px!important;
+    line-height:12px!important;
+    font-weight:950!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:6px!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+
+  .lang-switch,
+  .mf-lang-switch{
+    flex:0 0 auto!important;
+    min-height:34px!important;
+    border-radius:999px!important;
+  }
+
+  .lang-switch a,
+  .mf-lang-switch button{
+    width:30px!important;
+    min-width:30px!important;
+    height:30px!important;
+    font-size:11px!important;
+  }
+
+  .card,
+  .panel,
+  .box,
+  section.card{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    margin:0 0 10px!important;
+    padding:12px!important;
+    border-radius:17px!important;
+    box-sizing:border-box!important;
+    overflow:hidden!important;
+    box-shadow:0 10px 26px rgba(15,35,90,.06)!important;
+  }
+
+  .card h2,
+  .card h3,
+  .section-head h2{
+    font-size:20px!important;
+    line-height:22px!important;
+    margin:0 0 6px!important;
+  }
+
+  .card p,
+  .muted,
+  .section-head p{
+    font-size:12px!important;
+    line-height:15px!important;
+  }
+
+  .section-head,
+  .card-head{
+    display:flex!important;
+    align-items:center!important;
+    gap:9px!important;
+    flex-wrap:nowrap!important;
+    margin-bottom:10px!important;
+  }
+
+  .ico,
+  .square,
+  .section-head .ico,
+  .module-icon{
+    width:34px!important;
+    height:34px!important;
+    min-width:34px!important;
+    border-radius:12px!important;
+    font-size:14px!important;
+  }
+
+  .grid,
+  .grid-top,
+  .grid-2,
+  .grid-3,
+  .stats,
+  .kpis,
+  .form-grid,
+  .form-row,
+  .filters,
+  .panels{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:10px!important;
+    width:100%!important;
+  }
+
+  input,
+  select,
+  textarea{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    min-height:40px!important;
+    border-radius:12px!important;
+    font-size:14px!important;
+    box-sizing:border-box!important;
+  }
+
+  textarea{
+    min-height:84px!important;
+  }
+
+  .form-line,
+  .actions,
+  .card-actions{
+    width:100%!important;
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:7px!important;
+    align-items:stretch!important;
+  }
+
+  .actions .btn,
+  .card-actions .btn,
+  .card-actions button,
+  .card-actions a{
+    width:100%!important;
+    min-width:0!important;
+    height:36px!important;
+    min-height:36px!important;
+    font-size:10.5px!important;
+    padding:0 7px!important;
+  }
+
+  .mobilebar{
+    display:grid!important;
+    position:fixed!important;
+    left:0!important;
+    right:0!important;
+    bottom:0!important;
+    z-index:9999!important;
+    background:#fff!important;
+    border-top:1px solid #dbe6f3!important;
+    box-shadow:0 -10px 28px rgba(15,35,90,.08)!important;
+    grid-template-columns:repeat(5,1fr)!important;
+  }
+
+  .mobilebar a{
+    min-height:62px!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:5px!important;
+    font-size:10px!important;
+    line-height:11px!important;
+    font-weight:900!important;
+    color:#667085!important;
+    text-align:center!important;
+    padding:4px 2px!important;
+  }
+
+  .mobilebar a.active{
+    color:#061b8f!important;
+  }
+
+  .mobilebar a.logout{
+    color:#be123c!important;
+  }
+
+  /* Pedidos */
+  .kanban-wrap{
+    width:100%!important;
+    overflow:visible!important;
+    padding:0!important;
+  }
+
+  .kanban,
+  .kanban.single{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    min-width:0!important;
+    width:100%!important;
+    gap:10px!important;
+  }
+
+  .coluna{
+    width:100%!important;
+    min-width:0!important;
+    min-height:0!important;
+    padding:12px!important;
+    border-radius:17px!important;
+  }
+
+  .cards-coluna{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:10px!important;
+  }
+
+  .pedido-card{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    padding:12px!important;
+    border-radius:16px!important;
+  }
+
+  .pedido-top{
+    gap:8px!important;
+  }
+
+  .pedido-num{
+    font-size:17px!important;
+  }
+
+  .pedido-status-select{
+    max-width:120px!important;
+    font-size:11px!important;
+    padding:8px 9px!important;
+    border-radius:12px!important;
+  }
+
+  .cliente{
+    font-size:12px!important;
+    line-height:14px!important;
+  }
+
+  .meta{
+    font-size:12px!important;
+    line-height:15px!important;
+  }
+
+  .item-line{
+    font-size:12px!important;
+  }
+
+  .total-card strong{
+    font-size:22px!important;
+  }
+
+  .tabs{
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    gap:7px!important;
+    overflow-x:auto!important;
+    padding:4px 2px 9px!important;
+    margin-bottom:10px!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+
+  .tab{
+    flex:0 0 auto!important;
+    min-width:98px!important;
+    height:38px!important;
+    min-height:38px!important;
+    padding:0 10px!important;
+    border-radius:13px!important;
+    font-size:11px!important;
+  }
+
+  .tab .count,
+  .count{
+    min-width:20px!important;
+    height:20px!important;
+    font-size:10px!important;
+    margin-left:5px!important;
+  }
+
+  /* Reservas */
+  .prof-tabs,
+  .agenda-profissionais-fixa{
+    width:100%!important;
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    gap:7px!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    padding:8px!important;
+    border-radius:14px!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+
+  .prof-tab{
+    flex:0 0 auto!important;
+    height:36px!important;
+    min-height:36px!important;
+    padding:0 12px!important;
+    border-radius:14px!important;
+    font-size:11px!important;
+    white-space:nowrap!important;
+  }
+
+  .reservas-grid,
+  .agenda-grid,
+  .list,
+  .items-grid,
+  .cat-list{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:9px!important;
+    width:100%!important;
+  }
+
+  .reserva-card,
+  .row,
+  .item-card,
+  .cat-row{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    padding:10px!important;
+    border-radius:15px!important;
+  }
+
+  .reserva-card h3,
+  .item-card h3{
+    font-size:15px!important;
+    line-height:17px!important;
+    margin:8px 0!important;
+  }
+
+  .reserva-prof{
+    font-size:10.5px!important;
+    line-height:12px!important;
+    gap:5px!important;
+    margin-bottom:6px!important;
+  }
+
+  .codigo,
+  .badge{
+    font-size:9.5px!important;
+    min-height:20px!important;
+    padding:4px 6px!important;
+    border-radius:999px!important;
+  }
+
+  .info-box,
+  .item-desc,
+  .itens-preview,
+  .detail-box{
+    padding:8px!important;
+    border-radius:12px!important;
+    font-size:10.5px!important;
+    line-height:13px!important;
+    overflow-wrap:anywhere!important;
+    word-break:break-word!important;
+  }
+
+  /* Caixa */
+  .table,
+  table{
+    display:block!important;
+    width:100%!important;
+    max-width:100%!important;
+    overflow-x:auto!important;
+    white-space:nowrap!important;
+    font-size:12px!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+
+  th,td{
+    padding:9px 10px!important;
+  }
+
+  .row{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:8px!important;
+  }
+
+  .row-time{
+    min-width:0!important;
+    font-size:15px!important;
+  }
+
+  /* Cardápio */
+  .item-top{
+    display:flex!important;
+    align-items:flex-start!important;
+    gap:8px!important;
+  }
+
+  .item-price{
+    font-size:20px!important;
+  }
+
+  .kpi strong{
+    font-size:22px!important;
+  }
+
+  .modal,
+  .func-modal,
+  .modal-agenda{
+    padding:8px!important;
+    align-items:flex-start!important;
+    overflow:auto!important;
+  }
+
+  .modal-card,
+  .func-modal-card,
+  .modal-agenda-card{
+    width:100%!important;
+    max-width:100%!important;
+    max-height:92vh!important;
+    margin-top:12px!important;
+    padding:14px!important;
+    border-radius:18px!important;
+  }
+
+  .fullscreen-toggle{
+    right:10px!important;
+    bottom:68px!important;
+    width:46px!important;
+    height:46px!important;
+    border-radius:15px!important;
+  }
+
+  body.mf-fullscreen .content,
+  body.mf-fullscreen .main{
+    padding:7px 7px 72px!important;
+  }
+
+  body.mf-fullscreen .card,
+  body.mf-fullscreen .reserva-card,
+  body.mf-fullscreen .pedido-card{
+    padding:8px!important;
+    border-radius:13px!important;
+  }
+
+  body.mf-fullscreen .actions .btn,
+  body.mf-fullscreen .card-actions .btn,
+  body.mf-fullscreen .card-actions button{
+    height:32px!important;
+    min-height:32px!important;
+    font-size:9.5px!important;
+    border-radius:10px!important;
+  }
+
+  body.mf-fullscreen .fullscreen-toggle{
+    right:8px!important;
+    bottom:50px!important;
+    width:42px!important;
+    height:42px!important;
+    border-radius:14px!important;
+  }
+}
+
+@media(max-width:380px){
+  .main{padding-left:7px!important;padding-right:7px!important;}
+  .hello h1,.top-title strong,.page-title{font-size:20px!important;line-height:22px!important;}
+  .card h2,.section-head h2{font-size:18px!important;line-height:20px!important;}
+  .reserva-card h3,.item-card h3{font-size:14px!important;line-height:16px!important;}
+  .info-box,.item-desc,.itens-preview{font-size:9.6px!important;line-height:12px!important;}
+  .actions .btn,.card-actions .btn,.card-actions button{font-size:9.5px!important;}
+}
+</style>
+{% endblock %}
+{% block page %}
+{% set _pode_cardapio = permissao_admin_sessao(request, 'cardapio') %}
+{% set _pode_pedidos = permissao_admin_sessao(request, 'pedidos') %}
+{% set _pode_reservas = permissao_admin_sessao(request, 'reservas') %}
+{% set _pode_financeiro = permissao_admin_sessao(request, 'financeiro') %}
+<div class="app">
+<aside class="side">
+  <div class="brand"><div class="brand-icon"><i class="fa-solid fa-store"></i></div><div><strong>{{ empresa.nome }}</strong><span>Painel funcionário</span></div></div>
+  <nav class="nav">
+    <a class="" href="/funcionario/{{ empresa.id }}"><i class="fa-solid fa-house"></i>Painel</a>
+    {% if _pode_pedidos %}<a class="" href="/funcionario/{{ empresa.id }}/pedidos"><i class="fa-solid fa-bag-shopping"></i>Pedidos</a>{% endif %}
+    {% if _pode_reservas %}<a class="" href="/funcionario/{{ empresa.id }}/reservas"><i class="fa-regular fa-calendar"></i>Reservas</a>{% endif %}
+    {% if _pode_cardapio %}<a class="" href="/funcionario/{{ empresa.id }}/cardapio"><i class="fa-solid fa-utensils"></i>Menu</a>{% endif %}
+    {% if _pode_financeiro %}<a class="active" href="/funcionario/{{ empresa.id }}/caixa"><i class="fa-solid fa-cash-register"></i>Caixa</a>{% endif %}
+    <a href="/logout"><i class="fa-solid fa-right-from-bracket"></i>Sair</a>
+  </nav>
+</aside>
+<main class="main">
+<header class="top"><div class="hello"><h1>Caixa</h1><p>Resumo operacional do dia.</p></div><a class="pill" href="/funcionario/{{ empresa.id }}"><i class="fa-solid fa-arrow-left"></i>Painel</a></header>
+<section class="grid three"><div class="card"><h2>Faturamento</h2><p class="muted">€ {{ '%.2f'|format(total_dia|default(0)) }}</p></div><div class="card"><h2>Pedidos finalizados</h2><p class="muted">{{ total_pedidos|default(0) }}</p></div><div class="card"><h2>Data</h2><form class="form-line" method="get"><input type="date" name="data" value="{{ data_selecionada }}"><button class="btn green">Ver</button></form></div></section>
+</main>
+</div>
+<nav class="mobilebar">
+<a class="" href="/funcionario/{{ empresa.id }}"><i class="fa-solid fa-house"></i>Painel</a>
+{% if _pode_pedidos %}<a class="" href="/funcionario/{{ empresa.id }}/pedidos"><i class="fa-solid fa-bag-shopping"></i>Pedidos</a>{% endif %}
+{% if _pode_reservas %}<a class="" href="/funcionario/{{ empresa.id }}/reservas"><i class="fa-regular fa-calendar"></i>Reservas</a>{% endif %}
+<a href="/funcionario/{{ empresa.id }}"><i class="fa-solid fa-ellipsis"></i>Mais</a>
+</nav>
+
+
+<script id="mf-v19-i18n-js">
+(function(){
+  const TR = {
+    pt: {
+      home:"Início", panel:"Painel", backPanel:"Painel", employee:"Atendente", logout:"Sair",
+      orders:"Pedidos", reservations:"Reservas", menu:"Menu / Serviços", cash:"Caixa",
+      ordersTitle:"Pedidos", ordersSubtitle:"Fluxo operacional igual ao admin, adaptado para funcionário.",
+      reservationsTitle:"Reservas / Agendamentos", reservationsSubtitle:"Horários, agenda, confirmações e clientes.",
+      menuTitle:"Menu / Serviços", menuSubtitle:"Produtos, categorias e serviços.", cashTitle:"Caixa",
+      operationalDate:"Data operativa", workDate:"Data de trabalho", chooseOrdersDate:"Escolha a data para seguir os pedidos.",
+      chooseReservationsDate:"Escolha o dia para ver horários e reservas.", seeOrders:"Ver pedidos", seeDate:"Ver data",
+      times:"Tempos", timesDesc:"Preparo, entrega e retirada.", calls:"Chamadas", callsDesc:"Clientes chamando o atendente.",
+      configureSchedule:"Configurar agenda", configureScheduleDesc:"Criar profissional e gerar horários, igual ao admin.",
+      professional:"Profissional", newProfessional:"Novo profissional", noProfessional:"Sem profissional / restaurante",
+      name:"Nome", start:"Início", end:"Fim", interval:"Intervalo", seats:"Vagas",
+      generateTimes:"Gerar horários", selectAll:"Selecionar todos", saveSelected:"Salvar selecionados",
+      dayHours:"Horários do dia", available:"Disponível", free:"Livre", block:"Bloquear", unblock:"Ativar",
+      dayReservations:"Reservas / Agendamentos do dia", all:"Todos", pending:"Pendentes", confirmed:"Confirmadas", canceled:"Canceladas", refused:"Recusadas",
+      confirm:"Confirmar", pendingOne:"Pendente", cancel:"Cancelar", reject:"Recusar", notify:"Avisar",
+      new:"Novos", kitchen:"Cozinha", delivery:"Entrega / Retirada", completed:"Concluídos", canceledOrders:"Cancelados",
+      customer:"Cliente", phone:"Telefone", type:"Tipo", payment:"Pagamento", address:"Endereço", note:"Observação",
+      details:"Detalhes", print:"Imprimir", sendKitchen:"Enviar para cozinha", ready:"Pronto", finish:"Concluir",
+      receivedAt:"Recebido às", articles:"Itens", itemsNotLoaded:"Itens não carregados", total:"Total",
+      categories:"Categorias", newCategory:"Nova categoria", newCategoryDesc:"Organize produtos e serviços por categorias.",
+      newItem:"Novo item / serviço", newItemDesc:"Cadastre produtos do cardápio ou serviços.",
+      filters:"Filtros", itemsServices:"Itens / Serviços", active:"Ativo", actives:"Ativos", company:"Empresa",
+      category:"Categoria", price:"Preço", code:"Código", duration:"Duração", stock:"Estoque", iva:"IVA", photoUrl:"Foto URL",
+      description:"Descrição", createCategory:"Criar categoria", createItem:"Criar item", edit:"Editar", delete:"Excluir",
+      save:"Salvar", close:"Fechar", clear:"Limpar", search:"Buscar", allFem:"Todas", noImage:"Sem imagem",
+      product:"Produto", service:"Serviço", withoutCategory:"Sem categoria", touchCard:"Toque no card para editar detalhes do item.",
+      editItem:"Editar item / serviço"
+    },
+    it: {
+      home:"Home", panel:"Pannello", backPanel:"Pannello", employee:"Addetto", logout:"Esci",
+      orders:"Ordini", reservations:"Prenotazioni", menu:"Menu / Servizi", cash:"Cassa",
+      ordersTitle:"Ordini", ordersSubtitle:"Flusso operativo come l'admin, adattato al dipendente.",
+      reservationsTitle:"Prenotazioni / Appuntamenti", reservationsSubtitle:"Orari, agenda, conferme e clienti.",
+      menuTitle:"Menu / Servizi", menuSubtitle:"Prodotti, categorie e servizi.", cashTitle:"Cassa",
+      operationalDate:"Data operativa", workDate:"Data di lavoro", chooseOrdersDate:"Scegli la data per seguire gli ordini.",
+      chooseReservationsDate:"Scegli il giorno per visualizzare orari e prenotazioni.", seeOrders:"Vedi ordini", seeDate:"Vedi data",
+      times:"Tempi", timesDesc:"Preparazione, consegna e ritiro.", calls:"Chiamate", callsDesc:"Clienti che chiamano l'addetto.",
+      configureSchedule:"Configura agenda", configureScheduleDesc:"Crea professionista e genera orari, come nell'admin.",
+      professional:"Professionista", newProfessional:"Nuovo professionista", noProfessional:"Nessun professionista / ristorante",
+      name:"Nome", start:"Inizio", end:"Fine", interval:"Intervallo", seats:"Posti",
+      generateTimes:"Genera orari", selectAll:"Seleziona tutti", saveSelected:"Salva selezionati",
+      dayHours:"Orari del giorno", available:"Disponibile", free:"Libero", block:"Blocca", unblock:"Attiva",
+      dayReservations:"Prenotazioni / Appuntamenti del giorno", all:"Tutte", pending:"In sospeso", confirmed:"Confermate", canceled:"Annullate", refused:"Rifiutate",
+      confirm:"Conferma", pendingOne:"In sospeso", cancel:"Annulla", reject:"Rifiuta", notify:"Avvisa",
+      new:"Nuovi", kitchen:"Cucina", delivery:"Consegna / Ritiro", completed:"Completati", canceledOrders:"Annullati",
+      customer:"Cliente", phone:"Telefono", type:"Tipo", payment:"Pagamento", address:"Indirizzo", note:"Note",
+      details:"Dettagli", print:"Stampa", sendKitchen:"Invia in cucina", ready:"Pronto", finish:"Concludi",
+      receivedAt:"Ricevuto alle", articles:"Articoli", itemsNotLoaded:"Articoli non caricati", total:"Totale",
+      categories:"Categorie", newCategory:"Nuova categoria", newCategoryDesc:"Organizza prodotti e servizi per categorie.",
+      newItem:"Nuovo item / servizio", newItemDesc:"Registra prodotti del menu o servizi.",
+      filters:"Filtri", itemsServices:"Item / Servizi", active:"Attivo", actives:"Attivi", company:"Azienda",
+      category:"Categoria", price:"Prezzo", code:"Codice", duration:"Durata", stock:"Scorta", iva:"IVA", photoUrl:"URL foto",
+      description:"Descrizione", createCategory:"Crea categoria", createItem:"Crea item", edit:"Modifica", delete:"Elimina",
+      save:"Salva", close:"Chiudi", clear:"Pulisci", search:"Cerca", allFem:"Tutte", noImage:"Senza immagine",
+      product:"Prodotto", service:"Servizio", withoutCategory:"Senza categoria", touchCard:"Tocca il card per modificare i dettagli dell'item.",
+      editItem:"Modifica item / servizio"
+    },
+    en: {
+      home:"Home", panel:"Panel", backPanel:"Panel", employee:"Employee", logout:"Logout",
+      orders:"Orders", reservations:"Reservations", menu:"Menu / Services", cash:"Cash",
+      ordersTitle:"Orders", ordersSubtitle:"Admin-like workflow adapted for staff.",
+      reservationsTitle:"Reservations / Appointments", reservationsSubtitle:"Times, schedule, confirmations, and customers.",
+      menuTitle:"Menu / Services", menuSubtitle:"Products, categories, and services.", cashTitle:"Cash",
+      operationalDate:"Operating date", workDate:"Work date", chooseOrdersDate:"Choose the date to follow received orders.",
+      chooseReservationsDate:"Choose the day to view times and reservations.", seeOrders:"View orders", seeDate:"View date",
+      times:"Times", timesDesc:"Preparation, delivery, and pickup.", calls:"Calls", callsDesc:"Customers calling the attendant.",
+      configureSchedule:"Configure schedule", configureScheduleDesc:"Create professional and generate times, like admin.",
+      professional:"Professional", newProfessional:"New professional", noProfessional:"No professional / restaurant",
+      name:"Name", start:"Start", end:"End", interval:"Interval", seats:"Seats",
+      generateTimes:"Generate times", selectAll:"Select all", saveSelected:"Save selected",
+      dayHours:"Day times", available:"Available", free:"Free", block:"Block", unblock:"Enable",
+      dayReservations:"Day reservations / appointments", all:"All", pending:"Pending", confirmed:"Confirmed", canceled:"Canceled", refused:"Refused",
+      confirm:"Confirm", pendingOne:"Pending", cancel:"Cancel", reject:"Reject", notify:"Notify",
+      new:"New", kitchen:"Kitchen", delivery:"Delivery / Pickup", completed:"Completed", canceledOrders:"Canceled",
+      customer:"Customer", phone:"Phone", type:"Type", payment:"Payment", address:"Address", note:"Note",
+      details:"Details", print:"Print", sendKitchen:"Send to kitchen", ready:"Ready", finish:"Finish",
+      receivedAt:"Received at", articles:"Items", itemsNotLoaded:"Items not loaded", total:"Total",
+      categories:"Categories", newCategory:"New category", newCategoryDesc:"Organize products and services by categories.",
+      newItem:"New item / service", newItemDesc:"Register menu products or services.",
+      filters:"Filters", itemsServices:"Items / Services", active:"Active", actives:"Active", company:"Company",
+      category:"Category", price:"Price", code:"Code", duration:"Duration", stock:"Stock", iva:"VAT", photoUrl:"Photo URL",
+      description:"Description", createCategory:"Create category", createItem:"Create item", edit:"Edit", delete:"Delete",
+      save:"Save", close:"Close", clear:"Clear", search:"Search", allFem:"All", noImage:"No image",
+      product:"Product", service:"Service", withoutCategory:"No category", touchCard:"Tap a card to edit item details.",
+      editItem:"Edit item / service"
+    }
+  };
+
+  const phraseKeys = {
+    "Home":"home","Início":"home","Painel":"panel","Pannello":"panel","Panel":"panel","Esci":"logout","Sair":"logout","Logout":"logout",
+    "Ordini":"orders","Pedidos":"orders","Orders":"orders","Prenotazioni":"reservations","Reservas":"reservations","Reservations":"reservations",
+    "Menu / Servizi":"menu","Menu / Serviços":"menu","Menu / Services":"menu","Cassa":"cash","Caixa":"cash","Cash":"cash",
+    "Data operativa":"operationalDate","Data de trabalho":"workDate","Data di lavoro":"workDate","Work date":"workDate",
+    "Escolha a data para seguir os pedidos.":"chooseOrdersDate","Scegli la data per seguire gli ordini.":"chooseOrdersDate",
+    "Escolha o dia para ver horários e reservas.":"chooseReservationsDate","Scegli il giorno per visualizzare orari e prenotazioni.":"chooseReservationsDate",
+    "Vedi ordini":"seeOrders","Ver pedidos":"seeOrders","View orders":"seeOrders","Vedi data":"seeDate","Ver data":"seeDate","View date":"seeDate",
+    "Tempi":"times","Tempos":"times","Times":"times","Preparo, entrega e retirada.":"timesDesc","Preparazione, consegna e ritiro.":"timesDesc",
+    "Chiamate":"calls","Chamadas":"calls","Calls":"calls","Clienti che chiamano l'addetto.":"callsDesc","Clientes chamando o atendente.":"callsDesc",
+    "Configura agenda":"configureSchedule","Configurar agenda":"configureSchedule","Configure schedule":"configureSchedule",
+    "Criar profissional e gerar horários, igual ao admin.":"configureScheduleDesc","Crea professionista e genera orari, come nell'admin.":"configureScheduleDesc",
+    "Professionista":"professional","Profissional":"professional","Professional":"professional","Nuovo professionista":"newProfessional","Novo profissional":"newProfessional",
+    "Sem profissional / restaurante":"noProfessional","Nessun professionista / ristorante":"noProfessional",
+    "Nome":"name","Name":"name","Início":"start","Inizio":"start","Start":"start","Fim":"end","Fine":"end","End":"end",
+    "Intervallo":"interval","Intervalo":"interval","Interval":"interval","Vagas":"seats","Posti":"seats","Seats":"seats",
+    "Genera orari":"generateTimes","Gerar horários":"generateTimes","Generate times":"generateTimes",
+    "Seleziona tutti":"selectAll","Selecionar todos":"selectAll","Select all":"selectAll",
+    "Salva selezionati":"saveSelected","Salvar selecionados":"saveSelected","Save selected":"saveSelected",
+    "Orari del giorno":"dayHours","Horários do dia":"dayHours","Day times":"dayHours",
+    "Disponibile":"available","Disponível":"available","Available":"available","Libero":"free","Livre":"free","Free":"free",
+    "Bloccare":"block","Bloquear":"block","Blocca":"block","Block":"block","Attiva":"unblock","Ativar":"unblock","Enable":"unblock",
+    "Prenotazioni / Appuntamenti do dia":"dayReservations","Reservas / Appuntamenti do dia":"dayReservations","Reservas / Agendamentos do dia":"dayReservations",
+    "Prenotazioni / Appuntamenti del giorno":"dayReservations","Day reservations / appointments":"dayReservations",
+    "Tutte":"all","Todos":"all","All":"all","In sospeso":"pending","Pendentes":"pending","Pending":"pending",
+    "Confermate":"confirmed","Confirmadas":"confirmed","Confirmed":"confirmed","Annullate":"canceled","Canceladas":"canceled","Canceled":"canceled",
+    "Rifiutate":"refused","Recusadas":"refused","Refused":"refused","Conferma":"confirm","Confirmar":"confirm","Confirm":"confirm",
+    "Annulla":"cancel","Cancelar":"cancel","Cancel":"cancel","Rifiuta":"reject","Recusar":"reject","Reject":"reject","Avvisa":"notify","Avisar":"notify","Notify":"notify",
+    "Nuovi":"new","Novos":"new","New":"new","Cucina":"kitchen","Cozinha":"kitchen","Kitchen":"kitchen",
+    "Consegna/Ritiro":"delivery","Consegna / Ritiro":"delivery","Entrega / Retirada":"delivery","Delivery / Pickup":"delivery",
+    "Completati":"completed","Concluídos":"completed","Completed":"completed","Annullati":"canceledOrders","Cancelados":"canceledOrders",
+    "Cliente":"customer","Customer":"customer","Telefone":"phone","Telefono":"phone","Phone":"phone",
+    "Tipo":"type","Type":"type","Pagamento":"payment","Payment":"payment","Endereço":"address","Indirizzo":"address","Address":"address",
+    "Observação":"note","Osservazione":"note","Note":"note","Dettagli":"details","Detalhes":"details","Details":"details",
+    "Stampa":"print","Imprimir":"print","Print":"print","Invia in cucina":"sendKitchen","Enviar para cozinha":"sendKitchen","Send to kitchen":"sendKitchen",
+    "Pronto":"ready","Ready":"ready","Concludi":"finish","Concluir":"finish","Finish":"finish",
+    "Ricevuto alle":"receivedAt","Recebido às":"receivedAt","Received at":"receivedAt","Articoli":"articles","Itens":"articles","Items":"articles",
+    "Itens não carregados":"itemsNotLoaded","Articoli non caricati":"itemsNotLoaded","Items not loaded":"itemsNotLoaded",
+    "Totale":"total","Total":"total",
+    "Categorie":"categories","Categorias":"categories","Categories":"categories","Nuova categoria":"newCategory","Nova categoria":"newCategory","New category":"newCategory",
+    "Organize produtos e serviços por categorias.":"newCategoryDesc","Organizza prodotti e servizi per categorie.":"newCategoryDesc",
+    "Nuovo item / servizio":"newItem","Novo item / serviço":"newItem","New item / service":"newItem",
+    "Cadastre produtos do cardápio ou serviços.":"newItemDesc","Registra prodotti del menu o servizi.":"newItemDesc",
+    "Filtri":"filters","Filtros":"filters","Filters":"filters","Item / Servizi":"itemsServices","Itens / Serviços":"itemsServices","Items / Services":"itemsServices",
+    "Attivo":"active","Ativo":"active","Active":"active","Attivi":"actives","Ativos":"actives","Azienda":"company","Empresa":"company","Company":"company",
+    "Categoria":"category","Category":"category","Prezzo":"price","Preço":"price","Price":"price","Codice":"code","Código":"code","Code":"code",
+    "Durata":"duration","Duração":"duration","Duration":"duration","Scorta":"stock","Estoque":"stock","Stock":"stock","IVA":"iva","VAT":"iva",
+    "URL foto":"photoUrl","Foto URL":"photoUrl","Photo URL":"photoUrl","Descrizione":"description","Descrição":"description","Description":"description",
+    "Crea categoria":"createCategory","Criar categoria":"createCategory","Create category":"createCategory",
+    "Crea item":"createItem","Criar item":"createItem","Create item":"createItem","Modifica":"edit","Editar":"edit","Edit":"edit",
+    "Elimina":"delete","Excluir":"delete","Delete":"delete","Salva":"save","Salvar":"save","Save":"save","Chiudi":"close","Fechar":"close","Close":"close",
+    "Pulisci":"clear","Limpar":"clear","Clear":"clear","Cerca":"search","Buscar":"search","Search":"search",
+    "Senza immagine":"noImage","Sem imagem":"noImage","No image":"noImage","Prodotto":"product","Produto":"product","Product":"product",
+    "Servizio":"service","Serviço":"service","Service":"service","Senza categoria":"withoutCategory","Sem categoria":"withoutCategory","No category":"withoutCategory",
+    "Tocca il card per modificare i dettagli dell'item.":"touchCard","Toque no card para editar detalhes do item.":"touchCard",
+    "Modifica item / servizio":"editItem","Editar item / serviço":"editItem","Edit item / service":"editItem"
+  };
+
+  function curLang(){
+    return "pt";
+  }
+  function t(key, lang){ return (TR[lang] && TR[lang][key]) || TR.pt[key] || key; }
+
+  function normalize(s){ return String(s||"").replace(/\s+/g," ").trim(); }
+  function translateTextNode(node, lang){
+    const original = normalize(node.textContent);
+    if(!original) return;
+    const countMatch = original.match(/^(.+?)\s*(\(\d+\)|\d+)$/);
+    const base = countMatch ? normalize(countMatch[1]) : original;
+    const key = phraseKeys[base] || phraseKeys[original];
+    if(!key) return;
+    node.textContent = node.textContent.replace(base, t(key,lang));
+  }
+
+  function translateTree(lang){
+    document.querySelectorAll("body *").forEach(el=>{
+      if(el.closest("script,style")) return;
+      if(el.dataset && el.dataset.i18n){
+        el.textContent = t(el.dataset.i18n, lang);
+        return;
+      }
+      Array.from(el.childNodes).forEach(n=>{
+        if(n.nodeType === 3) translateTextNode(n, lang);
+      });
+      if(["INPUT","TEXTAREA"].includes(el.tagName)){
+        const ph = normalize(el.getAttribute("placeholder"));
+        const key = phraseKeys[ph];
+        if(key) el.setAttribute("placeholder", t(key,lang));
+      }
+      if(el.tagName === "OPTION"){
+        const key = phraseKeys[normalize(el.textContent)];
+        if(key) el.textContent = t(key,lang);
+      }
+    });
+  }
+
+  function ensureSwitch(){
+    return;
+  }
+
+  function updatePageHeaders(lang){
+    const path = location.pathname;
+    const h1 = document.querySelector(".hello h1");
+    const hp = document.querySelector(".hello p");
+    if(path.includes("/pedidos")){
+      if(h1) h1.textContent = t("ordersTitle",lang);
+      if(hp) hp.textContent = t("ordersSubtitle",lang);
+    }else if(path.includes("/reservas")){
+      if(h1) h1.textContent = t("reservationsTitle",lang);
+      if(hp) hp.textContent = t("reservationsSubtitle",lang);
+    }else if(path.includes("/cardapio")){
+      if(h1) h1.textContent = t("menuTitle",lang);
+      if(hp) hp.textContent = t("menuSubtitle",lang);
+    }else if(path.includes("/caixa")){
+      if(h1) h1.textContent = t("cashTitle",lang);
+    }
+  }
+
+  function applyLang(lang){
+    lang = "pt";
+    localStorage.setItem("mf_funcionario_lang", "pt");
+    document.documentElement.lang = lang;
+    ensureSwitch();
+    document.querySelectorAll("[data-mf-lang]").forEach(b=>b.classList.toggle("active", b.dataset.mfLang === lang));
+    updatePageHeaders(lang);
+    translateTree(lang);
+  }
+
+  window.mfApplyFuncionarioLang = applyLang;
+  document.addEventListener("DOMContentLoaded", ()=>applyLang(curLang()));
+
+  // Reaplica depois que cards são renderizados via JS em pedidos.
+  const mo = new MutationObserver(()=> {
+    clearTimeout(window.__mf_i18n_timer);
+    window.__mf_i18n_timer = setTimeout(()=>translateTree(curLang()), 60);
+  });
+  document.addEventListener("DOMContentLoaded", ()=> {
+    const root = document.querySelector("main") || document.body;
+    if(root) mo.observe(root,{childList:true,subtree:true});
+  });
+})();
+</script>
+
+
+<script id="mf-v20-extra-i18n">
+(function(){
+  const EXTRA = {
+    pt:{
+      timeAlert:"Tempos devem ser configurados no admin ou liberados depois.",
+      informName:"Informe o nome.",
+      client:"Cliente", phone:"Telefone", type:"Tipo", payment:"Pagamento", address:"Endereço", note:"Observação",
+      itemsNotLoaded:"Itens não carregados", customer:"Cliente", people:"Pessoas", time:"Horário",
+      editCategory:"Editar categoria", editItem:"Editar item / serviço", close:"Fechar", save:"Salvar",
+      newItemDesc:"Cadastre produtos do cardápio ou serviços para salão/barbearia.",
+      descriptionPlaceholder:"Descrição do item", categoryNoImage:"Sem imagem", localPickup:"Retirada no local",
+      paymentDash:"Pagamento: -"
+    },
+    it:{
+      timeAlert:"I tempi devono essere configurati nell'admin o abilitati in seguito.",
+      informName:"Inserisci il nome.",
+      client:"Cliente", phone:"Telefono", type:"Tipo", payment:"Pagamento", address:"Indirizzo", note:"Note",
+      itemsNotLoaded:"Articoli non caricati", customer:"Cliente", people:"Persone", time:"Orario",
+      editCategory:"Modifica categoria", editItem:"Modifica item / servizio", close:"Chiudi", save:"Salva",
+      newItemDesc:"Registra prodotti del menu o servizi per sala/barberia.",
+      descriptionPlaceholder:"Descrizione dell'item", categoryNoImage:"Senza immagine", localPickup:"Ritiro sul posto",
+      paymentDash:"Pagamento: -"
+    },
+    en:{
+      timeAlert:"Times must be configured in admin or enabled later.",
+      informName:"Enter the name.",
+      client:"Customer", phone:"Phone", type:"Type", payment:"Payment", address:"Address", note:"Note",
+      itemsNotLoaded:"Items not loaded", customer:"Customer", people:"People", time:"Time",
+      editCategory:"Edit category", editItem:"Edit item / service", close:"Close", save:"Save",
+      newItemDesc:"Register menu products or services for restaurant/salon.",
+      descriptionPlaceholder:"Item description", categoryNoImage:"No image", localPickup:"Local pickup",
+      paymentDash:"Payment: -"
+    }
+  };
+  function lang(){ const l=localStorage.getItem("mf_funcionario_lang")||document.documentElement.lang||"it"; return "pt"; }
+  function ex(k){ return (EXTRA[lang()]&&EXTRA[lang()][k])||EXTRA.pt[k]||k; }
+  window.mfTExtra = ex;
+
+  const oldAlert = window.alert;
+  window.alert = function(msg){
+    const s = String(msg||"");
+    const map = {
+      "Tempos devem ser configurados no admin ou liberados depois.":"timeAlert",
+      "Informe o nome.":"informName"
+    };
+    oldAlert(map[s] ? ex(map[s]) : msg);
+  };
+
+  function replaceTextDeep(){
+    const replacements = {
+      "Cliente:":"client","Telefone:":"phone","Tipo:":"type","Pagamento:":"payment","Endereço:":"address","Observação:":"note",
+      "Itens não carregados":"itemsNotLoaded","Articoli non caricati":"itemsNotLoaded",
+      "Retirada no local":"localPickup",
+      "Editar categoria":"editCategory","Editar item / serviço":"editItem",
+      "Fechar":"close","Salvar":"save","Chiudi":"close","Salva":"save",
+      "Cadastre produtos do cardápio ou serviços para salão/barbearia.":"newItemDesc",
+      "Descrição do item":"descriptionPlaceholder","Sem imagem":"categoryNoImage","Senza immagine":"categoryNoImage"
+    };
+    document.querySelectorAll("body *").forEach(el=>{
+      if(el.closest("script,style")) return;
+      Array.from(el.childNodes).forEach(n=>{
+        if(n.nodeType!==3) return;
+        let text = n.textContent;
+        Object.keys(replacements).forEach(k=>{
+          if(text.includes(k)){
+            text = text.replaceAll(k, ex(replacements[k]));
+          }
+        });
+        n.textContent = text;
+      });
+      if((el.tagName==="INPUT" || el.tagName==="TEXTAREA") && el.placeholder){
+        Object.keys(replacements).forEach(k=>{
+          if(el.placeholder.includes(k)) el.placeholder = el.placeholder.replaceAll(k, ex(replacements[k]));
+        });
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", ()=>{
+    replaceTextDeep();
+    const mo = new MutationObserver(()=> {
+      clearTimeout(window.__mf_v20_timer);
+      window.__mf_v20_timer=setTimeout(replaceTextDeep,80);
+    });
+    mo.observe(document.body,{childList:true,subtree:true,characterData:true});
+  });
+
+  const oldApply = window.mfApplyFuncionarioLang;
+  window.mfApplyFuncionarioLang = function(l){
+    if(oldApply) oldApply(l);
+    setTimeout(replaceTextDeep,120);
+  };
+})();
+</script>
+
+
+<script id="v396-funcionario-clean-service-text">
+(function(){
+  if(window.__V396_CLEAN_SERVICE__) return;
+  window.__V396_CLEAN_SERVICE__ = true;
+
+  function limpar(){
+    document.querySelectorAll(".info-box, .item-desc, .itens-preview").forEach(function(el){
+      if(el.dataset.v396Cleaned === "1") return;
+      el.innerHTML = el.innerHTML
+        .replace(/\\n/g, " ")
+        .replace(/\s*FINANCEIRO_SERVICO\s+valor\s*=\s*[\d.,]+/gi, "")
+        .replace(/\s*financeiro_servico\s+valor\s*=\s*[\d.,]+/gi, "")
+        .replace(/\s*pagamento\s*=\s*/gi, " <strong>Pagamento:</strong> ")
+        .replace(/\s{2,}/g, " ");
+      el.dataset.v396Cleaned = "1";
+    });
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", limpar);
+  }else{
+    limpar();
+  }
+  setInterval(limpar, 1500);
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,37 @@
+__pycache__/
+*.pyc
+.env
+.venv/
+venv/
+venv_server/
+.DS_Store
+.vscode/
+
+*.zip
+*.db
+*.db.backup
+*.backup
+*.bkp
+backups_local/
+backups/
+.menufacile_secret_key
+
+*.db-journal
+
+*.db-wal
+
+*.db-shm
+
+backend/static/uploads/*
+!backend/static/uploads/.gitkeep
+*.db.*
+
+
+# Chaves privadas e arquivos sensíveis
+*.pem
+*.key
+.menufacile_vapid_private.pem
+
+# Arquivos locais de execução/configuração
+.menufacile_push_worker_heartbeat.json
+.saas_owner_settings.json

@@ -1,0 +1,646 @@
+{% set lang = 'pt' %}
+{% set is_servico = negocio_servico if negocio_servico is defined else False %}
+
+{% macro status_label(status) -%}
+  {%- set s = (status or 'pendente')|lower -%}
+  {%- if lang == "it" -%}
+    {%- if s == "confirmada" -%}confermata{%- elif s == "cancelada" -%}annullata{%- elif s == "recusada" -%}rifiutata{%- elif s == "concluida" or s == "paga" -%}pagata{%- else -%}in attesa{%- endif -%}
+  {%- elif lang == "en" -%}
+    {%- if s == "confirmada" -%}confirmed{%- elif s == "cancelada" -%}cancelled{%- elif s == "recusada" -%}declined{%- elif s == "concluida" or s == "paga" -%}paid{%- else -%}pending{%- endif -%}
+  {%- else -%}
+    {%- if s == "confirmada" -%}confirmada{%- elif s == "cancelada" -%}cancelada{%- elif s == "recusada" -%}recusada{%- elif s == "concluida" or s == "paga" -%}paga{%- else -%}pendente{%- endif -%}
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro nome_profissional(r) -%}
+  {%- set ns = namespace(nome='') -%}
+  {%- if profissionais is defined -%}
+    {%- for p in profissionais -%}
+      {%- if r.profissional_id and p.id == r.profissional_id -%}
+        {%- set ns.nome = p.nome -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+  {%- if ns.nome -%}
+    {{- ns.nome -}}
+  {%- elif r.horario and ' - ' in r.horario -%}
+    {{- r.horario.split(' - ', 1)[1] -}}
+  {%- else -%}
+    {%- if lang == "it" -%}Non informato{%- elif lang == "en" -%}Not informed{%- else -%}Não informado{%- endif -%}
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro hora_limpa(r) -%}
+  {{- (r.horario or '').split(' - ', 1)[0] -}}
+{%- endmacro %}
+
+{% macro servico_limpo(obs) -%}
+  {%- set s = (obs or '-') -%}
+  {%- set s = s.replace('\\n', ' ') -%}
+  {%- set s = s.replace('Serviços selecionados:', '') -%}
+  {%- set s = s.replace('Servicos selecionados:', '') -%}
+  {%- set s = s.replace('Servizi selezionati:', '') -%}
+  {%- set s = s.replace('Selected services:', '') -%}
+  {%- set s = s.split('FINANCEIRO_SERVICO')[0] -%}
+  {%- set s = s.split(' Total:', 1)[0] -%}
+  {%- set s = s.split(' Totale:', 1)[0] -%}
+  {%- set s = s.split(' Professional:', 1)[0] -%}
+  {%- set s = s.split(' Profissional:', 1)[0] -%}
+  {%- set s = s.split(' Professionista:', 1)[0] -%}
+  {{- s.strip() or '-' -}}
+{%- endmacro %}
+
+{% macro pagamento_limpo(r) -%}
+  {%- if r.pagamento is defined and r.pagamento -%}
+    {{- r.pagamento -}}
+  {%- else -%}
+    {%- set s = r.observacao or '' -%}
+    {%- if 'pagamento=' in s -%}
+      {{- s.split('pagamento=', 1)[1].split()[0].strip() -}}
+    {%- elif 'pagamento:' in s -%}
+      {{- s.split('pagamento:', 1)[1].split()[0].strip() -}}
+    {%- else -%}
+      -
+    {%- endif -%}
+  {%- endif -%}
+{%- endmacro %}
+
+<!DOCTYPE html>
+{% extends "base.html" %}
+{% block body_attrs %} class="mf-print-reservas"{% endblock %}
+{% block title %}{% if is_servico %}{% if lang == "it" %}Agenda per professionista{% elif lang == "en" %}Schedule by professional{% else %}Agenda por profissional{% endif %}{% else %}{% if lang == "it" %}Prenotazioni del giorno{% elif lang == "en" %}Daily reservations{% else %}Reservas do dia{% endif %}{% endif %} - {{ empresa.nome }}{% endblock %}
+{% block head %}
+<style>
+*{box-sizing:border-box}
+body{font-family:Arial,sans-serif;margin:0;color:#111827;background:#fff}
+.page{max-width:1180px;margin:0 auto;padding:20px}
+.header{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;border-bottom:2px solid #111827;padding-bottom:12px;margin-bottom:16px}
+h1{margin:0;font-size:24px}
+.meta{font-size:18px;color:#061b8f;font-weight:900;margin-top:6px}
+.actions{display:flex;gap:8px}
+button{border:0;border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer}
+.print{background:#061b8f;color:#fff}
+.back{background:#eef3ff;color:#061b8f}
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.box{border:1px solid #d1d5db;border-radius:12px;padding:10px 12px}
+.box strong{display:block;color:#061b8f;font-size:20px}
+.box span{font-size:12px;color:#4b5563;font-weight:800}
+.staff-columns{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;align-items:start}
+.staff-col{border:2px solid #d1d5db;border-radius:16px;overflow:hidden;break-inside:avoid;background:#fff;box-shadow:0 8px 20px rgba(15,35,90,.06)}
+.staff-title{background:#061b8f;color:#fff;padding:12px 14px;font-size:19px;font-weight:1000;display:flex;justify-content:space-between;gap:8px}
+.staff-count{font-size:12px;background:#fff;color:#061b8f;border-radius:999px;padding:5px 9px;align-self:center;font-weight:1000}
+.appt{padding:12px 12px;border-top:3px solid #dbe6f5;position:relative}
+.appt-time{font-size:22px;font-weight:1000;color:#061b8f;margin-bottom:6px;background:#eef3ff;border-radius:10px;padding:5px 8px;display:inline-block}
+.appt-client{font-size:14px;font-weight:900;text-transform:uppercase;margin-bottom:4px}
+.appt-service{font-size:13px;font-weight:900;color:#344054;line-height:1.35;margin:7px 0;padding:8px;border-radius:10px;background:#f8fbff;border:1px solid #e5edf8}
+.appt-meta{display:flex;gap:6px;flex-wrap:wrap;font-size:11px;color:#4b5563;font-weight:800}
+.badge{display:inline-block;border-radius:999px;background:#eef3ff;color:#061b8f;padding:3px 7px;font-size:11px;font-weight:900}
+.group{border:1px solid #d1d5db;border-radius:14px;margin-bottom:14px;overflow:hidden;break-inside:avoid}
+.group-title{background:#f3f4f6;padding:11px 14px;font-size:18px;font-weight:900;color:#061b8f;display:flex;justify-content:space-between;gap:10px}
+.reserva{padding:12px 14px;border-top:1px solid #e5e7eb}
+.reserva h3{margin:0 0 8px;font-size:17px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;font-size:13px}
+.label{font-weight:900;color:#061b8f}
+.empty{border:1px dashed #d1d5db;border-radius:14px;padding:18px;text-align:center;color:#6b7280;font-weight:800}
+@media print{
+  .actions{display:none}
+  .page{padding:0;max-width:none}
+  .staff-columns{grid-template-columns:repeat(3,1fr);gap:12px}
+  .staff-col,.group{break-inside:avoid}
+  .appt{padding:8px 9px}
+  .staff-title{font-size:15px}
+  .appt-time{font-size:16px}
+  .appt-client{font-size:12px}
+  .appt-service{font-size:11px}
+}
+@media(max-width:700px){.header{display:block}.actions{margin-top:12px}.summary{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.staff-columns{grid-template-columns:1fr}}
+
+/* v372-ajuste-data-separacao */
+.header h1{font-size:30px}
+.header .meta::before{
+  content:"";
+  display:inline-block;
+  width:8px;
+  height:8px;
+  border-radius:999px;
+  background:#061b8f;
+  margin-right:8px;
+  vertical-align:middle;
+}
+.appt + .appt{
+  margin-top:0;
+}
+@media print{
+  .header h1{font-size:24px}
+  .meta{font-size:15px}
+  .appt-time{font-size:18px;padding:4px 7px}
+}
+
+/* v373 - barra vertical entre profissionais na impressão do salão */
+.staff-columns{
+  gap:24px !important;
+}
+.staff-col{
+  position:relative;
+}
+.staff-col:not(:first-child)::before{
+  content:"";
+  position:absolute;
+  left:-14px;
+  top:0;
+  bottom:0;
+  width:4px;
+  border-radius:999px;
+  background:#061b8f;
+}
+@media(max-width:700px){
+  .staff-col:not(:first-child)::before{
+    display:none;
+  }
+}
+@media print{
+  .staff-columns{
+    gap:16px !important;
+  }
+  .staff-col:not(:first-child)::before{
+    left:-10px;
+    width:3px;
+  }
+}
+
+
+/* v374 - separador visível entre profissionais */
+.staff-columns{
+  gap:18px !important;
+}
+.staff-col{
+  border-left:7px solid #061b8f !important;
+}
+.staff-col:first-child{
+  border-left:7px solid #061b8f !important;
+}
+.staff-title{
+  border-left:0 !important;
+}
+@media print{
+  .staff-col{
+    border-left:5px solid #061b8f !important;
+  }
+}
+
+
+/* v375 - impressão salão estilo colunas separadas */
+body{
+  background:#fff !important;
+}
+.page{
+  max-width:1500px !important;
+  padding:28px 34px !important;
+}
+.header{
+  border-bottom:4px solid #061b8f !important;
+  align-items:center !important;
+  margin-bottom:18px !important;
+}
+.header h1{
+  font-size:34px !important;
+  color:#061b8f !important;
+  letter-spacing:-.04em;
+}
+.meta{
+  font-size:19px !important;
+  color:#061b8f !important;
+}
+.summary{
+  display:none !important;
+}
+.staff-columns{
+  display:grid !important;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr)) !important;
+  gap:0 !important;
+  align-items:start !important;
+}
+.staff-col{
+  border:0 !important;
+  border-left:5px solid #061b8f !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  min-height:760px;
+  padding:0 14px 10px 14px !important;
+  background:#fff !important;
+}
+.staff-title{
+  background:#061b8f !important;
+  color:#fff !important;
+  border-radius:8px 8px 0 0 !important;
+  padding:10px 12px !important;
+  margin:0 0 12px 0 !important;
+  font-size:18px !important;
+}
+.staff-count{
+  background:#fff !important;
+  color:#061b8f !important;
+}
+.appt{
+  border-top:1px dashed #b9c6dd !important;
+  padding:16px 0 14px 0 !important;
+}
+.appt:first-of-type{
+  border-top:0 !important;
+}
+.appt-time{
+  font-size:24px !important;
+  font-weight:1000 !important;
+  color:#061b8f !important;
+  background:#eef3ff !important;
+  border-radius:9px !important;
+  padding:4px 8px !important;
+  display:inline-block !important;
+}
+.appt-client{
+  font-size:13px !important;
+  font-weight:1000 !important;
+  line-height:1.22 !important;
+  margin-top:8px !important;
+}
+.appt-service{
+  background:#f8fbff !important;
+  border:1px solid #dbe6f5 !important;
+  border-radius:9px !important;
+  padding:8px !important;
+  font-size:12px !important;
+  font-weight:900 !important;
+  line-height:1.35 !important;
+}
+.appt-meta{
+  font-size:11px !important;
+  gap:6px !important;
+  line-height:1.4 !important;
+}
+.badge{
+  background:#eef3ff !important;
+  color:#061b8f !important;
+}
+@media print{
+  @page{
+    size:A4 landscape;
+    margin:8mm;
+  }
+  .page{
+    max-width:none !important;
+    padding:0 !important;
+  }
+  .header h1{
+    font-size:28px !important;
+  }
+  .staff-columns{
+    grid-template-columns:repeat(6,1fr) !important;
+  }
+  .staff-col{
+    min-height:690px !important;
+    padding:0 8px 8px 10px !important;
+    border-left:4px solid #061b8f !important;
+  }
+  .staff-title{
+    font-size:14px !important;
+    padding:8px !important;
+  }
+  .appt-time{
+    font-size:18px !important;
+  }
+  .appt-client{
+    font-size:11px !important;
+  }
+  .appt-service{
+    font-size:10px !important;
+    padding:6px !important;
+  }
+  .appt-meta{
+    font-size:9px !important;
+  }
+}
+
+
+/* v380 - sidebar fixo padronizado em todas as telas */
+.side,
+.sidebar,
+.premium-sidebar,
+aside.side,
+aside.sidebar{
+  width:230px !important;
+  min-width:230px !important;
+  max-width:230px !important;
+  flex:0 0 230px !important;
+  background:#fff !important;
+  border-right:1px solid #d9e4f4 !important;
+  padding:18px 14px !important;
+  overflow-x:hidden !important;
+}
+
+.app{
+  display:grid !important;
+  grid-template-columns:230px minmax(0,1fr) !important;
+}
+
+.brand,
+.logo-area,
+.sidebar-brand,
+.side-brand{
+  min-height:74px !important;
+  padding:0 0 16px 0 !important;
+  margin:0 0 14px 0 !important;
+  border-bottom:1px solid #edf2f7 !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:12px !important;
+}
+
+.brand .logo,
+.brand-icon,
+.store-icon,
+.sidebar-logo{
+  width:40px !important;
+  height:40px !important;
+  min-width:40px !important;
+  border-radius:14px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+
+.brand strong,
+.brand-title,
+.sidebar-title{
+  font-size:18px !important;
+  line-height:1.05 !important;
+  font-weight:1000 !important;
+  color:#061b8f !important;
+  display:block !important;
+  white-space:normal !important;
+}
+
+.brand small,
+.brand-subtitle,
+.sidebar-subtitle{
+  font-size:12px !important;
+  line-height:1.1 !important;
+  font-weight:900 !important;
+  color:#667085 !important;
+  display:block !important;
+  margin-top:3px !important;
+}
+
+.nav,
+.side-nav,
+.sidebar-nav{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:8px !important;
+}
+
+.nav a,
+.side a,
+.sidebar a,
+.premium-sidebar a,
+.side-link,
+.nav-link{
+  min-height:42px !important;
+  height:auto !important;
+  padding:10px 13px !important;
+  border-radius:13px !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:12px !important;
+  font-size:13px !important;
+  line-height:1.12 !important;
+  font-weight:950 !important;
+  color:#344054 !important;
+  text-decoration:none !important;
+  white-space:normal !important;
+  word-break:normal !important;
+  overflow-wrap:normal !important;
+}
+
+.nav a i,
+.side a i,
+.sidebar a i,
+.premium-sidebar a i,
+.side-link i,
+.nav-link i{
+  width:18px !important;
+  min-width:18px !important;
+  text-align:center !important;
+  font-size:14px !important;
+  color:#667085 !important;
+}
+
+.nav a.active,
+.side a.active,
+.sidebar a.active,
+.premium-sidebar a.active,
+.side-link.active,
+.nav-link.active{
+  background:#061b8f !important;
+  color:#fff !important;
+  box-shadow:0 12px 24px rgba(6,27,143,.18) !important;
+}
+
+.nav a.active i,
+.side a.active i,
+.sidebar a.active i,
+.premium-sidebar a.active i,
+.side-link.active i,
+.nav-link.active i{
+  color:#fff !important;
+}
+
+.nav-title,
+.sidebar-section-title,
+.side-section-title{
+  margin:18px 0 8px !important;
+  padding:0 6px !important;
+  font-size:12px !important;
+  line-height:1 !important;
+  letter-spacing:.04em !important;
+  font-weight:1000 !important;
+  color:#98a2b3 !important;
+  text-transform:uppercase !important;
+}
+
+/* evita que "Reservas / Agendamentos" aumente o menu ou mude largura */
+.nav a span,
+.side a span,
+.sidebar a span,
+.premium-sidebar a span,
+.side-link span,
+.nav-link span{
+  display:inline-block !important;
+  max-width:160px !important;
+}
+
+/* mobile: mantém comportamento responsivo sem quebrar */
+@media(max-width:900px){
+  .app{
+    display:block !important;
+  }
+  .side,
+  .sidebar,
+  .premium-sidebar,
+  aside.side,
+  aside.sidebar{
+    width:100% !important;
+    max-width:none !important;
+    min-width:0 !important;
+    border-right:0 !important;
+    border-bottom:1px solid #d9e4f4 !important;
+  }
+}
+
+/* Isolamento da visualização de impressão contra estilos administrativos globais. */
+body.mf-print-reservas{
+  margin:0 !important;
+  background:#fff !important;
+  color:#102033 !important;
+  font-family:Inter,Arial,sans-serif !important;
+}
+body.mf-print-reservas .page{
+  width:min(100%,1500px) !important;
+  margin:0 auto !important;
+  padding:28px 34px !important;
+  background:#fff !important;
+}
+body.mf-print-reservas .header{
+  min-height:72px !important;
+  margin:0 0 18px !important;
+  padding:0 0 14px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:20px !important;
+  border:0 !important;
+  border-bottom:3px solid #2d0057 !important;
+  border-radius:0 !important;
+  background:#fff !important;
+  color:#102033 !important;
+  box-shadow:none !important;
+}
+body.mf-print-reservas .header h1{
+  margin:0 !important;
+  color:#2d0057 !important;
+  font-size:28px !important;
+  line-height:1.15 !important;
+  letter-spacing:-.03em !important;
+}
+body.mf-print-reservas .header .meta{
+  margin-top:6px !important;
+  color:#667085 !important;
+  font-size:14px !important;
+  line-height:1.3 !important;
+}
+body.mf-print-reservas .header .meta::before{background:#2d0057 !important}
+body.mf-print-reservas .actions{display:flex !important;align-items:center !important;gap:8px !important}
+body.mf-print-reservas .actions button{min-height:40px !important;padding:0 14px !important;border-radius:12px !important;font:800 13px/1 Inter,Arial,sans-serif !important;white-space:nowrap !important}
+body.mf-print-reservas .actions .print{background:#2d0057 !important;color:#fff !important}
+body.mf-print-reservas .actions .back{border:1px solid #dbe6f3 !important;background:#fff !important;color:#2d0057 !important}
+@media(max-width:700px){body.mf-print-reservas .page{padding:18px !important}body.mf-print-reservas .header{align-items:flex-start !important;flex-direction:column !important}body.mf-print-reservas .actions{margin-top:0 !important}}
+@media print{body.mf-print-reservas .page{width:100% !important;max-width:none !important;padding:0 !important}body.mf-print-reservas .header{min-height:0 !important}body.mf-print-reservas .actions{display:none !important}}
+
+</style>
+{% endblock %}
+{% block page %}
+<div class="page">
+  <div class="header">
+    <div>
+      <h1>{% if is_servico %}{% if lang == "it" %}Agenda per professionista{% elif lang == "en" %}Schedule by professional{% else %}Agenda por profissional{% endif %}{% else %}{% if lang == "it" %}Prenotazioni del giorno{% elif lang == "en" %}Daily reservations{% else %}Reservas do dia{% endif %}{% endif %}</h1>
+      <div class="meta">{{ empresa.nome }} · {{ data|data_br }}</div>
+    </div>
+    <div class="actions">
+      <button class="print" onclick="window.print()">🖨️ {% if lang == "it" %}Stampa{% elif lang == "en" %}Print{% else %}Imprimir{% endif %}</button>
+      <button class="back" onclick="window.close()">{% if lang == "it" %}Chiudi{% elif lang == "en" %}Close{% else %}Fechar{% endif %}</button>
+    </div>
+  </div>
+
+  {% set total = namespace(registros=0, pessoas=0, confirmadas=0, pendentes=0) %}
+  {% for horario, lista in reservas_por_horario.items() %}
+    {% for r in lista %}
+      {% set total.registros = total.registros + 1 %}
+      {% set total.pessoas = total.pessoas + (r.pessoas or 0) %}
+      {% if (r.status or '')|lower == 'confirmada' %}{% set total.confirmadas = total.confirmadas + 1 %}{% endif %}
+      {% if (r.status or '')|lower == 'pendente' %}{% set total.pendentes = total.pendentes + 1 %}{% endif %}
+    {% endfor %}
+  {% endfor %}
+
+  <div class="summary">
+    <div class="box"><strong>{{ total.registros }}</strong><span>{% if is_servico %}{% if lang == "it" %}Appuntamenti{% elif lang == "en" %}Appointments{% else %}Agendamentos{% endif %}{% else %}{% if lang == "it" %}Prenotazioni{% elif lang == "en" %}Reservations{% else %}Reservas{% endif %}{% endif %}</span></div>
+    <div class="box"><strong>{{ total.pessoas }}</strong><span>{% if is_servico %}{% if lang == "it" %}Clienti{% elif lang == "en" %}Clients{% else %}Clientes{% endif %}{% else %}{% if lang == "it" %}Persone{% elif lang == "en" %}Guests{% else %}Pessoas{% endif %}{% endif %}</span></div>
+    <div class="box"><strong>{{ total.confirmadas }}</strong><span>{% if lang == "it" %}Confermati{% elif lang == "en" %}Confirmed{% else %}Confirmados{% endif %}</span></div>
+    <div class="box"><strong>{{ total.pendentes }}</strong><span>{% if lang == "it" %}In attesa{% elif lang == "en" %}Pending{% else %}Pendentes{% endif %}</span></div>
+  </div>
+
+  {% if reservas_por_horario %}
+    {% if is_servico %}
+      {% set profs = namespace(nomes=[]) %}
+      {% for horario, lista in reservas_por_horario.items() %}
+        {% for r in lista %}
+          {% set pn = nome_profissional(r)|trim %}
+          {% if pn not in profs.nomes %}
+            {% set profs.nomes = profs.nomes + [pn] %}
+          {% endif %}
+        {% endfor %}
+      {% endfor %}
+      <div class="staff-columns">
+        {% for prof in profs.nomes|sort %}
+          {% set qtd = namespace(n=0) %}
+          {% for horario, lista in reservas_por_horario.items() %}
+            {% for r in lista %}
+              {% if (nome_profissional(r)|trim) == prof %}
+                {% set qtd.n = qtd.n + 1 %}
+              {% endif %}
+            {% endfor %}
+          {% endfor %}
+          <section class="staff-col">
+            <div class="staff-title"><span>{{ prof }}</span><span class="staff-count">{{ qtd.n }}</span></div>
+            {% for horario, lista in reservas_por_horario.items() %}
+              {% for r in lista %}
+                {% if (nome_profissional(r)|trim) == prof %}
+                  <div class="appt">
+                    <div class="appt-time">{{ hora_limpa(r) }}</div>
+                    <div class="appt-client">{{ r.nome_cliente }}</div>
+                    <div class="appt-service"><strong>{% if lang == "it" %}Servizio{% elif lang == "en" %}Service{% else %}Serviço{% endif %}:</strong> {{ servico_limpo(r.observacao) }}</div>
+                    <div class="appt-meta">
+                      <span class="badge">{{ status_label(r.status) }}</span>
+                      <span>{{ r.codigo or ('RSV-' ~ r.id) }}</span>
+                      <span>{{ r.telefone_cliente or '-' }}</span>
+                      <span>{% if lang == "it" %}Pagamento{% elif lang == "en" %}Payment{% else %}Pagamento{% endif %}: {{ pagamento_limpo(r) }}</span>
+                    </div>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            {% endfor %}
+          </section>
+        {% endfor %}
+      </div>
+    {% else %}
+      {% for horario, lista in reservas_por_horario.items() %}
+        <div class="group">
+          <div class="group-title"><span>{{ horario }}</span><span>{{ lista|length }} {% if lang == "it" %}prenotazione/i{% elif lang == "en" %}reservation(s){% else %}reserva(s){% endif %}</span></div>
+          {% for r in lista %}
+            <div class="reserva">
+              <h3>{{ r.nome_cliente }} <span class="badge">{{ status_label(r.status) }}</span></h3>
+              <div class="grid">
+                <div><span class="label">{% if lang == "it" %}Codice{% elif lang == "en" %}Code{% else %}Código{% endif %}:</span> {{ r.codigo or ('RSV-' ~ r.id) }}</div>
+                <div><span class="label">{% if lang == "it" %}Persone{% elif lang == "en" %}Guests{% else %}Pessoas{% endif %}:</span> {{ r.pessoas or 1 }}</div>
+                <div><span class="label">{% if lang == "it" %}Telefono{% elif lang == "en" %}Phone{% else %}Telefone{% endif %}:</span> {{ r.telefone_cliente or '-' }}</div>
+                <div><span class="label">{% if lang == "it" %}Data{% elif lang == "en" %}Date{% else %}Data{% endif %}:</span> {{ r.data|data_br }}</div>
+                <div style="grid-column:1/-1"><span class="label">{% if lang == "it" %}Osservazione{% elif lang == "en" %}Note{% else %}Observação{% endif %}:</span> {{ r.observacao or '-' }}</div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% else %}
+    <div class="empty">{% if is_servico %}{% if lang == "it" %}Nessun appuntamento per questa data.{% elif lang == "en" %}No appointments for this date.{% else %}Nenhum agendamento para esta data.{% endif %}{% else %}{% if lang == "it" %}Nessuna prenotazione per questa data.{% elif lang == "en" %}No reservations for this date.{% else %}Nenhuma reserva para esta data.{% endif %}{% endif %}</div>
+  {% endif %}
+</div>
+{% endblock %}

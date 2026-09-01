@@ -1,0 +1,64 @@
+/* MenuFacile Agenda v43 — ordem desktop e recolher histórico */
+.mf-history-collapse-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin:0 0 14px;
+  padding:0 0 12px;
+  border-bottom:1px solid #e3eaf3;
+}
+.mf-history-collapse-title{display:flex;align-items:center;gap:10px;min-width:0;color:#120057}
+.mf-history-collapse-title strong{font-size:18px;line-height:1.2}
+.mf-history-collapse-icon{width:36px;height:36px;border-radius:12px;background:#f3efff;color:#3b0078;display:grid;place-items:center;flex:0 0 36px}
+.mf-history-collapse-btn{width:38px;height:38px;border:1px solid #dce5f2;border-radius:12px;background:#f7f9ff;color:#1036a6;display:grid;place-items:center;cursor:pointer}
+#agendamentosCard.mf-history-collapsed #reservasGrid{display:none!important}
+#agendamentosCard.mf-history-collapsed{padding-bottom:14px!important}
+@media(max-width:768px){
+  .mf-history-collapse-head{display:none!important}
+  #agendamentosCard.mf-history-collapsed #reservasGrid{display:grid!important}
+}
+
+
+/* v44 — histórico fechado por padrão e ações da Agenda alinhadas */
+@media(min-width:769px){
+  #agendaDia > .card-head{
+    display:flex!important;
+    align-items:center!important;
+    gap:12px!important;
+    flex-wrap:wrap!important;
+  }
+  #agendaDia > .card-head h2{margin-right:auto!important}
+  #agendaDia #formDataAgenda{
+    display:flex!important;
+    align-items:center!important;
+    margin:0!important;
+    padding:0!important;
+    border:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+    border-radius:0!important;
+  }
+  #agendaDia #formDataAgenda::before,
+  #agendaDia #formDataAgenda::after{display:none!important;content:none!important}
+  #agendaDia #dataAgendaDia{
+    width:180px!important;
+    min-width:180px!important;
+    height:42px!important;
+    margin:0!important;
+    background:#fff!important;
+    border:1px solid #d5dfed!important;
+    border-radius:13px!important;
+    box-shadow:none!important;
+    padding:0 12px!important;
+  }
+  #agendaDia .imprimir-dia-btn{
+    margin:0!important;
+    min-height:42px!important;
+    flex:0 0 auto!important;
+  }
+  #agendaDia > .card-head .collapse-btn{
+    margin-left:8px!important;
+    flex:0 0 38px!important;
+  }
+}

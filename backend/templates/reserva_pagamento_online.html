@@ -1,0 +1,28 @@
+<link rel="stylesheet" href="/static/css/reserva-pagamentos-v253.css?v=255">
+
+<div class="modal" id="modalPagamentoReserva" aria-hidden="true">
+  <div class="modal-content mf-reserva-payment-modal">
+    <div class="modal-header">
+      <div class="modal-title" id="mfReservaPaymentTitle">Pagamento</div>
+      <button type="button" class="modal-close" onclick="MFReservaPagamentos.fechar()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="mf-reserva-pay-summary">
+        <span>Valor a pagar agora</span>
+        <strong id="mfReservaPaymentAmount">R$ 0,00</strong>
+      </div>
+      <div class="mf-reserva-pay-status" id="mfReservaPaymentStatus">Carregando pagamento...</div>
+      <div id="mfReservaPaymentBrick"></div>
+      <div class="mf-reserva-pix-result" id="mfReservaPixResult">
+        <img id="mfReservaPixQr" alt="QR Code Pix">
+        <div class="mf-reserva-pix-code">
+          <input id="mfReservaPixCode" readonly aria-label="Código Pix copia e cola">
+          <button type="button" onclick="MFReservaPagamentos.copiarPix()">Copiar Pix</button>
+        </div>
+      </div>
+      <button type="button" class="mf-reserva-payment-close" onclick="MFReservaPagamentos.fechar()">Fechar e acompanhar depois</button>
+    </div>
+  </div>
+</div>
+
+<script src="/static/js/reserva-pagamentos-v252.js?v=252"></script>

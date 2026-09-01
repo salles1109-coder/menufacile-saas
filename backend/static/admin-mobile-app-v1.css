@@ -1,0 +1,282 @@
+/* MenuFacile Admin Mobile App v1 — apenas celular */
+@media (max-width: 768px){
+  :root{
+    --mf-app-blue:#1647d8;
+    --mf-app-blue-dark:#0b2d91;
+    --mf-app-bg:#f4f7fb;
+    --mf-app-card:#fff;
+    --mf-app-text:#17233b;
+    --mf-app-muted:#718096;
+    --mf-app-line:#e3eaf3;
+    --mf-app-green:#14945b;
+    --mf-app-orange:#e69019;
+    --mf-app-red:#dc3f4f;
+    --mf-app-nav-h:72px;
+  }
+
+  html,body{background:var(--mf-app-bg)!important;overflow-x:hidden!important}
+  body.mf-ds-admin{padding-bottom:calc(var(--mf-app-nav-h) + env(safe-area-inset-bottom,0px) + 16px)!important}
+  body.mf-ds-admin .mf-admin-sidebar,
+  body.mf-ds-admin .mf-admin-sidebar-overlay,
+  body.mf-ds-admin .side,
+  body.mf-ds-admin .fullscreen-toggle,
+  body.mf-ds-admin #autoUpdateReservas{display:none!important}
+
+  body.mf-ds-admin .layout,
+  body.mf-ds-admin .mf-admin-shell,
+  body.mf-ds-admin .main{display:block!important;width:100%!important;min-width:0!important;min-height:100vh!important;background:var(--mf-app-bg)!important}
+
+  body.mf-ds-admin .topbar{position:sticky!important;top:0!important;z-index:70!important;display:flex!important;align-items:center!important;min-height:62px!important;padding:10px 16px!important;background:rgba(255,255,255,.96)!important;border-bottom:1px solid var(--mf-app-line)!important;backdrop-filter:blur(14px)!important}
+  body.mf-ds-admin .top-title strong{font-size:17px!important;line-height:1.15!important;color:var(--mf-app-text)!important}
+  body.mf-ds-admin .top-title span{display:none!important}
+
+  body.mf-ds-admin .content{width:100%!important;max-width:none!important;margin:0!important;padding:14px 14px 24px!important;overflow:visible!important}
+  body.mf-ds-admin .admin-page-header,
+  body.mf-ds-admin .mf-admin-page-header,
+  body.mf-ds-admin .page-title,
+  body.mf-ds-admin .subtitle{display:none!important}
+
+  .mf-mobile-app-top{display:flex!important;align-items:center;gap:11px;margin:2px 0 14px;padding:2px 2px 0}
+  .mf-mobile-app-avatar{width:44px;height:44px;flex:0 0 44px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(145deg,#e7efff,#f8fbff);color:var(--mf-app-blue);box-shadow:0 8px 22px rgba(20,71,216,.12);font-size:18px}
+  .mf-mobile-app-heading{min-width:0;flex:1}
+  .mf-mobile-app-heading small{display:block;color:var(--mf-app-muted);font-size:11px;font-weight:800;margin-bottom:2px}
+  .mf-mobile-app-heading strong{display:block;color:var(--mf-app-text);font-size:22px;line-height:1.08;letter-spacing:-.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mf-mobile-app-iconbtn{width:42px;height:42px;flex:0 0 42px;border:1px solid var(--mf-app-line);border-radius:14px;background:#fff;color:var(--mf-app-blue);display:grid;place-items:center;font-size:16px;box-shadow:0 6px 16px rgba(21,40,80,.05)}
+
+  .mf-mobile-date-strip{display:grid!important;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;margin:0 0 14px;padding:8px;border:1px solid var(--mf-app-line);border-radius:20px;background:#fff;box-shadow:0 10px 26px rgba(28,47,82,.06)}
+  .mf-mobile-date-day{border:0;background:transparent;border-radius:14px;padding:7px 2px 6px;min-width:0;color:var(--mf-app-muted);display:grid;gap:3px;place-items:center;font-family:inherit;cursor:pointer}
+  .mf-mobile-date-day span{font-size:9px;font-weight:900;text-transform:uppercase}
+  .mf-mobile-date-day strong{font-size:15px;line-height:1;font-weight:950;color:var(--mf-app-text)}
+  .mf-mobile-date-day i{width:4px;height:4px;border-radius:50%;background:#c9d4e6}
+  .mf-mobile-date-day.is-active{background:var(--mf-app-blue);color:#fff;box-shadow:0 8px 18px rgba(22,71,216,.25)}
+  .mf-mobile-date-day.is-active strong{color:#fff}.mf-mobile-date-day.is-active i{background:#fff}
+
+  .mf-mobile-agenda-title{display:flex!important;align-items:center;justify-content:space-between;gap:10px;margin:0 2px 12px}
+  .mf-mobile-agenda-title h1{margin:0!important;color:var(--mf-app-text)!important;font-size:16px!important;line-height:1.05!important;letter-spacing:-.025em!important;font-weight:850!important}
+  .mf-mobile-agenda-title button{min-height:36px!important;width:auto!important;padding:0 12px!important;border:1px solid #dce6fb!important;border-radius:12px!important;background:#eef4ff!important;color:var(--mf-app-blue)!important;font-size:11px!important;font-weight:900!important}
+
+  body.mf-ds-reservas #setupCard{display:none!important}
+  body.mf-ds-reservas.mf-mobile-setup-open #setupCard{display:block!important;margin:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;overflow:visible!important}
+  body.mf-ds-reservas.mf-mobile-setup-open .mf-mobile-date-strip,
+  body.mf-ds-reservas.mf-mobile-setup-open .mf-mobile-agenda-title,
+  body.mf-ds-reservas.mf-mobile-setup-open #agendaDia,
+  body.mf-ds-reservas.mf-mobile-setup-open #agendamentosCard,
+  body.mf-ds-reservas.mf-mobile-setup-open .mf-mobile-fab-wrap{display:none!important}
+  body.mf-ds-reservas.mf-mobile-setup-open #setupCard>.card-head{display:flex!important;align-items:center!important;gap:10px!important;margin:0 0 12px!important;padding:0!important;border:0!important;background:transparent!important}
+  body.mf-ds-reservas.mf-mobile-setup-open #setupCard>.card-head .square{width:40px!important;height:40px!important;border-radius:13px!important;background:#eef2ff!important;color:var(--mf-app-blue)!important}
+  body.mf-ds-reservas.mf-mobile-setup-open #setupCard>.card-head h2{font-size:16px!important;line-height:1.2!important;color:var(--mf-app-text)!important;flex:1!important}
+  body.mf-ds-reservas.mf-mobile-setup-open #setupCard>.card-head .collapse-btn{display:grid!important;width:38px!important;height:38px!important;min-height:38px!important;padding:0!important;border-radius:12px!important}
+  body.mf-ds-reservas.mf-mobile-setup-open #setupCard>.card-body{display:block!important;padding:0!important;overflow:visible!important}
+  body.mf-ds-reservas.mf-mobile-setup-open #setupCard .setup-section{margin:0 0 12px!important;padding:14px!important;border:1px solid var(--mf-app-line)!important;border-radius:18px!important;background:#fff!important}
+  body.mf-ds-reservas.mf-mobile-setup-open #setupCard .setup-entity-grid,
+  body.mf-ds-reservas.mf-mobile-setup-open #setupCard .setup-fields{display:grid!important;grid-template-columns:1fr!important;gap:10px!important}
+  body.mf-ds-reservas.mf-mobile-setup-open #setupCard .field{min-width:0!important;width:100%!important}
+  body.mf-ds-reservas.mf-mobile-setup-open #setupCard .setup-actions{display:grid!important;grid-template-columns:1fr!important;gap:9px!important;margin-top:12px!important}
+  body.mf-ds-reservas.mf-mobile-setup-open #setupCard .btn{width:100%!important;min-height:44px!important}
+  body.mf-ds-reservas #agendaDia{margin:0 0 12px!important;padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important;overflow:visible!important}
+  body.mf-ds-reservas #agendaDia>.card-head{display:none!important}
+  body.mf-ds-reservas #agendaDia>.prof-tabs{margin:0 0 12px!important;padding:0 0 4px!important;border:0!important;background:transparent!important;border-radius:0!important;gap:8px!important;overflow-x:auto!important}
+  body.mf-ds-reservas #agendaDia .prof-tab{height:36px!important;min-height:36px!important;padding:0 13px!important;border:1px solid var(--mf-app-line)!important;border-radius:999px!important;background:#fff!important;color:var(--mf-app-muted)!important;font-size:11px!important;font-weight:900!important;box-shadow:none!important}
+  body.mf-ds-reservas #agendaDia .prof-tab.active{background:var(--mf-app-blue)!important;color:#fff!important;border-color:var(--mf-app-blue)!important}
+  body.mf-ds-reservas #agendaDia .card-body{display:block!important;overflow:visible!important}
+  body.mf-ds-reservas #agendaDia.collapsed .card-body{display:block!important}
+  body.mf-ds-reservas #agendaGrid{display:grid!important;grid-template-columns:1fr!important;gap:8px!important}
+  body.mf-ds-reservas #agendaGrid .slot{display:grid!important;grid-template-columns:68px minmax(0,1fr) auto!important;align-items:center!important;gap:10px!important;min-height:64px!important;padding:10px 12px!important;border:1px solid var(--mf-app-line)!important;border-radius:17px!important;background:#fff!important;box-shadow:0 7px 18px rgba(28,47,82,.05)!important;overflow:hidden!important}
+  body.mf-ds-reservas #agendaGrid .slot .time{font-size:18px!important;line-height:1!important;color:var(--mf-app-blue-dark)!important}
+  body.mf-ds-reservas #agendaGrid .slot .chip{margin:0!important;justify-self:start!important;padding:5px 8px!important;font-size:9px!important;background:#e8f8f0!important;color:var(--mf-app-green)!important}
+  body.mf-ds-reservas #agendaGrid .slot.busy{border-left:4px solid var(--mf-app-orange)!important;background:#fffaf1!important}
+  body.mf-ds-reservas #agendaGrid .slot.busy .time{color:#a55b00!important}
+  body.mf-ds-reservas #agendaGrid .slot.busy .chip{background:#fff0cc!important;color:#a55b00!important}
+  body.mf-ds-reservas #agendaGrid .slot p{grid-column:2 / 4!important;margin:0!important;color:var(--mf-app-muted)!important;font-size:11px!important;line-height:1.3!important}
+  body.mf-ds-reservas #agendaGrid .slot .x{display:grid!important;place-items:center!important;position:absolute!important;right:8px!important;top:8px!important;width:22px!important;height:22px!important;padding:0!important;border:1px solid #dbe4ef!important;border-radius:999px!important;background:rgba(248,250,252,.96)!important;color:#7b8798!important;font-size:13px!important;font-weight:900!important;line-height:1!important;box-shadow:0 4px 10px rgba(15,23,42,.06)!important;opacity:.96!important}
+  body.mf-ds-reservas #agendaGrid .slot.busy .x{display:none!important}
+
+  body.mf-ds-reservas #agendamentosCard{margin:14px 0 0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;overflow:visible!important}
+  body.mf-ds-reservas #statusTabs{display:flex!important;gap:7px!important;margin:0 0 12px!important;padding:0 0 4px!important;border:0!important;background:transparent!important;overflow-x:auto!important}
+  body.mf-ds-reservas #statusTabs .tab{height:36px!important;min-height:36px!important;padding:0 13px!important;border:1px solid var(--mf-app-line)!important;border-radius:999px!important;background:#fff!important;color:var(--mf-app-muted)!important;font-size:11px!important;font-weight:900!important;white-space:nowrap!important}
+  body.mf-ds-reservas #statusTabs .tab.active{background:var(--mf-app-blue)!important;color:#fff!important;border-color:var(--mf-app-blue)!important}
+  body.mf-ds-reservas #reservasGrid{display:grid!important;grid-template-columns:1fr!important;gap:10px!important}
+  body.mf-ds-reservas .reserva-card{min-height:0!important;padding:14px 14px 13px 17px!important;border:1px solid var(--mf-app-line)!important;border-radius:19px!important;background:#fff!important;box-shadow:0 9px 24px rgba(28,47,82,.06)!important}
+  body.mf-ds-reservas .reserva-prof{font-size:11px!important;margin-bottom:5px!important}
+  body.mf-ds-reservas .reserva-card h3{font-size:16px!important;line-height:1.18!important;margin:8px 0!important;text-transform:none!important;color:var(--mf-app-text)!important}
+  body.mf-ds-reservas .info-box{padding:9px 10px!important;border-radius:13px!important;font-size:11px!important;line-height:1.4!important;background:#f7f9fc!important}
+  body.mf-ds-reservas .reserva-meta{gap:6px!important;margin-bottom:4px!important}
+  body.mf-ds-reservas .codigo,body.mf-ds-reservas .badge{padding:5px 8px!important;font-size:9px!important}
+  body.mf-ds-reservas .actions{display:grid!important;grid-template-columns:minmax(0,1fr) 42px!important;gap:8px!important;padding-top:11px!important}
+  body.mf-ds-reservas .actions>.btn{display:none!important}
+  body.mf-ds-reservas .actions>.btn:first-child{display:flex!important;width:100%!important;min-height:40px!important;align-items:center!important;justify-content:center!important;background:var(--mf-app-blue)!important;color:#fff!important;border-radius:13px!important}
+  body.mf-ds-reservas .actions::after{content:'•••';display:grid;place-items:center;width:42px;height:40px;border:1px solid var(--mf-app-line);border-radius:13px;background:#f7f9fc;color:var(--mf-app-blue);font-size:16px;font-weight:900;cursor:pointer}
+
+  .mf-mobile-fab-wrap{display:block!important;position:fixed;right:17px;bottom:calc(var(--mf-app-nav-h) + env(safe-area-inset-bottom,0px) + 18px);z-index:115}
+  .mf-mobile-fab{width:56px!important;height:56px!important;min-height:56px!important;padding:0!important;border:0!important;border-radius:50%!important;background:var(--mf-app-blue)!important;color:#fff!important;display:grid!important;place-items:center!important;font-size:23px!important;box-shadow:0 15px 32px rgba(22,71,216,.34)!important;transition:transform .2s ease!important}
+  .mf-mobile-fab-wrap.is-open .mf-mobile-fab{transform:rotate(45deg)}
+  .mf-mobile-fab-menu{position:absolute;right:0;bottom:66px;display:grid;gap:9px;min-width:210px;opacity:0;pointer-events:none;transform:translateY(8px);transition:.18s ease}
+  .mf-mobile-fab-wrap.is-open .mf-mobile-fab-menu{opacity:1;pointer-events:auto;transform:none}
+  .mf-mobile-fab-action{display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:9px!important;border:0!important;background:transparent!important;padding:0!important;min-height:42px!important;width:100%!important}
+  .mf-mobile-fab-action span{padding:9px 11px;border-radius:10px;background:#fff;color:var(--mf-app-text);font-size:11px;font-weight:900;box-shadow:0 8px 22px rgba(28,47,82,.16);white-space:nowrap}
+  .mf-mobile-fab-action i{width:43px;height:43px;border-radius:50%;display:grid;place-items:center;background:#fff;color:var(--mf-app-blue);box-shadow:0 8px 22px rgba(28,47,82,.18)}
+
+  body.mf-ds-admin nav.mf-mobile-bottom-nav{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;grid-template-rows:1fr!important;grid-auto-flow:column!important;align-items:stretch!important;gap:4px!important;position:fixed!important;left:0!important;right:0!important;bottom:0!important;width:100%!important;max-width:none!important;height:var(--mf-app-nav-h)!important;min-height:var(--mf-app-nav-h)!important;margin:0!important;padding:8px 8px calc(7px + env(safe-area-inset-bottom,0px))!important;background:rgba(255,255,255,.97)!important;border:0!important;border-top:1px solid var(--mf-app-line)!important;border-radius:0!important;box-shadow:0 -10px 30px rgba(28,47,82,.08)!important;backdrop-filter:blur(16px)!important;overflow:visible!important;z-index:110!important}
+  body.mf-ds-admin nav.mf-mobile-bottom-nav>*{grid-row:1!important;width:auto!important;max-width:none!important;margin:0!important}
+  .mf-mobile-bottom-nav a,.mf-mobile-bottom-nav button{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:4px!important;min-width:0!important;min-height:54px!important;padding:5px 2px!important;border:0!important;border-radius:15px!important;background:transparent!important;color:#8290a6!important;font-size:9px!important;font-weight:900!important;text-decoration:none!important}
+  .mf-mobile-bottom-nav i{font-size:18px!important;line-height:1!important}
+  .mf-mobile-bottom-nav .is-active{background:#eaf1ff!important;color:var(--mf-app-blue)!important}
+  .mf-mobile-more-sheet{display:none;position:fixed;inset:0;z-index:130;background:rgba(16,28,50,.38);align-items:flex-end;padding:14px}
+  .mf-mobile-more-sheet.is-open{display:flex}
+  .mf-mobile-more-panel{width:100%;max-height:78vh;overflow:auto;padding:16px;border-radius:24px;background:#fff;box-shadow:0 20px 60px rgba(15,30,60,.28)}
+  .mf-mobile-more-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.mf-mobile-more-head strong{font-size:18px;color:var(--mf-app-text)}
+  .mf-mobile-more-close{width:36px!important;height:36px!important;min-height:36px!important;padding:0!important;border:0!important;border-radius:50%!important;background:#edf2f8!important;color:var(--mf-app-text)!important}
+  .mf-mobile-more-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .mf-mobile-more-grid a{min-height:62px;padding:11px;border:1px solid var(--mf-app-line);border-radius:16px;background:#f9fbfd;color:var(--mf-app-text);display:flex;align-items:center;gap:10px;font-size:11px;font-weight:900;text-decoration:none}
+  .mf-mobile-more-grid a i{width:34px;height:34px;flex:0 0 34px;border-radius:11px;background:#eaf1ff;color:var(--mf-app-blue);display:grid;place-items:center;font-size:14px}
+
+
+
+  /* v5 — a agenda diária é a tela principal; o histórico abre somente pelo botão flutuante */
+  body.mf-ds-reservas:not(.mf-mobile-history-open):not(.mf-mobile-setup-open) #agendamentosCard{display:none!important}
+  body.mf-ds-reservas.mf-mobile-history-open .mf-mobile-date-strip,
+  body.mf-ds-reservas.mf-mobile-history-open .mf-mobile-agenda-title,
+  body.mf-ds-reservas.mf-mobile-history-open #agendaDia{display:none!important}
+  body.mf-ds-reservas.mf-mobile-history-open #agendamentosCard{display:block!important;margin-top:0!important}
+  body.mf-ds-reservas.mf-mobile-history-open #statusTabs{position:sticky;top:58px;z-index:8;padding-top:6px!important;background:var(--mf-app-bg)!important}
+
+  .modal-agenda{padding:16px!important;align-items:center!important;justify-content:center!important}
+  .modal-agenda-card{width:min(100%,380px)!important;max-width:380px!important;max-height:min(88vh,760px)!important;overflow:auto!important;border-radius:24px!important;padding:18px 14px calc(18px + env(safe-area-inset-bottom,0px))!important;margin:0 auto!important;box-shadow:0 24px 70px rgba(15,23,42,.22)!important}
+  .modal-agenda-actions{grid-template-columns:1fr 1fr!important;gap:8px!important}
+  .modal-agenda-actions .btn{min-height:40px!important;padding:0 10px!important;border-radius:12px!important;font-size:11px!important}
+}
+
+@media (min-width:769px){.mf-mobile-app-top,.mf-mobile-date-strip,.mf-mobile-agenda-title,.mf-mobile-fab-wrap,.mf-mobile-bottom-nav,.mf-mobile-more-sheet{display:none!important}}
+
+
+/* v6 — agenda mobile: filtro real, troca de dia instantânea e calendário no padrão aprovado */
+@media (max-width:768px){
+  body.mf-ds-reservas #agendaGrid .slot.mf-agenda-slot-hidden{display:none!important}
+  .mf-mobile-date-strip{display:block!important;padding:0!important;border:1px solid #dfe6f2!important;border-radius:18px!important;background:#fff!important;overflow:hidden!important;box-shadow:0 8px 22px rgba(30,64,175,.05)!important}
+  .mf-mobile-date-months{display:flex!important;justify-content:space-around!important;min-height:24px!important;padding:3px 14px 0!important;background:#eef2f8!important;color:#8a94a6!important;font-size:13px!important;line-height:20px!important}
+  .mf-mobile-date-days{display:grid!important;grid-template-columns:repeat(7,minmax(0,1fr))!important;align-items:stretch!important;padding:5px 4px 8px!important}
+  .mf-mobile-date-day{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:2px!important;min-width:0!important;min-height:58px!important;padding:4px 1px!important;border:0!important;border-radius:11px!important;background:transparent!important;color:#24324a!important;box-shadow:none!important}
+  .mf-mobile-date-day span{font-size:10px!important;line-height:1!important;font-weight:800!important;text-transform:none!important;color:#7d8798!important}
+  .mf-mobile-date-day strong{font-size:21px!important;line-height:1.15!important;font-weight:800!important;color:#202b3d!important}
+  .mf-mobile-date-day.is-active{background:#1856e8!important}
+  .mf-mobile-date-day.is-active span,.mf-mobile-date-day.is-active strong{color:#fff!important}
+  body.mf-ds-reservas #profTabsAgenda{display:flex!important;visibility:visible!important;min-height:40px!important;opacity:1!important}
+}
+
+
+/* v7 — refinamento do calendário e profissionais no mobile */
+@media (max-width:768px){
+  .mf-mobile-date-day span{
+    font-size:8px!important;
+    line-height:1!important;
+    letter-spacing:-.01em!important;
+    font-weight:800!important;
+  }
+  .mf-mobile-date-day strong{
+    font-size:19px!important;
+  }
+  .mf-mobile-date-days{
+    padding:4px 3px 7px!important;
+  }
+  .mf-mobile-date-day{
+    min-height:54px!important;
+    padding:3px 0!important;
+  }
+
+  body.mf-ds-reservas #agendaDia>.prof-tabs,
+  body.mf-ds-reservas #profTabsAgenda{
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    gap:5px!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-height:36px!important;
+    padding:0 2px 5px!important;
+    margin:0 0 12px!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    scrollbar-width:thin!important;
+    scroll-behavior:smooth!important;
+    -webkit-overflow-scrolling:touch!important;
+    scroll-snap-type:x proximity!important;
+  }
+  body.mf-ds-reservas #agendaDia .prof-tab{
+    flex:0 0 auto!important;
+    min-width:max-content!important;
+    height:32px!important;
+    min-height:32px!important;
+    padding:0 9px!important;
+    gap:5px!important;
+    font-size:9px!important;
+    line-height:1!important;
+    scroll-snap-align:start!important;
+  }
+  body.mf-ds-reservas #agendaDia .prof-tab .count{
+    min-width:19px!important;
+    width:auto!important;
+    height:19px!important;
+    margin-left:3px!important;
+    padding:0 5px!important;
+    font-size:9px!important;
+  }
+}
+
+
+/* v11 — status real na agenda, serviço escolhido e ações compactas */
+@media (max-width:768px){
+  body.mf-ds-reservas #agendaGrid .slot{position:relative!important}
+  body.mf-ds-reservas #agendaGrid .slot[data-mf-status="pendente"]{border-left:4px solid #f59e0b!important;background:#fffaf0!important}
+  body.mf-ds-reservas #agendaGrid .slot[data-mf-status="pendente"] .chip{background:#fff0c7!important;color:#a95f00!important}
+  body.mf-ds-reservas #agendaGrid .slot[data-mf-status="confirmada"]{border-left:4px solid #2563eb!important;background:#f5f8ff!important}
+  body.mf-ds-reservas #agendaGrid .slot[data-mf-status="confirmada"] .chip{background:#e6efff!important;color:#1647d8!important}
+  body.mf-ds-reservas #agendaGrid .slot[data-mf-status="paga"],
+  body.mf-ds-reservas #agendaGrid .slot[data-mf-status="concluida"]{border-left:4px solid #16a34a!important;background:#f3fcf6!important}
+  body.mf-ds-reservas #agendaGrid .slot[data-mf-status="paga"] .chip,
+  body.mf-ds-reservas #agendaGrid .slot[data-mf-status="concluida"] .chip{background:#dcf7e5!important;color:#087443!important}
+  body.mf-ds-reservas #agendaGrid .slot[data-mf-status="cancelada"]{border-left:4px solid #94a3b8!important;background:#f7f8fa!important;opacity:.82!important}
+  body.mf-ds-reservas #agendaGrid .slot[data-mf-status="cancelada"] .chip{background:#e9edf2!important;color:#64748b!important}
+  body.mf-ds-reservas #agendaGrid .slot[data-mf-status="recusada"]{border-left:4px solid #ef4444!important;background:#fff5f5!important;opacity:.88!important}
+  body.mf-ds-reservas #agendaGrid .slot[data-mf-status="recusada"] .chip{background:#ffe3e3!important;color:#b42318!important}
+  body.mf-ds-reservas #agendaGrid .slot[data-mf-status="expirado"]{border-left:4px solid #a78bfa!important;background:#faf8ff!important}
+  body.mf-ds-reservas #agendaGrid .slot[data-mf-status="expirado"] .chip{background:#eee9ff!important;color:#6d28d9!important}
+  body.mf-ds-reservas #agendaGrid .slot[data-mf-status="aguardando"]{border-left:4px solid #0ea5e9!important;background:#f3fbff!important}
+  body.mf-ds-reservas #agendaGrid .slot[data-mf-status="aguardando"] .chip{background:#dff5ff!important;color:#0369a1!important}
+  body.mf-ds-reservas #agendaGrid .slot .mf-slot-detail{display:block!important;color:#344054!important;font-size:11px!important;font-weight:900!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+  body.mf-ds-reservas #agendaGrid .slot .mf-slot-prof{display:block!important;color:#7b8798!important;font-size:10px!important;font-weight:800!important;margin-top:2px!important}
+}
+
+/* v13 — data mais compacta no mobile */
+@media (max-width:768px){
+  .mf-mobile-agenda-title{align-items:center!important;margin-bottom:10px!important}
+  .mf-mobile-agenda-title h1{font-size:16px!important;line-height:1.05!important;max-width:calc(100% - 86px)!important}
+}
+@media (max-width:380px){
+  .mf-mobile-agenda-title h1{font-size:15px!important}
+}
+
+
+/* v15 — resumo completo nos cards e botões refinados */
+@media (max-width:768px){
+  body.mf-ds-reservas #agendaGrid .slot{grid-template-columns:minmax(0,1fr) auto!important;align-items:start!important;padding:12px 13px!important;min-height:92px!important}
+  body.mf-ds-reservas #agendaGrid .slot .time{grid-column:1!important;font-size:18px!important;white-space:nowrap!important}
+  body.mf-ds-reservas #agendaGrid .slot .chip{grid-column:2!important;grid-row:1!important;justify-self:end!important;margin-right:25px!important}
+  body.mf-ds-reservas #agendaGrid .slot p{grid-column:1 / 3!important;display:grid!important;gap:3px!important;padding-right:4px!important}
+  body.mf-ds-reservas .mf-slot-client{font-size:12px!important;font-weight:1000!important;color:#17233b!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+  body.mf-ds-reservas .mf-slot-service{font-size:11px!important;font-weight:900!important;color:#344054!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+  body.mf-ds-reservas .mf-slot-prof{font-size:10px!important;font-weight:850!important;color:#7b8798!important}
+  #modalAgendaReserva .modal-agenda-card{padding:18px 14px 14px!important}
+  #modalAgendaReserva .modal-agenda-close{right:12px!important;left:auto!important;top:12px!important;width:30px!important;height:30px!important}
+  #modalAgendaReserva .modal-agenda-prof,
+  #modalAgendaReserva .modal-agenda-meta,
+  #modalAgendaReserva h2{display:none!important}
+  #modalAgendaReserva .modal-agenda-info{margin-top:34px!important;padding:14px!important;border-radius:16px!important;display:grid!important;gap:8px!important;font-size:12px!important;line-height:1.35!important}
+  #modalAgendaReserva .modal-agenda-info>div{display:grid!important;grid-template-columns:92px minmax(0,1fr)!important;gap:8px!important;align-items:start!important}
+  #modalAgendaReserva .modal-agenda-info strong{color:#0b2d91!important}
+  #modalAgendaReserva .modal-agenda-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:9px!important;margin-top:12px!important}
+  #modalAgendaReserva .modal-agenda-actions .btn{min-height:42px!important;height:42px!important;border-radius:13px!important;font-size:12px!important;box-shadow:none!important}
+  #modalAgendaReserva .modal-agenda-actions .btn.gray{grid-column:1!important}
+  #modalAgendaReserva .modal-agenda-actions .btn:hover{filter:brightness(.98)!important}
+}
+
+/* v16 — filtro de profissional também no notebook */
+body #agendaGrid .slot.mf-agenda-slot-hidden{display:none!important}

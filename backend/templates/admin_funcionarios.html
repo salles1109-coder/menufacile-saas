@@ -1,0 +1,621 @@
+{% extends "base.html" %}
+{% block body_attrs %} class="mf-ds-admin mf-ds-funcionarios"{% endblock %}
+{% block title %}{{ t("funcionarios", idioma_empresa(empresa if empresa is defined else None)) }} - {{ empresa.nome }}{% endblock %}
+{% block head %}
+<style id="mf-employee-four-modules">
+.mf-permission-groups-simple{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important;margin-top:10px!important}
+.perm-check-module{min-height:72px!important;padding:12px!important;border:1px solid #dbe6f3!important;border-radius:15px!important;background:#fff!important;display:flex!important;align-items:center!important;gap:11px!important;cursor:pointer!important}
+.perm-check-module:has(input:checked){border-color:#061b8f!important;background:#f2f5ff!important;box-shadow:0 8px 20px rgba(6,27,143,.08)!important}
+.perm-check-module input{width:18px!important;height:18px!important;min-height:18px!important;accent-color:#061b8f!important}
+.perm-check-icon{width:38px;height:38px;min-width:38px;border-radius:12px;background:#eef3ff;color:#061b8f;display:grid;place-items:center}
+.perm-check-module strong{display:block;color:#172033;font-size:13px}.perm-check-module small{display:block;margin-top:3px;color:#667085;font-size:10px}
+@media(max-width:1050px){.mf-permission-groups-simple{grid-template-columns:1fr 1fr!important}}
+@media(max-width:700px){.mf-permission-groups-simple{grid-template-columns:1fr!important}.perm-check-module{min-height:64px!important}}
+</style>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<style id="mf-funcionarios-profissional">
+.mf-ds-funcionarios .grid{display:block!important}
+.mf-ds-funcionarios .grid>.card:first-child{width:100%!important}
+.mf-ds-funcionarios .grid>.card:nth-child(2){display:none}
+.mf-ds-funcionarios .employee-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 16px}
+.mf-ds-funcionarios .employee-search{flex:1;max-width:560px;position:relative}
+.mf-ds-funcionarios .employee-search i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#98a2b3}
+.mf-ds-funcionarios .employee-search input{width:100%;height:44px;padding:0 14px 0 40px;border:1px solid #dbe3ee;border-radius:13px;background:#fff}
+.mf-ds-funcionarios .employee-list{display:grid;gap:12px}
+.mf-ds-funcionarios table{display:none!important}
+.mf-ds-funcionarios .employee-card{display:grid;grid-template-columns:minmax(220px,1.2fr) minmax(180px,.8fr) minmax(260px,1.2fr) auto;gap:18px;align-items:center;border:1px solid #e5eaf1;border-radius:17px;padding:16px;background:#fff}
+.mf-ds-funcionarios .employee-card:hover{border-color:#cbb6dc;box-shadow:0 8px 24px rgba(45,0,87,.07)}
+.mf-ds-funcionarios .employee-main{display:flex;align-items:center;gap:12px;min-width:0}
+.mf-ds-funcionarios .employee-avatar{width:48px;height:48px;min-width:48px;display:grid;place-items:center;border-radius:15px;background:#f1eafb;color:#2d0057;font-size:19px}
+.mf-ds-funcionarios .employee-name{font-weight:950;color:#172033}
+.mf-ds-funcionarios .employee-email{display:block;margin-top:3px;color:#667085;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mf-ds-funcionarios .employee-role strong{display:block;color:#172033}
+.mf-ds-funcionarios .employee-role span{display:block;margin-top:4px;color:#667085;font-size:11px}
+.mf-ds-funcionarios .permission-chips{display:flex;gap:6px;flex-wrap:wrap}
+.mf-ds-funcionarios .permission-chip{padding:5px 8px;border-radius:999px;background:#f2f4f7;color:#475467;font-size:10px;font-weight:850}
+.mf-ds-funcionarios .employee-actions{display:flex;gap:7px}
+.mf-ds-funcionarios .employee-empty{padding:28px;text-align:center;border:1px dashed #d8e0ea;border-radius:16px;color:#667085}
+.mf-modal{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(16,24,40,.55);backdrop-filter:blur(4px)}
+.mf-modal.open{display:flex}
+.mf-modal-dialog{width:min(920px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:22px;box-shadow:0 24px 80px rgba(16,24,40,.3)}
+.mf-modal-head{position:sticky;top:0;z-index:2;display:flex;justify-content:space-between;align-items:center;padding:20px 22px;background:#fff;border-bottom:1px solid #edf0f4}
+.mf-modal-head h2{margin:0;color:#2d0057}
+.mf-modal-close{width:38px;height:38px;border:0;border-radius:11px;background:#f2f4f7;cursor:pointer}
+.mf-modal-body{padding:22px}
+.mf-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.mf-form-grid .full{grid-column:1/-1}
+.mf-role-help{padding:11px 13px;border-radius:12px;background:#f8f5fb;color:#5c4371;font-size:12px}
+.mf-access-level{font-size:12px;color:#667085;margin-top:5px}
+.mf-modal-actions{display:flex;justify-content:flex-end;gap:10px;padding-top:18px}
+@media(max-width:1000px){
+ .mf-ds-funcionarios .employee-card{grid-template-columns:1fr 1fr}
+ .mf-ds-funcionarios .employee-actions{justify-content:flex-end}
+}
+@media(max-width:700px){
+ .mf-ds-funcionarios .employee-card{grid-template-columns:1fr}
+ .mf-ds-funcionarios .employee-actions{justify-content:flex-start}
+ .mf-form-grid{grid-template-columns:1fr}
+ .mf-form-grid .full{grid-column:auto}
+ }
+</style>
+
+
+<script id="mf-employee-modal-js">
+function openEmployeeModal(key){
+  const id = key === 'create' ? 'employeeModalCreate' : 'employeeModalEdit-' + key.replace('edit-','');
+  const modal = document.getElementById(id);
+  if(modal){ modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden'; }
+}
+function closeEmployeeModal(key){
+  const id = key === 'create' ? 'employeeModalCreate' : 'employeeModalEdit-' + key.replace('edit-','');
+  const modal = document.getElementById(id);
+  if(modal){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); document.body.style.overflow=''; }
+}
+document.addEventListener('click', function(e){
+if(e.target.classList.contains('mf-modal')){
+    e.target.classList.remove('open'); document.body.style.overflow='';
+  }
+});
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape'){ document.querySelectorAll('.mf-modal.open').forEach(m => m.classList.remove('open')); document.body.style.overflow=''; }
+});
+
+</script>
+
+
+<style id="mf-funcionarios-lista-refinada">
+.mf-ds-funcionarios .card-head{padding:18px 20px!important}
+.mf-ds-funcionarios .card-body{padding:18px 20px 22px!important}
+.mf-ds-funcionarios .login-note{
+  display:flex!important;
+  align-items:center!important;
+  gap:10px!important;
+  padding:11px 14px!important;
+  margin-bottom:16px!important;
+  border-radius:13px!important;
+  background:#f7f9fc!important;
+  border:1px solid #e4eaf2!important;
+}
+.mf-ds-funcionarios .login-note strong{font-size:12px!important}
+.mf-ds-funcionarios .login-note .muted{font-size:11px!important}
+.mf-ds-funcionarios .employee-toolbar{margin:0 0 14px!important}
+.mf-ds-funcionarios .employee-search{max-width:440px!important}
+.mf-ds-funcionarios .employee-card{
+  grid-template-columns:minmax(260px,1.25fr) minmax(190px,.75fr) minmax(170px,.65fr) auto!important;
+  min-height:82px!important;
+  padding:14px 16px!important;
+}
+.mf-ds-funcionarios .employee-avatar{
+  width:44px!important;height:44px!important;min-width:44px!important;
+  border-radius:13px!important;font-size:17px!important;
+}
+.mf-ds-funcionarios .employee-role strong{font-size:13px!important}
+.mf-ds-funcionarios .employee-role span{font-size:11px!important}
+.mf-ds-funcionarios .permission-summary{
+  display:flex;align-items:center;gap:9px;color:#475467;font-size:12px;font-weight:850
+}
+.mf-ds-funcionarios .permission-summary i{
+  width:30px;height:30px;border-radius:10px;background:#f2f4f7;display:grid;place-items:center;color:#667085
+}
+.mf-ds-funcionarios .permission-preview{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.mf-ds-funcionarios .permission-preview span{
+  padding:4px 7px;border-radius:999px;background:#f5f6f8;color:#667085;font-size:9px;font-weight:850
+}
+.mf-ds-funcionarios .employee-actions .btn{white-space:nowrap}
+.mf-ds-funcionarios .owner-access{
+  display:inline-flex;align-items:center;gap:6px;padding:6px 9px;border-radius:999px;background:#fff6db;color:#8a5a00;font-size:10px;font-weight:900
+}
+.mf-modal-dialog{width:min(760px,100%)!important}
+.mf-modal-body{padding:20px 22px 24px!important}
+.mf-form-grid{grid-template-columns:1fr 1fr!important}
+.mf-form-grid .full{grid-column:1/-1!important}
+.permissions-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.mf-permission-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.mf-permission-count{font-size:11px;color:#667085;font-weight:850}
+.mf-email-warning{display:none;margin-top:6px;color:#b42318;font-size:11px;font-weight:800}
+.mf-email-warning.show{display:block}
+@media(max-width:820px){
+  .mf-ds-funcionarios .employee-card{grid-template-columns:1fr!important}
+  .mf-form-grid{grid-template-columns:1fr!important}
+  .mf-form-grid .full{grid-column:auto!important}
+  .permissions-grid{grid-template-columns:1fr!important}
+}
+</style>
+
+
+<script id="mf-funcionarios-refino-js">
+(function(){
+  const existingEmails = new Set([
+    {% for usuario in usuarios %}"{{ usuario.email|lower|e }}"{% if not loop.last %},{% endif %}{% endfor %}
+  ]);
+
+  
+
+  function validateEmail(form){
+    const input = form?.querySelector('input[name="email"]');
+    if(!input) return true;
+    const value = String(input.value || '').trim().toLowerCase();
+    const original = String(input.dataset.originalEmail || '').trim().toLowerCase();
+    const duplicate = value && value !== original && existingEmails.has(value);
+    const warning = input.parentElement.querySelector('.mf-email-warning');
+    if(warning) warning.classList.toggle('show', duplicate);
+    input.setCustomValidity(duplicate ? 'Este e-mail já está cadastrado.' : '');
+    return !duplicate;
+  }
+
+  document.querySelectorAll('.employee-form').forEach(form => {
+const email = form.querySelector('input[name="email"]');
+    if(email){
+      email.addEventListener('input', () => validateEmail(form));
+      email.addEventListener('blur', () => validateEmail(form));
+    }
+    form.addEventListener('submit', function(e){
+      if(!validateEmail(form)){
+        e.preventDefault();
+        form.querySelector('input[name="email"]')?.focus();
+      }
+    });
+  });
+})();
+</script>
+
+
+
+
+<style id="mf-funcionarios-final">
+/* Geometria única da tela Funcionários, alinhada ao padrão administrativo. */
+.mf-ds-funcionarios .premium-main{
+  padding:0!important;
+}
+.mf-ds-funcionarios .premium-topbar{
+  margin:0!important;
+}
+.mf-ds-funcionarios .mf-funcionarios-content{
+  box-sizing:border-box!important;
+  width:100%!important;
+  max-width:none!important;
+  min-height:calc(100vh - var(--mf-admin-topbar-min-h,72px))!important;
+  margin:0!important;
+  padding:var(--mf-admin-content-y,28px) var(--mf-admin-page-x,34px) 56px!important;
+  background:#f4f8fd!important;
+}
+.mf-ds-funcionarios .mf-funcionarios-grid{
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
+  padding:0!important;
+  display:block!important;
+}
+.mf-ds-funcionarios .mf-funcionarios-grid>.card:first-child{
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
+}
+.mf-ds-funcionarios .employee-card-head{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  min-height:0!important;
+  padding:18px 20px!important;
+  gap:18px!important;
+}
+.mf-ds-funcionarios .employee-section-copy{
+  display:none!important;
+}
+.mf-ds-funcionarios .employee-new-btn{
+  flex:0 0 auto!important;
+  min-height:42px!important;
+  margin-left:auto!important;
+  padding:0 16px!important;
+  border-radius:12px!important;
+  white-space:nowrap!important;
+  box-shadow:0 8px 20px rgba(45,0,87,.16)!important;
+}
+.mf-ds-funcionarios .employee-list{
+  margin-top:2px!important;
+}
+.mf-ds-funcionarios .mf-funcionarios-content>.alert{
+  margin:0 0 14px!important;
+}
+.mf-password-box{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 42px 42px 42px;
+  align-items:center;
+  gap:6px;
+}
+.mf-password-box .mf-password-input{
+  width:100%;
+  min-width:0;
+}
+.mf-password-action{
+  width:42px;
+  height:42px;
+  border:1px solid #dbe3ee;
+  border-radius:11px;
+  background:#fff;
+  color:#475467;
+  cursor:pointer;
+}
+.mf-password-action:hover{
+  border-color:#2d0057;
+  color:#2d0057;
+  background:#f8f2fc;
+}
+.mf-permission-groups{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+  margin-top:8px;
+}
+.mf-permission-group{
+  border:1px solid #e4e9f0;
+  border-radius:14px;
+  padding:12px;
+  background:#fbfcfe;
+}
+.mf-permission-group h4{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin:0 0 9px;
+  color:#2d0057;
+  font-size:12px;
+}
+.mf-permission-group .perm-check{
+  margin-top:7px;
+}
+@media(max-width:900px){
+  .mf-ds-funcionarios .mf-funcionarios-content{
+    padding:var(--mf-admin-content-y,18px) var(--mf-admin-page-x,16px) 44px!important;
+  }
+}
+@media(max-width:720px){
+  .mf-ds-funcionarios .employee-card-head{
+    align-items:stretch!important;
+    flex-direction:column!important;
+  }
+  .mf-ds-funcionarios .employee-new-btn{
+    width:100%!important;
+    justify-content:center!important;
+  }
+  .mf-permission-groups{
+    grid-template-columns:1fr;
+  }
+  .mf-password-box{
+    grid-template-columns:minmax(0,1fr) 40px 40px 40px;
+  }
+}
+</style>
+
+
+<script id="mf-password-tools-js">
+(function(){
+  function gerarSenha(){
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789@#$!';
+    let senha = '';
+    for(let i=0;i<10;i++){
+      senha += chars[Math.floor(Math.random()*chars.length)];
+    }
+    return senha;
+  }
+
+  document.addEventListener('click', async function(e){
+    const toggle = e.target.closest('[data-password-toggle]');
+    if(toggle){
+      const box = toggle.closest('.mf-password-box');
+      const input = box?.querySelector('.mf-password-input');
+      if(!input) return;
+      const showing = input.type === 'text';
+      input.type = showing ? 'password' : 'text';
+      toggle.innerHTML = showing
+        ? '<i class="fa-solid fa-eye"></i>'
+        : '<i class="fa-solid fa-eye-slash"></i>';
+      toggle.title = showing ? 'Mostrar senha' : 'Ocultar senha';
+      return;
+    }
+
+    const copy = e.target.closest('[data-password-copy]');
+    if(copy){
+      const input = copy.closest('.mf-password-box')?.querySelector('.mf-password-input');
+      if(!input) return;
+      try{
+        await navigator.clipboard.writeText(input.value || '');
+        const original = copy.innerHTML;
+        copy.innerHTML = '<i class="fa-solid fa-check"></i>';
+        setTimeout(()=>copy.innerHTML=original,1200);
+      }catch(err){
+        input.select();
+        document.execCommand('copy');
+      }
+      return;
+    }
+
+    const generate = e.target.closest('[data-password-generate]');
+    if(generate){
+      const input = generate.closest('.mf-password-box')?.querySelector('.mf-password-input');
+      if(!input) return;
+      input.value = gerarSenha();
+      input.type = 'text';
+      const toggleBtn = generate.closest('.mf-password-box')?.querySelector('[data-password-toggle]');
+      if(toggleBtn){
+        toggleBtn.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
+        toggleBtn.title = 'Ocultar senha';
+      }
+      input.dispatchEvent(new Event('input', {bubbles:true}));
+    }
+  });
+})();
+</script>
+
+{% endblock %}
+{% block page %}
+{% set lang = idioma_empresa(empresa if empresa is defined else None) %}
+<div class="premium-layout mf-admin-shell">
+  {% include "includes/admin_sidebar.html" %}
+
+  <main class="premium-main">
+    <header class="premium-topbar">
+      <div class="premium-page-title">
+        <strong>{{ t("funcionarios", idioma_empresa(empresa if empresa is defined else None)) }}</strong>
+        <span>{{ {'pt': 'Gerencie acessos, permissões e perfis da equipe.', 'it': 'Gestisci accessi, permessi e profili del team.', 'en': 'Manage access, permissions and team profiles.'}.get(lang, 'Gerencie acessos, permissões e perfis da equipe.') }}</span>
+      </div>
+      
+    </header>
+
+    <section class="content mf-funcionarios-content">
+      {% if sucesso %}<div class="alert ok">{{ sucesso }}</div>{% endif %}
+      {% if erro %}<div class="alert err">{{ erro }}</div>{% endif %}
+
+      <section class="grid mf-funcionarios-grid">
+      <div class="card">
+        <div class="card-head employee-card-head">
+          <div class="employee-section-copy" aria-hidden="true"></div>
+          <button type="button" class="btn btn-primary employee-new-btn" onclick="openEmployeeModal('create')">
+            <i class="fa-solid fa-user-plus"></i>
+            {{ {'pt':'Novo funcionário','it':'Nuovo dipendente','en':'New staff member'}.get(lang,'Novo funcionário') }}
+          </button>
+        </div>
+        <div class="card-body">
+          <div class="login-note">
+            <i class="fa-solid fa-right-to-bracket"></i>
+            <div>
+              <strong>Acesso individual para cada funcionário.</strong>
+              <span class="muted">Cada pessoa entra com o próprio e-mail, usa as mesmas páginas do admin e vê somente as telas liberadas.</span>
+            </div>
+          </div>
+
+          <div class="employee-list" id="employeeList">
+            {% for usuario in usuarios %}
+            <article class="employee-card" data-search="{{ (usuario.nome ~ ' ' ~ usuario.email ~ ' ' ~ usuario.cargo_nome)|lower }}">
+              <div class="employee-main">
+                <div class="employee-avatar"><i class="fa-solid {{ usuario.cargo_icone }}"></i></div>
+                <div style="min-width:0">
+                  <div class="employee-name">{{ usuario.nome }}</div>
+                  <span class="employee-email">{{ usuario.email }}</span>
+                </div>
+              </div>
+
+              <div class="employee-role">
+                {% if (usuario.perfil or 'administrador') == 'administrador' %}
+                  <strong>Dono da conta</strong>
+                  <span>Acesso completo ao sistema</span>
+                {% else %}
+                  <strong>{{ usuario.cargo_nome }}</strong>
+                  <span>Cargo definido pela empresa</span>
+                {% endif %}
+              </div>
+
+              <div>
+                {% if (usuario.perfil or 'administrador') == 'administrador' %}
+                  <span class="owner-access"><i class="fa-solid fa-shield-halved"></i>Acesso completo</span>
+                {% else %}
+                  <div class="permission-summary">
+                    <i class="fa-solid fa-key"></i>
+                    <div>
+                      <strong>{{ usuario.permissoes_set|length }} permissões</strong>
+                      <div class="permission-preview">
+                        {% for permissao in usuario.permissoes_set|list|sort %}
+                          {% if loop.index <= 3 %}<span>{{ permissoes_funcionarios.get(permissao, permissao) }}</span>{% endif %}
+                        {% endfor %}
+                        {% if usuario.permissoes_set|length > 3 %}<span>+{{ usuario.permissoes_set|length - 3 }}</span>{% endif %}
+                      </div>
+                    </div>
+                  </div>
+                {% endif %}
+              </div>
+
+              <div class="employee-actions">
+                {% if (usuario.perfil or 'administrador') == 'administrador' %}
+                  <span class="owner-access"><i class="fa-solid fa-crown"></i>Dono</span>
+                {% else %}
+                  <button type="button" class="btn btn-mini" onclick="openEmployeeModal('edit-{{ usuario.id }}')"><i class="fa-solid fa-pen"></i>Editar</button>
+                  <form class="inline-form" method="post" action="/admin/{{ empresa.id }}/funcionarios/{{ usuario.id }}/excluir" data-mf-confirm="Excluir este funcionário e remover o acesso ao painel?" data-mf-confirm-title="Excluir funcionário" data-mf-confirm-button="Excluir">
+                    <button class="btn btn-mini btn-danger" type="submit"><i class="fa-solid fa-trash"></i></button>
+                  </form>
+                {% endif %}
+              </div>
+            </article>
+            {% else %}
+              <div class="employee-empty">Nenhum funcionário cadastrado.</div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      </section>
+    </section>
+  </main>
+</div>
+
+<div class="mf-modal" id="employeeModalCreate" aria-hidden="true">
+  <div class="mf-modal-dialog">
+    <div class="mf-modal-head">
+      <div><h2>Novo funcionário</h2><div class="mf-access-level">Informe os dados e escolha exatamente quais páginas do admin essa pessoa poderá acessar.</div></div>
+      <button type="button" class="mf-modal-close" onclick="closeEmployeeModal('create')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="mf-modal-body">
+      <form method="post" action="/admin/{{ empresa.id }}/funcionarios/criar" class="employee-form">
+        <div class="mf-form-grid">
+          <div class="field"><label>Nome do funcionário</label><input name="nome" placeholder="Ex.: Maria Silva" required></div>
+          <div class="field"><label>E-mail de acesso</label><input type="email" name="email" placeholder="maria@empresa.com" required><div class="mf-email-warning">Este e-mail já está cadastrado.</div></div>
+          <div class="field full"><label>Nome do cargo</label><input name="cargo_nome" placeholder="Ex.: Recepcionista, Pizzaiolo, Fisioterapeuta..." maxlength="80" required><div class="mf-role-help">Este nome é livre e aparece no cartão do funcionário. Não precisa estar programado no sistema.</div></div>
+          <input type="hidden" name="cargo_icone" value="fa-user">
+          <input type="hidden" name="perfil" value="atendente">
+          <div class="field"><label>Senha temporária</label><div class="mf-password-box">
+      <input type="text" name="senha" minlength="6" required class="mf-password-input" autocomplete="new-password">
+      <button type="button" class="mf-password-action" data-password-toggle title="Ocultar senha"><i class="fa-solid fa-eye-slash"></i></button>
+      <button type="button" class="mf-password-action" data-password-copy title="Copiar senha"><i class="fa-regular fa-copy"></i></button>
+      <button type="button" class="mf-password-action" data-password-generate title="Gerar senha"><i class="fa-solid fa-rotate"></i></button>
+    </div></div>
+          <div class="field full"><label>Módulos liberados</label>
+            <div class="mf-role-help">O funcionário usará as mesmas páginas do painel principal e verá somente as telas marcadas abaixo.</div>
+            <div class="mf-permission-groups mf-permission-groups-simple">
+              {% for permissao_key, permissao_nome in permissoes_funcionarios.items() %}
+              <label class="perm-check perm-check-module">
+                <input type="checkbox" name="permissoes" value="{{ permissao_key }}">
+                <span class="perm-check-icon">
+                  <i class="fa-solid {{ permissoes_funcionarios_icones.get(permissao_key, 'fa-circle') }}"></i>
+                </span>
+                <span><strong>{{ permissao_nome }}</strong><small>{{ permissoes_funcionarios_descricoes.get(permissao_key, 'Mostrar no painel do funcionário') }}</small></span>
+              </label>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        <div class="mf-modal-actions"><button type="button" class="btn btn-soft" onclick="closeEmployeeModal('create')">Cancelar</button><button class="btn btn-primary" type="submit"><i class="fa-solid fa-user-plus"></i>Criar acesso</button></div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% for usuario in usuarios %}
+{% if (usuario.perfil or 'administrador') != 'administrador' %}
+<div class="mf-modal" id="employeeModalEdit-{{ usuario.id }}" aria-hidden="true">
+  <div class="mf-modal-dialog">
+    <div class="mf-modal-head">
+      <div><h2>Editar funcionário</h2><div class="mf-access-level">{{ usuario.nome }}</div></div>
+      <button type="button" class="mf-modal-close" onclick="closeEmployeeModal('edit-{{ usuario.id }}')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="mf-modal-body">
+      <form method="post" action="/admin/{{ empresa.id }}/funcionarios/{{ usuario.id }}/editar" class="employee-form">
+        <div class="mf-form-grid">
+          <div class="field"><label>Nome</label><input name="nome" value="{{ usuario.nome }}" required></div>
+          <div class="field"><label>E-mail</label><input type="email" name="email" value="{{ usuario.email }}" data-original-email="{{ usuario.email|lower }}" required><div class="mf-email-warning">Este e-mail já está cadastrado.</div></div>
+          <div class="field full"><label>Nome do cargo</label><input name="cargo_nome" value="{{ usuario.cargo_nome }}" maxlength="80" required></div>
+          <input type="hidden" name="cargo_icone" value="{{ usuario.cargo_icone or 'fa-user' }}">
+          <input type="hidden" name="perfil" value="{{ usuario.perfil or 'atendente' }}">
+          <div class="field full"><label>Módulos liberados</label>
+            <div class="mf-role-help">Marque exatamente quais páginas do painel principal este funcionário poderá abrir.</div>
+            <div class="mf-permission-groups mf-permission-groups-simple">
+              {% for permissao_key, permissao_nome in permissoes_funcionarios.items() %}
+              <label class="perm-check perm-check-module">
+                <input type="checkbox" name="permissoes" value="{{ permissao_key }}" {% if permissao_key in usuario.permissoes_set %}checked{% endif %}>
+                <span class="perm-check-icon">
+                  <i class="fa-solid {{ permissoes_funcionarios_icones.get(permissao_key, 'fa-circle') }}"></i>
+                </span>
+                <span><strong>{{ permissao_nome }}</strong><small>{{ permissoes_funcionarios_descricoes.get(permissao_key, 'Mostrar no painel do funcionário') }}</small></span>
+              </label>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        <div class="mf-modal-actions"><button type="button" class="btn btn-soft" onclick="closeEmployeeModal('edit-{{ usuario.id }}')">Cancelar</button><button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i>Salvar alterações</button></div>
+      </form>
+      <hr style="border:0;border-top:1px solid #edf0f4;margin:22px 0">
+      <form method="post" action="/admin/{{ empresa.id }}/funcionarios/{{ usuario.id }}/senha">
+        <div class="field"><label>Trocar senha</label><div class="password-row"><div class="mf-password-box">
+      <input type="text" name="senha" minlength="6" placeholder="Nova senha" required class="mf-password-input" autocomplete="new-password">
+      <button type="button" class="mf-password-action" data-password-toggle title="Ocultar senha"><i class="fa-solid fa-eye-slash"></i></button>
+      <button type="button" class="mf-password-action" data-password-copy title="Copiar senha"><i class="fa-regular fa-copy"></i></button>
+      <button type="button" class="mf-password-action" data-password-generate title="Gerar senha"><i class="fa-solid fa-rotate"></i></button>
+    </div><button class="btn btn-soft" type="submit"><i class="fa-solid fa-key"></i>Atualizar senha</button></div></div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endfor %}
+
+<script>
+  function toggleEdit(id){
+    var box = document.getElementById('editar-' + id);
+    var btn = document.getElementById('toggle-btn-' + id);
+    var caret = document.getElementById('caret-btn-' + id);
+    var icon = document.getElementById('toggle-icon-' + id);
+    if(!box) return;
+    var aberto = box.classList.toggle('open');
+    if(btn){
+      btn.title = aberto ? '{{ {'pt':'Recolher edição','it':'Chiudi modifica','en':'Close edit'}.get(lang,'Recolher edição') }}' : '{{ {'pt': 'Editar acesso', 'it': 'Modifica accesso', 'en': 'Edit access'}.get(lang, 'Editar acesso') }}';
+    }
+    if(caret){
+      caret.classList.toggle('is-open', aberto);
+      caret.title = aberto ? '{{ {'pt':'Recolher edição','it':'Chiudi modifica','en':'Close edit'}.get(lang,'Recolher edição') }}' : '{{ {'pt': 'Abrir edição', 'it': 'Apri modifica', 'en': 'Open edit'}.get(lang, 'Abrir edição') }}';
+    }
+    if(icon){
+      icon.className = aberto ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down';
+    }
+  }
+</script>
+
+<script id="v20-copy-menu-link-js">
+(function(){
+  function fullMenuUrl(path){
+    try { return new URL(path, window.location.origin).href; }
+    catch(e){ return window.location.origin + path; }
+  }
+  async function copyText(text){
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly','');
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    return ok;
+  }
+  document.addEventListener('click', async function(ev){
+    const btn = ev.target.closest('[data-copy-menu-link]');
+    if(!btn) return;
+    ev.preventDefault();
+    const original = btn.innerHTML;
+    const url = fullMenuUrl(btn.getAttribute('data-copy-menu-link'));
+    try{
+      await copyText(url);
+      btn.classList.add('copied');
+      btn.innerHTML = '<i class="fa-solid fa-check"></i>{{ {'pt': 'Link copiado', 'it': 'Link copiato', 'en': 'Link copied'}.get(lang, 'Link copiado') }}';
+      setTimeout(function(){ btn.classList.remove('copied'); btn.innerHTML = original; }, 1800);
+    }catch(e){
+      window.mfPrompt('{{ t("copie_link_menu", idioma_empresa(empresa if empresa is defined else None)) }}', url);
+    }
+  });
+})();
+</script>
+
+{% endblock %}

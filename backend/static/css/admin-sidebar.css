@@ -1,0 +1,565 @@
+/* MenuFacile — sidebar administrativa única */
+:root{
+  --mf-admin-sidebar-w:248px;
+  --mf-admin-purple:#2d0057;
+  --mf-admin-ink:#0b1f40;
+  --mf-admin-muted:#7c8799;
+  --mf-admin-line:#e2e8f0;
+  --mf-admin-soft:#f6f2fa;
+}
+
+@view-transition{navigation:auto}
+
+.mf-admin-shell{
+  display:grid !important;
+  grid-template-columns:var(--mf-admin-sidebar-w) minmax(0,1fr) !important;
+  min-height:100vh !important;
+  width:100% !important;
+}
+
+.mf-admin-sidebar{
+  position:sticky;
+  top:0;
+  z-index:90;
+  width:var(--mf-admin-sidebar-w);
+  min-width:var(--mf-admin-sidebar-w);
+  max-width:var(--mf-admin-sidebar-w);
+  height:100vh;
+  padding:20px 15px 16px;
+  display:flex;
+  flex-direction:column;
+  overflow-x:hidden;
+  overflow-y:auto;
+  background:#fff;
+  border-right:1px solid var(--mf-admin-line);
+  box-shadow:none;
+  scrollbar-width:thin;
+  scrollbar-color:#aab3c0 transparent;
+  view-transition-name:mf-admin-sidebar;
+  contain:layout paint;
+}
+
+.mf-admin-sidebar::-webkit-scrollbar{width:5px}
+.mf-admin-sidebar::-webkit-scrollbar-track{background:transparent}
+.mf-admin-sidebar::-webkit-scrollbar-thumb{background:#aab3c0;border-radius:999px}
+
+.mf-admin-sidebar__brand{
+  min-height:70px;
+  padding:0 4px 18px;
+  margin:0 0 14px;
+  display:grid;
+  grid-template-columns:42px minmax(0,1fr) 34px;
+  align-items:center;
+  gap:11px;
+  border-bottom:1px solid #edf1f6;
+}
+
+.mf-admin-sidebar__brand-icon{
+  width:42px;
+  height:42px;
+  display:grid;
+  place-items:center;
+  border-radius:13px;
+  background:#f3edf7;
+  color:var(--mf-admin-purple);
+  font-size:16px;
+}
+
+.mf-admin-sidebar__brand-copy{min-width:0}
+.mf-admin-sidebar__brand-copy strong,
+.mf-admin-sidebar__brand-copy span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mf-admin-sidebar__brand-copy strong{color:var(--mf-admin-purple);font-size:18px;line-height:1.1;font-weight:900}
+.mf-admin-sidebar__brand-copy span{margin-top:3px;color:#8a93a5;font-size:11px;line-height:1.2;font-weight:750}
+.mf-admin-sidebar__close{display:none;width:34px;height:34px;padding:0;border:0;border-radius:10px;background:#f4f6f9;color:#344054}
+
+.mf-admin-nav{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  flex:0 0 auto;
+}
+
+.mf-admin-nav-link{
+  width:100%;
+  min-width:0;
+  height:46px;
+  min-height:46px;
+  max-height:46px;
+  padding:0 14px;
+  margin:0;
+  display:flex;
+  align-items:center;
+  gap:13px;
+  border:0;
+  border-radius:14px;
+  color:var(--mf-admin-ink);
+  background:transparent;
+  box-shadow:none;
+  text-decoration:none;
+  font-family:"Inter",Arial,sans-serif;
+  font-size:14px;
+  line-height:1;
+  font-weight:800;
+  white-space:nowrap;
+  overflow:hidden;
+  transition:background-color .14s ease,color .14s ease,transform .14s ease;
+}
+
+.mf-admin-nav-link i{
+  width:20px;
+  min-width:20px;
+  max-width:20px;
+  height:20px;
+  display:grid;
+  place-items:center;
+  color:#062b5d;
+  font-size:16px;
+  line-height:20px;
+  text-align:center;
+  transition:color .14s ease;
+}
+
+.mf-admin-nav-link span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mf-admin-nav-link:hover{background:var(--mf-admin-soft);color:var(--mf-admin-purple);transform:none}
+.mf-admin-nav-link:hover i{color:var(--mf-admin-purple)}
+.mf-admin-nav-link.active{background:var(--mf-admin-purple);color:#fff;box-shadow:none}
+.mf-admin-nav-link.active i{color:#fff}
+.mf-admin-nav-link:focus-visible{outline:3px solid rgba(45,0,87,.18);outline-offset:1px}
+
+.mf-admin-plan{
+  margin-top:auto;
+  padding:13px 13px 14px;
+  border:1px solid #e2d8eb;
+  border-radius:18px;
+  background:linear-gradient(180deg,#fff,#fbf8fd);
+}
+.mf-admin-plan__title{display:flex;align-items:center;gap:8px;color:var(--mf-admin-purple);font-size:12px;font-weight:900}
+.mf-admin-plan__price{margin:7px 0 11px;color:#556176;font-size:11px;font-weight:800}
+.mf-admin-plan__button{min-height:42px;padding:0 12px;display:flex;align-items:center;justify-content:center;gap:9px;border-radius:12px;background:var(--mf-admin-purple);color:#fff;text-decoration:none;font-size:12px;font-weight:900}
+.mf-admin-plan__button i{font-size:13px}
+
+.mf-admin-sidebar-overlay{display:none}
+
+.mf-sidebar-toggle{
+  display:none;
+  width:40px;
+  height:40px;
+  padding:0;
+  flex:0 0 40px;
+  place-items:center;
+  border:1px solid #e2e8f0;
+  border-radius:12px;
+  background:#fff;
+  color:var(--mf-admin-purple);
+  font-size:16px;
+}
+
+::view-transition-old(mf-admin-sidebar),
+::view-transition-new(mf-admin-sidebar){animation:none;mix-blend-mode:normal}
+::view-transition-old(root){animation:mf-admin-page-out .10s ease both}
+::view-transition-new(root){animation:mf-admin-page-in .14s ease both}
+@keyframes mf-admin-page-out{to{opacity:.985}}
+@keyframes mf-admin-page-in{from{opacity:.985}}
+
+@media(max-width:900px){
+  .mf-sidebar-toggle{display:grid}
+  .mf-admin-shell{grid-template-columns:minmax(0,1fr) !important}
+  .mf-admin-sidebar{
+    position:fixed;
+    left:0;
+    top:0;
+    z-index:1002;
+    transform:translateX(-102%);
+    transition:transform .2s ease;
+    box-shadow:18px 0 48px rgba(15,23,42,.18);
+  }
+  body.admin-mobile-nav-open .mf-admin-sidebar{transform:translateX(0)}
+  .mf-admin-sidebar__close{display:grid;place-items:center}
+  .mf-admin-sidebar-overlay{
+    position:fixed;
+    inset:0;
+    z-index:1001;
+    display:block;
+    visibility:hidden;
+    opacity:0;
+    background:rgba(15,23,42,.45);
+    transition:opacity .2s ease,visibility .2s ease;
+  }
+  body.admin-mobile-nav-open .mf-admin-sidebar-overlay{visibility:visible;opacity:1}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .mf-admin-nav-link,.mf-admin-sidebar,.mf-admin-sidebar-overlay{transition:none}
+  ::view-transition-old(root),::view-transition-new(root){animation:none}
+}
+
+/* MenuFacile — geometria única da área administrativa
+   Referência visual: Entrega e Políticas.
+   O mesmo recuo é aplicado ao cabeçalho e ao conteúdo de todas as páginas. */
+:root{
+  --mf-admin-page-x:32px;
+  --mf-admin-content-y:28px;
+  --mf-admin-topbar-y:20px;
+  --mf-admin-topbar-min-h:88px;
+  --mf-admin-page-bg:#f4f8fd;
+}
+
+/* O main sempre começa depois da sidebar e nunca invade ou fica por baixo dela. */
+.mf-admin-shell > main,
+.mf-admin-shell > .main,
+.mf-admin-shell > .premium-main,
+.mf-admin-shell > .delivery-main{
+  box-sizing:border-box !important;
+  min-width:0 !important;
+  width:100% !important;
+  max-width:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow-x:clip !important;
+  background:var(--mf-admin-page-bg) !important;
+}
+
+/* Identidade visual única do cabeçalho administrativo.
+   O círculo e o recuo são os mesmos em Dashboard, Reservas, Pagamentos e Entrega. */
+.mf-admin-shell .topbar > .top-title,
+.mf-admin-shell .premium-topbar > .premium-page-title,
+.mf-admin-shell .delivery-topbar > .top-title{
+  display:flex !important;
+  align-items:center !important;
+  gap:var(--mf-space-3,12px) !important;
+  min-width:0 !important;
+  margin:0 !important;
+}
+
+.mf-admin-shell .topbar > .top-title::before,
+.mf-admin-shell .premium-topbar > .premium-page-title::before,
+.mf-admin-shell .delivery-topbar > .top-title::before{
+  content:"\f05a" !important;
+  width:28px !important;
+  height:28px !important;
+  min-width:28px !important;
+  display:grid !important;
+  place-items:center !important;
+  border:1px solid #dbe5ff !important;
+  border-radius:50% !important;
+  background:var(--mf-color-primary-soft,#eef3ff) !important;
+  color:var(--mf-color-info,#1237c9) !important;
+  font-family:"Font Awesome 6 Free" !important;
+  font-size:12px !important;
+  font-weight:900 !important;
+}
+
+.mf-admin-shell .topbar > .top-title strong,
+.mf-admin-shell .premium-topbar > .premium-page-title strong,
+.mf-admin-shell .delivery-topbar > .top-title strong{
+  display:block !important;
+  margin:0 !important;
+  color:var(--mf-color-text,#2d0057) !important;
+  font-size:var(--mf-font-size-body,16px) !important;
+  font-weight:var(--mf-font-weight-extrabold,850) !important;
+  line-height:1.2 !important;
+}
+
+.mf-admin-shell .topbar > .top-title span,
+.mf-admin-shell .premium-topbar > .premium-page-title span,
+.mf-admin-shell .delivery-topbar > .top-title span{
+  display:none !important;
+}
+
+/* Cabeçalho único: mesmo espaço em cima e nas laterais em qualquer módulo.
+   O seletor genérico cobre também cabeçalhos específicos, como pp-topbar. */
+.mf-admin-shell > main > header,
+.mf-admin-shell > .main > .topbar,
+.mf-admin-shell > .premium-main > .premium-topbar,
+.mf-admin-shell > .delivery-main > .delivery-topbar,
+.mf-admin-shell > .premium-main > .pp-topbar{
+  position:sticky !important;
+  top:0 !important;
+  z-index:25 !important;
+  box-sizing:border-box !important;
+  width:100% !important;
+  max-width:none !important;
+  min-height:var(--mf-admin-topbar-min-h) !important;
+  height:auto !important;
+  margin:0 !important;
+  padding:var(--mf-admin-topbar-y) var(--mf-admin-page-x) !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:16px !important;
+  flex-shrink:0 !important;
+  overflow:visible !important;
+  background:rgba(255,255,255,.97) !important;
+  border:0 !important;
+  border-bottom:1px solid var(--mf-admin-line) !important;
+  box-shadow:none !important;
+}
+
+.mf-admin-shell > main > header > :first-child,
+.mf-admin-shell > .main > .topbar > :first-child,
+.mf-admin-shell > .premium-main > .premium-topbar > :first-child,
+.mf-admin-shell > .delivery-main > .delivery-topbar > :first-child,
+.mf-admin-shell > .premium-main > .pp-topbar > :first-child{
+  min-width:0 !important;
+  margin:0 !important;
+}
+
+.mf-admin-shell > main > header strong,
+.mf-admin-shell > .main > .topbar strong,
+.mf-admin-shell > .premium-main > .premium-topbar strong,
+.mf-admin-shell > .delivery-main > .delivery-topbar strong,
+.mf-admin-shell > .premium-main > .pp-topbar strong{
+  display:block;
+  margin:0;
+  line-height:1.15;
+}
+
+.mf-admin-shell > main > header span,
+.mf-admin-shell > .main > .topbar span,
+.mf-admin-shell > .premium-main > .premium-topbar span,
+.mf-admin-shell > .delivery-main > .delivery-topbar span,
+.mf-admin-shell > .premium-main > .pp-topbar span{
+  line-height:1.35;
+}
+
+/* Conteúdo: mesma borda imaginária do título, sem centralizações diferentes. */
+.mf-admin-shell > .main > .content,
+.mf-admin-shell > .premium-main > .content,
+.mf-admin-shell > .premium-main > .premium-content,
+.mf-admin-shell > .delivery-main > .delivery-content,
+.mf-admin-shell > .premium-main > .pp-content,
+.mf-admin-shell > .main > .grid,
+.mf-admin-shell > .premium-main > .grid{
+  box-sizing:border-box !important;
+  width:100% !important;
+  max-width:none !important;
+  margin:0 !important;
+  padding:var(--mf-admin-content-y) var(--mf-admin-page-x) 56px !important;
+}
+
+/* Configurações possui um container interno; ele não deve criar outro recuo. */
+.mf-admin-shell > .premium-main > .premium-content > .container,
+.mf-admin-shell > .main > .content > .container,
+.mf-admin-shell > .delivery-main > .delivery-content > .container{
+  box-sizing:border-box !important;
+  width:100% !important;
+  max-width:none !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+
+/* Páginas sem wrapper de conteúdo, como Funcionários, seguem a mesma linha. */
+.mf-admin-shell > .premium-main > .admin-page-header,
+.mf-admin-shell > .premium-main > .alert,
+.mf-admin-shell > .premium-main > header + .admin-page-header + .alert,
+.mf-admin-shell > .premium-main > header + .admin-page-header + .alert + .grid{
+  box-sizing:border-box !important;
+  width:auto !important;
+  max-width:none !important;
+  margin-left:var(--mf-admin-page-x) !important;
+  margin-right:var(--mf-admin-page-x) !important;
+}
+
+.mf-admin-shell > .premium-main > header + .admin-page-header{
+  margin-top:var(--mf-admin-content-y) !important;
+}
+
+.mf-admin-shell .top-title,
+.mf-admin-shell .premium-page-title,
+.mf-admin-shell .pp-title,
+.mf-admin-shell .delivery-topbar > div:first-child{
+  min-width:0 !important;
+}
+
+.mf-admin-shell .top-actions,
+.mf-admin-shell .premium-top-actions,
+.mf-admin-shell .pp-actions{
+  min-width:0;
+  margin-left:auto;
+}
+
+@media(max-width:1180px) and (min-width:901px){
+  :root{
+    --mf-admin-page-x:28px;
+    --mf-admin-content-y:24px;
+    --mf-admin-topbar-y:18px;
+    --mf-admin-topbar-min-h:82px;
+  }
+
+  .mf-admin-shell > main > header,
+  .mf-admin-shell > .main > .topbar,
+  .mf-admin-shell > .premium-main > .premium-topbar,
+  .mf-admin-shell > .delivery-main > .delivery-topbar,
+  .mf-admin-shell > .premium-main > .pp-topbar{
+    flex-wrap:wrap !important;
+  }
+}
+
+@media(max-width:900px){
+  :root{
+    --mf-admin-page-x:16px;
+    --mf-admin-content-y:18px;
+    --mf-admin-topbar-y:14px;
+    --mf-admin-topbar-min-h:68px;
+  }
+
+  .mf-admin-shell > main > header,
+  .mf-admin-shell > .main > .topbar,
+  .mf-admin-shell > .premium-main > .premium-topbar,
+  .mf-admin-shell > .delivery-main > .delivery-topbar,
+  .mf-admin-shell > .premium-main > .pp-topbar{
+    position:sticky !important;
+    flex-wrap:wrap !important;
+  }
+
+  .mf-admin-shell > .main > .content,
+  .mf-admin-shell > .premium-main > .content,
+  .mf-admin-shell > .premium-main > .premium-content,
+  .mf-admin-shell > .delivery-main > .delivery-content,
+  .mf-admin-shell > .premium-main > .pp-content,
+  .mf-admin-shell > .main > .grid,
+  .mf-admin-shell > .premium-main > .grid{
+    padding-bottom:44px !important;
+  }
+}
+
+/* MenuFacile — padrão final para Pagamentos Online e Entrega e Políticas.
+   Evita recuos somados por classes genéricas e mantém o mesmo eixo do cabeçalho. */
+body.mf-ds-pagamentos-online .mf-admin-shell > .main > .mf-admin-standard-content,
+body.mf-ds-entrega-politicas .mf-admin-shell > .delivery-main > .mf-admin-standard-content{
+  box-sizing:border-box !important;
+  width:100% !important;
+  max-width:none !important;
+  margin:0 !important;
+  padding:var(--mf-admin-content-y) var(--mf-admin-page-x) 56px !important;
+}
+
+body.mf-ds-pagamentos-online .mf-admin-standard-content > form,
+body.mf-ds-pagamentos-online .mf-admin-standard-content .payments-grid,
+body.mf-ds-entrega-politicas .mf-admin-standard-content > form,
+body.mf-ds-entrega-politicas .mf-admin-standard-content .delivery-panel,
+body.mf-ds-entrega-politicas .mf-admin-standard-content .delivery-grid,
+body.mf-ds-entrega-politicas .mf-admin-standard-content .delivery-stack{
+  box-sizing:border-box !important;
+  width:100% !important;
+  max-width:none !important;
+  margin-left:0 !important;
+  margin-right:0 !important;
+}
+
+body.mf-ds-pagamentos-online .mf-admin-standard-content .payments-grid{
+  padding:0 !important;
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) !important;
+  gap:20px !important;
+  align-items:start !important;
+}
+
+body.mf-ds-entrega-politicas .mf-admin-standard-content > .delivery-tabs{
+  margin-top:0 !important;
+  margin-left:0 !important;
+  margin-right:0 !important;
+}
+
+@media(max-width:900px){
+  body.mf-ds-pagamentos-online .mf-admin-shell > .main > .mf-admin-standard-content,
+  body.mf-ds-entrega-politicas .mf-admin-shell > .delivery-main > .mf-admin-standard-content{
+    padding:var(--mf-admin-content-y) var(--mf-admin-page-x) 44px !important;
+  }
+}
+
+/* =========================================================
+   MenuFacile v814 — sidebar recolhível global (desktop/tablet)
+   ========================================================= */
+:root{--mf-admin-sidebar-collapsed-w:78px}
+
+.mf-admin-shell,
+.mf-admin-sidebar,
+.mf-admin-nav-link,
+.mf-admin-sidebar__brand{
+  transition:grid-template-columns .2s ease,width .2s ease,min-width .2s ease,max-width .2s ease,padding .2s ease,gap .2s ease!important;
+}
+
+.mf-admin-sidebar__collapse{
+  width:34px;
+  height:34px;
+  padding:0;
+  display:grid;
+  place-items:center;
+  border:1px solid #e6eaf0;
+  border-radius:10px;
+  background:#fff;
+  color:var(--mf-admin-purple);
+  cursor:pointer;
+  font-size:12px;
+  transition:background .16s ease,color .16s ease,transform .2s ease;
+}
+.mf-admin-sidebar__collapse:hover{background:var(--mf-admin-soft);color:var(--mf-admin-purple)}
+.mf-admin-sidebar__collapse:focus-visible{outline:3px solid rgba(45,0,87,.16);outline-offset:1px}
+
+@media(min-width:901px){
+  body.mf-sidebar-collapsed .mf-admin-shell{
+    grid-template-columns:var(--mf-admin-sidebar-collapsed-w) minmax(0,1fr)!important;
+  }
+  body.mf-sidebar-collapsed .mf-admin-sidebar{
+    width:var(--mf-admin-sidebar-collapsed-w)!important;
+    min-width:var(--mf-admin-sidebar-collapsed-w)!important;
+    max-width:var(--mf-admin-sidebar-collapsed-w)!important;
+    padding:16px 10px!important;
+  }
+  body.mf-sidebar-collapsed .mf-admin-sidebar__brand{
+    min-height:94px!important;
+    padding:0 0 13px!important;
+    grid-template-columns:1fr!important;
+    grid-template-rows:42px 34px!important;
+    justify-items:center!important;
+    align-content:start!important;
+    gap:8px!important;
+  }
+  body.mf-sidebar-collapsed .mf-admin-sidebar__brand-copy{display:none!important}
+  body.mf-sidebar-collapsed .mf-admin-sidebar__brand-icon{
+    width:40px!important;height:40px!important;border-radius:12px!important;
+  }
+  body.mf-sidebar-collapsed .mf-admin-sidebar__collapse{
+    width:34px!important;height:34px!important;
+  }
+  body.mf-sidebar-collapsed .mf-admin-sidebar__collapse i{transform:rotate(180deg)}
+  body.mf-sidebar-collapsed .mf-admin-nav{align-items:center!important;gap:5px!important}
+  body.mf-sidebar-collapsed .mf-admin-nav-link{
+    width:48px!important;
+    min-width:48px!important;
+    max-width:48px!important;
+    height:46px!important;
+    padding:0!important;
+    justify-content:center!important;
+    gap:0!important;
+    border-radius:13px!important;
+    overflow:visible!important;
+  }
+  body.mf-sidebar-collapsed .mf-admin-nav-link>span{display:none!important}
+  body.mf-sidebar-collapsed .mf-admin-nav-link>i{
+    width:22px!important;min-width:22px!important;max-width:22px!important;
+    font-size:17px!important;
+  }
+  body.mf-sidebar-collapsed .mf-admin-nav-link>img{
+    width:22px!important;height:22px!important;min-width:22px!important;
+    object-fit:contain!important;border-radius:6px!important;
+  }
+  body.mf-sidebar-collapsed .mf-admin-plan{display:none!important}
+}
+
+@media(max-width:900px){
+  .mf-admin-sidebar__collapse{display:none!important}
+  body.mf-sidebar-collapsed .mf-admin-shell{grid-template-columns:minmax(0,1fr)!important}
+  body.mf-sidebar-collapsed .mf-admin-sidebar{
+    width:var(--mf-admin-sidebar-w)!important;
+    min-width:var(--mf-admin-sidebar-w)!important;
+    max-width:var(--mf-admin-sidebar-w)!important;
+    padding:20px 15px 16px!important;
+  }
+  body.mf-sidebar-collapsed .mf-admin-sidebar__brand-copy{display:block!important}
+  body.mf-sidebar-collapsed .mf-admin-nav-link>span{display:block!important}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .mf-admin-shell,.mf-admin-sidebar,.mf-admin-nav-link,.mf-admin-sidebar__brand,.mf-admin-sidebar__collapse{transition:none!important}
+}

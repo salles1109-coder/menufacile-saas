@@ -1,0 +1,118 @@
+/* MenuFacile v773 — ícones sociais delicados, circulares e translúcidos. */
+
+/* Ações sociais: somente ícone, como pequenos botões de vidro suave. */
+.mf-encomendas-v761 .enc-header-actions-v772{
+  gap:10px;
+}
+.mf-encomendas-v761 .enc-social-icon-v773{
+  width:48px!important;
+  height:48px!important;
+  min-width:48px!important;
+  min-height:48px!important;
+  padding:0!important;
+  border-radius:50%!important;
+  gap:0!important;
+  border:1px solid rgba(255,255,255,.72)!important;
+  background:rgba(255,255,255,.34)!important;
+  box-shadow:0 6px 20px rgba(49,35,26,.055),inset 0 0 0 1px rgba(255,255,255,.20)!important;
+  backdrop-filter:blur(12px) saturate(118%);
+  -webkit-backdrop-filter:blur(12px) saturate(118%);
+  transition:transform .18s ease,box-shadow .18s ease,background .18s ease,border-color .18s ease!important;
+}
+.mf-encomendas-v761 .enc-social-icon-v773 span{display:none!important}
+.mf-encomendas-v761 .enc-social-icon-v773 i{
+  font-size:19px!important;
+  line-height:1;
+}
+
+/* Tons individuais bem suaves: a cor aparece mais no ícone do que no fundo. */
+.mf-encomendas-v761 .enc-social-whatsapp-v773{
+  color:#15935f!important;
+  background:rgba(37,211,102,.075)!important;
+  border-color:rgba(37,211,102,.16)!important;
+}
+.mf-encomendas-v761 .enc-social-facebook-v773{
+  color:#1877f2!important;
+  background:rgba(24,119,242,.07)!important;
+  border-color:rgba(24,119,242,.14)!important;
+}
+.mf-encomendas-v761 .enc-social-instagram-v773{
+  color:#df356e!important;
+  background:rgba(225,48,108,.065)!important;
+  border-color:rgba(225,48,108,.14)!important;
+}
+.mf-encomendas-v761 .enc-social-hours-v773{
+  color:#775b49!important;
+  background:rgba(119,91,73,.055)!important;
+  border-color:rgba(119,91,73,.13)!important;
+}
+
+.mf-encomendas-v761 .enc-social-icon-v773:hover,
+.mf-encomendas-v761 .enc-social-icon-v773:focus-visible{
+  transform:translateY(-2px)!important;
+  box-shadow:0 10px 24px rgba(49,35,26,.09),inset 0 0 0 1px rgba(255,255,255,.28)!important;
+  outline:none;
+}
+.mf-encomendas-v761 .enc-social-whatsapp-v773:hover{background:rgba(37,211,102,.12)!important}
+.mf-encomendas-v761 .enc-social-facebook-v773:hover{background:rgba(24,119,242,.11)!important}
+.mf-encomendas-v761 .enc-social-instagram-v773:hover{background:rgba(225,48,108,.105)!important}
+.mf-encomendas-v761 .enc-social-hours-v773:hover{background:rgba(119,91,73,.095)!important}
+
+/* Mantém o popover de horários ancorado ao novo botão circular. */
+.mf-encomendas-v761 .enc-hours-v772{flex:0 0 auto}
+.mf-encomendas-v761 .enc-hours-v772[open] .enc-social-hours-v773{
+  background:rgba(119,91,73,.11)!important;
+  border-color:rgba(119,91,73,.20)!important;
+}
+
+/* Tablet/celular: os ícones continuam visíveis sem esmagar o nome da empresa. */
+@media (max-width:760px){
+  .mf-encomendas-v761 .enc-public-header-v772{
+    flex-wrap:wrap;
+    align-items:center;
+    padding:9px 11px 10px!important;
+    gap:7px!important;
+  }
+  .mf-encomendas-v761 .enc-public-header-v772 .enc-public-brand{
+    width:100%;
+    max-width:100%!important;
+  }
+  .mf-encomendas-v761 .enc-header-actions-v772{
+    width:100%;
+    margin-left:0;
+    justify-content:flex-start;
+    gap:8px;
+  }
+  .mf-encomendas-v761 .enc-social-icon-v773,
+  .mf-encomendas-v761 .enc-hours-v772 .enc-social-icon-v773{
+    width:42px!important;
+    height:42px!important;
+    min-width:42px!important;
+    min-height:42px!important;
+  }
+  .mf-encomendas-v761 .enc-social-icon-v773 i{font-size:17px!important}
+  .mf-encomendas-v761 .enc-cart-btn{
+    margin-left:auto;
+    flex:0 0 39px;
+  }
+  .mf-encomendas-v761 .enc-hours-popover-v772{
+    position:fixed;
+    top:118px;
+    right:12px;
+  }
+}
+
+@media (max-width:430px){
+  /* v772 escondia Horários aqui; v773 mantém os quatro atalhos sociais. */
+  .mf-encomendas-v761 .enc-hours-v772{display:block!important}
+  .mf-encomendas-v761 .enc-public-header-v772 .enc-public-brand{max-width:100%!important}
+  .mf-encomendas-v761 .enc-header-actions-v772{gap:7px}
+  .mf-encomendas-v761 .enc-social-icon-v773,
+  .mf-encomendas-v761 .enc-hours-v772 .enc-social-icon-v773{
+    width:39px!important;
+    height:39px!important;
+    min-width:39px!important;
+    min-height:39px!important;
+  }
+  .mf-encomendas-v761 .enc-social-icon-v773 i{font-size:16px!important}
+}

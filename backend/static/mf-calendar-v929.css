@@ -1,0 +1,27 @@
+/* MenuFacile V929 — calendário consistente no mobile/desktop */
+.mf-calendar-input-v929{cursor:pointer!important;background:#fff!important;caret-color:transparent!important}
+.mf-calendar-backdrop-v929{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(15,23,42,.58);backdrop-filter:blur(6px);z-index:2147483600}
+.mf-calendar-backdrop-v929.is-open{display:flex}
+.mf-calendar-v929{width:min(390px,calc(100vw - 28px));max-height:min(620px,calc(100dvh - 36px));overflow:auto;background:#fff;border:1px solid #e5eaf1;border-radius:24px;box-shadow:0 28px 80px rgba(15,23,42,.32);padding:18px;color:#263244}
+.mf-calendar-head-v929{display:grid;grid-template-columns:44px 1fr 44px;align-items:center;gap:8px;margin-bottom:14px}
+.mf-calendar-nav-v929{width:44px;height:44px;border:1px solid #dfe6ef;border-radius:13px;background:#f8fafc;color:#344054;font-size:20px;font-weight:900;cursor:pointer}
+.mf-calendar-month-v929{text-align:center;font-size:18px;font-weight:950;text-transform:capitalize;color:#172033}
+.mf-calendar-week-v929,.mf-calendar-grid-v929{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.mf-calendar-week-v929{margin-bottom:6px;color:#8792a2;font-size:11px;font-weight:900;text-align:center;text-transform:uppercase}
+.mf-calendar-week-v929 span{padding:5px 0}
+.mf-calendar-day-v929{aspect-ratio:1;border:0;border-radius:13px;background:transparent;color:#344054;font-size:14px;font-weight:850;cursor:pointer}
+.mf-calendar-day-v929:hover{background:#f1f5f9}
+.mf-calendar-day-v929.is-today{box-shadow:inset 0 0 0 1px #9eb2c9}
+.mf-calendar-day-v929.is-selected{background:var(--mf-theme-primary,#1236b5);color:#fff;box-shadow:0 7px 18px rgba(18,54,181,.22)}
+.mf-calendar-day-v929.is-outside{color:#c1c8d2}
+.mf-calendar-day-v929:disabled{color:#d1d5db;background:#f7f8fa;cursor:not-allowed;box-shadow:none}
+.mf-calendar-actions-v929{display:grid;grid-template-columns:1fr 1.25fr;gap:9px;margin-top:16px;padding-top:14px;border-top:1px solid #e7ebf0}
+.mf-calendar-actions-v929 button{min-height:46px;border-radius:14px;font-size:13px;font-weight:950;cursor:pointer}
+.mf-calendar-cancel-v929{border:1px solid #d8e0e9;background:#fff;color:#475467}
+.mf-calendar-confirm-v929{border:1px solid var(--mf-theme-primary,#1236b5);background:var(--mf-theme-primary,#1236b5);color:#fff}
+@media(max-width:480px){
+ .mf-calendar-backdrop-v929{padding:12px 12px 88px}
+ .mf-calendar-v929{width:100%;border-radius:21px;padding:15px}
+ .mf-calendar-head-v929{grid-template-columns:40px 1fr 40px}.mf-calendar-nav-v929{width:40px;height:40px}
+ .mf-calendar-day-v929{border-radius:11px;font-size:13px}
+}

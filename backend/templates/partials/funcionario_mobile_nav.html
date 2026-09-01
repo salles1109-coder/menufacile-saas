@@ -1,0 +1,12 @@
+{% set _pode_cardapio = permissao_admin_sessao(request, 'cardapio') %}
+{% set _pode_produtos = permissao_admin_sessao(request, 'produtos') %}
+{% set _pode_pedidos = permissao_admin_sessao(request, 'pedidos') %}
+{% set _pode_reservas = permissao_admin_sessao(request, 'reservas') %}
+{% set _path = request.url.path %}
+<nav class="mf-employee-bottom-nav" aria-label="Navegação do funcionário">
+  <a class="{% if _path == '/funcionario/' ~ empresa.id %}active{% endif %}" href="/funcionario/{{ empresa.id }}"><i class="fa-solid fa-house"></i><span>Início</span></a>
+  {% if _pode_cardapio %}<a class="{% if '/cardapio' in _path %}active{% endif %}" href="/funcionario/{{ empresa.id }}/cardapio"><i class="fa-solid fa-utensils"></i><span>Menu</span></a>{% endif %}
+  {% if _pode_produtos %}<a class="{% if '/produtos' in _path %}active{% endif %}" href="/funcionario/{{ empresa.id }}/produtos"><i class="fa-solid fa-box"></i><span>Produtos</span></a>{% endif %}
+  {% if _pode_pedidos %}<a class="{% if '/pedidos' in _path and '/produtos' not in _path %}active{% endif %}" href="/funcionario/{{ empresa.id }}/pedidos"><i class="fa-solid fa-bag-shopping"></i><span>Pedidos</span></a>{% endif %}
+  {% if _pode_reservas %}<a class="{% if '/reservas' in _path %}active{% endif %}" href="/funcionario/{{ empresa.id }}/reservas"><i class="fa-regular fa-calendar-check"></i><span>Agenda</span></a>{% endif %}
+</nav>

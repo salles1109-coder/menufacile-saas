@@ -1,0 +1,128 @@
+{% set _idioma_sidebar = idioma_empresa(empresa if empresa is defined else None) %}
+{% set _admin_perfil = perfil_admin_sessao(request) %}
+{% set _admin_total = _admin_perfil == 'administrador' %}
+{% set _pode_dashboard = permissao_admin_sessao(request, 'dashboard') %}
+{% set _pode_cardapio = permissao_admin_sessao(request, 'cardapio') %}
+{% set _pode_produtos = permissao_admin_sessao(request, 'produtos') %}
+{% set _pode_pedidos = permissao_admin_sessao(request, 'pedidos') %}
+{% set _pode_reservas = permissao_admin_sessao(request, 'reservas') %}
+{% set _pode_financeiro = permissao_admin_sessao(request, 'financeiro') %}
+{% set _pode_fiscal = permissao_admin_sessao(request, 'fiscal') %}
+{% set _pode_pagamentos_online = permissao_admin_sessao(request, 'pagamentos_online') %}
+{% set _pode_entrega_politicas = permissao_admin_sessao(request, 'entrega_politicas') %}
+{% set _pode_configuracoes = permissao_admin_sessao(request, 'configuracoes') %}
+{% set _pode_funcionarios = permissao_admin_sessao(request, 'funcionarios') %}
+{% set _pode_integracoes = permissao_admin_sessao(request, 'integracoes') %}
+{% set _pode_menu_publico = permissao_admin_sessao(request, 'menu_publico') %}
+{% set _tipo_sidebar = (empresa.tipo or '')|lower|trim %}
+{% set _tipos_produto_sidebar = [
+  'loja', 'loja_catalogo', 'catalogo', 'produto', 'produtos', 'ecommerce', 'varejo',
+  'mercado', 'mercearia', 'adega', 'bebidas', 'farmacia', 'pet_shop', 'petshop',
+  'floricultura', 'outras_lojas', 'mercado_mercearia', 'adega_bebidas',
+  'loja / catálogo', 'loja / catalogo', 'mercado / mercearia', 'adega / bebidas',
+  'farmácia', 'pet shop', 'outras lojas'
+] %}
+{% set _negocio_produto_sidebar = _tipo_sidebar in _tipos_produto_sidebar %}
+{% set _tipos_agenda_sidebar = [
+  'servico', 'serviço', 'servicos', 'serviços', 'agenda',
+  'servico_agendamento', 'serviço_agendamento', 'servicos_agendamento', 'serviços_agendamento',
+  'servico / agendamento', 'serviço / agendamento', 'servicos / agendamento', 'serviços / agendamento',
+  'salao', 'salão', 'salao_beleza', 'salão_beleza', 'salao / beleza', 'salão / beleza',
+  'salao de beleza', 'salão de beleza', 'barbearia', 'estetica', 'estética',
+  'clinica', 'clínica', 'clinica_simples', 'consultorio', 'consultório',
+  'academia', 'oficina', 'servicos_gerais', 'serviços gerais',
+  'outros_servicos', 'outros serviços'
+] %}
+{% set _negocio_agenda_sidebar = _tipo_sidebar in _tipos_agenda_sidebar %}
+{% set _negocio_encomenda_sidebar = _tipo_sidebar in ['encomendas','encomenda','sob_encomenda','confeitaria_encomendas'] %}
+{% set _admin_base_sidebar = '/admin/' ~ empresa.id %}
+{% set _admin_path_sidebar = request.url.path if request is defined else '' %}
+
+<div class="mf-admin-sidebar" data-mf-admin-sidebar>
+  <div class="mf-admin-sidebar__brand">
+    <div class="mf-admin-sidebar__brand-icon" aria-hidden="true"><i class="fa-solid fa-store"></i></div>
+    <div class="mf-admin-sidebar__brand-copy">
+      <strong>{{ empresa.nome }}</strong>
+      <span>{{ t('painel_administrativo', _idioma_sidebar) }}</span>
+    </div>
+    <button class="mf-admin-sidebar__collapse" type="button" data-mf-sidebar-collapse aria-label="{{ 'Riduci menu' if _idioma_sidebar == 'it' else ('Collapse menu' if _idioma_sidebar == 'en' else 'Recolher menu') }}" aria-pressed="false" title="{{ 'Riduci menu' if _idioma_sidebar == 'it' else ('Collapse menu' if _idioma_sidebar == 'en' else 'Recolher menu') }}">
+      <i class="fa-solid fa-angles-left" aria-hidden="true"></i>
+    </button>
+    <button class="mf-admin-sidebar__close" type="button" data-mf-sidebar-close aria-label="{{ 'Chiudi menu' if _idioma_sidebar == 'it' else ('Close menu' if _idioma_sidebar == 'en' else 'Fechar menu') }}">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
+
+  <nav class="mf-admin-nav" aria-label="{{ 'Navigazione amministrativa' if _idioma_sidebar == 'it' else ('Administrative navigation' if _idioma_sidebar == 'en' else 'Navegação administrativa') }}">
+    {% if _admin_total or _pode_dashboard %}
+    <a class="mf-admin-nav-link{% if _admin_path_sidebar == _admin_base_sidebar %} active{% endif %}" href="{{ _admin_base_sidebar }}"><i class="fa-solid fa-house"></i><span>{{ t('dashboard', _idioma_sidebar) }}</span></a>
+    {% endif %}
+
+    <a class="mf-admin-nav-link mf-admin-nav-link--pwa" href="#" data-mf-push-open aria-haspopup="dialog" aria-expanded="false">
+      <img src="/static/pwa/icons/icon-192.png?v=724" alt="" aria-hidden="true">
+      <span>{% if _idioma_sidebar == 'it' %}Applicazione e avvisi{% elif _idioma_sidebar == 'en' %}Application & alerts{% else %}Aplicativo e alertas{% endif %}</span>
+    </a>
+
+    {% if _negocio_encomenda_sidebar %}
+      {% if _admin_total or _pode_cardapio %}
+      <a class="mf-admin-nav-link{% if _admin_path_sidebar.startswith(_admin_base_sidebar ~ '/encomendas/cadastrar') %} active{% endif %}" href="{{ _admin_base_sidebar }}/encomendas/cadastrar"><i class="fa-solid fa-cake-candles"></i><span>Cadastrar encomendas</span></a>
+      {% endif %}
+      {% if _admin_total or _pode_pedidos %}
+      <a class="mf-admin-nav-link{% if _admin_path_sidebar == _admin_base_sidebar ~ '/encomendas' %} active{% endif %}" href="{{ _admin_base_sidebar }}/encomendas"><i class="fa-solid fa-box-open"></i><span>Encomendas</span></a>
+      {% endif %}
+    {% endif %}
+
+    {% if (_admin_total or _pode_cardapio) and not _negocio_encomenda_sidebar %}
+    <a class="mf-admin-nav-link{% if _admin_path_sidebar.startswith(_admin_base_sidebar ~ '/cardapio') %} active{% endif %}" href="{{ _admin_base_sidebar }}/cardapio"><i class="fa-solid fa-cart-shopping"></i><span>{% if _negocio_agenda_sidebar %}{{ t('servicos', _idioma_sidebar) }}{% elif _negocio_produto_sidebar %}{{ t('produtos', _idioma_sidebar) }}{% else %}{{ t('cardapio', _idioma_sidebar) }}{% endif %}</span></a>
+    {% endif %}
+
+    {% if (_admin_total or _pode_pedidos) and not _negocio_produto_sidebar and not _negocio_agenda_sidebar and not _negocio_encomenda_sidebar %}
+    <a class="mf-admin-nav-link{% if _admin_path_sidebar.startswith(_admin_base_sidebar ~ '/pedidos') %} active{% endif %}" href="{{ _admin_base_sidebar }}/pedidos"><i class="fa-solid fa-bag-shopping"></i><span>{{ t('pedidos', _idioma_sidebar) }}</span></a>
+    {% endif %}
+
+    {% if (_admin_total or _pode_produtos) and _negocio_produto_sidebar %}
+    <a class="mf-admin-nav-link{% if _admin_path_sidebar.startswith(_admin_base_sidebar ~ '/produtos-pedidos') %} active{% endif %}" href="{{ _admin_base_sidebar }}/produtos-pedidos"><i class="fa-solid fa-boxes-stacked"></i><span>{% if _idioma_sidebar == 'it' %}Prodotti{% elif _idioma_sidebar == 'en' %}Products{% else %}Produtos{% endif %}</span></a>
+    {% endif %}
+
+    {% if (_admin_total or _pode_reservas) and not _negocio_produto_sidebar and not _negocio_encomenda_sidebar %}
+    <a class="mf-admin-nav-link{% if _admin_path_sidebar.startswith(_admin_base_sidebar ~ '/reservas') %} active{% endif %}" href="{{ _admin_base_sidebar }}/reservas"><i class="fa-regular fa-calendar-days"></i><span>{% if _negocio_agenda_sidebar %}{{ t('agendamentos', _idioma_sidebar) }}{% else %}{{ t('reservas', _idioma_sidebar) }}{% endif %}</span></a>
+    {% endif %}
+
+    {% if _admin_total or _pode_financeiro %}
+    <a class="mf-admin-nav-link{% if _admin_path_sidebar.startswith(_admin_base_sidebar ~ '/financeiro') %} active{% endif %}" href="{{ _admin_base_sidebar }}/financeiro"><i class="fa-solid fa-coins"></i><span>{{ t('financeiro', _idioma_sidebar) }}</span></a>
+    {% endif %}
+
+    {% if _admin_total or _pode_fiscal %}
+    <a class="mf-admin-nav-link{% if _admin_path_sidebar.startswith(_admin_base_sidebar ~ '/fiscal') %} active{% endif %}" href="{{ _admin_base_sidebar }}/fiscal"><i class="fa-regular fa-file-lines"></i><span>{{ t('fiscal_iva', _idioma_sidebar) }}</span></a>
+    {% endif %}
+
+    {% if _admin_total or _pode_pagamentos_online %}
+    <a class="mf-admin-nav-link{% if _admin_path_sidebar.startswith(_admin_base_sidebar ~ '/pagamentos-online') %} active{% endif %}" href="{{ _admin_base_sidebar }}/pagamentos-online"><i class="fa-regular fa-credit-card"></i><span>{{ t('pagamentos_online', _idioma_sidebar) }}</span></a>
+    {% endif %}
+
+    {% if (_admin_total or _pode_entrega_politicas) and not _negocio_agenda_sidebar %}
+    <a class="mf-admin-nav-link{% if _admin_path_sidebar.startswith(_admin_base_sidebar ~ '/entrega-politicas') %} active{% endif %}" href="{{ _admin_base_sidebar }}/entrega-politicas"><i class="fa-solid fa-truck-fast"></i><span>{{ t('entrega_politicas', _idioma_sidebar) }}</span></a>
+    {% endif %}
+
+    {% if _admin_total or _pode_configuracoes %}
+    <a class="mf-admin-nav-link{% if _admin_path_sidebar.startswith(_admin_base_sidebar ~ '/configuracoes') %} active{% endif %}" href="{{ _admin_base_sidebar }}/configuracoes"><i class="fa-solid fa-gear"></i><span>{{ t('configuracoes', _idioma_sidebar) }}</span></a>
+    {% endif %}
+
+    {% if _admin_total or _pode_funcionarios %}
+    <a class="mf-admin-nav-link{% if _admin_path_sidebar.startswith(_admin_base_sidebar ~ '/funcionarios') %} active{% endif %}" href="{{ _admin_base_sidebar }}/funcionarios"><i class="fa-solid fa-users-gear"></i><span>{{ t('funcionarios', _idioma_sidebar) }}</span></a>
+    {% endif %}
+
+    {% if _admin_total or _pode_integracoes %}
+    <a class="mf-admin-nav-link{% if _admin_path_sidebar.startswith(_admin_base_sidebar ~ '/integracoes') %} active{% endif %}" href="{{ _admin_base_sidebar }}/integracoes"><i class="fa-solid fa-plug"></i><span>{{ t('integracoes', _idioma_sidebar) }}</span></a>
+    {% endif %}
+
+
+    {% if _admin_total or _pode_menu_publico %}
+    <a class="mf-admin-nav-link" href="{{ _admin_base_sidebar }}/menu-publico" target="_blank" rel="noopener"><i class="fa-solid fa-globe"></i><span>{{ t('menu_publico', _idioma_sidebar) }}</span></a>
+    {% endif %}
+
+    <a class="mf-admin-nav-link" href="/logout"><i class="fa-solid fa-right-from-bracket"></i><span>{{ t('sair', _idioma_sidebar) }}</span></a>
+  </nav>
+
+</div>
+<div class="mf-admin-sidebar-overlay" data-mf-sidebar-overlay aria-hidden="true"></div>

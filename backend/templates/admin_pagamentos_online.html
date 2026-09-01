@@ -1,0 +1,1113 @@
+{% extends "base.html" %}
+{% block body_attrs %} class="mf-ds-admin mf-payments-page mf-ds-pagamentos-online"{% endblock %}
+{% block title %}Pagamentos Online - {{ empresa.nome }}{% endblock %}
+{% block head %}
+<style>
+*{box-sizing:border-box}.premium-layout{min-height:100vh;display:grid;grid-template-columns:250px 1fr;background:#f4f8fd;color:#102033}.premium-sidebar{position:sticky;top:0;height:100vh;background:linear-gradient(180deg,#fff,#f7fbff);border-right:1px solid #dbe6f3;padding:22px 18px;z-index:30}.premium-brand{display:flex;align-items:center;gap:12px;padding:4px 4px 18px;border-bottom:1px solid #edf2f7}.premium-brand-icon{width:44px;height:44px;border-radius:15px;background:#eef3ff;color:#061b8f;display:flex;align-items:center;justify-content:center;font-size:22px}.premium-brand strong{display:block;color:#061b8f;font-size:20px}.premium-brand span{display:block;color:#667085;font-size:13px;font-weight:800}.premium-nav{display:grid;gap:8px;margin-top:18px}.premium-nav-title{color:#98a2b3;font-size:12px;font-weight:900;text-transform:uppercase;margin:12px 8px 4px}.premium-nav-link{min-height:44px;display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:13px;color:#53627a;font-weight:850;text-decoration:none}.premium-nav-link i{width:20px}.premium-nav-link:hover{background:#f3f6ff;color:#061b8f}.premium-nav-link.active{background:#061b8f;color:#fff;box-shadow:0 12px 24px rgba(6,27,143,.16)}
+.main{min-width:0}.topbar{min-height:74px;background:rgba(255,255,255,.94);border-bottom:1px solid #dbe6f3;display:flex;align-items:center;padding:14px 28px;position:sticky;top:0;z-index:20}.topbar strong{font-size:20px;color:#061b8f}.topbar span{display:block;color:#667085;font-size:12px;font-weight:700;margin-top:3px}.content{width:100%;max-width:none;margin:0;padding:var(--mf-admin-content-y,28px) var(--mf-admin-page-x,32px) 56px}.head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:22px}.head h1{margin:0;color:#061b8f;font-size:34px}.head p{color:#667085;font-weight:700;line-height:1.55;max-width:760px}.status{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;font-weight:900;background:#fff8e8;color:#946200;border:1px solid #f5d78e}.status.on{background:#eaf8ef;color:#0d5b3a;border-color:#cfe8d8}.dot{width:9px;height:9px;border-radius:50%;background:currentColor}.alert{padding:14px 16px;border-radius:16px;background:#eaf8ef;color:#0d5b3a;border:1px solid #cfe8d8;font-weight:850;margin-bottom:18px}.payments-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:20px;align-items:start}.stack{display:grid;gap:20px}.card{background:#fff;border:1px solid #dbe6f3;border-radius:24px;box-shadow:0 16px 36px rgba(15,35,90,.06);overflow:hidden}.card-h{padding:21px 23px 16px;border-bottom:1px solid #edf2f7}.card-h h2{margin:0;color:#061b8f;font-size:19px}.card-h p{margin:6px 0 0;color:#667085;font-weight:700;font-size:13px}.card-b{padding:23px}.gateway{border:2px solid #1237c9;background:#eef3ff;border-radius:18px;padding:18px;display:flex;align-items:center;gap:15px}.gateway-logo{width:54px;height:54px;border-radius:16px;background:#009ee3;color:#fff;display:grid;place-items:center;font-weight:1000;font-size:20px}.gateway strong{display:block;font-size:17px}.gateway span{display:block;color:#667085;margin-top:4px;font-size:13px;font-weight:700}.soon{margin-left:auto;border-radius:999px;padding:6px 10px;background:#dcfce7;color:#15803d;font-size:11px;font-weight:900}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.field{display:grid;gap:7px}.field.full{grid-column:1/-1}.field label{font-size:13px;font-weight:900;color:#344054}.field input,.field select{width:100%;border:1px solid #d0d5dd;border-radius:14px;padding:12px 13px;font:inherit;color:#102033;background:#fff}.hint{font-size:12px;color:#667085;line-height:1.45}.switch-row{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:15px 0;border-bottom:1px solid #edf2f7}.switch-row:last-child{border-bottom:0}.switch-row strong{display:block}.switch-row span{display:block;color:#667085;font-size:12px;font-weight:700;margin-top:4px}.switch{position:relative;width:50px;height:28px;flex:none}.switch input{opacity:0}.slider{position:absolute;inset:0;border-radius:999px;background:#cbd5e1;cursor:pointer}.slider:before{content:"";position:absolute;width:22px;height:22px;left:3px;top:3px;border-radius:50%;background:#fff;transition:.2s}.switch input:checked+.slider{background:#1237c9}.switch input:checked+.slider:before{transform:translateX(22px)}.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}.btn{border:0;border-radius:14px;min-height:44px;padding:0 18px;font-weight:950;cursor:pointer;background:#061b8f;color:#fff;display:inline-flex;align-items:center;gap:8px}.security{background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:15px;color:#475569;font-size:13px;line-height:1.55}.checklist{display:grid;gap:12px}.check{display:flex;gap:10px;align-items:flex-start;color:#475569;font-weight:750;font-size:13px}.check i{color:#16a34a;margin-top:2px}@media(max-width:1100px){.premium-layout{grid-template-columns:1fr}.premium-sidebar{position:relative;height:auto}.premium-nav{grid-template-columns:repeat(2,1fr)}.payments-grid{grid-template-columns:1fr}}@media(max-width:700px){.content{padding:22px 14px 50px}.head{display:grid}.form-grid,.premium-nav{grid-template-columns:1fr}.topbar{position:relative}.head h1{font-size:28px}}
+
+.mf-enc-presential-payments{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding:16px 0;border-bottom:1px solid #edf2f7}.mf-enc-payment-select-card{border:1px solid #e3e9f2;border-radius:16px;padding:15px;background:#fbfcfe;display:grid;gap:13px}.mf-enc-payment-select-copy{display:flex;gap:11px;align-items:flex-start}.mf-enc-payment-select-copy strong{display:block;color:#102033;font-size:14px}.mf-enc-payment-select-copy div>span{display:block;color:#667085;font-size:12px;font-weight:700;line-height:1.45;margin-top:4px}.mf-enc-payment-select-icon{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:#f1ecff;color:#4a0a78;flex:none}.mf-enc-payment-select-card select{width:100%;height:44px;border:1px solid #d5dce7;border-radius:12px;padding:0 38px 0 12px;background:#fff;color:#102033;font:inherit;font-weight:800;outline:none}.mf-enc-payment-select-card select:focus{border-color:#6d28d9;box-shadow:0 0 0 3px rgba(109,40,217,.1)}@media(max-width:760px){.mf-enc-presential-payments{grid-template-columns:1fr}}
+/* v780 — deixa explícito o escopo: online vale para retirada + entrega; seletores abaixo são somente presenciais */
+.mf-enc-payment-group{border:1px solid #e3e9f2;border-radius:18px;background:#fbfcfe;padding:16px 18px;margin-top:14px}
+.mf-enc-payment-group+.mf-enc-payment-group{margin-top:16px}
+.mf-enc-payment-group-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding-bottom:12px;border-bottom:1px solid #edf1f6;margin-bottom:2px}
+.mf-enc-payment-group-title{display:flex;align-items:flex-start;gap:11px;min-width:0}
+.mf-enc-payment-group-icon{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:#eef3ff;color:#1237c9;flex:none}
+.mf-enc-payment-group-title strong{display:block;color:#102033;font-size:15px;line-height:1.25}
+.mf-enc-payment-group-title span{display:block;color:#667085;font-size:12px;font-weight:700;line-height:1.45;margin-top:4px}
+.mf-enc-payment-scope-badge{flex:none;border:1px solid #d9e3ff;background:#f3f6ff;color:#2647ba;border-radius:999px;padding:6px 10px;font-size:11px;font-weight:900;white-space:nowrap}
+.mf-enc-payment-group .switch-row{padding:14px 0}
+.mf-enc-payment-group .switch-row:last-child{border-bottom:0}
+.mf-enc-payment-group--presential{padding-bottom:14px}
+.mf-enc-payment-group--presential .mf-enc-presential-payments{padding:14px 0 0;border-bottom:0}
+.mf-enc-payment-explainer{margin-top:10px;color:#667085;font-size:11.5px;font-weight:700;line-height:1.45}
+@media(max-width:760px){.mf-enc-payment-group{padding:14px}.mf-enc-payment-group-head{display:grid}.mf-enc-payment-scope-badge{justify-self:start}.mf-enc-payment-group-icon{width:34px;height:34px}.mf-enc-payment-group-title strong{font-size:14px}}
+
+</style>
+
+<style id="mf-payments-safe-fix">
+/* Layout consolidado do Pagamentos Online.
+   Mantém desktop e corrige a leitura/organização no celular sem empilhar outro patch. */
+.mf-ds-pagamentos-online .content{
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
+  padding:var(--mf-admin-content-y,28px) var(--mf-admin-page-x,32px) 56px!important;
+}
+.mf-ds-pagamentos-online .payments-grid{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
+  padding:0!important;
+  gap:20px!important;
+  align-items:start!important;
+}
+.mf-ds-pagamentos-online .stack{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  gap:16px!important;
+  width:100%!important;
+  min-width:0!important;
+}
+.mf-ds-pagamentos-online .card{
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  padding:0!important;
+  margin:0!important;
+  overflow:hidden!important;
+  border-radius:18px!important;
+}
+.mf-ds-pagamentos-online .card-h{
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  margin:0!important;
+  padding:18px 20px 14px!important;
+  border-bottom:1px solid #edf2f7!important;
+}
+.mf-ds-pagamentos-online .mf-payment-card-heading{
+  display:block!important;
+  grid-column:1 / -1!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+}
+.mf-ds-pagamentos-online .card-h h2{
+  display:block!important;
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
+  color:#061b8f!important;
+  font-size:19px!important;
+  line-height:1.22!important;
+  letter-spacing:-.2px!important;
+  white-space:normal!important;
+  word-break:normal!important;
+  overflow-wrap:normal!important;
+  hyphens:none!important;
+}
+.mf-ds-pagamentos-online .card-h p{
+  display:block!important;
+  width:100%!important;
+  max-width:none!important;
+  margin:6px 0 0!important;
+  color:#667085!important;
+  font-size:13px!important;
+  line-height:1.48!important;
+  font-weight:700!important;
+  white-space:normal!important;
+  word-break:normal!important;
+  overflow-wrap:break-word!important;
+}
+.mf-ds-pagamentos-online .card-b{
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  padding:20px!important;
+}
+.mf-ds-pagamentos-online .gateway,
+.mf-ds-pagamentos-online .mp-guide,
+.mf-ds-pagamentos-online .form-grid,
+.mf-ds-pagamentos-online .field,
+.mf-ds-pagamentos-online .switch-row{
+  min-width:0!important;
+  max-width:100%!important;
+}
+.mf-ds-pagamentos-online .gateway strong,
+.mf-ds-pagamentos-online .gateway span,
+.mf-ds-pagamentos-online .mp-guide strong,
+.mf-ds-pagamentos-online .mp-guide span,
+.mf-ds-pagamentos-online .switch-row strong,
+.mf-ds-pagamentos-online .switch-row span,
+.mf-ds-pagamentos-online .field label,
+.mf-ds-pagamentos-online .hint{
+  word-break:normal!important;
+  overflow-wrap:break-word!important;
+  hyphens:none!important;
+}
+.mf-ds-pagamentos-online .switch-row{
+  min-height:66px!important;
+  padding:13px 0!important;
+}
+.mf-ds-pagamentos-online .actions{
+  margin-top:16px!important;
+}
+
+@media(max-width:700px){
+  .mf-ds-pagamentos-online .content{
+    width:100%!important;
+    max-width:100%!important;
+    padding:14px 10px 112px!important;
+    overflow-x:hidden!important;
+  }
+  .mf-ds-pagamentos-online .payments-grid,
+  .mf-ds-pagamentos-online .stack{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:12px!important;
+  }
+  .mf-ds-pagamentos-online .card{
+    padding:0!important;
+    margin:0!important;
+    border-radius:17px!important;
+  }
+  html body.mf-ds-pagamentos-online .card .card-h{
+    display:block!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    align-items:start!important;
+    gap:0!important;
+    width:100%!important;
+    min-width:0!important;
+    padding:17px 16px 13px!important;
+    margin:0!important;
+  }
+  html body.mf-ds-pagamentos-online .card .card-h .mf-payment-card-heading{
+    display:block!important;
+    grid-column:1 / -1!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+  }
+  .mf-ds-pagamentos-online .card-h h2{
+    font-size:18px!important;
+    line-height:1.2!important;
+  }
+  .mf-ds-pagamentos-online .card-h p{
+    margin-top:6px!important;
+    font-size:12.5px!important;
+    line-height:1.45!important;
+  }
+  .mf-ds-pagamentos-online .card-b{
+    padding:15px!important;
+  }
+  .mf-ds-pagamentos-online .gateway{
+    display:grid!important;
+    grid-template-columns:48px minmax(0,1fr)!important;
+    grid-template-areas:
+      "logo copy"
+      "logo badge"!important;
+    align-items:center!important;
+    gap:7px 11px!important;
+    padding:14px!important;
+    border-radius:16px!important;
+  }
+  .mf-ds-pagamentos-online .gateway-logo{
+    grid-area:logo!important;
+    width:48px!important;
+    height:48px!important;
+    margin:0!important;
+  }
+  .mf-ds-pagamentos-online .gateway>div:nth-child(2){
+    grid-area:copy!important;
+    min-width:0!important;
+  }
+  .mf-ds-pagamentos-online .gateway strong{
+    font-size:16px!important;
+    line-height:1.18!important;
+  }
+  .mf-ds-pagamentos-online .gateway span:not(.soon){
+    margin-top:3px!important;
+    font-size:12px!important;
+    line-height:1.35!important;
+  }
+  .mf-ds-pagamentos-online .gateway .soon{
+    grid-area:badge!important;
+    justify-self:start!important;
+    margin:0!important;
+    min-height:27px!important;
+    padding:0 10px!important;
+    display:inline-flex!important;
+    align-items:center!important;
+  }
+  .mf-ds-pagamentos-online .mp-guide{
+    margin-top:12px!important;
+    padding:14px!important;
+    border-radius:15px!important;
+  }
+  .mf-ds-pagamentos-online .mp-guide-top{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:10px!important;
+  }
+  .mf-ds-pagamentos-online .mp-guide-copy strong{
+    font-size:14px!important;
+    line-height:1.25!important;
+  }
+  .mf-ds-pagamentos-online .mp-guide-copy span{
+    font-size:12px!important;
+    line-height:1.45!important;
+  }
+  .mf-ds-pagamentos-online .mp-connection-status{
+    justify-self:start!important;
+    max-width:100%!important;
+    white-space:normal!important;
+    text-align:left!important;
+  }
+  .mf-ds-pagamentos-online .mp-guide-actions{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:8px!important;
+  }
+  .mf-ds-pagamentos-online .mp-help-btn{
+    width:100%!important;
+    min-width:0!important;
+    min-height:42px!important;
+    padding:8px 12px!important;
+    text-align:center!important;
+    white-space:normal!important;
+    line-height:1.25!important;
+  }
+  .mf-ds-pagamentos-online .mp-guide-security{
+    display:grid!important;
+    grid-template-columns:20px minmax(0,1fr)!important;
+    align-items:start!important;
+    gap:9px!important;
+    font-size:11.5px!important;
+    line-height:1.5!important;
+  }
+  .mf-ds-pagamentos-online .form-grid{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:14px!important;
+  }
+  .mf-ds-pagamentos-online .field,
+  .mf-ds-pagamentos-online .field.full{
+    grid-column:auto!important;
+    gap:7px!important;
+  }
+  .mf-ds-pagamentos-online .field label{
+    margin:0!important;
+    font-size:12.5px!important;
+    line-height:1.3!important;
+  }
+  .mf-ds-pagamentos-online .field input,
+  .mf-ds-pagamentos-online .field select{
+    width:100%!important;
+    min-width:0!important;
+    min-height:46px!important;
+    padding:11px 12px!important;
+    font-size:15px!important;
+    border-radius:13px!important;
+  }
+  .mf-ds-pagamentos-online .hint{
+    margin-top:0!important;
+    font-size:11.5px!important;
+    line-height:1.42!important;
+  }
+  .mf-ds-pagamentos-online .switch-row{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) 48px!important;
+    align-items:center!important;
+    gap:12px!important;
+    min-height:72px!important;
+    padding:13px 0!important;
+  }
+  .mf-ds-pagamentos-online .switch-row>div{
+    min-width:0!important;
+  }
+  .mf-ds-pagamentos-online .switch-row strong{
+    font-size:12.5px!important;
+    line-height:1.28!important;
+  }
+  .mf-ds-pagamentos-online .switch-row span:not(.slider){
+    margin-top:3px!important;
+    font-size:11.5px!important;
+    line-height:1.38!important;
+  }
+  .mf-ds-pagamentos-online .switch{
+    width:48px!important;
+    height:28px!important;
+    justify-self:end!important;
+    margin:0!important;
+  }
+  .mf-ds-pagamentos-online form>.actions{
+    position:sticky!important;
+    bottom:76px!important;
+    z-index:55!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    width:100%!important;
+    margin-top:10px!important;
+    padding:7px!important;
+    border:1px solid #dbe6f3!important;
+    border-radius:15px!important;
+    background:rgba(255,255,255,.97)!important;
+    box-shadow:0 8px 24px rgba(23,35,59,.09)!important;
+  }
+  .mf-ds-pagamentos-online form>.actions .btn{
+    width:100%!important;
+    min-height:44px!important;
+    justify-content:center!important;
+    padding:0 14px!important;
+  }
+}
+</style>
+
+
+<style id="mf-mp-help-guide">
+.mp-guide{
+  margin-top:14px;
+  padding:16px;
+  border:1px solid #cbd8ff;
+  border-radius:16px;
+  background:#fff;
+}
+.mp-guide-top{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+}
+.mp-guide-copy strong{
+  display:block;
+  color:#102033;
+  font-size:15px;
+}
+.mp-guide-copy span{
+  display:block;
+  margin-top:4px;
+  color:#667085;
+  font-size:12px;
+  font-weight:750;
+  line-height:1.45;
+}
+.mp-connection-status{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  flex:none;
+  min-height:30px;
+  padding:0 10px;
+  border-radius:999px;
+  border:1px solid #dbe6f3;
+  background:#f8fafc;
+  color:#667085;
+  font-size:11px;
+  font-weight:950;
+  white-space:nowrap;
+}
+.mp-connection-status i{font-size:8px}
+.mp-connection-status.ok{
+  background:#eaf8ef;
+  color:#0d5b3a;
+  border-color:#cfe8d8;
+}
+.mp-connection-status.partial{
+  background:#fff8e8;
+  color:#946200;
+  border-color:#f5d78e;
+}
+.mp-guide-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:9px;
+  margin-top:14px;
+}
+.mp-help-btn{
+  min-height:40px;
+  padding:0 14px;
+  border-radius:12px;
+  border:1px solid #d7e0ff;
+  background:#eef3ff;
+  color:#061b8f;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  font-size:12px;
+  font-weight:950;
+  text-decoration:none;
+  cursor:pointer;
+}
+.mp-help-btn.primary{
+  background:#061b8f;
+  color:#fff;
+  border-color:#061b8f;
+}
+.mp-help-btn.whatsapp{
+  background:#eaf8ef;
+  color:#0d5b3a;
+  border-color:#cfe8d8;
+}
+.mp-guide-security{
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  margin-top:12px;
+  padding-top:12px;
+  border-top:1px solid #edf2f7;
+  color:#475569;
+  font-size:11.5px;
+  font-weight:750;
+  line-height:1.45;
+}
+.mp-guide-security i{color:#16a34a;margin-top:2px}
+.mp-help-modal{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  background:rgba(15,23,42,.58);
+  backdrop-filter:blur(4px);
+}
+.mp-help-modal.show{display:flex}
+.mp-help-card{
+  width:min(680px,100%);
+  max-height:90vh;
+  overflow:auto;
+  border-radius:22px;
+  background:#fff;
+  border:1px solid #dbe6f3;
+  box-shadow:0 26px 70px rgba(15,35,90,.24);
+}
+.mp-help-head{
+  position:sticky;
+  top:0;
+  z-index:2;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+  padding:18px 20px;
+  border-bottom:1px solid #edf2f7;
+  background:#fff;
+}
+.mp-help-head h2{margin:0;color:#061b8f;font-size:21px}
+.mp-help-head p{margin:5px 0 0;color:#667085;font-size:12px;font-weight:750}
+.mp-help-close{
+  width:36px;
+  height:36px;
+  flex:none;
+  border:0;
+  border-radius:50%;
+  background:#f2f4f7;
+  color:#475569;
+  font-size:20px;
+  cursor:pointer;
+}
+.mp-help-body{padding:20px}
+.mp-steps{display:grid;gap:12px}
+.mp-step{
+  display:grid;
+  grid-template-columns:40px minmax(0,1fr);
+  gap:12px;
+  align-items:center;
+  padding:13px;
+  border:1px solid #e4eaf3;
+  border-radius:15px;
+  background:#fbfdff;
+}
+.mp-step-number{
+  width:40px;
+  height:40px;
+  min-width:40px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  line-height:1;
+  padding:0;
+  background:#eef3ff;
+  color:#061b8f;
+  font-weight:1000;
+  font-size:14px;
+}
+.mp-step strong{display:block;color:#102033;font-size:13px}
+.mp-step span{display:block;margin-top:4px;color:#667085;font-size:12px;line-height:1.45;font-weight:700}
+.mp-webhook-box{
+  margin-top:14px;
+  padding:14px;
+  border-radius:15px;
+  background:#f8fafc;
+  border:1px solid #e2e8f0;
+}
+.mp-webhook-box label{display:block;color:#344054;font-size:12px;font-weight:950;margin-bottom:7px}
+.mp-webhook-copy{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+.mp-webhook-copy input{min-width:0;font-size:12px!important}
+.mp-webhook-copy button{
+  min-height:38px;
+  border:0;
+  border-radius:11px;
+  padding:0 12px;
+  background:#061b8f;
+  color:#fff;
+  font-weight:950;
+  cursor:pointer;
+}
+.mp-help-footer{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  gap:9px;
+  padding:16px 20px 20px;
+}
+@media(max-width:700px){
+  .gateway{align-items:flex-start;flex-wrap:wrap}
+  .soon{margin-left:0}
+  .mp-guide-top{display:grid}
+  .mp-connection-status{justify-self:start}
+  .mp-guide-actions{display:grid;grid-template-columns:1fr}
+  .mp-help-btn{width:100%}
+  .mp-help-modal{padding:8px;align-items:flex-end}
+  .mp-help-card{max-height:94vh;border-radius:22px 22px 12px 12px}
+  .mp-help-body{padding:14px}
+  .mp-help-head{padding:16px}
+  .mp-webhook-copy{grid-template-columns:1fr}
+  .mp-webhook-copy button{width:100%}
+}
+</style>
+
+
+<style id="mf-sinal-config-css">
+.mf-alert-error{background:#fff1f0!important;color:#b42318!important;border-color:#fecaca!important}
+.mf-sinal-fields{display:grid;gap:18px;margin-top:4px;transition:.2s ease}
+.mf-sinal-fields.is-disabled{display:none}
+.mf-sinal-scope{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 16px;border:1px solid #e4eaf3;border-radius:16px;background:#f8fbff}
+.mf-sinal-scope>strong{color:#344054;font-size:13px}
+.mf-check-option{display:inline-flex;align-items:center;gap:8px;padding:8px 11px;border:1px solid #dbe6f3;border-radius:12px;background:#fff;color:#344054;font-size:12px;font-weight:850;cursor:pointer}
+.mf-check-option input{accent-color:#1237c9}
+.mf-value-input{display:flex;align-items:center;border:1px solid #d0d5dd;border-radius:14px;background:#fff;overflow:hidden}
+.mf-value-input input{border:0!important;border-radius:0!important;min-width:0}
+.mf-value-input span{padding:0 12px;color:#667085;font-size:13px;font-weight:900;white-space:nowrap}
+.mf-sinal-grid textarea{width:100%;border:1px solid #d0d5dd;border-radius:14px;padding:12px 13px;font:inherit;resize:vertical;min-height:96px}
+.mf-sinal-preview{display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid #bfe8d3;border-radius:16px;background:#f3fff8}
+.mf-sinal-preview-icon{width:42px;height:42px;min-width:42px;border-radius:13px;background:#dcfce7;color:#15803d;display:flex;align-items:center;justify-content:center;font-size:20px}
+.mf-sinal-preview strong{display:block;color:#075333;font-size:14px}
+.mf-sinal-preview span{display:block;color:#3f6653;font-size:12px;font-weight:700;margin-top:3px}
+@media(max-width:700px){
+  .mf-sinal-scope{display:grid;grid-template-columns:1fr;padding:13px}
+  .mf-check-option{width:100%}
+  .mf-sinal-preview{align-items:flex-start}
+}
+</style>
+
+
+<style id="v252-payment-scope-note">
+.mf-payment-scope-note{display:flex;align-items:flex-start;gap:10px;margin:0 0 10px;padding:11px 13px;border:1px solid #d9e6f7;border-radius:13px;background:#f7fbff;color:#344054;font-size:12px;font-weight:750;line-height:1.45}
+.mf-payment-scope-note i{margin-top:2px;color:#2563eb}
+</style>
+<style id="mf-v362-sinal-segmentado-mobile">
+.mf-check-option input[type="checkbox"]{
+  appearance:auto!important;
+  -webkit-appearance:checkbox!important;
+  width:20px!important;
+  height:20px!important;
+  min-width:20px!important;
+  min-height:20px!important;
+  max-width:20px!important;
+  max-height:20px!important;
+  margin:0!important;
+  padding:0!important;
+  flex:0 0 20px!important;
+  accent-color:#1237c9!important;
+  transform:none!important;
+}
+@media(max-width:768px){
+  .mf-sinal-card .card-h{padding:16px 16px 12px!important}
+  .mf-sinal-card .card-b{padding:12px 16px 16px!important}
+  .mf-sinal-master-row{align-items:flex-start!important;gap:12px!important}
+  .mf-sinal-master-row>div{min-width:0!important}
+  .mf-sinal-scope{gap:10px!important;padding:12px!important}
+  .mf-check-option{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    min-height:48px!important;
+    padding:11px 12px!important;
+    gap:10px!important;
+    text-align:left!important;
+  }
+  .mf-check-option span{font-size:13px!important;line-height:1.25!important}
+}
+</style>
+{% endblock %}
+{% block page %}
+<div class="premium-layout mf-admin-shell">
+  {% set active = 'pagamentos_online' %}
+  {% include "includes/admin_sidebar.html" %}
+  <main class="main">
+    <header class="topbar"><div class="top-title"><strong>Pagamentos Online</strong><span>Receba Pix e cartão diretamente na conta do estabelecimento</span></div></header>
+    <div class="content mf-admin-standard-content">
+      {% if salvo %}<div class="alert"><i class="fa-solid fa-circle-check"></i> Configurações salvas com sucesso.</div>{% endif %}
+      {% if erro_sinal == 'pix' %}<div class="alert mf-alert-error"><i class="fa-solid fa-triangle-exclamation"></i> Para ativar o sinal, informe a chave Pix e o nome do titular.</div>{% endif %}
+      {% if erro_pix_manual == '1' %}<div class="alert mf-alert-error"><i class="fa-solid fa-triangle-exclamation"></i> Para ativar o Pix pela chave, informe a chave Pix e o nome do titular.</div>{% endif %}
+      <form method="post" action="/admin/{{ empresa.id }}/pagamentos-online" id="pagamentosOnlineForm">
+      <div class="payments-grid"><div class="stack">
+        <section class="card">
+  <div class="card-h">
+    <div class="mf-payment-card-heading">
+      <h2>Gateway de pagamento</h2>
+      <p>Mercado Pago é a primeira integração disponível para o Brasil.</p>
+    </div>
+  </div>
+  <div class="card-b">
+    <div class="gateway">
+      <div class="gateway-logo">MP</div>
+      <div>
+        <strong>Mercado Pago</strong>
+        <span>Pix, cartão de crédito e confirmação por webhook.</span>
+      </div>
+      <span class="soon">Recomendado</span>
+    </div>
+
+    {% set mp_tem_public_key = empresa.mercadopago_public_key %}
+    {% set mp_tem_token = empresa.mercadopago_access_token %}
+    {% set mp_tem_webhook = empresa.mercadopago_webhook_secret %}
+    <div class="mp-guide">
+      <div class="mp-guide-top">
+        <div class="mp-guide-copy">
+          <strong>Ainda não configurou sua conta?</strong>
+          <span>Siga o passo a passo ou abra o Mercado Pago Developers para criar sua aplicação e localizar as credenciais.</span>
+        </div>
+        {% if mp_tem_public_key and mp_tem_token and mp_tem_webhook %}
+          <span class="mp-connection-status ok"><i class="fa-solid fa-circle"></i> Conta configurada</span>
+        {% elif mp_tem_public_key or mp_tem_token or mp_tem_webhook %}
+          <span class="mp-connection-status partial"><i class="fa-solid fa-circle"></i> Configuração incompleta</span>
+        {% else %}
+          <span class="mp-connection-status"><i class="fa-solid fa-circle"></i> Ainda não configurado</span>
+        {% endif %}
+      </div>
+
+      <div class="mp-guide-actions">
+        <button class="mp-help-btn primary" type="button" onclick="abrirTutorialMercadoPago()">
+          <i class="fa-solid fa-list-check"></i> Ver passo a passo
+        </button>
+        <a class="mp-help-btn" href="https://www.mercadopago.com.br/developers/panel/app" target="_blank" rel="noopener noreferrer">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i> Abrir Mercado Pago Developers
+        </a>
+        <a class="mp-help-btn whatsapp" href="https://wa.me/393341306012?text={{ ('Olá! Preciso de ajuda para configurar o Mercado Pago no MenuFacile para a empresa ' ~ empresa.nome ~ '.')|urlencode }}" target="_blank" rel="noopener noreferrer">
+          <i class="fa-brands fa-whatsapp"></i> Preciso de ajuda
+        </a>
+      </div>
+
+      <div class="mp-guide-security">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span>Os pagamentos são recebidos diretamente na conta Mercado Pago do estabelecimento. Nunca envie seu Access Token por mensagem.</span>
+      </div>
+    </div>
+
+    <input type="hidden" name="gateway_pagamento" value="mercadopago">
+  </div>
+</section>
+        <section class="card"><div class="card-h"><div class="mf-payment-card-heading"><h2>Credenciais</h2><p>Use as credenciais da conta Mercado Pago do próprio estabelecimento.</p></div></div><div class="card-b"><div class="form-grid"><div class="field"><label>Ambiente</label><select name="gateway_ambiente"><option value="sandbox" {% if empresa.gateway_ambiente != 'producao' %}selected{% endif %}>Teste / Sandbox</option><option value="producao" {% if empresa.gateway_ambiente == 'producao' %}selected{% endif %}>Produção</option></select></div><div class="field"><label>Public Key</label><input name="mercadopago_public_key" value="{{ empresa.mercadopago_public_key or '' }}" placeholder="APP_USR-..."></div><div class="field full"><label>Access Token</label><input type="password" name="mercadopago_access_token" placeholder="{% if empresa.mercadopago_access_token %}Token já salvo — deixe vazio para manter{% else %}APP_USR-...{% endif %}"><span class="hint">Por segurança, o token salvo não é exibido novamente.</span></div><div class="field full"><label>Assinatura secreta do webhook</label><input type="password" name="mercadopago_webhook_secret" placeholder="{% if empresa.mercadopago_webhook_secret %}Segredo já salvo — deixe vazio para manter{% else %}Cole a assinatura secreta{% endif %}"></div></div></div></section>
+        <section class="card">
+  <div class="card-h">
+    <div class="mf-payment-card-heading">
+      <h2>Configurações</h2>
+      <p>Ative somente as formas de pagamento que deseja oferecer. As opções serão aplicadas automaticamente ao menu público.</p>
+    </div>
+  </div>
+  <div class="card-b">
+    <div class="mf-payment-scope-note"><i class="fa-solid fa-circle-info"></i><span>{% if negocio_encomenda %}Pagamento online vale para <strong>Retirada e Entrega</strong>. Os seletores de retirada/entrega abaixo controlam somente o pagamento presencial do saldo.{% elif negocio_servico %}Pix online, cartão online, dinheiro e cartão no atendimento aparecerão na etapa final do agendamento, conforme as opções ativadas.{% elif negocio_produto %}Estas formas aparecerão no checkout do Menu de Produtos.{% else %}Estas formas aparecerão nos pedidos; o sinal também será aplicado às reservas quando estiver ativado abaixo.{% endif %}</span></div>
+
+    {% if negocio_encomenda %}
+    <div class="mf-enc-payment-group">
+      <div class="mf-enc-payment-group-head">
+        <div class="mf-enc-payment-group-title">
+          <span class="mf-enc-payment-group-icon"><i class="fa-solid fa-globe"></i></span>
+          <div><strong>Pagamento online</strong><span>Quando habilitado, fica disponível independentemente de o cliente escolher retirada ou entrega.</span></div>
+        </div>
+        <span class="mf-enc-payment-scope-badge"><i class="fa-solid fa-check"></i> Retirada + Entrega</span>
+      </div>
+      <div class="switch-row">
+        <div><strong>Ativar pagamentos online</strong><span>Libera as formas online configuradas abaixo no checkout público.</span></div>
+        <label class="switch"><input type="checkbox" name="pagamentos_online_ativo" {% if empresa.pagamentos_online_ativo %}checked{% endif %}><span class="slider"></span></label>
+      </div>
+      <div class="switch-row">
+        <div><strong>Pix online</strong><span>Pagamento instantâneo pelo Mercado Pago.</span></div>
+        <label class="switch"><input type="checkbox" name="aceita_pix_online" {% if empresa.aceita_pix_online is not sameas false %}checked{% endif %}><span class="slider"></span></label>
+      </div>
+      <div class="switch-row">
+        <div><strong>Cartão online</strong><span>Cartão de crédito no checkout, processado online.</span></div>
+        <label class="switch"><input type="checkbox" name="aceita_cartao_online" {% if empresa.aceita_cartao_online is not sameas false %}checked{% endif %}><span class="slider"></span></label>
+      </div>
+    </div>
+
+    {% set modo_retirada = empresa.pagamento_retirada_modo or ('ambos' if empresa.aceita_dinheiro and empresa.aceita_cartao_entrega else ('dinheiro' if empresa.aceita_dinheiro else ('cartao' if empresa.aceita_cartao_entrega else 'nenhum'))) %}
+    {% set modo_entrega = empresa.pagamento_entrega_modo or ('ambos' if empresa.aceita_dinheiro and empresa.aceita_cartao_entrega else ('dinheiro' if empresa.aceita_dinheiro else ('cartao' if empresa.aceita_cartao_entrega else 'nenhum'))) %}
+    <div class="mf-enc-payment-group mf-enc-payment-group--presential">
+      <div class="mf-enc-payment-group-head">
+        <div class="mf-enc-payment-group-title">
+          <span class="mf-enc-payment-group-icon"><i class="fa-solid fa-hand-holding-dollar"></i></span>
+          <div><strong>Pagamento presencial do saldo</strong><span>Defina separadamente o que o cliente pode usar na retirada e na entrega.</span></div>
+        </div>
+        <span class="mf-enc-payment-scope-badge">Saldo restante</span>
+      </div>
+      <div class="mf-enc-presential-payments">
+        <div class="mf-enc-payment-select-card">
+          <div class="mf-enc-payment-select-copy">
+            <span class="mf-enc-payment-select-icon"><i class="fa-solid fa-store"></i></span>
+            <div><strong>Pagamento presencial na retirada</strong><span>O que pode ser pago no estabelecimento quando o cliente buscar.</span></div>
+          </div>
+          <select name="pagamento_retirada_modo" aria-label="Pagamento presencial na retirada">
+            <option value="nenhum" {% if modo_retirada == 'nenhum' %}selected{% endif %}>Não aceitar pagamento presencial</option>
+            <option value="dinheiro" {% if modo_retirada == 'dinheiro' %}selected{% endif %}>Somente dinheiro</option>
+            <option value="cartao" {% if modo_retirada == 'cartao' %}selected{% endif %}>Somente cartão</option>
+            <option value="ambos" {% if modo_retirada == 'ambos' %}selected{% endif %}>Dinheiro e cartão</option>
+          </select>
+        </div>
+        <div class="mf-enc-payment-select-card">
+          <div class="mf-enc-payment-select-copy">
+            <span class="mf-enc-payment-select-icon"><i class="fa-solid fa-truck"></i></span>
+            <div><strong>Pagamento presencial na entrega</strong><span>Escolha se o entregador recebe dinheiro, leva maquininha, ambos ou nenhum.</span></div>
+          </div>
+          <select name="pagamento_entrega_modo" aria-label="Pagamento presencial na entrega">
+            <option value="nenhum" {% if modo_entrega == 'nenhum' %}selected{% endif %}>Não aceitar pagamento presencial</option>
+            <option value="dinheiro" {% if modo_entrega == 'dinheiro' %}selected{% endif %}>Somente dinheiro</option>
+            <option value="cartao" {% if modo_entrega == 'cartao' %}selected{% endif %}>Somente cartão</option>
+            <option value="ambos" {% if modo_entrega == 'ambos' %}selected{% endif %}>Dinheiro e cartão</option>
+          </select>
+        </div>
+      </div>
+      <div class="mf-enc-payment-explainer"><i class="fa-solid fa-circle-info"></i> Estes dois seletores não desligam Pix ou cartão online. Eles controlam apenas o que pode ser pago presencialmente.</div>
+    </div>
+    {% else %}
+    <div class="switch-row">
+      <div><strong>Ativar pagamentos online</strong><span>Exibe Pix e cartão no checkout público.</span></div>
+      <label class="switch"><input type="checkbox" name="pagamentos_online_ativo" {% if empresa.pagamentos_online_ativo %}checked{% endif %}><span class="slider"></span></label>
+    </div>
+    <div class="switch-row">
+      <div><strong>Aceitar Pix online</strong><span>Pagamento instantâneo pelo Mercado Pago.</span></div>
+      <label class="switch"><input type="checkbox" name="aceita_pix_online" {% if empresa.aceita_pix_online is not sameas false %}checked{% endif %}><span class="slider"></span></label>
+    </div>
+    <div class="switch-row">
+      <div><strong>Aceitar cartão online</strong><span>Cartão de crédito no checkout.</span></div>
+      <label class="switch"><input type="checkbox" name="aceita_cartao_online" {% if empresa.aceita_cartao_online is not sameas false %}checked{% endif %}><span class="slider"></span></label>
+    </div>
+    {% if negocio_produto or (not negocio_servico and not negocio_encomenda) %}
+    <div class="switch-row">
+      <div><strong>Aceitar Pix pela chave</strong><span>Pagamento manual. O pedido fica aguardando até você confirmar o recebimento no painel.</span></div>
+      <label class="switch"><input type="checkbox" id="aceitaPixChaveV906" name="aceita_pix_chave" {% if empresa.aceita_pix_chave %}checked{% endif %}><span class="slider"></span></label>
+    </div>
+    <div id="pixManualFieldsV906" class="form-grid mf-sinal-grid" style="margin:14px 0 6px;padding:16px;border:1px solid #dbe3ef;border-radius:16px;background:#f8fbff;">
+      <div class="field">
+        <label>Tipo da chave Pix</label>
+        <select name="pix_manual_tipo">
+          {% set pix_manual_tipo = empresa.pix_manual_tipo or 'cnpj' %}
+          <option value="cpf" {% if pix_manual_tipo == 'cpf' %}selected{% endif %}>CPF</option>
+          <option value="cnpj" {% if pix_manual_tipo == 'cnpj' %}selected{% endif %}>CNPJ</option>
+          <option value="telefone" {% if pix_manual_tipo == 'telefone' %}selected{% endif %}>Telefone</option>
+          <option value="email" {% if pix_manual_tipo == 'email' %}selected{% endif %}>E-mail</option>
+          <option value="aleatoria" {% if pix_manual_tipo == 'aleatoria' %}selected{% endif %}>Chave aleatória</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Nome do titular</label>
+        <input name="pix_manual_titular" value="{{ empresa.pix_manual_titular or '' }}" placeholder="Nome do recebedor">
+      </div>
+      <div class="field full">
+        <label>Chave Pix</label>
+        <input name="pix_manual_chave" value="{{ empresa.pix_manual_chave or '' }}" placeholder="Informe a chave Pix que receberá os pedidos">
+        <span class="hint">A chave não será exibida no menu público; o cliente verá apenas o botão “Copiar chave Pix”.</span>
+      </div>
+    </div>
+    {% endif %}
+    <div class="switch-row">
+      <div>
+        <strong>{% if negocio_servico %}Aceitar dinheiro no atendimento{% else %}Aceitar dinheiro na entrega ou retirada{% endif %}</strong>
+        <span>{% if negocio_servico %}O cliente paga presencialmente ao finalizar o serviço.{% else %}Mantém a opção de pagamento presencial em dinheiro.{% endif %}</span>
+      </div>
+      <label class="switch"><input type="checkbox" name="aceita_dinheiro" {% if empresa.aceita_dinheiro is not sameas false %}checked{% endif %}><span class="slider"></span></label>
+    </div>
+    <div class="switch-row">
+      <div>
+        <strong>{% if negocio_servico %}Aceitar cartão no atendimento{% else %}Aceitar cartão na entrega ou retirada{% endif %}</strong>
+        <span>Pagamento presencial na maquininha.</span>
+      </div>
+      <label class="switch"><input type="checkbox" name="aceita_cartao_entrega" {% if empresa.aceita_cartao_entrega is not sameas false %}checked{% endif %}><span class="slider"></span></label>
+    </div>
+    {% endif %}
+
+    <div class="switch-row">
+      <div>
+        <strong>{% if negocio_encomenda %}Liberar encomenda apenas após confirmação do pagamento{% elif negocio_servico %}Confirmar agendamento após o pagamento online{% else %}Liberar pedido apenas após confirmação do pagamento{% endif %}</strong>
+        <span>{% if negocio_encomenda %}Quando ativado, encomendas pagas online só entram em Recebidas depois da aprovação do pagamento.{% elif negocio_servico %}Quando o pagamento for aprovado, o agendamento muda automaticamente para Confirmado.{% else %}Evita enviar pedido online não pago para a operação.{% endif %}</span>
+      </div>
+      <label class="switch">
+        <input type="checkbox" name="pedido_so_apos_pagamento" {% if empresa.pedido_so_apos_pagamento is not sameas false %}checked{% endif %}>
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+</section>
+
+        {% if not negocio_produto %}
+        <section class="card mf-sinal-card">
+          <div class="card-h">
+            <div class="mf-payment-card-heading">
+              <h2>{% if negocio_encomenda %}Sinal para encomendas{% elif negocio_servico %}Sinal para agendamentos{% else %}Sinal para reservas{% endif %}</h2>
+              <p>{% if negocio_encomenda %}Defina um valor antecipado para reservar a produção, com saldo restante visível para o cliente.{% elif negocio_servico %}Cobre uma antecipação por Pix e mantém o horário do serviço aguardando confirmação.{% else %}Cobre uma antecipação por Pix e mantém a reserva aguardando confirmação do estabelecimento.{% endif %}</p>
+            </div>
+          </div>
+          <div class="card-b">
+            <div class="switch-row mf-sinal-master-row">
+              <div>
+                <strong>{% if negocio_encomenda %}Solicitar sinal para confirmar a encomenda{% elif negocio_servico %}Confirmar agendamento somente após pagamento do sinal{% else %}Confirmar reserva somente após pagamento do sinal{% endif %}</strong>
+                <span>{% if negocio_encomenda %}O checkout mostra o valor do sinal, o saldo restante e as formas disponíveis para pagar agora.{% else %}O horário fica com o status “Aguardando sinal” até a empresa confirmar o recebimento.{% endif %}</span>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="sinalReservaAtivo" name="sinal_reserva_ativo" {% if empresa.sinal_reserva_ativo %}checked{% endif %}>
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div id="sinalConfigFields" class="mf-sinal-fields">
+              <div class="mf-sinal-scope">
+                <strong>Aplicar em</strong>
+                {% if negocio_encomenda %}
+                <label class="mf-check-option"><input type="checkbox" checked disabled><span>Todas as encomendas do menu</span></label>
+                {% elif negocio_servico %}
+                <label class="mf-check-option">
+                  <input type="checkbox" name="sinal_aplicar_agendamentos" {% if empresa.sinal_aplicar_agendamentos is not sameas false %}checked{% endif %}>
+                  <span>Agendamentos de serviços</span>
+                </label>
+                {% else %}
+                <label class="mf-check-option">
+                  <input type="checkbox" name="sinal_aplicar_reservas" {% if empresa.sinal_aplicar_reservas is not sameas false %}checked{% endif %}>
+                  <span>Reservas de mesa / área</span>
+                </label>
+                {% endif %}
+              </div>
+
+              <div class="form-grid mf-sinal-grid">
+                <div class="field">
+                  <label>Forma de cobrança</label>
+                  <select name="sinal_tipo" id="sinalTipo">
+                    {% if negocio_encomenda %}
+                    <option value="percentual" {% if (empresa.sinal_tipo or 'percentual') == 'percentual' %}selected{% endif %}>Percentual da encomenda</option>
+                    <option value="fixo" {% if empresa.sinal_tipo == 'fixo' %}selected{% endif %}>Valor fixo</option>
+                    <option value="integral" {% if empresa.sinal_tipo == 'integral' %}selected{% endif %}>Pagamento integral antecipado</option>
+                    {% elif negocio_servico %}
+                    <option value="percentual" {% if (empresa.sinal_tipo or 'percentual') == 'percentual' %}selected{% endif %}>Percentual do serviço</option>
+                    <option value="fixo" {% if empresa.sinal_tipo == 'fixo' %}selected{% endif %}>Valor fixo</option>
+                    <option value="integral" {% if empresa.sinal_tipo == 'integral' %}selected{% endif %}>Pagamento integral do serviço</option>
+                    {% else %}
+                    <option value="fixo" {% if empresa.sinal_tipo != 'por_pessoa' %}selected{% endif %}>Valor fixo por reserva</option>
+                    <option value="por_pessoa" {% if empresa.sinal_tipo == 'por_pessoa' %}selected{% endif %}>Valor por pessoa</option>
+                    {% endif %}
+                  </select>
+                  <span class="hint" id="sinalTipoHint">Percentual calculado sobre o valor dos serviços selecionados.</span>
+                </div>
+                <div class="field" id="sinalValorField">
+                  <label id="sinalValorLabel">Percentual do sinal</label>
+                  <div class="mf-value-input">
+                    <span id="sinalValuePrefix">%</span>
+                    <input type="number" name="sinal_valor" id="sinalValor" min="0.01" step="0.01" value="{{ empresa.sinal_valor or 50 }}">
+                  </div>
+                </div>
+                <div class="field">
+                  <label>Prazo para pagamento</label>
+                  <div class="mf-value-input">
+                    <input type="number" name="sinal_prazo_minutos" min="5" max="1440" step="5" value="{{ empresa.sinal_prazo_minutos or 30 }}">
+                    <span>min</span>
+                  </div>
+                  <span class="hint">Depois desse prazo, o estabelecimento pode liberar o horário.</span>
+                </div>
+                <div class="field">
+                  <label>Tipo da chave Pix</label>
+                  <select name="sinal_pix_tipo">
+                    {% set pix_tipo = empresa.sinal_pix_tipo or 'cnpj' %}
+                    <option value="cpf" {% if pix_tipo == 'cpf' %}selected{% endif %}>CPF</option>
+                    <option value="cnpj" {% if pix_tipo == 'cnpj' %}selected{% endif %}>CNPJ</option>
+                    <option value="telefone" {% if pix_tipo == 'telefone' %}selected{% endif %}>Telefone</option>
+                    <option value="email" {% if pix_tipo == 'email' %}selected{% endif %}>E-mail</option>
+                    <option value="aleatoria" {% if pix_tipo == 'aleatoria' %}selected{% endif %}>Chave aleatória</option>
+                  </select>
+                </div>
+                <div class="field full">
+                  <label>Chave Pix</label>
+                  <input name="sinal_pix_chave" value="{{ empresa.sinal_pix_chave or '' }}" placeholder="Informe a chave que receberá o sinal">
+                </div>
+                <div class="field">
+                  <label>Nome do titular</label>
+                  <input name="sinal_pix_titular" value="{{ empresa.sinal_pix_titular or '' }}" placeholder="Nome exibido ao cliente">
+                </div>
+                <div class="field">
+                  <label>WhatsApp para comprovante</label>
+                  <input name="sinal_whatsapp" value="{{ empresa.sinal_whatsapp or empresa.telefone_whatsapp or '' }}" placeholder="Ex.: 5515999999999">
+                  <span class="hint">Se ficar vazio, será usado o WhatsApp principal da empresa.</span>
+                </div>
+                <div class="field full">
+                  <label>Política de cancelamento</label>
+                  <textarea name="sinal_politica" rows="4" placeholder="Ex.: O sinal garante a reserva do horário. Cancelamentos devem ser informados com 24 horas de antecedência.">{{ empresa.sinal_politica or '' }}</textarea>
+                  <span class="hint">Esse texto aparecerá antes de o cliente confirmar {% if negocio_encomenda %}a encomenda{% elif negocio_servico %}o agendamento{% else %}a reserva{% endif %}.</span>
+                </div>
+              </div>
+
+              <div class="mf-sinal-preview">
+                <div class="mf-sinal-preview-icon"><i class="fa-brands fa-pix"></i></div>
+                <div>
+                  <strong>Prévia para o cliente</strong>
+                  <span id="sinalPreviewText">Sinal de 50% para confirmar. O restante será pago no atendimento.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        {% endif %}
+      </div></div><div class="actions"><button class="btn" type="submit"><i class="fa-solid fa-floppy-disk"></i>Salvar configurações</button></div></form>
+    </div>
+  </main>
+</div>
+
+<div id="mpHelpModal" class="mp-help-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="mpHelpTitle">
+  <div class="mp-help-card">
+    <div class="mp-help-head">
+      <div>
+        <h2 id="mpHelpTitle">Como configurar o Mercado Pago</h2>
+        <p>Use a conta Mercado Pago do próprio estabelecimento.</p>
+      </div>
+      <button class="mp-help-close" type="button" aria-label="Fechar" onclick="fecharTutorialMercadoPago()">×</button>
+    </div>
+
+    <div class="mp-help-body">
+      <div class="mp-steps">
+        <div class="mp-step"><span class="mp-step-number">1</span><div><strong>Entre no Mercado Pago Developers</strong><span>Use o mesmo login da conta Mercado Pago que receberá os pagamentos.</span></div></div>
+        <div class="mp-step"><span class="mp-step-number">2</span><div><strong>Crie uma aplicação</strong><span>Acesse “Suas integrações”, clique em “Criar aplicação” e escolha pagamentos online.</span></div></div>
+        <div class="mp-step"><span class="mp-step-number">3</span><div><strong>Abra as credenciais de produção</strong><span>Entre na aplicação criada e copie a Public Key e o Access Token de produção.</span></div></div>
+        <div class="mp-step"><span class="mp-step-number">4</span><div><strong>Configure o webhook</strong><span>Na área de Webhooks da aplicação, adicione a URL abaixo e copie a assinatura secreta gerada pelo Mercado Pago.</span></div></div>
+        <div class="mp-step"><span class="mp-step-number">5</span><div><strong>Cole os dados no MenuFacile</strong><span>Escolha “Produção”, cole as três credenciais nos campos abaixo e salve as configurações.</span></div></div>
+      </div>
+
+      <div class="mp-webhook-box">
+        <label for="mpWebhookUrl">URL do webhook desta empresa</label>
+        <div class="mp-webhook-copy">
+          <input id="mpWebhookUrl" type="text" readonly value="{{ request.base_url }}api/pagamentos/mercadopago/{{ empresa.id }}/webhook">
+          <button type="button" onclick="copiarWebhookMercadoPago()"><i class="fa-regular fa-copy"></i> Copiar</button>
+        </div>
+        <span class="hint" id="mpWebhookCopyStatus">Use esta URL nas notificações de pagamento da aplicação.</span>
+      </div>
+    </div>
+
+    <div class="mp-help-footer">
+      <a class="mp-help-btn whatsapp" href="https://wa.me/393341306012?text={{ ('Olá! Preciso de ajuda para configurar o Mercado Pago no MenuFacile para a empresa ' ~ empresa.nome ~ '.')|urlencode }}" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-whatsapp"></i> Preciso de ajuda</a>
+      <a class="mp-help-btn primary" href="https://www.mercadopago.com.br/developers/panel/app" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-arrow-up-right-from-square"></i> Abrir Mercado Pago Developers</a>
+    </div>
+  </div>
+</div>
+
+
+
+<script id="mf-pix-manual-config-v906">
+(function(){
+  const toggle=document.getElementById('aceitaPixChaveV906');
+  const fields=document.getElementById('pixManualFieldsV906');
+  if(!toggle||!fields)return;
+  function sync(){
+    fields.style.display=toggle.checked?'grid':'none';
+    fields.querySelectorAll('input,select').forEach(el=>el.disabled=!toggle.checked);
+  }
+  toggle.addEventListener('change',sync);
+  sync();
+})();
+</script>
+<script id="mf-sinal-config-js">
+(function(){
+  const master=document.getElementById('sinalReservaAtivo');
+  const fields=document.getElementById('sinalConfigFields');
+  const tipo=document.getElementById('sinalTipo');
+  const valor=document.getElementById('sinalValor');
+  const valorField=document.getElementById('sinalValorField');
+  const valorLabel=document.getElementById('sinalValorLabel');
+  const prefix=document.getElementById('sinalValuePrefix');
+  const hint=document.getElementById('sinalTipoHint');
+  const preview=document.getElementById('sinalPreviewText');
+  const negocioEncomenda={{ 'true' if negocio_encomenda else 'false' }};
+  if(!master||!fields||!tipo||!valor) return;
+
+  function atualizar(){
+    fields.classList.toggle('is-disabled',!master.checked);
+    const t=tipo.value;
+    valorField.style.display=t==='integral'?'none':'grid';
+    if(t==='percentual'){
+      valorLabel.textContent='Percentual do sinal'; prefix.textContent='%';
+      hint.textContent=negocioEncomenda?'Percentual calculado sobre o valor total da encomenda.':'Percentual calculado sobre o valor dos serviços selecionados.';
+      preview.textContent=negocioEncomenda?`Sinal de ${Number(valor.value||50).toLocaleString('pt-BR')}% para reservar a produção. O saldo fica para retirada/entrega.`:`Sinal de ${Number(valor.value||50).toLocaleString('pt-BR')}% para confirmar. O restante será pago no atendimento.`;
+    }else if(t==='fixo'){
+      valorLabel.textContent='Valor fixo do sinal'; prefix.textContent='R$';
+      hint.textContent=negocioEncomenda?'O mesmo valor de sinal será solicitado em cada encomenda.':'O mesmo valor será cobrado em cada reserva ou agendamento.';
+      preview.textContent=`Sinal fixo de R$ ${Number(valor.value||0).toLocaleString('pt-BR',{minimumFractionDigits:2})} para confirmar.`;
+    }else if(t==='por_pessoa'){
+      valorLabel.textContent='Valor por pessoa'; prefix.textContent='R$';
+      hint.textContent='Mais indicado para reservas de mesa com quantidade de pessoas.';
+      preview.textContent=`Sinal de R$ ${Number(valor.value||0).toLocaleString('pt-BR',{minimumFractionDigits:2})} por pessoa.`;
+    }else{
+      hint.textContent=negocioEncomenda?'O cliente paga antecipadamente o valor integral da encomenda.':'O cliente paga antecipadamente o valor integral dos serviços selecionados.';
+      preview.textContent=negocioEncomenda?'Pagamento integral antecipado para confirmar a encomenda.':'Pagamento integral antecipado para confirmar o agendamento.';
+    }
+  }
+  master.addEventListener('change',atualizar);
+  tipo.addEventListener('change',atualizar);
+  valor.addEventListener('input',atualizar);
+  atualizar();
+})();
+</script>
+
+<script id="mf-mp-help-script">
+function abrirTutorialMercadoPago(){
+  const modal=document.getElementById('mpHelpModal');
+  if(!modal)return;
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden','false');
+  document.body.style.overflow='hidden';
+}
+function fecharTutorialMercadoPago(){
+  const modal=document.getElementById('mpHelpModal');
+  if(!modal)return;
+  modal.classList.remove('show');
+  modal.setAttribute('aria-hidden','true');
+  document.body.style.overflow='';
+}
+async function copiarWebhookMercadoPago(){
+  const input=document.getElementById('mpWebhookUrl');
+  const status=document.getElementById('mpWebhookCopyStatus');
+  if(!input)return;
+  try{
+    await navigator.clipboard.writeText(input.value);
+    if(status)status.textContent='URL copiada com sucesso.';
+  }catch(e){
+    input.select();
+    document.execCommand('copy');
+    if(status)status.textContent='URL copiada com sucesso.';
+  }
+}
+document.addEventListener('click',function(event){
+  const modal=document.getElementById('mpHelpModal');
+  if(modal&&event.target===modal)fecharTutorialMercadoPago();
+});
+document.addEventListener('keydown',function(event){
+  if(event.key==='Escape')fecharTutorialMercadoPago();
+});
+</script>
+
+
+
+<style id="mf-sinal-admin-clean-v240">
+.mf-sinal-card .card-h{padding-bottom:12px !important;}
+.mf-sinal-card .mf-payment-card-heading h2{font-size:20px !important;margin-bottom:3px !important;}
+.mf-sinal-card .mf-payment-card-heading p{font-size:12px !important;line-height:1.35 !important;max-width:760px !important;}
+.mf-sinal-card .card-b{padding-top:10px !important;}
+.mf-sinal-master-row{padding:12px 0 !important;}
+.mf-sinal-master-row strong{font-size:13px !important;}
+.mf-sinal-master-row span{font-size:11px !important;line-height:1.3 !important;}
+.mf-sinal-fields{gap:13px !important;margin-top:0 !important;}
+.mf-sinal-scope{padding:10px 12px !important;border-radius:12px !important;gap:10px !important;}
+.mf-check-option{padding:6px 9px !important;border-radius:10px !important;font-size:11px !important;}
+.mf-sinal-grid{gap:12px !important;}
+.mf-sinal-grid .field label{font-size:11px !important;}
+.mf-sinal-grid .field input,.mf-sinal-grid .field select{min-height:42px !important;height:42px !important;border-radius:11px !important;}
+.mf-sinal-grid textarea{min-height:72px !important;border-radius:11px !important;font-size:12px !important;}
+.mf-sinal-preview{padding:10px 12px !important;border-radius:12px !important;gap:10px !important;}
+.mf-sinal-preview-icon{width:34px !important;height:34px !important;min-width:34px !important;border-radius:10px !important;font-size:16px !important;}
+.mf-sinal-preview strong{font-size:12px !important;}
+.mf-sinal-preview span{font-size:10.5px !important;margin-top:2px !important;}
+</style>
+
+{% endblock %}

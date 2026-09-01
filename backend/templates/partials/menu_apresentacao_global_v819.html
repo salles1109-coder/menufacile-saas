@@ -1,0 +1,42 @@
+{# MenuFacile v819 — apresentação institucional global para Restaurante, Serviços e Loja. #}
+{% set mf_story_photos_v819 = [] %}
+{% if encomendas_apresentacao.foto1_url %}{% set _ = mf_story_photos_v819.append(encomendas_apresentacao.foto1_url) %}{% endif %}
+{% if encomendas_apresentacao.foto2_url %}{% set _ = mf_story_photos_v819.append(encomendas_apresentacao.foto2_url) %}{% endif %}
+{% if encomendas_apresentacao.foto3_url %}{% set _ = mf_story_photos_v819.append(encomendas_apresentacao.foto3_url) %}{% endif %}
+{% set mf_story_count_v819 = mf_story_photos_v819|length %}
+<section
+  class="enc-intro-v812"
+  id="encIntroV812"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="encIntroTitleV812"
+  style="--enc-brand:{{ empresa.menu_cor_principal or '#1236B5' }};--enc-brand-rgb:{{ empresa.menu_cor_rgb or '18,54,181' }};--enc-brand-on:{{ empresa.menu_cor_texto or '#FFFFFF' }};--enc-page-bg:{{ empresa.menu_cor_fundo or '#F5F7FB' }};"
+>
+  <div class="enc-intro-panel-v812 photos-{{ mf_story_count_v819 }}-v812">
+    <div class="enc-intro-copy-v812">
+      <div class="enc-intro-brand-v812">
+        <span class="enc-intro-brand-mark-v812">
+          {% if empresa.logo_url %}<img src="{{ empresa.logo_url }}" alt="">{% else %}{{ (empresa.nome or 'M')[:1]|upper }}{% endif %}
+        </span>
+        <span>{{ empresa.nome }}</span>
+      </div>
+      <span class="enc-intro-eyebrow-v812">Nossa essência</span>
+      <h1 class="enc-intro-title-v812" id="encIntroTitleV812">{{ encomendas_apresentacao.titulo or 'Conheça nossa história' }}</h1>
+      {% if encomendas_apresentacao.texto %}<p class="enc-intro-text-v812">{{ encomendas_apresentacao.texto }}</p>{% endif %}
+      <button class="enc-intro-action-v812" id="encIntroOpenCatalogV812" type="button">
+        <span>{{ encomendas_apresentacao.botao_texto or 'Acessar nosso menu' }}</span>
+        <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+      </button>
+      <span class="enc-intro-note-v812"><i class="fa-regular fa-heart" aria-hidden="true"></i> Conheça a história da nossa marca</span>
+    </div>
+    {% if mf_story_count_v819 %}
+    <div class="enc-intro-media-v812" aria-label="Fotos da nossa história">
+      <div class="enc-intro-gallery-v812 photos-{{ mf_story_count_v819 }}-v812">
+        {% for foto in mf_story_photos_v819 %}
+        <figure class="enc-intro-photo-v812"><img src="{{ foto }}" alt="Foto da história de {{ empresa.nome }}" loading="eager" decoding="async"></figure>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>

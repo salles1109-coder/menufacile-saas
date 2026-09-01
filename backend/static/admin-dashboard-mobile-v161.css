@@ -1,0 +1,216 @@
+/* MenuFacile v161 — Dashboard mobile: faixa do plano fina e atalhos delicados */
+@media (max-width: 768px) {
+  body.mf-ds-dashboard.mf-page-inicio {
+    background: #f4f7fb !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .main,
+  body.mf-ds-dashboard.mf-page-inicio .content {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .content {
+    padding: 12px 14px calc(112px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .topbar {
+    min-height: 64px !important;
+    padding: 9px 14px !important;
+    border-bottom: 1px solid #e7ecf3 !important;
+    background: rgba(255, 255, 255, 0.98) !important;
+    box-shadow: 0 5px 18px rgba(29, 45, 76, 0.045) !important;
+  }
+
+  /* Plano em uma faixa fina, ocupando toda a largura. */
+  body.mf-ds-dashboard.mf-page-inicio .mf-v51-dashboard-control-card {
+    gap: 6px !important;
+    margin: 0 0 11px !important;
+    padding: 8px !important;
+    border: 1px solid #e4e9f1 !important;
+    border-radius: 17px !important;
+    background: #fff !important;
+    box-shadow: 0 7px 20px rgba(31, 46, 77, 0.045) !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .mf-v51-control-top {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .mf-v51-plan-summary {
+    width: 100% !important;
+    min-height: 32px !important;
+    padding: 6px 9px !important;
+    gap: 6px !important;
+    border: 1px solid #d7e4f3 !important;
+    border-radius: 10px !important;
+    background: #f5f9fe !important;
+    color: #264b78 !important;
+    font-size: 9.5px !important;
+    line-height: 1 !important;
+    font-weight: 850 !important;
+    white-space: nowrap !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .mf-v51-plan-summary i {
+    flex: 0 0 auto !important;
+    font-size: 12px !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .mf-v51-plan-summary span {
+    min-width: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  /* Plano, Suporte e Link Menu: ações leves, sem botão pesado. */
+  body.mf-ds-dashboard.mf-page-inicio .mf-v51-dashboard-actions {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 5px !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .mf-v51-dashboard-actions :is(a, button),
+  body.mf-ds-dashboard.mf-page-inicio .mf-v51-dashboard-actions .mf-v51-payment-btn,
+  body.mf-ds-dashboard.mf-page-inicio .mf-v51-dashboard-actions .support-btn,
+  body.mf-ds-dashboard.mf-page-inicio .mf-v51-dashboard-actions .copy-menu-btn {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 30px !important;
+    margin: 0 !important;
+    padding: 4px 5px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    border: 1px solid #e8edf3 !important;
+    border-radius: 9px !important;
+    background: #fbfcfe !important;
+    color: #56657a !important;
+    box-shadow: none !important;
+    font-size: 9px !important;
+    line-height: 1 !important;
+    font-weight: 800 !important;
+    white-space: nowrap !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .mf-v51-dashboard-actions :is(a, button) i {
+    font-size: 10px !important;
+    opacity: 0.8 !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .mf-v51-dashboard-actions .support-btn {
+    color: #426a58 !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .mf-v51-dashboard-actions .copy-menu-btn {
+    color: #6f5c4e !important;
+  }
+
+  /* Atualizar dados não participa mais do card mobile. */
+  body.mf-ds-dashboard.mf-page-inicio .mf-v51-dashboard-actions .update-btn {
+    display: none !important;
+  }
+
+  /* No celular, o painel mostra apenas os atalhos dos módulos. */
+  body.mf-ds-dashboard.mf-page-inicio .kpis,
+  body.mf-ds-dashboard.mf-page-inicio .panels {
+    display: none !important;
+  }
+
+  /* Módulos: cards horizontais compactos, iguais ao padrão de Serviços. */
+  body.mf-ds-dashboard.mf-page-inicio .quick-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 11px !important;
+    margin: 0 !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .action-card {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    padding: 15px !important;
+    display: grid !important;
+    grid-template-columns: 46px minmax(0, 1fr) !important;
+    align-items: start !important;
+    gap: 12px !important;
+    border: 1px solid #e1e7f0 !important;
+    border-radius: 20px !important;
+    background: #fff !important;
+    box-shadow: 0 8px 24px rgba(31, 46, 77, 0.05) !important;
+    overflow: hidden !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .action-icon {
+    width: 46px !important;
+    min-width: 46px !important;
+    height: 46px !important;
+    border-radius: 14px !important;
+    font-size: 19px !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .action-card > div:last-child {
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .action-card h3 {
+    margin: 0 0 4px !important;
+    color: var(--azul, #4b007a) !important;
+    font-size: 17px !important;
+    line-height: 1.2 !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .action-card p {
+    display: -webkit-box !important;
+    margin: 0 0 9px !important;
+    color: #68758b !important;
+    font-size: 12px !important;
+    line-height: 1.38 !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 2 !important;
+    overflow: hidden !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .action-btn {
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 30px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: var(--azul, #4b007a) !important;
+    box-shadow: none !important;
+    font-size: 12px !important;
+    line-height: 1.15 !important;
+    font-weight: 950 !important;
+  }
+}
+
+@media (max-width: 390px) {
+  body.mf-ds-dashboard.mf-page-inicio .content {
+    padding-right: 11px !important;
+    padding-left: 11px !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .mf-v51-plan-summary {
+    padding-right: 7px !important;
+    padding-left: 7px !important;
+    font-size: 8.8px !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .mf-v51-dashboard-actions :is(a, button) {
+    padding-right: 3px !important;
+    padding-left: 3px !important;
+    font-size: 8.5px !important;
+  }
+}

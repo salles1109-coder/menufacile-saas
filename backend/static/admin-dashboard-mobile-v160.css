@@ -1,0 +1,181 @@
+/* MenuFacile v160 — Dashboard mobile enxuto: plano compacto e somente módulos */
+@media (max-width: 768px) {
+  body.mf-ds-dashboard.mf-page-inicio {
+    background: #f4f7fb !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .main,
+  body.mf-ds-dashboard.mf-page-inicio .content {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .content {
+    padding: 12px 14px calc(112px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .topbar {
+    min-height: 64px !important;
+    padding: 9px 14px !important;
+    border-bottom: 1px solid #e7ecf3 !important;
+    background: rgba(255, 255, 255, 0.98) !important;
+    box-shadow: 0 5px 18px rgba(29, 45, 76, 0.045) !important;
+  }
+
+  /* Plano e atalhos principais */
+  body.mf-ds-dashboard.mf-page-inicio .mf-v51-dashboard-control-card {
+    gap: 8px !important;
+    margin: 0 0 11px !important;
+    padding: 10px !important;
+    border: 1px solid #e1e7f0 !important;
+    border-radius: 20px !important;
+    background: #fff !important;
+    box-shadow: 0 8px 24px rgba(31, 46, 77, 0.055) !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .mf-v51-control-top {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    gap: 9px !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .mf-v51-plan-summary,
+  body.mf-ds-dashboard.mf-page-inicio .mf-v51-payment-btn {
+    min-height: 42px !important;
+    border-radius: 13px !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .mf-v51-plan-summary {
+    padding: 7px 10px !important;
+    font-size: 10px !important;
+    line-height: 1.18 !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .mf-v51-plan-summary i {
+    flex: 0 0 auto !important;
+    font-size: 15px !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .mf-v51-payment-btn {
+    min-width: 94px !important;
+    padding: 0 9px !important;
+    font-size: 10px !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .mf-v51-dashboard-actions {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .mf-v51-dashboard-actions :is(a, button) {
+    min-height: 38px !important;
+    padding: 5px 4px !important;
+    border-radius: 11px !important;
+    font-size: 9px !important;
+    line-height: 1.15 !important;
+  }
+
+  /* No celular, o painel mostra apenas os atalhos dos módulos. */
+  body.mf-ds-dashboard.mf-page-inicio .kpis,
+  body.mf-ds-dashboard.mf-page-inicio .panels {
+    display: none !important;
+  }
+
+  /* Módulos: cards horizontais compactos, iguais ao padrão de Serviços */
+  body.mf-ds-dashboard.mf-page-inicio .quick-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 11px !important;
+    margin: 0 !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .action-card {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    padding: 15px !important;
+    display: grid !important;
+    grid-template-columns: 46px minmax(0, 1fr) !important;
+    align-items: start !important;
+    gap: 12px !important;
+    border: 1px solid #e1e7f0 !important;
+    border-radius: 20px !important;
+    background: #fff !important;
+    box-shadow: 0 8px 24px rgba(31, 46, 77, 0.05) !important;
+    overflow: hidden !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .action-icon {
+    width: 46px !important;
+    min-width: 46px !important;
+    height: 46px !important;
+    border-radius: 14px !important;
+    font-size: 19px !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .action-card > div:last-child {
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .action-card h3 {
+    margin: 0 0 4px !important;
+    color: var(--azul, #4b007a) !important;
+    font-size: 17px !important;
+    line-height: 1.2 !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .action-card p {
+    display: -webkit-box !important;
+    margin: 0 0 9px !important;
+    color: #68758b !important;
+    font-size: 12px !important;
+    line-height: 1.38 !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 2 !important;
+    overflow: hidden !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .action-btn {
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 30px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: var(--azul, #4b007a) !important;
+    box-shadow: none !important;
+    font-size: 12px !important;
+    line-height: 1.15 !important;
+    font-weight: 950 !important;
+  }
+}
+
+@media (max-width: 390px) {
+  body.mf-ds-dashboard.mf-page-inicio .content {
+    padding-right: 11px !important;
+    padding-left: 11px !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .mf-v51-control-top {
+    grid-template-columns: minmax(0, 1fr) 90px !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .mf-v51-payment-btn {
+    min-width: 90px !important;
+    padding: 0 6px !important;
+    font-size: 9px !important;
+  }
+
+  body.mf-ds-dashboard.mf-page-inicio .mf-v51-dashboard-actions :is(a, button) {
+    padding-right: 3px !important;
+    padding-left: 3px !important;
+    font-size: 9px !important;
+  }
+
+}

@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% block body_attrs %} class="mf-ds-admin mf-ds-employee mf-ds-employee-cardapio"{% endblock %}
+{% block title %}Cardápio / Serviços - {{ empresa.nome }}{% endblock %}
+{% block head %}
+<style id="mf-pt-only-employee-catalog">
+.mfc-advanced{display:none!important}
+</style>
+<style id="mf-employee-catalog-v2">
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Arial,sans-serif;background:#f2f6fc;color:#101828}
+button,input,select,textarea{font-family:inherit}
+.mfc-page{width:min(100%,820px);margin:0 auto;padding:18px 16px 34px}
+.mfc-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:12px}.mfc-head h1{margin:0;color:#061b8f;font-size:28px;line-height:1.05;letter-spacing:-.7px}.mfc-head p{margin:5px 0 0;color:#667085;font-size:12px;font-weight:750}
+.mfc-summary{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:11px}.mfc-summary-card{padding:11px 13px;border:1px solid #dbe5f2;border-radius:16px;background:#fff}.mfc-summary-card span{display:block;color:#667085;font-size:10px;font-weight:850}.mfc-summary-card strong{display:block;margin-top:3px;color:#061b8f;font-size:20px}
+.mfc-toolbar{position:sticky;top:65px;z-index:50;padding:7px;margin-bottom:11px;border:1px solid #dbe5f2;border-radius:17px;background:rgba(255,255,255,.97);box-shadow:0 8px 22px rgba(15,35,90,.05);backdrop-filter:blur(10px)}
+.mfc-toolbar-top{display:grid;grid-template-columns:1fr 1fr;gap:6px}.mfc-tab{min-height:38px;border:0;border-radius:12px;background:#f4f7fc;color:#667085;font-size:12px;font-weight:950}.mfc-tab.active{background:#061b8f;color:#fff}.mfc-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}.mfc-action{min-height:38px;border:1px solid #dbe5f2;border-radius:12px;background:#fff;color:#061b8f;font-size:11px;font-weight:950}.mfc-action.primary{background:#eef3ff}
+.mfc-filter{display:grid;grid-template-columns:1fr auto;gap:7px;margin-bottom:10px}.mfc-filter input{width:100%;min-height:44px;border:1px solid #d5dfed;border-radius:14px;background:#fff;padding:0 13px;color:#101828;font-size:16px}.mfc-filter button{width:44px;min-height:44px;border:1px solid #dbe5f2;border-radius:14px;background:#fff;color:#061b8f}
+.mfc-view[hidden]{display:none!important}.mfc-list{display:grid;gap:9px}
+.mfc-item{display:grid;grid-template-columns:72px minmax(0,1fr);gap:11px;padding:11px;border:1px solid #dbe5f2;border-radius:18px;background:#fff;box-shadow:0 8px 22px rgba(15,35,90,.045)}.mfc-item.inactive{opacity:.62}.mfc-photo{width:72px;height:72px;border-radius:14px;overflow:hidden;background:#eef3ff;display:grid;place-items:center;color:#061b8f}.mfc-photo img{width:100%;height:100%;object-fit:cover}.mfc-photo i{font-size:21px}.mfc-item-main{min-width:0}.mfc-item-line{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}.mfc-item h3{margin:0;min-width:0;color:#101828;font-size:15px;line-height:1.2;overflow-wrap:anywhere}.mfc-price{flex:0 0 auto;color:#061b8f;font-size:15px;font-weight:1000;white-space:nowrap}.mfc-desc{margin:4px 0 0;color:#667085;font-size:10.5px;line-height:1.35;font-weight:700;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.mfc-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}.mfc-tag{display:inline-flex;align-items:center;min-height:22px;padding:4px 7px;border-radius:999px;background:#eef3ff;color:#061b8f;font-size:9px;font-weight:950}.mfc-tag.green{background:#eaf8ef;color:#075333}.mfc-tag.gray{background:#f2f4f7;color:#667085}.mfc-item-actions{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:1px}.mfc-btn{min-height:38px;border:0;border-radius:12px;font-size:11px;font-weight:950}.mfc-btn.edit{background:#eef3ff;color:#061b8f}.mfc-btn.delete{background:#fff1f2;color:#be123c;border:1px solid #fecdd3}
+.mfc-category{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px;border:1px solid #dbe5f2;border-radius:17px;background:#fff}.mfc-category strong{display:block;color:#101828;font-size:14px}.mfc-category small{display:block;margin-top:3px;color:#667085;font-size:10px;font-weight:750}.mfc-category-actions{display:flex;gap:5px}.mfc-icon-btn{width:38px;height:38px;border:0;border-radius:12px;display:grid;place-items:center}.mfc-icon-btn.edit{background:#eef3ff;color:#061b8f}.mfc-icon-btn.delete{background:#fff1f2;color:#be123c}
+.mfc-empty{padding:24px;border:1px dashed #cbd5e1;border-radius:17px;background:#fff;text-align:center;color:#667085;font-size:12px;font-weight:800}
+.mfc-sheet{position:fixed;inset:0;z-index:20000;display:none;align-items:flex-end;justify-content:center;padding:8px;background:rgba(15,23,42,.54)}.mfc-sheet.open{display:flex}.mfc-sheet-card{width:min(100%,720px);max-height:91vh;overflow-y:auto;border-radius:24px 24px 14px 14px;background:#fff;box-shadow:0 24px 70px rgba(0,0,0,.25)}.mfc-sheet-head{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px 15px 12px;background:#fff;border-bottom:1px solid #edf1f7}.mfc-sheet-head h2{margin:0;color:#061b8f;font-size:20px}.mfc-close{width:36px;height:36px;border:0;border-radius:12px;background:#f2f4f7;color:#344054}.mfc-sheet-body{padding:14px}.mfc-form{display:grid;grid-template-columns:1fr 1fr;gap:10px}.mfc-field.full,.mfc-advanced{grid-column:1/-1}.mfc-field label{display:block;margin-bottom:5px;color:#344054;font-size:11px;font-weight:950}.mfc-field input,.mfc-field select,.mfc-field textarea{width:100%;min-height:45px;border:1px solid #d5dfed;border-radius:13px;background:#fff;padding:10px 12px;color:#101828;font-size:16px}.mfc-field textarea{min-height:76px;resize:vertical}.mfc-check{min-height:45px;display:flex;align-items:center;gap:9px;padding:10px 12px;border:1px solid #d5dfed;border-radius:13px}.mfc-check input{width:19px;height:19px}.mfc-advanced{border:1px solid #dbe5f2;border-radius:14px;background:#f8fbff}.mfc-advanced summary{padding:12px;color:#061b8f;font-size:11px;font-weight:950;cursor:pointer}.mfc-advanced-body{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:0 10px 10px}.mfc-sheet-actions{position:sticky;bottom:0;display:grid;grid-template-columns:1fr 1.4fr;gap:8px;padding:11px 14px calc(11px + env(safe-area-inset-bottom,0px));background:#fff;border-top:1px solid #edf1f7}.mfc-sheet-actions button{min-height:45px;border:0;border-radius:13px;font-size:12px;font-weight:950}.mfc-cancel{background:#f2f4f7;color:#344054}.mfc-save{background:#061b8f;color:#fff}
+.mfc-toast{position:fixed;left:50%;bottom:82px;z-index:30000;transform:translateX(-50%) translateY(12px);max-width:calc(100% - 24px);padding:10px 14px;border-radius:12px;background:#101828;color:#fff;font-size:11px;font-weight:850;opacity:0;pointer-events:none;transition:.2s}.mfc-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.mfc-title-row{display:flex;align-items:center;gap:10px}.mfc-title-row i{width:24px;height:24px;display:grid;place-items:center;border-radius:999px;background:#eef3ff;color:#061b8f;font-size:12px}.mfc-title-row h1{margin:0}
+@media(max-width:900px){.mfc-page{width:100%;padding:12px 10px 20px}.mfc-head{margin-bottom:10px}.mfc-head h1{font-size:21px;letter-spacing:-.4px}.mfc-head p{font-size:10.5px}.mfc-toolbar{top:64px}.mfc-form{grid-template-columns:1fr}.mfc-field.full,.mfc-advanced{grid-column:auto}.mfc-advanced-body{grid-template-columns:1fr}.mfc-sheet-card{width:100%}}
+@media(max-width:365px){.mfc-page{padding-left:8px;padding-right:8px}.mfc-item{grid-template-columns:64px minmax(0,1fr);gap:9px}.mfc-photo{width:64px;height:64px}.mfc-item h3,.mfc-price{font-size:14px}}
+</style>
+{% endblock %}
+{% block page %}
+{% set _lang = idioma_empresa(empresa if empresa is defined else None) %}
+{% include "partials/funcionario_mobile_header.html" %}
+<main class="mfc-page">
+  <header class="mfc-head">
+    <div class="mfc-title-row"><i class="fa-solid fa-utensils" aria-hidden="true"></i><h1>Cardápio / Serviços</h1></div>
+  </header>
+
+  <section class="mfc-summary">
+    <div class="mfc-summary-card"><span>Itens / serviços</span><strong>{{ itens|length }}</strong></div>
+    <div class="mfc-summary-card"><span>Categorias</span><strong>{{ categorias|length }}</strong></div>
+  </section>
+
+  <section class="mfc-toolbar" aria-label="Ações do catálogo">
+    <div class="mfc-toolbar-top">
+      <button class="mfc-tab active" id="mfcTabItens" type="button" onclick="mfcShowView('items')">Itens</button>
+      <button class="mfc-tab" id="mfcTabCategorias" type="button" onclick="mfcShowView('categories')">Categorias</button>
+    </div>
+    <div class="mfc-actions">
+      <button class="mfc-action primary" type="button" onclick="mfcOpenItem()"><i class="fa-solid fa-plus"></i> Item / serviço</button>
+      <button class="mfc-action" type="button" onclick="mfcOpenCategory()"><i class="fa-solid fa-plus"></i> Categoria</button>
+    </div>
+  </section>
+
+  <section class="mfc-view" id="mfcItemsView">
+    
+    <div class="mfc-list" id="mfcItemsList">
+      {% for item in itens %}
+      {% set _tipo = (item.tipo or 'produto')|lower %}
+      <article class="mfc-item{% if item.ativo is defined and not item.ativo %} inactive{% endif %}" data-search="{{ (item.nome ~ ' ' ~ (item.codigo_produto or '') ~ ' ' ~ (item.descricao or '') ~ ' ' ~ (item.categoria_nome or ''))|lower|e }}">
+        <div class="mfc-photo">{% if item.foto_url %}<img src="{{ item.foto_url }}" alt="{{ item.nome }}" loading="lazy">{% elif _tipo in ['servico','serviço'] %}<i class="fa-solid fa-scissors"></i>{% else %}<i class="fa-solid fa-box-open"></i>{% endif %}</div>
+        <div class="mfc-item-main">
+          <div class="mfc-item-line"><h3>{{ item.nome }}</h3><span class="mfc-price">R$ {{ "%.2f"|format(item.preco or 0)|replace('.', ',') }}</span></div>
+          {% if item.descricao %}<p class="mfc-desc">{{ item.descricao }}</p>{% endif %}
+          <div class="mfc-tags">
+            <span class="mfc-tag">{{ item.categoria_nome or 'Sem categoria' }}</span>
+            {% if _tipo in ['servico','serviço'] %}<span class="mfc-tag green">Serviço · {{ item.duracao_minutos or 0 }} min</span>{% else %}<span class="mfc-tag gray">Produto · estoque {{ item.estoque if item.estoque is not none else '-' }}</span>{% endif %}
+            {% if item.ativo is defined and not item.ativo %}<span class="mfc-tag gray">Indisponível</span>{% endif %}
+          </div>
+        </div>
+        <div class="mfc-item-actions">
+          <button class="mfc-btn edit" type="button" onclick="mfcEditItem(this)"
+            data-id="{{ item.id }}" data-codigo="{{ item.codigo_produto or ''|e }}" data-nome="{{ item.nome|e }}"
+            data-nome-pt="{{ item.nome_pt or ''|e }}" data-nome-it="{{ item.nome_it or ''|e }}" data-nome-en="{{ item.nome_en or ''|e }}"
+            data-categoria="{{ item.categoria_id or '' }}" data-preco="{{ item.preco or 0 }}" data-tipo="{{ item.tipo or 'produto' }}"
+            data-estoque="{{ item.estoque if item.estoque is not none else '' }}" data-iva="{{ item.aliquota_iva if item.aliquota_iva is not none else '' }}"
+            data-foto="{{ item.foto_url or ''|e }}" data-duracao="{{ item.duracao_minutos if item.duracao_minutos is not none else '' }}"
+            data-descricao="{{ item.descricao or ''|e }}" data-descricao-pt="{{ item.descricao_pt or ''|e }}"
+            data-descricao-it="{{ item.descricao_it or ''|e }}" data-descricao-en="{{ item.descricao_en or ''|e }}"
+            data-ativo="{{ '1' if item.ativo is not defined or item.ativo else '0' }}"><i class="fa-solid fa-pen"></i> Editar</button>
+          <button class="mfc-btn delete" type="button" onclick="mfcDeleteItem({{ item.id }})"><i class="fa-solid fa-trash"></i> Excluir</button>
+        </div>
+      </article>
+      {% else %}<div class="mfc-empty">Nenhum item ou serviço cadastrado.</div>{% endfor %}
+    </div>
+    <div class="mfc-empty" id="mfcItemsEmpty" hidden>Nenhum item encontrado.</div>
+  </section>
+
+  <section class="mfc-view" id="mfcCategoriesView" hidden>
+    
+    <div class="mfc-list" id="mfcCategoriesList">
+      {% for categoria in categorias %}
+      <article class="mfc-category" data-search="{{ categoria.nome|lower|e }}">
+        <div><strong>{{ categoria.nome }}</strong><small>Categoria do catálogo</small></div>
+        <div class="mfc-category-actions">
+          <button class="mfc-icon-btn edit" type="button" aria-label="Editar categoria" onclick="mfcEditCategory(this)" data-id="{{ categoria.id }}" data-nome="{{ categoria.nome|e }}" data-nome-pt="{{ categoria.nome_pt or ''|e }}" data-nome-it="{{ categoria.nome_it or ''|e }}" data-nome-en="{{ categoria.nome_en or ''|e }}" data-imagem="{{ categoria.imagem_url or ''|e }}" data-ordem="{{ categoria.ordem or 0 }}"><i class="fa-solid fa-pen"></i></button>
+          <button class="mfc-icon-btn delete" type="button" aria-label="Excluir categoria" onclick="mfcDeleteCategory({{ categoria.id }})"><i class="fa-solid fa-trash"></i></button>
+        </div>
+      </article>
+      {% else %}<div class="mfc-empty">Nenhuma categoria cadastrada.</div>{% endfor %}
+    </div>
+    <div class="mfc-empty" id="mfcCategoriesEmpty" hidden>Nenhuma categoria encontrada.</div>
+  </section>
+</main>
+
+<div class="mfc-sheet" id="mfcItemSheet" aria-hidden="true">
+  <section class="mfc-sheet-card">
+    <header class="mfc-sheet-head"><h2 id="mfcItemTitle">Novo item / serviço</h2><button class="mfc-close" type="button" onclick="mfcCloseSheet('mfcItemSheet')"><i class="fa-solid fa-xmark"></i></button></header>
+    <div class="mfc-sheet-body">
+      <input id="mfcItemId" type="hidden">
+      <div class="mfc-form">
+        <div class="mfc-field"><label>Nome</label><input id="mfcItemNome" autocomplete="off"></div>
+        <div class="mfc-field"><label>Código</label><input id="mfcItemCodigo" autocomplete="off"></div>
+        <div class="mfc-field"><label>Categoria</label><select id="mfcItemCategoria"><option value="">Sem categoria</option>{% for categoria in categorias %}<option value="{{ categoria.id }}">{{ categoria.nome }}</option>{% endfor %}</select></div>
+        <div class="mfc-field"><label>Preço</label><input id="mfcItemPreco" type="number" min="0" step="0.01" inputmode="decimal"></div>
+        <div class="mfc-field"><label>Tipo</label><select id="mfcItemTipo" onchange="mfcUpdateTypeFields()"><option value="produto">Produto</option><option value="servico">Serviço</option></select></div>
+        <div class="mfc-field" id="mfcStockField"><label>Estoque</label><input id="mfcItemEstoque" type="number" inputmode="numeric"></div>
+        <div class="mfc-field" id="mfcDurationField" hidden><label>Duração (minutos)</label><input id="mfcItemDuracao" type="number" min="0" inputmode="numeric"></div>
+        <div class="mfc-field"><label>Imposto (%)</label><input id="mfcItemIva" type="number" min="0" step="0.01" inputmode="decimal"></div>
+        <div class="mfc-field full"><label>Imagem URL</label><input id="mfcItemFoto" type="url" placeholder="https://..."></div>
+        <div class="mfc-field full"><label>Descrição</label><textarea id="mfcItemDescricao"></textarea></div>
+        <div class="mfc-field full"><label class="mfc-check"><input id="mfcItemAtivo" type="checkbox" checked> Disponível no menu</label></div>
+        <details class="mfc-advanced"><summary><i class="fa-solid fa-language"></i> Traduções avançadas</summary><div class="mfc-advanced-body">
+          <div class="mfc-field"><label>Nome PT</label><input id="mfcItemNomePt"></div><div class="mfc-field"><label>Nome IT</label><input id="mfcItemNomeIt"></div><div class="mfc-field"><label>Nome EN</label><input id="mfcItemNomeEn"></div>
+          <div class="mfc-field"><label>Descrição PT</label><textarea id="mfcItemDescricaoPt"></textarea></div><div class="mfc-field"><label>Descrição IT</label><textarea id="mfcItemDescricaoIt"></textarea></div><div class="mfc-field"><label>Descrição EN</label><textarea id="mfcItemDescricaoEn"></textarea></div>
+        </div></details>
+      </div>
+    </div>
+    <footer class="mfc-sheet-actions"><button class="mfc-cancel" type="button" onclick="mfcCloseSheet('mfcItemSheet')">Cancelar</button><button class="mfc-save" id="mfcItemSave" type="button" onclick="mfcSaveItem()">Salvar</button></footer>
+  </section>
+</div>
+
+<div class="mfc-sheet" id="mfcCategorySheet" aria-hidden="true">
+  <section class="mfc-sheet-card">
+    <header class="mfc-sheet-head"><h2 id="mfcCategoryTitle">Nova categoria</h2><button class="mfc-close" type="button" onclick="mfcCloseSheet('mfcCategorySheet')"><i class="fa-solid fa-xmark"></i></button></header>
+    <div class="mfc-sheet-body">
+      <input id="mfcCategoryId" type="hidden"><input id="mfcCategoryOrder" type="hidden" value="0">
+      <div class="mfc-form">
+        <div class="mfc-field full"><label>Nome</label><input id="mfcCategoryNome" autocomplete="off"></div>
+        <div class="mfc-field full"><label>Imagem URL</label><input id="mfcCategoryImagem" type="url" placeholder="https://..."></div>
+        <details class="mfc-advanced"><summary><i class="fa-solid fa-language"></i> Traduções avançadas</summary><div class="mfc-advanced-body"><div class="mfc-field"><label>Nome PT</label><input id="mfcCategoryNomePt"></div><div class="mfc-field"><label>Nome IT</label><input id="mfcCategoryNomeIt"></div><div class="mfc-field"><label>Nome EN</label><input id="mfcCategoryNomeEn"></div></div></details>
+      </div>
+    </div>
+    <footer class="mfc-sheet-actions"><button class="mfc-cancel" type="button" onclick="mfcCloseSheet('mfcCategorySheet')">Cancelar</button><button class="mfc-save" id="mfcCategorySave" type="button" onclick="mfcSaveCategory()">Salvar</button></footer>
+  </section>
+</div>
+<div class="mfc-toast" id="mfcToast"></div>
+{% include "partials/funcionario_mobile_nav.html" %}
+{% endblock %}
+{% block scripts %}
+<script>
+const MFC_EMPRESA_ID={{ empresa.id }};
+const mfcVal=id=>document.getElementById(id)?.value||'';
+const mfcNum=value=>value===''||value===null?null:Number(value);
+function mfcToast(message){const el=document.getElementById('mfcToast');el.textContent=message;el.classList.add('show');clearTimeout(window.__mfcToastTimer);window.__mfcToastTimer=setTimeout(()=>el.classList.remove('show'),2400)}
+function mfcOpenSheet(id){const el=document.getElementById(id);el.classList.add('open');el.setAttribute('aria-hidden','false');document.body.style.overflow='hidden'}
+function mfcCloseSheet(id){const el=document.getElementById(id);el.classList.remove('open');el.setAttribute('aria-hidden','true');document.body.style.overflow=''}
+document.addEventListener('click',event=>{if(event.target.classList.contains('mfc-sheet'))mfcCloseSheet(event.target.id)});
+async function mfcRequest(url,options){const response=await fetch(url,options);let data={};try{data=await response.json()}catch(_e){}if(!response.ok||data.error)throw new Error(data.error||'Não foi possível concluir a operação.');return data}
+function mfcShowView(view){const items=view==='items';document.getElementById('mfcItemsView').hidden=!items;document.getElementById('mfcCategoriesView').hidden=items;document.getElementById('mfcTabItens').classList.toggle('active',items);document.getElementById('mfcTabCategorias').classList.toggle('active',!items)}
+function mfcFilterItems(){const q=mfcVal('mfcItemSearch').trim().toLowerCase();let visible=0;document.querySelectorAll('#mfcItemsList .mfc-item').forEach(el=>{const show=!q||(el.dataset.search||'').includes(q);el.hidden=!show;if(show)visible++});document.getElementById('mfcItemsEmpty').hidden=visible!==0}
+function mfcClearItemSearch(){document.getElementById('mfcItemSearch').value='';mfcFilterItems()}
+function mfcFilterCategories(){const q=mfcVal('mfcCategorySearch').trim().toLowerCase();let visible=0;document.querySelectorAll('#mfcCategoriesList .mfc-category').forEach(el=>{const show=!q||(el.dataset.search||'').includes(q);el.hidden=!show;if(show)visible++});document.getElementById('mfcCategoriesEmpty').hidden=visible!==0}
+function mfcClearCategorySearch(){document.getElementById('mfcCategorySearch').value='';mfcFilterCategories()}
+function mfcSet(id,value){const el=document.getElementById(id);if(el)el.value=value??''}
+function mfcOpenItem(){document.getElementById('mfcItemTitle').textContent='Novo item / serviço';['mfcItemId','mfcItemNome','mfcItemCodigo','mfcItemPreco','mfcItemEstoque','mfcItemDuracao','mfcItemIva','mfcItemFoto','mfcItemDescricao','mfcItemNomePt','mfcItemNomeIt','mfcItemNomeEn','mfcItemDescricaoPt','mfcItemDescricaoIt','mfcItemDescricaoEn'].forEach(id=>mfcSet(id,''));mfcSet('mfcItemCategoria','');mfcSet('mfcItemTipo','produto');document.getElementById('mfcItemAtivo').checked=true;mfcUpdateTypeFields();mfcOpenSheet('mfcItemSheet')}
+function mfcEditItem(btn){document.getElementById('mfcItemTitle').textContent='Editar item / serviço';mfcSet('mfcItemId',btn.dataset.id);mfcSet('mfcItemCodigo',btn.dataset.codigo);mfcSet('mfcItemNome',btn.dataset.nome);mfcSet('mfcItemNomePt',btn.dataset.nomePt);mfcSet('mfcItemNomeIt',btn.dataset.nomeIt);mfcSet('mfcItemNomeEn',btn.dataset.nomeEn);mfcSet('mfcItemCategoria',btn.dataset.categoria);mfcSet('mfcItemPreco',btn.dataset.preco);mfcSet('mfcItemTipo',btn.dataset.tipo||'produto');mfcSet('mfcItemEstoque',btn.dataset.estoque);mfcSet('mfcItemIva',btn.dataset.iva);mfcSet('mfcItemFoto',btn.dataset.foto);mfcSet('mfcItemDuracao',btn.dataset.duracao);mfcSet('mfcItemDescricao',btn.dataset.descricao);mfcSet('mfcItemDescricaoPt',btn.dataset.descricaoPt);mfcSet('mfcItemDescricaoIt',btn.dataset.descricaoIt);mfcSet('mfcItemDescricaoEn',btn.dataset.descricaoEn);document.getElementById('mfcItemAtivo').checked=btn.dataset.ativo!=='0';mfcUpdateTypeFields();mfcOpenSheet('mfcItemSheet')}
+function mfcUpdateTypeFields(){const service=['servico','serviço'].includes(mfcVal('mfcItemTipo').toLowerCase());document.getElementById('mfcDurationField').hidden=!service;document.getElementById('mfcStockField').hidden=service}
+function mfcItemPayload(){const service=['servico','serviço'].includes(mfcVal('mfcItemTipo').toLowerCase());return{empresa_id:MFC_EMPRESA_ID,categoria_id:mfcNum(mfcVal('mfcItemCategoria')),codigo_produto:mfcVal('mfcItemCodigo').trim(),nome:mfcVal('mfcItemNome').trim(),nome_pt:mfcVal('mfcItemNomePt').trim(),nome_it:mfcVal('mfcItemNomeIt').trim(),nome_en:mfcVal('mfcItemNomeEn').trim(),descricao:mfcVal('mfcItemDescricao'),descricao_pt:mfcVal('mfcItemDescricaoPt'),descricao_it:mfcVal('mfcItemDescricaoIt'),descricao_en:mfcVal('mfcItemDescricaoEn'),preco:Number(mfcVal('mfcItemPreco')||0),aplica_iva:true,aliquota_iva:mfcNum(mfcVal('mfcItemIva')),tipo:service?'servico':'produto',foto_url:mfcVal('mfcItemFoto'),duracao_minutos:service?mfcNum(mfcVal('mfcItemDuracao')):null,estoque:service?null:mfcNum(mfcVal('mfcItemEstoque')),ativo:document.getElementById('mfcItemAtivo').checked}}
+async function mfcSaveItem(){const payload=mfcItemPayload();if(!payload.nome){mfcToast('Informe o nome do item.');return}const id=mfcVal('mfcItemId');const button=document.getElementById('mfcItemSave');button.disabled=true;button.textContent='Salvando...';try{await mfcRequest(id?`/itens/${id}`:'/itens',{method:id?'PATCH':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});location.reload()}catch(error){mfcToast(error.message);button.disabled=false;button.textContent='Salvar'}}
+async function mfcDeleteItem(id){if(!(await mfConfirm('Excluir este item ou serviço?', {title:'Confirmar exclusão',type:'warning',confirmText:'Excluir'})))return;try{await mfcRequest(`/itens/${id}`,{method:'DELETE'});location.reload()}catch(error){mfcToast(error.message)}}
+function mfcOpenCategory(){document.getElementById('mfcCategoryTitle').textContent='Nova categoria';['mfcCategoryId','mfcCategoryNome','mfcCategoryNomePt','mfcCategoryNomeIt','mfcCategoryNomeEn','mfcCategoryImagem'].forEach(id=>mfcSet(id,''));mfcSet('mfcCategoryOrder','0');mfcOpenSheet('mfcCategorySheet')}
+function mfcEditCategory(btn){document.getElementById('mfcCategoryTitle').textContent='Editar categoria';mfcSet('mfcCategoryId',btn.dataset.id);mfcSet('mfcCategoryNome',btn.dataset.nome);mfcSet('mfcCategoryNomePt',btn.dataset.nomePt);mfcSet('mfcCategoryNomeIt',btn.dataset.nomeIt);mfcSet('mfcCategoryNomeEn',btn.dataset.nomeEn);mfcSet('mfcCategoryImagem',btn.dataset.imagem);mfcSet('mfcCategoryOrder',btn.dataset.ordem||0);mfcOpenSheet('mfcCategorySheet')}
+async function mfcSaveCategory(){const nome=mfcVal('mfcCategoryNome').trim();if(!nome){mfcToast('Informe o nome da categoria.');return}const id=mfcVal('mfcCategoryId');const payload={empresa_id:MFC_EMPRESA_ID,nome,nome_pt:mfcVal('mfcCategoryNomePt').trim(),nome_it:mfcVal('mfcCategoryNomeIt').trim(),nome_en:mfcVal('mfcCategoryNomeEn').trim(),descricao:'',imagem_url:mfcVal('mfcCategoryImagem'),ordem:Number(mfcVal('mfcCategoryOrder')||0)};const button=document.getElementById('mfcCategorySave');button.disabled=true;button.textContent='Salvando...';try{await mfcRequest(id?`/categorias/${id}`:'/categorias',{method:id?'PATCH':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});location.reload()}catch(error){mfcToast(error.message);button.disabled=false;button.textContent='Salvar'}}
+async function mfcDeleteCategory(id){if(!(await mfConfirm('Excluir esta categoria?', {title:'Confirmar exclusão',type:'warning',confirmText:'Excluir'})))return;try{await mfcRequest(`/categorias/${id}`,{method:'DELETE'});location.reload()}catch(error){mfcToast(error.message)}}
+</script>
+{% endblock %}

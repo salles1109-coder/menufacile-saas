@@ -1,0 +1,11 @@
+<div class="admin-page-header ds-page-header" role="group" aria-label="{{ eyebrow }}">
+  {% if eyebrow %}
+    <span class="admin-page-header__eyebrow ds-page-header__badge">
+      <i class="fa-solid {{ header_icon|default('fa-chart-line') }}" aria-hidden="true"></i>
+      {{ eyebrow }}
+    </span>
+  {% endif %}
+  {% if actions_html %}
+    <div class="admin-page-header__actions ds-page-header__actions">{{ actions_html|safe }}</div>
+  {% endif %}
+</div>

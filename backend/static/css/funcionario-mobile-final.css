@@ -1,0 +1,149 @@
+/* MenuFacile — acabamento final uniforme do painel do funcionário */
+@media(max-width:900px){
+  body.mf-ds-employee{padding-bottom:calc(64px + var(--mf-app-safe))!important}
+  .mf-employee-bottom-nav{
+    min-height:60px!important;
+    display:flex!important;
+    align-items:stretch!important;
+    padding:3px 3px calc(3px + var(--mf-app-safe))!important;
+  }
+  .mf-employee-bottom-nav a{
+    flex:1 1 0!important;
+    width:auto!important;
+    min-width:0!important;
+    min-height:52px!important;
+    padding:4px 1px!important;
+    gap:4px!important;
+    border-radius:11px!important;
+    font-size:clamp(7.5px,2.35vw,9.5px)!important;
+    line-height:1!important;
+    overflow:visible!important;
+  }
+  .mf-employee-bottom-nav a i{font-size:15px!important}
+  .mf-employee-bottom-nav a span{
+    width:100%!important;
+    max-width:none!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+    white-space:nowrap!important;
+    letter-spacing:-.15px!important;
+  }
+  .mf-employee-bottom-nav a.active{
+    box-shadow:0 7px 18px rgba(6,27,143,.10)!important;
+  }
+
+  /* Cabeçalhos iguais em todos os módulos operacionais. */
+  body.mf-ds-employee-cardapio .mfc-head,
+  body.mf-ds-employee-pedidos .top,
+  body.mf-ds-employee-reservas .page-title-row,
+  body.mf-ds-employee-dashboard .mf-home-welcome{
+    width:100%!important;
+    min-height:58px!important;
+    margin:0 0 12px!important;
+    padding:13px 14px!important;
+    display:flex!important;
+    align-items:center!important;
+    gap:10px!important;
+    background:#fff!important;
+    border:1px solid var(--mf-app-line)!important;
+    border-radius:18px!important;
+    box-shadow:0 8px 22px rgba(15,35,90,.045)!important;
+  }
+  body.mf-ds-employee-cardapio .mfc-title-row,
+  body.mf-ds-employee-pedidos .hello h1,
+  body.mf-ds-employee-reservas .page-title-row{
+    display:flex!important;
+    align-items:center!important;
+    gap:10px!important;
+  }
+  body.mf-ds-employee-cardapio .mfc-title-row i,
+  body.mf-ds-employee-pedidos .hello h1>i,
+  body.mf-ds-employee-reservas .page-title-row>i{
+    width:32px!important;height:32px!important;min-width:32px!important;
+    display:grid!important;place-items:center!important;
+    border-radius:11px!important;background:var(--mf-app-blue-soft)!important;
+    color:var(--mf-app-blue)!important;font-size:14px!important;
+  }
+  body.mf-ds-employee-cardapio .mfc-head h1,
+  body.mf-ds-employee-pedidos .hello h1,
+  body.mf-ds-employee-reservas .page-title,
+  body.mf-ds-employee-dashboard .mf-home-welcome h1{
+    margin:0!important;color:var(--mf-app-ink)!important;
+    font-size:20px!important;line-height:1.1!important;
+    letter-spacing:-.4px!important;font-weight:950!important;
+  }
+  body.mf-ds-employee-dashboard .mf-home-welcome{display:block!important}
+  body.mf-ds-employee-dashboard .mf-home-welcome p{margin:4px 0 0!important;font-size:11px!important}
+
+  body.mf-ds-employee .card,
+  body.mf-ds-employee .mfc-toolbar,
+  body.mf-ds-employee .mfc-summary-card,
+  body.mf-ds-employee .product-order,
+  body.mf-ds-employee .products-head,
+  body.mf-ds-employee .section-card{
+    border-radius:18px!important;
+    border-color:var(--mf-app-line)!important;
+    box-shadow:0 8px 22px rgba(15,35,90,.045)!important;
+  }
+}
+@media(max-width:360px){
+  .mf-employee-bottom-nav a{font-size:7.2px!important;letter-spacing:-.25px!important}
+  .mf-employee-bottom-nav a i{font-size:14px!important}
+}
+
+/* Agenda do funcionário: configuração de horários e cabeçalho do dia */
+@media(max-width:900px){
+  #setupCard{padding:12px!important;overflow:hidden!important}
+  #setupCard .card-head{
+    min-height:52px!important;margin:0!important;padding:0!important;
+    display:grid!important;grid-template-columns:36px minmax(0,1fr) 36px!important;
+    align-items:center!important;gap:10px!important;
+  }
+  #setupCard .square{width:36px!important;height:36px!important;min-width:36px!important;border-radius:12px!important;background:#eef3ff!important}
+  #setupCard .card-head h2{font-size:18px!important;line-height:1.15!important;color:#102033!important}
+  #setupCard .collapse-btn{width:36px!important;height:36px!important;min-width:36px!important;margin:0!important;border-radius:12px!important}
+  #setupCard.collapsed .card-head{min-height:52px!important}
+  #setupCard:not(.collapsed) .card-body{display:block!important;border-top:1px solid #e7edf5!important;margin-top:10px!important;padding-top:12px!important}
+  #setupCard .card-body .row{display:grid!important;grid-template-columns:1fr 1fr!important;gap:9px!important;align-items:end!important}
+  #setupCard .card-body .field{min-width:0!important;width:100%!important}
+  #setupCard .card-body .field[style]{min-width:0!important}
+  #setupCard .card-body .btn{width:100%!important;min-width:0!important}
+  #setupCard #previewHorarios{grid-column:1/-1!important}
+
+  #agendaDia{padding:12px!important;overflow:hidden!important}
+  #agendaDia .card-head{
+    display:grid!important;
+    grid-template-columns:32px minmax(0,1fr) 36px!important;
+    grid-template-areas:"icon title toggle" "date date print"!important;
+    align-items:center!important;gap:8px!important;margin:0!important;
+  }
+  #agendaDia .card-head .square{grid-area:icon!important;width:32px!important;height:32px!important;min-width:32px!important;border-radius:11px!important;background:#eef3ff!important}
+  #agendaDia .card-head .square:before{content:"\f073";font-family:"Font Awesome 6 Free";font-weight:900;color:#061b8f;font-size:13px}
+  #agendaDia .card-head h2{grid-area:title!important;font-size:17px!important;color:#102033!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+  #agendaDia .collapse-btn{grid-area:toggle!important;width:36px!important;height:36px!important;min-width:36px!important}
+  #agendaDia #formDataAgenda{grid-area:date!important;width:100%!important;max-width:none!important;margin:0!important}
+  #agendaDia #dataAgendaDia{width:100%!important;max-width:none!important;height:38px!important;min-height:38px!important;font-size:13px!important}
+  #agendaDia .imprimir-dia-btn{grid-area:print!important;width:100%!important;min-width:92px!important;max-width:none!important;height:38px!important;min-height:38px!important;margin:0!important;font-size:11px!important;padding:0 9px!important}
+  #agendaDia:not(.collapsed) .card-body{display:block!important;margin-top:10px!important;padding-top:10px!important;border-top:1px solid #e7edf5!important}
+}
+@media(max-width:430px){
+  #setupCard .card-body .row{grid-template-columns:1fr!important}
+}
+
+/* Ajuste definitivo: nomes completos na navegação inferior. */
+@media(max-width:900px){
+  .mf-employee-bottom-nav a{font-size:9px!important;padding:4px 2px!important;letter-spacing:-.08px!important}
+  .mf-employee-bottom-nav a i{font-size:14px!important}
+  .mf-employee-bottom-nav a.active{flex:1 1 0!important;width:auto!important;max-width:none!important}
+  .mf-employee-bottom-nav a span{display:block!important;overflow:visible!important;text-overflow:clip!important;white-space:nowrap!important}
+  body.mf-ds-employee-reservas #setupCard .card-head{cursor:pointer}
+  body.mf-ds-employee-reservas #setupCard .card-body{padding-left:0!important;padding-right:0!important}
+  body.mf-ds-employee-reservas #setupCard .preview{display:flex!important;flex-wrap:wrap!important;gap:7px!important;margin-top:8px!important}
+  body.mf-ds-employee-reservas #setupCard .preview-chip{min-height:34px!important;padding:7px 10px!important;border-radius:10px!important;font-size:11px!important}
+  body.mf-ds-employee-reservas #profTabsAgenda{display:flex!important;gap:7px!important;overflow-x:auto!important;padding-bottom:4px!important;scrollbar-width:thin}
+  body.mf-ds-employee-reservas #profTabsAgenda .prof-tab{flex:0 0 auto!important;max-width:190px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+}
+@media(max-width:360px){
+  .mf-employee-bottom-nav a{font-size:8.5px!important;letter-spacing:-.18px!important}
+  .mf-employee-bottom-nav a i{font-size:13.5px!important}
+}

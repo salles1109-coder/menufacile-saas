@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+{% block body_attrs %} class="mf-ds-admin mf-ds-employee mf-ds-employee-produtos"{% endblock %}
+{% block title %}Produtos - {{ empresa.nome }}{% endblock %}
+{% block head %}
+<style>
+:root{--blue:#061b8f;--ink:#102033;--muted:#667085;--line:#dbe6f3;--bg:#eef4fb;--green:#075333;--orange:#f97316;--red:#d92d20}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,Arial,sans-serif;color:var(--ink)}a{text-decoration:none;color:inherit}button,input,select{font:inherit}
+.products-page{max-width:1180px;margin:0 auto;padding:22px}.products-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:14px}.products-head h1{margin:0;color:var(--blue);font-size:30px;letter-spacing:-.7px}.products-head p{margin:5px 0 0;color:var(--muted);font-weight:750}.products-date{display:flex;align-items:end;gap:8px}.products-date label{display:block;margin-bottom:5px;color:var(--muted);font-size:11px;font-weight:900}.products-date input{height:42px;border:1px solid var(--line);border-radius:13px;padding:0 11px;background:#fff}.products-date button{height:42px;border:0;border-radius:13px;padding:0 15px;background:var(--blue);color:#fff;font-weight:900;min-width:72px}
+.products-toolbar{display:flex;gap:8px;overflow-x:auto;flex-wrap:wrap;padding:3px 0 12px}.products-filter{min-height:40px;border:1px solid var(--line);border-radius:999px;background:#fff;color:#667085;padding:0 13px;font-size:12px;font-weight:900;white-space:nowrap}.products-filter.active{background:var(--blue);border-color:var(--blue);color:#fff}.products-search{margin-left:auto;min-width:220px;height:40px;border:1px solid var(--line);border-radius:13px;padding:0 12px;background:#fff}
+.products-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.product-order{background:#fff;border:1px solid var(--line);border-radius:20px;padding:15px;box-shadow:0 12px 28px rgba(15,35,90,.055);position:relative;overflow:hidden}.product-order:before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:#98a2b3}.product-order[data-status="novo"]:before{background:#f59e0b}.product-order[data-status="pagamento confirmado"]:before,.product-order[data-status="recebido"]:before,.product-order[data-status="em separacao"]:before,.product-order[data-status="em preparo"]:before{background:var(--blue)}.product-order[data-status="enviado"]:before,.product-order[data-status="saiu para entrega"]:before,.product-order[data-status="pronto para retirada"]:before{background:#0ea5e9}.product-order[data-status="finalizado"]:before,.product-order[data-status="concluido"]:before{background:#16a34a}.product-order[data-status="cancelado"]:before{background:#ef4444}.product-order-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.product-order-number{font-size:20px;font-weight:950;color:var(--blue)}.product-order-client{margin-top:3px;font-size:14px;font-weight:900;text-transform:uppercase}.product-order-time{margin-top:3px;color:var(--muted);font-size:11px;font-weight:800}.product-order-total{text-align:right}.product-order-total small{display:block;color:var(--muted);font-size:10px;font-weight:800}.product-order-total strong{display:block;margin-top:3px;font-size:20px}.product-items{margin:12px 0;padding:10px;background:#f8fbff;border:1px solid #edf2f7;border-radius:14px;display:grid;gap:7px}.product-item{display:grid;grid-template-columns:1fr auto;gap:8px;font-size:12px;font-weight:800}.product-item strong{color:var(--blue)}.product-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}.product-meta div{background:#f8fbff;border:1px solid #edf2f7;border-radius:12px;padding:9px}.product-meta small{display:block;color:var(--muted);font-size:9px;font-weight:900;text-transform:uppercase}.product-meta strong{display:block;margin-top:3px;font-size:12px;overflow-wrap:anywhere}.product-status{width:100%;min-height:43px;border:1px solid var(--line);border-radius:13px;background:#fff;padding:0 10px;font-weight:900;color:var(--ink)}.product-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}.product-actions button,.product-actions a{min-height:41px;border-radius:12px;border:1px solid var(--line);background:#eef3ff;color:var(--blue);display:flex;align-items:center;justify-content:center;gap:7px;font-size:12px;font-weight:900}.product-actions .whats{background:#eaf8ef;color:var(--green);border-color:#cfe8d8}.products-empty{grid-column:1/-1;padding:32px;text-align:center;background:#fff;border:1px dashed #cbd5e1;border-radius:18px;color:var(--muted);font-weight:800}
+.product-modal{display:none;position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,.55);padding:16px;align-items:center;justify-content:center}.product-modal.show{display:flex}.product-modal-card{width:min(560px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:22px;padding:18px;position:relative}.product-modal-close{position:absolute;right:12px;top:12px;width:36px;height:36px;border:0;border-radius:50%;background:#f2f4f7;color:#667085}.product-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}.product-detail-box{background:#f8fbff;border:1px solid #edf2f7;border-radius:13px;padding:10px}.product-detail-box.full{grid-column:1/-1}.product-detail-box small{display:block;color:var(--muted);font-size:10px;font-weight:900}.product-detail-box strong{display:block;margin-top:4px;font-size:13px}.product-detail-items{margin-top:12px;display:grid;gap:8px}.product-detail-item{display:grid;grid-template-columns:1fr auto;gap:8px;border-bottom:1px solid #edf2f7;padding-bottom:8px}.product-detail-total{text-align:right;font-size:20px;font-weight:950;color:var(--blue);margin-top:10px}
+@media(max-width:900px){.products-page{padding:16px 12px 16px}.products-head{align-items:flex-start;padding:14px 12px 12px;margin:0 0 12px;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:18px}.products-title-row{display:flex;align-items:center;gap:8px;min-height:24px;padding-top:2px}.products-title-row i{width:22px;height:22px;display:grid;place-items:center;border-radius:999px;background:#eef3ff;color:var(--blue);font-size:11px;flex:0 0 auto}.products-head h1{font-size:17px;line-height:1.1}.products-date{width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end}.products-date label{font-size:10px}.products-date>div{flex:1}.products-date input{width:100%;font-size:16px;height:38px}.products-date button{padding:0 14px;height:38px}.products-toolbar{padding-bottom:10px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.products-filter{padding:0 8px;font-size:11px;min-width:0;height:38px}.products-search{grid-column:1/-1;min-width:0;width:100%;margin-left:0;font-size:16px;height:38px}.products-list{grid-template-columns:1fr;gap:9px}.product-order{padding:13px;border-radius:18px}.product-order-number{font-size:18px}.product-order-total strong{font-size:18px}.product-modal{align-items:flex-end;padding:9px}.product-modal-card{width:100%;max-width:100%;border-radius:22px 22px 14px 14px}.product-detail-grid{grid-template-columns:1fr}}
+</style>
+
+<style id="mf-produtos-mobile-espacamento-final">
+@media (max-width:900px){
+  body.mf-ds-employee-produtos .products-page{
+    padding:18px 12px 16px!important;
+  }
+  body.mf-ds-employee-produtos .products-head{
+    margin:0 0 12px!important;
+    padding:16px 14px 14px!important;
+    border-radius:18px!important;
+  }
+  body.mf-ds-employee-produtos .products-title-row{
+    min-height:28px!important;
+    margin:0 0 12px!important;
+    padding:0!important;
+    display:flex!important;
+    align-items:center!important;
+    gap:9px!important;
+  }
+  body.mf-ds-employee-produtos .products-title-row i{
+    width:24px!important;
+    height:24px!important;
+    min-width:24px!important;
+  }
+  body.mf-ds-employee-produtos .products-title-row h1{
+    margin:0!important;
+    font-size:17px!important;
+    line-height:1.1!important;
+  }
+}
+</style>
+{% endblock %}
+{% block page %}
+{% include "partials/funcionario_mobile_header.html" %}
+<main class="products-page">
+  <header class="products-head">
+    <div class="products-title-row"><i class="fa-solid fa-box" aria-hidden="true"></i><h1>Produtos</h1></div>
+    <form class="products-date" method="get">
+      <div><label>Data</label><input type="date" name="data" value="{{ data_selecionada }}"></div>
+      <button type="submit">Ver</button>
+    </form>
+  </header>
+
+  <div class="products-toolbar">
+    <button class="products-filter active" type="button" data-filter="todos">Todos</button>
+    <button class="products-filter" type="button" data-filter="novo">Novos</button>
+    <button class="products-filter" type="button" data-filter="andamento">Em andamento</button>
+    <button class="products-filter" type="button" data-filter="entrega">Entrega</button>
+    <button class="products-filter" type="button" data-filter="finalizado">Concluídos</button>
+    <button class="products-filter" type="button" data-filter="cancelado">Cancelados</button>
+    <input id="productsSearch" class="products-search" placeholder="Buscar cliente ou pedido">
+  </div>
+
+  <section class="products-list" id="productsList">
+    {% for grupo in pedidos_com_itens %}
+    {% set p = grupo.pedido %}
+    <article class="product-order" data-status="{{ p.status or 'novo' }}" data-payment="{{ (p.status_pagamento or 'nao_iniciado')|lower }}" data-phone="{{ p.telefone_cliente or '' }}" data-number="#{{ '%03d'|format(p.numero_dia or p.id) }}" data-client="{{ p.nome_cliente or 'Cliente' }}" data-type="{{ p.tipo_pedido or 'Pedido' }}" data-total="{{ p.total or 0 }}" data-company="{{ empresa.nome|e }}" data-search="{{ (p.nome_cliente or '')|lower }} {{ p.numero_dia or p.id }} {{ p.telefone_cliente or '' }}">
+      <div class="product-order-top">
+        <div><div class="product-order-number">#{{ '%03d'|format(p.numero_dia or p.id) }}</div><div class="product-order-client">{{ p.nome_cliente }}</div><div class="product-order-time">{{ p.criado_em.strftime('%H:%M') if p.criado_em else '' }} · {{ p.tipo_pedido or 'Pedido' }}</div></div>
+        <div class="product-order-total"><small>Total</small><strong>R$ {{ ('%.2f'|format(p.total or 0))|replace('.', ',') }}</strong></div>
+      </div>
+      <div class="product-items">
+        {% for item in grupo.itens %}<div class="product-item"><span><strong>{{ item.quantidade }}x</strong> {{ item.nome_item }}</span><b>R$ {{ ('%.2f'|format(item.subtotal or 0))|replace('.', ',') }}</b></div>{% endfor %}
+      </div>
+      <div class="product-meta">
+        <div><small>Pagamento</small><strong>{{ p.pagamento or 'Não informado' }}</strong></div>
+        <div><small>Recebimento</small><strong>{{ p.tipo_pedido or 'Não informado' }}</strong></div>
+      </div>
+      <select class="product-status" data-old="{{ p.status or 'novo' }}" onchange="atualizarProdutoStatus({{ p.id }},this)">
+        <option value="aguardando_pagamento" {% if p.status=='aguardando_pagamento' %}selected{% endif %}>Aguardando pagamento</option>
+        <option value="novo" {% if p.status=='novo' %}selected{% endif %}>Novo pedido</option>
+        <option value="pagamento confirmado" {% if p.status=='pagamento confirmado' %}selected{% endif %}>Pagamento confirmado</option>
+        <option value="recebido" {% if p.status=='recebido' %}selected{% endif %}>Recebido</option>
+        <option value="em separacao" {% if p.status=='em separacao' %}selected{% endif %}>Em separação</option>
+        <option value="em preparo" {% if p.status=='em preparo' %}selected{% endif %}>Em preparo</option>
+        <option value="pronto para retirada" {% if p.status=='pronto para retirada' %}selected{% endif %}>Pronto para retirada</option>
+        <option value="enviado" {% if p.status=='enviado' %}selected{% endif %}>Enviado</option>
+        <option value="saiu para entrega" {% if p.status=='saiu para entrega' %}selected{% endif %}>Saiu para entrega</option>
+        <option value="finalizado" {% if p.status in ['finalizado','concluido'] %}selected{% endif %}>Concluído</option>
+        <option value="cancelado" {% if p.status=='cancelado' %}selected{% endif %}>Cancelado</option>
+      </select>
+      <div class="product-actions">
+        <button type="button" onclick="abrirProdutoDetalhes({{ p.id }})"><i class="fa-regular fa-eye"></i> Detalhes</button>
+        <button class="whats" type="button" onclick="abrirWhatsAppProduto(this.closest('.product-order'))"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button>
+      </div>
+    </article>
+    {% else %}<div class="products-empty"><i class="fa-solid fa-box-open"></i><br><br>Nenhum pedido de produto nesta data.</div>{% endfor %}
+  </section>
+</main>
+{% include "partials/funcionario_mobile_nav.html" %}
+
+<div id="productModal" class="product-modal">
+  <div class="product-modal-card">
+    <button class="product-modal-close" type="button" onclick="fecharProdutoDetalhes()">×</button>
+    <h2 id="productModalTitle">Detalhes do pedido</h2>
+    <div id="productModalBody"></div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+let produtoFiltro='todos';
+function aplicarProdutoFiltros(){
+  const busca=(document.getElementById('productsSearch')?.value||'').toLowerCase().trim();
+  document.querySelectorAll('.product-order').forEach(card=>{
+    const grupos={andamento:['pagamento confirmado','recebido','em separacao','em preparo'],entrega:['pronto para retirada','enviado','saiu para entrega'],finalizado:['finalizado','concluido']};
+    const statusOk=produtoFiltro==='todos'||card.dataset.status===produtoFiltro||(grupos[produtoFiltro]||[]).includes(card.dataset.status);
+    const buscaOk=!busca||(card.dataset.search||'').includes(busca)||card.textContent.toLowerCase().includes(busca);
+    card.style.display=statusOk&&buscaOk?'block':'none';
+  });
+}
+document.querySelectorAll('.products-filter').forEach(btn=>btn.addEventListener('click',()=>{
+  produtoFiltro=btn.dataset.filter;
+  document.querySelectorAll('.products-filter').forEach(x=>x.classList.toggle('active',x===btn));
+  aplicarProdutoFiltros();
+}));
+document.getElementById('productsSearch')?.addEventListener('input',aplicarProdutoFiltros);
+
+async function atualizarProdutoStatus(id,select){
+  const anterior=select.dataset.old||select.value;
+  select.disabled=true;
+  try{
+    const r=await fetch('/pedidos/'+id+'/status',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:select.value})});
+    const data=await r.json();
+    if(!r.ok||data.error) throw new Error(data.error||'Não foi possível atualizar.');
+    const card=select.closest('.product-order');
+    card.dataset.status=select.value;
+    select.dataset.old=select.value;
+    aplicarProdutoFiltros();
+    abrirWhatsAppProduto(card);
+  }catch(e){if(window.mfAlert){await mfAlert(e.message,{title:'Não foi possível atualizar',type:'error'});}else{mfAlert(e.message);}select.value=anterior}finally{select.disabled=false}
+}
+
+function normalizarStatusMensagemProduto(valor){
+  return String(valor||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+}
+function mensagemWhatsAppProduto(card){
+  const numero=card?.dataset.number||'';
+  const nomeCompleto=card?.dataset.client||'Cliente';
+  const nome=nomeCompleto.split(/\s+/)[0]||'Cliente';
+  const status=normalizarStatusMensagemProduto(card?.dataset.status||'novo');
+  const pagamento=normalizarStatusMensagemProduto(card?.dataset.payment||'nao iniciado');
+  const tipo=String(card?.dataset.type||'');
+  const empresa={{ empresa.nome|tojson }};
+  const mensagens={
+    'aguardando pagamento':'Olá, '+nome+'! 👋\n\nRecebemos o seu pedido '+numero+' na '+empresa+'.\n\n⏳ Estamos aguardando a confirmação do pagamento para prosseguir com o pedido.\n\nVocê pode acessar “Meus pedidos” no menu para continuar o pagamento.',
+    'novo':'Olá, '+nome+'! 👋\n\nSeu pedido '+numero+' foi recebido pela '+empresa+'.\n\n✅ O pedido já está em nossa central e será analisado em breve.',
+    'pagamento confirmado':'Olá, '+nome+'! ✅\n\nO pagamento do pedido '+numero+' foi confirmado com sucesso.\n\nSeu pedido já pode seguir para preparação/separação.',
+    'em separacao':'Olá, '+nome+'! 📦\n\nSeu pedido '+numero+' está em separação/preparação.\n\nNossa equipe já está cuidando de tudo com atenção.',
+    'enviado':'Olá, '+nome+'! 🚚\n\nSeu pedido '+numero+' saiu para entrega e está a caminho.\n\nAcompanhe o recebimento no endereço informado.',
+    'pronto para retirada':'Olá, '+nome+'! 🛍️\n\nSeu pedido '+numero+' está pronto para retirada na '+empresa+'.\n\nVocê já pode comparecer ao estabelecimento para retirá-lo.',
+    'finalizado':'Olá, '+nome+'! 🎉\n\nO pedido '+numero+' foi concluído com sucesso.\n\nAgradecemos pela preferência e esperamos atender você novamente!',
+    'cancelado':'Olá, '+nome+'. ❌\n\nO pedido '+numero+' foi cancelado.\n\nCaso precise de esclarecimentos, entre em contato com a '+empresa+'.'
+  };
+  if(status==='cancelado' && pagamento==='expirado'){
+    return 'Olá, '+nome+'. ⏰\n\nO prazo para pagamento do pedido '+numero+' expirou e o pedido foi cancelado automaticamente.\n\nCaso ainda queira os produtos, faça um novo pedido pelo menu da '+empresa+'.';
+  }
+  if(status==='cancelado' && pagamento==='cancelado'){
+    return 'Olá, '+nome+'. ❌\n\nO pedido '+numero+' e o pagamento pendente foram cancelados.\n\nCaso tenha alguma dúvida, entre em contato com a '+empresa+'.';
+  }
+  if(status==='enviado' && tipo.toLowerCase().includes('retirada')) return mensagens['pronto para retirada'];
+  return mensagens[status]||('Olá, '+nome+'! Temos uma nova atualização sobre o pedido '+numero+'.');
+}
+async function abrirWhatsAppProduto(card){
+  const phone=String(card?.dataset.phone||'').replace(/\D/g,'');
+  if(!phone){
+    if(window.mfAlert){await mfAlert('Telefone não informado para este cliente.',{title:'WhatsApp indisponível',type:'warning'});}else{mfAlert('Telefone não informado para este cliente.');}
+    return;
+  }
+  const mensagem=mensagemWhatsAppProduto(card);
+  window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(mensagem),'_blank','noopener');
+}
+function esc(v){return String(v??'').replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]))}
+async function abrirProdutoDetalhes(id){
+  const modal=document.getElementById('productModal');
+  const body=document.getElementById('productModalBody');
+  modal.classList.add('show');body.innerHTML='<p>Carregando...</p>';
+  try{
+    const r=await fetch('/funcionario/{{ empresa.id }}/produtos/'+id);
+    const d=await r.json();
+    if(!r.ok||d.error) throw new Error(d.error||'Erro ao carregar.');
+    document.getElementById('productModalTitle').textContent='Pedido '+d.numero;
+    const endereco=[d.endereco,d.cidade,d.estado,d.cep].filter(Boolean).join(' · ')||'Retirada na loja';
+    const itens=(d.itens||[]).map(i=>'<div class="product-detail-item"><strong>'+esc(i.quantidade)+'x '+esc(i.nome)+'</strong><b>R$ '+Number(i.subtotal||0).toLocaleString('pt-BR',{minimumFractionDigits:2})+'</b></div>').join('');
+    body.innerHTML='<div class="product-detail-grid"><div class="product-detail-box"><small>Cliente</small><strong>'+esc(d.cliente)+'</strong></div><div class="product-detail-box"><small>Telefone</small><strong>'+esc(d.telefone)+'</strong></div><div class="product-detail-box"><small>Recebimento</small><strong>'+esc(d.tipo_pedido)+'</strong></div><div class="product-detail-box"><small>Pagamento</small><strong>'+esc(d.pagamento||'Não informado')+'</strong></div><div class="product-detail-box full"><small>Endereço</small><strong>'+esc(endereco)+'</strong></div><div class="product-detail-box full"><small>Observação</small><strong>'+esc(d.observacao||'Nenhuma observação.')+'</strong></div></div><div class="product-detail-items">'+itens+'<div class="product-detail-total">Total: R$ '+Number(d.total||0).toLocaleString('pt-BR',{minimumFractionDigits:2})+'</div></div>';
+  }catch(e){body.innerHTML='<p>'+esc(e.message)+'</p>'}
+}
+function fecharProdutoDetalhes(){document.getElementById('productModal').classList.remove('show')}
+document.getElementById('productModal')?.addEventListener('click',e=>{if(e.target.id==='productModal')fecharProdutoDetalhes()});
+</script>
+{% endblock %}

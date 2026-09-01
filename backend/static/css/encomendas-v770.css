@@ -1,0 +1,249 @@
+/* MenuFacile v770 — refinamento visual do modal de produto de Encomendas.
+   Escopo propositalmente restrito: somente o modal de escolha do produto. */
+
+/* Caixa principal mais leve */
+.mf-encomendas-v761 .enc-product-modal{
+  width:min(760px,calc(100vw - 34px))!important;
+  grid-template-columns:31% 69%!important;
+  border-radius:24px!important;
+  background:#fff!important;
+  border:1px solid rgba(62,49,40,.07)!important;
+  box-shadow:0 30px 90px rgba(31,24,19,.20)!important;
+}
+.mf-encomendas-v761 .enc-modal-photo{
+  background-color:#f5f1ed!important;
+}
+.mf-encomendas-v761 .enc-modal-content{
+  padding:24px 26px 0!important;
+  scrollbar-width:thin;
+  scrollbar-color:#d7d0ca transparent;
+}
+.mf-encomendas-v761 .enc-modal-content::-webkit-scrollbar{width:6px}
+.mf-encomendas-v761 .enc-modal-content::-webkit-scrollbar-thumb{background:#d7d0ca;border-radius:999px}
+.mf-encomendas-v761 .enc-modal-content h2{
+  margin:0 44px 5px 0!important;
+  font-size:22px!important;
+  line-height:1.15!important;
+  font-weight:500!important;
+  letter-spacing:-.02em!important;
+}
+.mf-encomendas-v761 .enc-modal-content>p{
+  margin:0 44px 17px 0!important;
+  color:#8a817b!important;
+  font-size:10px!important;
+  line-height:1.45!important;
+}
+
+/* Seções com menos cara de formulário */
+.mf-encomendas-v761 .enc-choice-group{
+  padding:14px 0!important;
+  border-top:1px solid #f0ece8!important;
+}
+.mf-encomendas-v761 .enc-choice-head{
+  margin-bottom:9px!important;
+}
+.mf-encomendas-v761 .enc-choice-head strong{
+  color:#342f2b!important;
+  font-size:10.5px!important;
+  font-weight:850!important;
+}
+.mf-encomendas-v761 .enc-choice-head span{
+  color:#a0958d!important;
+  font-size:8px!important;
+  font-weight:750!important;
+}
+
+/* Quantidade/tamanho: linha fina, sem radios grandes */
+.mf-encomendas-v761 #encModalOptions.enc-radio-list{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:7px!important;
+}
+.mf-encomendas-v761 .enc-radio{
+  position:relative!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:12px!important;
+  min-height:48px!important;
+  padding:8px 13px 8px 44px!important;
+  border:1px solid #e7e1dc!important;
+  border-radius:14px!important;
+  background:#fff!important;
+  color:#4f4843!important;
+  font-size:10px!important;
+  font-weight:760!important;
+  box-shadow:none!important;
+  cursor:pointer!important;
+  transition:border-color .16s ease,background .16s ease,box-shadow .16s ease,transform .16s ease!important;
+}
+.mf-encomendas-v761 .enc-radio:hover{
+  border-color:#d8cec7!important;
+  background:#fdfcfb!important;
+}
+.mf-encomendas-v761 .enc-radio>span{
+  display:block!important;
+  min-width:0!important;
+}
+.mf-encomendas-v761 .enc-radio b{
+  display:block!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  color:#4b443f!important;
+  font-size:10px!important;
+  line-height:1.25!important;
+  font-weight:800!important;
+}
+.mf-encomendas-v761 .enc-radio>strong{
+  flex:0 0 auto!important;
+  color:#4b443f!important;
+  font-size:10px!important;
+  line-height:1!important;
+  font-weight:900!important;
+}
+.mf-encomendas-v761 .enc-radio input[type="radio"]{
+  position:absolute!important;
+  width:1px!important;
+  height:1px!important;
+  min-width:1px!important;
+  opacity:0!important;
+  pointer-events:none!important;
+  appearance:none!important;
+  -webkit-appearance:none!important;
+}
+.mf-encomendas-v761 .enc-radio::before{
+  content:"";
+  position:absolute;
+  left:14px;
+  top:50%;
+  width:19px;
+  height:19px;
+  transform:translateY(-50%);
+  display:grid;
+  place-items:center;
+  box-sizing:border-box;
+  border:1.5px solid #d2c8c0;
+  border-radius:7px;
+  background:#fff;
+  color:#fff;
+  font-size:11px;
+  font-weight:950;
+  line-height:1;
+  transition:.16s ease;
+}
+.mf-encomendas-v761 .enc-radio:has(input:checked){
+  border-color:rgba(var(--enc-brand-rgb,18,54,181),.34)!important;
+  background:rgba(var(--enc-brand-rgb,18,54,181),.035)!important;
+  box-shadow:0 0 0 2px rgba(var(--enc-brand-rgb,18,54,181),.025)!important;
+}
+.mf-encomendas-v761 .enc-radio:has(input:checked)::before{
+  content:"✓";
+  border-color:var(--enc-brand,#1236B5)!important;
+  background:var(--enc-brand,#1236B5)!important;
+  color:var(--enc-brand-on,#fff)!important;
+}
+
+/* Sabores/recheios: chips compactos em duas colunas */
+.mf-encomendas-v761 #encModalFillings.enc-radio-list{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:7px!important;
+}
+.mf-encomendas-v761 #encModalFillings .enc-radio{
+  min-height:42px!important;
+  padding:7px 10px 7px 39px!important;
+  border-radius:12px!important;
+}
+.mf-encomendas-v761 #encModalFillings .enc-radio::before{
+  left:11px!important;
+  width:17px!important;
+  height:17px!important;
+  border-radius:6px!important;
+  font-size:10px!important;
+}
+.mf-encomendas-v761 #encModalFillings .enc-radio b{
+  font-size:9.5px!important;
+  white-space:normal!important;
+}
+
+/* Data, horário e personalização */
+.mf-encomendas-v761 .enc-date-grid{
+  gap:8px!important;
+}
+.mf-encomendas-v761 .enc-public-control{
+  height:44px!important;
+  border:1px solid #e4ddd8!important;
+  border-radius:12px!important;
+  background:#fff!important;
+  padding-left:12px!important;
+  padding-right:12px!important;
+  color:#4c4540!important;
+  font-size:9.7px!important;
+  box-shadow:none!important;
+}
+.mf-encomendas-v761 .enc-public-control:focus{
+  border-color:rgba(var(--enc-brand-rgb,18,54,181),.40)!important;
+  box-shadow:0 0 0 3px rgba(var(--enc-brand-rgb,18,54,181),.055)!important;
+}
+
+/* Rodapé do modal mais limpo */
+.mf-encomendas-v761 .enc-modal-total{
+  margin:13px -26px 0!important;
+  padding:13px 26px 15px!important;
+  border-top:1px solid #f0ece8!important;
+  background:rgba(255,255,255,.985)!important;
+  box-shadow:0 -8px 22px rgba(54,44,37,.035)!important;
+}
+.mf-encomendas-v761 .enc-add-cart{
+  min-height:44px!important;
+  border-radius:13px!important;
+  box-shadow:none!important;
+}
+
+@media(max-width:768px){
+  .mf-encomendas-v761 .enc-product-modal{
+    width:100%!important;
+    max-height:94dvh!important;
+    border-radius:22px 22px 0 0!important;
+  }
+  .mf-encomendas-v761 .enc-modal-photo{
+    height:112px!important;
+    min-height:112px!important;
+  }
+  .mf-encomendas-v761 .enc-modal-content{
+    max-height:calc(94dvh - 112px)!important;
+    padding:17px 16px 0!important;
+  }
+  .mf-encomendas-v761 .enc-modal-content h2{
+    margin-right:42px!important;
+    font-size:20px!important;
+  }
+  .mf-encomendas-v761 .enc-modal-content>p{
+    margin-right:36px!important;
+    margin-bottom:13px!important;
+    font-size:9.4px!important;
+  }
+  .mf-encomendas-v761 .enc-choice-group{padding:12px 0!important}
+  .mf-encomendas-v761 .enc-radio{
+    min-height:45px!important;
+    padding:7px 11px 7px 42px!important;
+    border-radius:13px!important;
+  }
+  .mf-encomendas-v761 .enc-radio::before{left:12px!important;width:18px!important;height:18px!important}
+  .mf-encomendas-v761 #encModalFillings.enc-radio-list{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+  .mf-encomendas-v761 #encModalFillings .enc-radio{
+    min-height:40px!important;
+    padding:6px 8px 6px 36px!important;
+  }
+  .mf-encomendas-v761 #encModalFillings .enc-radio::before{left:10px!important}
+  .mf-encomendas-v761 .enc-modal-total{
+    margin:11px -16px 0!important;
+    padding:11px 16px calc(12px + env(safe-area-inset-bottom,0px))!important;
+  }
+}
+
+@media(max-width:390px){
+  .mf-encomendas-v761 #encModalFillings.enc-radio-list{grid-template-columns:1fr!important}
+}

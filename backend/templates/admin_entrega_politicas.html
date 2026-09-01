@@ -1,0 +1,1085 @@
+{% extends "base.html" %}
+{% block title %}{{ t("entrega_politicas", empresa.idioma) }} - {{ empresa.nome }}{% endblock %}
+{% block body_attrs %} class="mf-ds-admin mf-ds-entrega-politicas"{% endblock %}
+{% set _delivery_business = negocio_entrega if negocio_entrega is defined else (negocio_pedido if negocio_pedido is defined else (negocio_produto if negocio_produto is defined else true)) %}
+{% block head %}
+<style id="mf-delivery-policies-admin-css">
+:root{--mf-blue:#1237c9;--mf-dark:#0f172a;--mf-muted:#667085;--mf-border:#dbe6f3;--mf-bg:#f5f7fb;--mf-green:#0d8f58}
+body{background:var(--mf-bg)}
+.delivery-layout{display:grid;grid-template-columns:260px minmax(0,1fr);min-height:100vh;background:var(--mf-bg)}
+.delivery-main{min-width:0}
+.delivery-topbar{min-height:74px;padding:14px 28px;display:flex;align-items:center;justify-content:space-between;gap:18px;background:rgba(255,255,255,.95);border-bottom:1px solid var(--mf-border);position:sticky;top:0;z-index:20}
+.delivery-topbar strong{display:block;color:#061b8f;font-size:20px}.delivery-topbar span{display:block;margin-top:3px;color:var(--mf-muted);font-size:12px;font-weight:700}
+.delivery-preview-link{min-height:40px;padding:0 14px;display:inline-flex;align-items:center;gap:8px;border:1px solid #cbd5e1;border-radius:12px;color:#1237c9;background:#fff;font-size:12px;font-weight:900;text-decoration:none}
+.delivery-content{width:100%;max-width:none;margin:0;padding:var(--mf-admin-content-y,28px) var(--mf-admin-page-x,32px) 56px}
+.delivery-alert{margin-bottom:18px;padding:14px 16px;border-radius:15px;font-size:13px;font-weight:850}.delivery-alert.ok{color:#0d5b3a;background:#eaf8ef;border:1px solid #cfe8d8}.delivery-alert.error{color:#b42318;background:#fff1f0;border:1px solid #fecaca}
+.delivery-tabs{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px;padding:0;background:transparent;border-radius:0;width:auto;max-width:100%}
+.delivery-tabs button{min-height:42px;padding:0 16px;display:inline-flex;align-items:center;gap:8px;border:1px solid #d7e0ec;border-radius:16px;background:#fff;color:#475467;font-weight:900;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.delivery-tabs button i{font-size:13px;color:#667085}
+.delivery-tabs button:hover{border-color:#c8d3e2;color:#1237c9}
+.delivery-tabs button:hover i{color:#1237c9}
+.delivery-tabs button.active{background:#eef5ef;color:#185f4b;border-color:#c8dacc;box-shadow:inset 0 -2px 0 #2f7f68}
+.delivery-tabs button.active i{color:#185f4b}
+.delivery-panel{display:none}.delivery-panel.active{display:block}
+.delivery-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;align-items:start}.delivery-stack{display:grid;gap:18px}
+.delivery-card{overflow:hidden;background:#fff;border:1px solid var(--mf-border);border-radius:20px;box-shadow:0 14px 34px rgba(15,35,90,.05)}
+.delivery-card-head{padding:19px 21px 14px;border-bottom:1px solid #edf2f7}.delivery-card-head h2{margin:0;color:#061b8f;font-size:18px}.delivery-card-head p{margin:6px 0 0;color:var(--mf-muted);font-size:12px;font-weight:680;line-height:1.5}
+.delivery-card-body{padding:20px 21px}.delivery-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.delivery-field{display:grid;gap:7px}.delivery-field.full{grid-column:1/-1}.delivery-field label{color:#344054;font-size:12px;font-weight:900}.delivery-field input,.delivery-field textarea,.delivery-field select{width:100%;padding:12px 13px;border:1px solid #d0d5dd;border-radius:13px;background:#fff;color:#102033;font:inherit;outline:none}.delivery-field textarea{min-height:104px;resize:vertical;line-height:1.5}.delivery-field input:focus,.delivery-field textarea:focus{border-color:#315ce8;box-shadow:0 0 0 3px rgba(49,92,232,.10)}.delivery-hint{color:#667085;font-size:11px;line-height:1.4}
+.delivery-switch-row{min-height:66px;padding:13px 0;display:flex;align-items:center;justify-content:space-between;gap:16px;border-bottom:1px solid #edf2f7}.delivery-switch-row:last-child{border-bottom:0}.delivery-switch-row strong{display:block;color:#1f2937}.delivery-switch-row span{display:block;margin-top:4px;color:#667085;font-size:11px;font-weight:650}.delivery-switch{position:relative;width:50px;height:28px;flex:none}.delivery-switch input{position:absolute;opacity:0}.delivery-slider{position:absolute;inset:0;border-radius:999px;background:#cbd5e1;cursor:pointer;transition:.2s}.delivery-slider:before{content:"";position:absolute;width:22px;height:22px;left:3px;top:3px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 2px 5px rgba(0,0,0,.18)}.delivery-switch input:checked+.delivery-slider{background:#1237c9}.delivery-switch input:checked+.delivery-slider:before{transform:translateX(22px)}
+
+.policy-list{display:grid;gap:16px}.policy-card{background:#fff;border:1px solid var(--mf-border);border-radius:20px;overflow:hidden;box-shadow:0 14px 34px rgba(15,35,90,.05)}.policy-header{padding:17px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;border-bottom:1px solid #edf2f7}.policy-header h2{margin:0;color:#061b8f;font-size:17px}.policy-header p{margin:5px 0 0;color:#667085;font-size:11px;font-weight:650}.policy-body{padding:19px 20px}.policy-language-tabs{display:flex;gap:7px;margin-bottom:12px}.policy-language-tabs button{height:34px;min-width:46px;padding:0 11px;border:1px solid #dbe3ef;border-radius:10px;background:#fff;color:#53627a;font-size:11px;font-weight:900}.policy-language-tabs button.active{color:#fff;background:#1237c9;border-color:#1237c9}.policy-language-panel{display:none}.policy-language-panel.active{display:block}.policy-language-panel textarea{width:100%;min-height:190px;padding:14px;border:1px solid #d0d5dd;border-radius:14px;resize:vertical;font:inherit;font-size:13px;line-height:1.55;color:#1f2937}.policy-tools{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px}.policy-tools small{color:#667085;font-size:10px}.policy-reset{min-height:36px;padding:0 12px;border:1px solid #cbd5e1;border-radius:10px;background:#fff;color:#1237c9;font-size:11px;font-weight:900}
+.delivery-actions{position:sticky;bottom:0;z-index:15;margin-top:20px;padding:14px 0 calc(14px + env(safe-area-inset-bottom));display:flex;justify-content:flex-end;background:linear-gradient(to top,var(--mf-bg) 72%,rgba(245,247,251,0))}.delivery-save{min-height:48px;padding:0 21px;display:inline-flex;align-items:center;gap:9px;border:0;border-radius:14px;background:#061b8f;color:#fff;font-weight:950;box-shadow:0 12px 24px rgba(6,27,143,.18)}
+@media(max-width:1100px){.delivery-layout{grid-template-columns:1fr}.delivery-grid{grid-template-columns:1fr}.delivery-content{padding:var(--mf-admin-content-y,24px) var(--mf-admin-page-x,22px) 56px}}
+@media(max-width:700px){.delivery-topbar{position:relative;padding:13px 15px}.delivery-preview-link span{display:none}.delivery-content{padding:var(--mf-admin-content-y,18px) var(--mf-admin-page-x,16px) 44px}.delivery-tabs{width:100%;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}.delivery-tabs::-webkit-scrollbar{display:none}.delivery-tabs button{flex:0 0 auto;padding:0 14px;font-size:12px;white-space:nowrap}.delivery-form-grid{grid-template-columns:1fr}.delivery-field.full{grid-column:auto}.policy-header{align-items:flex-start}.policy-tools{align-items:flex-start;flex-direction:column}.delivery-actions{justify-content:stretch}.delivery-save{width:100%;justify-content:center}}
+
+.delivery-card-head-row{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.delivery-add-range{min-height:40px;padding:0 14px;display:inline-flex;align-items:center;gap:8px;border:1px solid #b9c8ea;border-radius:11px;background:#f6f8ff;color:#1237c9;font-size:11px;font-weight:950;white-space:nowrap}
+.delivery-range-list{display:grid;gap:12px}
+.delivery-range-row{position:relative;display:grid;grid-template-columns:34px minmax(0,1fr) 38px;gap:12px;align-items:start;padding:15px;border:1px solid #dce4f0;border-radius:16px;background:#fbfcff}
+.delivery-range-index{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:9px;background:#eaf0ff;color:#1237c9;font-size:12px;font-weight:950}
+.delivery-range-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.delivery-remove-range{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border:1px solid #fecaca;border-radius:10px;background:#fff5f5;color:#b42318}
+.delivery-empty-ranges{padding:18px;text-align:center;border:1px dashed #cbd5e1;border-radius:14px;color:#667085;font-size:12px;background:#fafcff}
+.delivery-distance-config{margin-top:17px;padding-top:17px;border-top:1px solid #edf2f7}
+.delivery-distance-note{margin-bottom:15px;padding:12px 13px;display:flex;align-items:flex-start;gap:10px;border:1px solid #cfe0ff;border-radius:13px;background:#f2f6ff;color:#344054;font-size:11px;line-height:1.45}
+.delivery-distance-note i{margin-top:2px;color:#1237c9}
+
+.delivery-not-product .delivery-card-body{display:flex;align-items:flex-start;gap:14px;padding:24px}
+.delivery-not-product i{width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex:none;border-radius:12px;background:#eaf0ff;color:#1237c9}
+.delivery-not-product h2{margin:0 0 6px;color:#061b8f;font-size:18px}.delivery-not-product p{margin:0;color:#667085;font-size:13px;line-height:1.55}
+.delivery-hidden{display:none!important}
+.delivery-field-invalid{border-color:#dc2626!important;box-shadow:0 0 0 3px rgba(220,38,38,.09)!important}
+@media(max-width:900px){.delivery-range-fields{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){.delivery-card-head-row{align-items:flex-start;flex-direction:column}.delivery-add-range{width:100%;justify-content:center}.delivery-range-row{grid-template-columns:28px minmax(0,1fr);padding:12px}.delivery-range-fields{grid-template-columns:1fr}.delivery-remove-range{position:absolute;top:10px;right:10px}.delivery-range-index{width:26px;height:26px}.delivery-not-product .delivery-card-body{padding:18px}}
+
+.delivery-model-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.delivery-model-option{position:relative;display:flex;align-items:flex-start;gap:12px;min-height:92px;padding:15px;border:1px solid #d8e1ee;border-radius:15px;background:#fff;cursor:pointer;transition:.18s}
+.delivery-model-option:hover{border-color:#9db2df;background:#f9fbff}
+.delivery-model-option input{position:absolute;opacity:0;pointer-events:none}
+.delivery-model-option>i{width:34px;height:34px;display:flex;align-items:center;justify-content:center;flex:none;border-radius:10px;background:#eef3ff;color:#1237c9}
+.delivery-model-option strong{display:block;color:#1f2937;font-size:13px}.delivery-model-option small{display:block;margin-top:5px;color:#667085;font-size:11px;line-height:1.4}
+.delivery-model-option:has(input:checked){border-color:#315ce8;background:#f3f6ff;box-shadow:0 0 0 3px rgba(49,92,232,.08)}
+.delivery-model-option:has(input:checked)>i{color:#fff;background:#1237c9}
+.delivery-location-note{margin-bottom:14px;padding:12px 13px;border:1px solid #cfe0ff;border-radius:13px;background:#f2f6ff;color:#344054;font-size:11px;line-height:1.5}
+
+.delivery-location-cep-picker{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+.delivery-location-cep-search{
+  min-width:108px;
+  min-height:44px;
+  padding:0 13px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  border:1px solid #b9c8ea;
+  border-radius:12px;
+  background:#f3f6ff;
+  color:#1237c9;
+  font-size:11px;
+  font-weight:950;
+  cursor:pointer;
+}
+.delivery-location-cep-search:hover{background:#eaf0ff}
+.delivery-location-cep-search:disabled{opacity:.65;cursor:wait}
+.delivery-location-cep-status{
+  display:block;
+  min-height:16px;
+  margin-top:5px;
+  color:#667085;
+  font-size:10px;
+  line-height:1.35;
+}
+.delivery-location-cep-status.is-ok{color:#067647}
+.delivery-location-cep-status.is-error{color:#d92d20}
+.delivery-location-cep-status.is-loading{color:#175cd3}
+@media(max-width:620px){
+  .delivery-location-cep-picker{grid-template-columns:1fr}
+  .delivery-location-cep-search{width:100%}
+}
+
+.delivery-city-picker{position:relative}
+.delivery-city-picker input{width:100%}
+.delivery-city-suggestions{
+  position:absolute;
+  left:0;
+  right:0;
+  top:calc(100% + 6px);
+  z-index:80;
+  display:none;
+  max-height:230px;
+  overflow:auto;
+  padding:6px;
+  background:#fff;
+  border:1px solid #d6deec;
+  border-radius:12px;
+  box-shadow:0 18px 45px rgba(15,23,42,.16);
+}
+.delivery-city-suggestions.is-open{display:block}
+.delivery-city-option{
+  width:100%;
+  min-height:38px;
+  padding:8px 10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  color:#1f2937;
+  background:transparent;
+  border:0;
+  border-radius:9px;
+  text-align:left;
+  font-size:12px;
+  font-weight:750;
+}
+.delivery-city-option:hover,
+.delivery-city-option:focus-visible{
+  background:#eef4ff;
+  color:#1237c9;
+  outline:none;
+}
+.delivery-city-option small{color:#667085;font-size:10px;font-weight:800}
+.delivery-city-status{
+  display:block;
+  min-height:16px;
+  margin-top:5px;
+  color:#667085;
+  font-size:10px;
+  line-height:1.35;
+}
+.delivery-city-status.is-ok{color:#067647}
+.delivery-city-status.is-error{color:#d92d20}
+.delivery-city-status.is-loading{color:#175cd3}
+.delivery-unit-input{display:grid;grid-template-columns:minmax(0,1fr) 145px;gap:9px}
+.delivery-unit-input input,.delivery-unit-input select{min-width:0}
+.delivery-section-note{margin-bottom:15px;padding:12px 13px;display:flex;align-items:flex-start;gap:10px;border:1px solid #dce7f7;border-radius:13px;background:#f8faff;color:#475467;font-size:11px;line-height:1.5}
+.delivery-section-note i{margin-top:2px;color:#1237c9}
+.delivery-card-compact .delivery-card-body{padding-top:17px}
+@media(max-width:700px){.delivery-model-options{grid-template-columns:1fr}.delivery-unit-input{grid-template-columns:1fr}}
+
+/* v822 — botões de navegação no padrão chips arredondados */
+/* v821 — entregadores como terceira aba de Entrega e políticas */
+.delivery-courier-v821{margin-top:0}.delivery-courier-intro-v820{padding:0 0 14px;color:#475467;font-size:12px;line-height:1.5}
+.delivery-courier-save-v820{min-height:44px;padding:0 16px;display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:12px;background:#061b8f;color:#fff;font-weight:900;cursor:pointer}
+.delivery-courier-list-v820{margin-top:18px;border:1px solid #dbe6f3;border-radius:15px;overflow:hidden;background:#fff}
+.delivery-courier-list-head-v820,.delivery-courier-row-v820{display:grid;grid-template-columns:1.2fr 1fr 1.4fr auto;gap:12px;align-items:center;padding:12px 14px;border-bottom:1px solid #edf2f7}
+.delivery-courier-list-head-v820{background:#f8fbff;color:#667085;font-size:10px;font-weight:950;text-transform:uppercase}
+.delivery-courier-row-v820:last-child{border-bottom:0}
+.delivery-courier-row-v820 strong{color:#102033;font-size:13px}.delivery-courier-row-v820 span{color:#667085;font-size:12px;font-weight:750}
+.delivery-courier-delete-v820{min-height:36px;padding:0 11px;border:1px solid #fecaca;border-radius:10px;background:#fff5f5;color:#b42318;font-weight:900;cursor:pointer}
+.delivery-courier-empty-v820{margin-top:16px;padding:14px;border:1px dashed #cbd5e1;border-radius:13px;background:#fafcff;color:#667085;font-size:12px;font-weight:750}
+@media(max-width:800px){.delivery-courier-list-head-v820{display:none}.delivery-courier-row-v820{grid-template-columns:1fr;gap:6px}.delivery-courier-delete-v820{width:100%;margin-top:4px}}
+
+/* MenuFacile — alinhamento final desta página com o restante do painel.
+   A geometria fica concentrada aqui, sem alterar os formulários ou regras de entrega. */
+@media(min-width:901px){
+  body.mf-ds-entrega-politicas{
+    --mf-admin-page-x:16px;
+    --mf-admin-content-y:20px;
+  }
+}
+body.mf-ds-entrega-politicas .delivery-content{
+  padding-top:var(--mf-admin-content-y)!important;
+  padding-right:var(--mf-admin-page-x)!important;
+  padding-left:var(--mf-admin-page-x)!important;
+}
+body.mf-ds-entrega-politicas .delivery-tabs{
+  margin-top:0!important;
+  margin-left:0!important;
+  margin-right:0!important;
+}
+body.mf-ds-entrega-politicas .delivery-panel,
+body.mf-ds-entrega-politicas .delivery-grid,
+body.mf-ds-entrega-politicas .delivery-stack{
+  width:100%!important;
+  max-width:none!important;
+  margin-left:0!important;
+  margin-right:0!important;
+}
+</style>
+{% endblock %}
+{% block page %}
+<div class="delivery-layout mf-admin-shell">
+  {% set active = 'entrega_politicas' %}
+  {% include "includes/admin_sidebar.html" %}
+
+  <main class="delivery-main">
+    <header class="delivery-topbar">
+      <div class="top-title">
+        <strong>{{ t("entrega_politicas", empresa.idioma) }}</strong>
+        <span>Frete, retirada e informações exibidas no menu público</span>
+      </div>
+      <a class="delivery-preview-link" href="/menu/{{ empresa.slug }}" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i><span>Visualizar no menu</span></a>
+    </header>
+
+    <div class="delivery-content mf-admin-standard-content">
+      {% if salvo %}<div class="delivery-alert ok"><i class="fa-solid fa-circle-check"></i> Configurações salvas com sucesso.</div>{% endif %}
+      {% if erro %}<div class="delivery-alert error"><i class="fa-solid fa-triangle-exclamation"></i> {{ erro }}</div>{% endif %}
+
+      <div class="delivery-tabs" role="tablist">
+        <button type="button" class="active" data-main-tab="delivery"><i class="fa-solid fa-truck-fast"></i> Entrega e retirada</button>
+        {% if _delivery_business %}<button type="button" data-main-tab="courier"><i class="fa-solid fa-motorcycle"></i> Entrega Externa</button>{% endif %}
+        <button type="button" data-main-tab="policies"><i class="fa-regular fa-file-lines"></i> Políticas da loja</button>
+      </div>
+
+      <form method="post" action="/admin/{{ empresa.id }}/entrega-politicas" id="deliveryPoliciesForm">
+        <section class="delivery-panel active" data-main-panel="delivery">
+          {% if _delivery_business %}
+          <div class="delivery-grid">
+            <div class="delivery-stack">
+              <article class="delivery-card">
+                <div class="delivery-card-head"><h2>Formas de recebimento</h2><p>Estas regras são compartilhadas pelos menus de restaurante e produtos. A taxa aplicada no pedido vem sempre desta configuração.</p></div>
+                <div class="delivery-card-body">
+                  <div class="delivery-switch-row"><div><strong>Permitir entrega</strong><span>Exibe endereço, consulta de CEP e frete no checkout.</span></div><label class="delivery-switch"><input type="checkbox" id="deliveryEnabled" name="entrega_ativa" {% if entrega_config.entrega_ativa %}checked{% endif %}><span class="delivery-slider"></span></label></div>
+                  <div class="delivery-switch-row"><div><strong>Permitir retirada no local</strong><span>O cliente pode retirar diretamente no estabelecimento.</span></div><label class="delivery-switch"><input type="checkbox" id="pickupEnabled" name="retirada_ativa" {% if entrega_config.retirada_ativa %}checked{% endif %}><span class="delivery-slider"></span></label></div>
+                </div>
+              </article>
+
+              <article class="delivery-card">
+                <div class="delivery-card-head"><h2>Como deseja calcular a entrega?</h2><p>Escolha uma opção. O painel mostra somente os campos necessários para esse modelo.</p></div>
+                <div class="delivery-card-body">
+                  <div class="delivery-model-options">
+                    <label class="delivery-model-option"><input type="radio" name="modelo_frete" value="taxa_fixa" {% if entrega_config.modelo_frete == 'taxa_fixa' %}checked{% endif %}><i class="fa-solid fa-tag"></i><span><strong>Taxa fixa para todos</strong><small>O mesmo valor para qualquer CEP atendido.</small></span></label>
+                    <label class="delivery-model-option"><input type="radio" name="modelo_frete" value="cidade_regiao" {% if entrega_config.modelo_frete == 'cidade_regiao' %}checked{% endif %}><i class="fa-solid fa-city"></i><span><strong>Por cidade ou bairro</strong><small>Ex.: Tatuí R$ 8, Sorocaba R$ 25. O CEP identifica o local.</small></span></label>
+                    <label class="delivery-model-option"><input type="radio" name="modelo_frete" value="distancia" {% if entrega_config.modelo_frete == 'distancia' %}checked{% endif %}><i class="fa-solid fa-route"></i><span><strong>Por distância em quilômetros</strong><small>Calcula a rota entre o CEP da loja e o CEP do cliente.</small></span></label>
+                    <label class="delivery-model-option"><input type="radio" name="modelo_frete" value="whatsapp" {% if entrega_config.modelo_frete == 'whatsapp' %}checked{% endif %}><i class="fa-brands fa-whatsapp"></i><span><strong>Combinar pelo WhatsApp</strong><small>Não informa preço automático; direciona o cliente para a loja.</small></span></label>
+                  </div>
+                </div>
+              </article>
+
+              <article class="delivery-card delivery-card-compact" id="deliveryFixedFeeCard">
+                <div class="delivery-card-head"><h2>Taxa fixa da entrega</h2><p>Este campo aparece apenas quando a taxa fixa for usada como cálculo principal ou como alternativa.</p></div>
+                <div class="delivery-card-body">
+                  <div class="delivery-field">
+                    <label>Valor da taxa fixa</label>
+                    <input type="number" min="0" max="9999" step="0.01" name="taxa_entrega_padrao" value="{{ '%.2f'|format(empresa.taxa_entrega_padrao or 0) }}">
+                    <span class="delivery-hint">Use R$ 0,00 caso a entrega fixa seja gratuita.</span>
+                  </div>
+                </div>
+              </article>
+
+              <article class="delivery-card delivery-card-compact" id="deliveryGeneralRulesCard">
+                <div class="delivery-card-head"><h2>Regras gerais da entrega</h2><p>Estas regras são aplicadas depois do cálculo escolhido.</p></div>
+                <div class="delivery-card-body">
+                  <div class="delivery-section-note"><i class="fa-solid fa-circle-info"></i><span>O pedido mínimo controla quando a entrega pode ser escolhida. O frete grátis substitui o valor calculado quando o subtotal atingir o limite.</span></div>
+                  <div class="delivery-form-grid">
+                    <div class="delivery-field">
+                      <label>Pedido mínimo para entrega</label>
+                      <input type="number" min="0" step="0.01" name="pedido_minimo_entrega" value="{{ '%.2f'|format(entrega_config.pedido_minimo_entrega or 0) }}">
+                      <span class="delivery-hint">Use R$ 0,00 para não exigir valor mínimo.</span>
+                    </div>
+                    <div class="delivery-field">
+                      <label>Frete grátis em pedidos a partir de</label>
+                      <input type="number" min="0" step="0.01" name="frete_gratis_acima" value="{{ '%.2f'|format(entrega_config.frete_gratis_acima or 0) }}">
+                      <span class="delivery-hint">Use R$ 0,00 para não oferecer frete grátis automaticamente.</span>
+                    </div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="delivery-card delivery-card-compact" id="deliveryFixedDeadlineCard">
+                <div class="delivery-card-head"><h2>Prazo da entrega com taxa fixa</h2><p>Informe em uma unidade fácil de entender. O sistema salva internamente em minutos.</p></div>
+                <div class="delivery-card-body">
+                  <input type="hidden" id="deliveryTimeMinutes" name="tempo_entrega_minutos" value="{{ empresa.tempo_entrega_minutos or 50 }}">
+                  <div class="delivery-field">
+                    <label>Prazo estimado para entrega</label>
+                    <div class="delivery-unit-input">
+                      <input id="deliveryTimeValue" type="number" min="0" step="1" inputmode="numeric">
+                      <select id="deliveryTimeUnit" aria-label="Unidade do prazo de entrega">
+                        <option value="minutes">Minutos</option>
+                        <option value="hours">Horas</option>
+                        <option value="days">Dias úteis</option>
+                      </select>
+                    </div>
+                    <span class="delivery-hint">Para cidades cadastradas, use o prazo de cada cidade. Para cálculo por distância, use o prazo da seção de distância.</span>
+                  </div>
+                </div>
+              </article>
+
+              <article class="delivery-card delivery-card-compact" id="deliveryPickupTimeCard">
+                <div class="delivery-card-head"><h2>Retirada no local</h2><p>Tempo necessário para separar e preparar o pedido antes de o cliente buscar.</p></div>
+                <div class="delivery-card-body">
+                  <input type="hidden" id="pickupTimeMinutes" name="tempo_retirada_minutos" value="{{ empresa.tempo_retirada_minutos or 30 }}">
+                  <div class="delivery-field">
+                    <label>Tempo de preparação para retirada</label>
+                    <div class="delivery-unit-input">
+                      <input id="pickupTimeValue" type="number" min="0" step="1" inputmode="numeric">
+                      <select id="pickupTimeUnit" aria-label="Unidade do tempo de retirada">
+                        <option value="minutes">Minutos</option>
+                        <option value="hours">Horas</option>
+                      </select>
+                    </div>
+                    <span class="delivery-hint">Exemplo: 30 minutos significa que o pedido ficará pronto para retirada em aproximadamente 30 minutos.</span>
+                  </div>
+                </div>
+              </article>
+
+              {% set ufs_brasil = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'] %}
+              <article class="delivery-card" id="deliveryLocationsCard">
+                <div class="delivery-card-head delivery-card-head-row">
+                  <div><h2>Cidades e bairros atendidos</h2><p>O lojista digita a cidade e o cliente informa apenas o CEP. Uma regra de bairro vence a regra geral da cidade.</p></div>
+                  <button class="delivery-add-range" type="button" id="deliveryAddLocation"><i class="fa-solid fa-plus"></i> Adicionar cidade ou bairro</button>
+                </div>
+                <div class="delivery-card-body">
+                  <div class="delivery-location-note"><strong>Como cadastrar:</strong> digite o CEP de um endereço do bairro e clique em <strong>Buscar CEP</strong>. O sistema preencherá estado, cidade e bairro automaticamente. Depois informe o frete. Um CEP de referência é suficiente: a regra fica salva pelo nome do bairro e vale para os outros CEPs que retornarem o mesmo bairro.</div>
+                  <div id="deliveryLocationList" class="delivery-range-list">
+                    {% for local in entrega_config.locais_entrega %}
+                    <div class="delivery-range-row">
+                      <div class="delivery-range-index">{{ loop.index }}</div>
+                      <div class="delivery-range-fields">
+                        <div class="delivery-field">
+                          <label>CEP para localizar o bairro</label>
+                          <div class="delivery-location-cep-picker">
+                            <input class="delivery-location-cep-input" inputmode="numeric" maxlength="9" placeholder="00000-000" autocomplete="postal-code">
+                            <button class="delivery-location-cep-search" type="button"><i class="fa-solid fa-magnifying-glass-location"></i> Buscar CEP</button>
+                          </div>
+                          <span class="delivery-location-cep-status">Use um CEP de referência do bairro.</span>
+                        </div>
+                        <div class="delivery-field"><label>Estado</label><select name="local_uf" class="delivery-location-uf">{% for uf in ufs_brasil %}<option value="{{ uf }}" {% if local.uf == uf %}selected{% endif %}>{{ uf }}</option>{% endfor %}</select></div>
+                        <div class="delivery-field">
+                          <label>Cidade</label>
+                          <div class="delivery-city-picker">
+                            <input name="local_cidade"
+                                   class="delivery-city-input"
+                                   maxlength="100"
+                                   value="{{ local.cidade }}"
+                                   placeholder="Digite para buscar"
+                                   autocomplete="off"
+                                   spellcheck="false"
+                                   aria-autocomplete="list">
+                            <div class="delivery-city-suggestions" role="listbox"></div>
+                          </div>
+                          <span class="delivery-city-status">Carregando cidades do estado...</span>
+                        </div>
+                        <div class="delivery-field"><label>Bairro (opcional)</label><input name="local_bairro" maxlength="100" value="{{ local.bairro }}" placeholder="Ex.: Centro"></div>
+                        <div class="delivery-field"><label>Frete</label><input name="local_valor" type="number" min="0" max="9999" step="0.01" value="{{ '%.2f'|format(local.valor or 0) }}"></div>
+                        <div class="delivery-field"><label>Prazo</label><input name="local_prazo" maxlength="120" value="{{ local.prazo }}" placeholder="Ex.: até 2 dias úteis"></div>
+                        <div class="delivery-field"><label>Pedido mínimo</label><input name="local_pedido_minimo" type="number" min="0" step="0.01" value="{{ '%.2f'|format(local.pedido_minimo or 0) }}"></div>
+                        <div class="delivery-field"><label>Status</label><select name="local_ativa"><option value="1" {% if local.ativa %}selected{% endif %}>Ativa</option><option value="0" {% if not local.ativa %}selected{% endif %}>Desativada</option></select></div>
+                      </div>
+                      <button class="delivery-remove-range" type="button" aria-label="Excluir local"><i class="fa-regular fa-trash-can"></i></button>
+                    </div>
+                    {% endfor %}
+                  </div>
+                  <div class="delivery-empty-ranges" id="deliveryEmptyLocations">Nenhuma cidade cadastrada. Clique em <strong>Adicionar cidade ou bairro</strong>.</div>
+                </div>
+              </article>
+
+              <article class="delivery-card" id="deliveryFallbackCard">
+                <div class="delivery-card-head"><h2>Quando a cidade ou o bairro não estiver cadastrado</h2><p>Defina o que acontece sem uma regra específica para o CEP do cliente.</p></div>
+                <div class="delivery-card-body">
+                  <div class="delivery-field">
+                    <label>Ação automática</label>
+                    <select name="fallback_sem_local" id="deliveryFallback">
+                      <option value="distancia" {% if entrega_config.fallback_sem_local == 'distancia' %}selected{% endif %}>Calcular pela distância em quilômetros</option>
+                      <option value="taxa_fixa" {% if entrega_config.fallback_sem_local == 'taxa_fixa' %}selected{% endif %}>Aplicar a taxa fixa</option>
+                      <option value="whatsapp" {% if entrega_config.fallback_sem_local == 'whatsapp' %}selected{% endif %}>Pedir cotação pelo WhatsApp</option>
+                      <option value="bloquear" {% if entrega_config.fallback_sem_local == 'bloquear' %}selected{% endif %}>Não permitir entrega</option>
+                    </select>
+                  </div>
+                </div>
+              </article>
+
+              <article class="delivery-card" id="deliveryDistanceCard">
+                <div class="delivery-card-head"><h2>Cálculo por distância</h2><p>O sistema calcula a rota entre o local da loja e o CEP informado pelo cliente.</p></div>
+                <div class="delivery-card-body">
+                  <div class="delivery-distance-note"><i class="fa-solid fa-route"></i><span>O cliente informa o CEP e o sistema calcula automaticamente a distância até a loja. O valor é conferido novamente antes de concluir o pedido.</span></div>
+                  <div class="delivery-form-grid">
+                    <div class="delivery-field"><label>CEP de onde o pedido sai</label><input class="delivery-cep-input" name="cep_origem" inputmode="numeric" maxlength="9" value="{% if entrega_config.cep_origem %}{{ entrega_config.cep_origem[:5] }}-{{ entrega_config.cep_origem[5:] }}{% endif %}" placeholder="00000-000"><span class="delivery-hint">Caso não preencha, será usado o CEP cadastrado nos dados da loja.</span></div>
+                    <div class="delivery-field"><label>Valor inicial da entrega</label><input name="taxa_base_km" type="number" min="0" max="9999" step="0.01" value="{{ '%.2f'|format(entrega_config.taxa_base_km or 0) }}"></div>
+                    <div class="delivery-field"><label>Valor por quilômetro</label><input name="valor_por_km" type="number" min="0" max="9999" step="0.01" value="{{ '%.2f'|format(entrega_config.valor_por_km or 0) }}"></div>
+                    <div class="delivery-field"><label>Valor mínimo do frete</label><input name="frete_minimo" type="number" min="0" max="9999" step="0.01" value="{{ '%.2f'|format(entrega_config.frete_minimo or 0) }}"></div>
+                    <div class="delivery-field"><label>Limite máximo cobrado</label><input name="frete_maximo" type="number" min="0" max="99999" step="0.01" value="{{ '%.2f'|format(entrega_config.frete_maximo or 0) }}"><span class="delivery-hint">Use 0 para não limitar.</span></div>
+                    <div class="delivery-field"><label>Até quantos km você entrega?</label><input name="distancia_maxima_km" type="number" min="0" max="5000" step="0.1" value="{{ entrega_config.distancia_maxima_km or 0 }}"><span class="delivery-hint">Acima desse limite, o cliente consulta a loja.</span></div>
+                    <div class="delivery-field"><label>Frete grátis válido até quantos km?</label><input name="frete_gratis_limite_km" type="number" min="0" max="5000" step="0.1" value="{{ entrega_config.frete_gratis_limite_km or 0 }}"><span class="delivery-hint">Use 0 para não limitar por distância.</span></div>
+                    <div class="delivery-field"><label>Prazo estimado (dias úteis)</label><input name="prazo_distancia_dias" type="number" min="0" max="365" value="{{ entrega_config.prazo_distancia_dias or 1 }}"></div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="delivery-card">
+                <div class="delivery-card-head"><h2>Mensagens para o cliente</h2><p>Textos curtos exibidos conforme a forma de recebimento.</p></div>
+                <div class="delivery-card-body">
+                  <input type="hidden" name="regioes_atendidas" value="{{ entrega_config.regioes_atendidas }}">
+                  <div class="delivery-form-grid">
+                    <div class="delivery-field full"><label>Mensagem de entrega</label><textarea name="mensagem_entrega" placeholder="Ex.: O valor aparece após informar o CEP.">{{ entrega_config.mensagem_entrega }}</textarea></div>
+                    <div class="delivery-field full"><label>Instruções para retirada</label><textarea name="instrucoes_retirada" placeholder="Ex.: Aguarde a confirmação e retire no balcão apresentando o número do pedido.">{{ entrega_config.instrucoes_retirada }}</textarea></div>
+                  </div>
+                </div>
+              </article>
+            </div>
+
+          </div>
+          {% else %}
+          <article class="delivery-card delivery-not-product">
+            <div class="delivery-card-body">
+              <i class="fa-solid fa-circle-info"></i>
+              <div><h2>Entrega indisponível para este tipo de negócio</h2><p>Este negócio utiliza somente serviços ou agendamentos. Nesta página, você ainda pode editar normalmente as políticas da loja.</p></div>
+            </div>
+          </article>
+          {% endif %}
+        </section>
+
+        <section class="delivery-panel" data-main-panel="policies">
+          <div class="policy-list">
+            {% set policy_meta = {
+              'privacidade': ('Política de Privacidade', 'Explica como os dados do cliente são utilizados.'),
+              'entrega': ('Política de Entrega', 'Regras de prazo, endereço e recebimento.'),
+              'trocas': ('Trocas, cancelamento e devolução', 'Orienta o atendimento depois da compra.'),
+              'termos': ('Termos de Compra', 'Condições gerais para concluir pedidos.')
+            } %}
+            {% for tipo, meta in policy_meta.items() %}
+            <article class="policy-card" data-policy-card="{{ tipo }}">
+              <div class="policy-header">
+                <div><h2>{{ meta[0] }}</h2><p>{{ meta[1] }}</p></div>
+                <label class="delivery-switch"><input type="checkbox" name="politica_{{ tipo }}_ativa" {% if politicas[tipo].ativa %}checked{% endif %}><span class="delivery-slider"></span></label>
+              </div>
+              <div class="policy-body">
+                {% for idioma in ['pt'] %}
+                <div class="policy-language-panel{% if idioma == 'pt' %} active{% endif %}" data-policy-panel="{{ idioma }}">
+                  <textarea name="politica_{{ tipo }}_{{ idioma }}" maxlength="20000">{{ politicas[tipo][idioma] or politicas_padrao[tipo][idioma] }}</textarea>
+                  <div class="policy-tools"><small>O texto aparece no modal do rodapé do menu.</small><button class="policy-reset" type="button" data-reset-policy="{{ tipo }}" data-reset-lang="{{ idioma }}"><i class="fa-solid fa-rotate-left"></i> Restaurar padrão</button></div>
+                </div>
+                {% endfor %}
+              </div>
+            </article>
+            {% endfor %}
+          </div>
+        </section>
+
+        <div class="delivery-actions"><button class="delivery-save" type="submit"><i class="fa-solid fa-floppy-disk"></i> Salvar entrega e políticas</button></div>
+      </form>
+
+      {% if _delivery_business %}
+      <section class="delivery-panel" data-main-panel="courier" id="entrega-externa">
+        <article class="delivery-card delivery-courier-v821">
+          <div class="delivery-card-head">
+            <h2>Entrega Externa</h2>
+            <p>Cadastre o motoboy, entregador ou parceiro externo que a empresa usa nos pedidos.</p>
+          </div>
+          <div class="delivery-card-body">
+            <div class="delivery-courier-intro-v820">Os entregadores cadastrados aqui ficam disponíveis para o fluxo de entrega dos pedidos. Você pode cadastrar motoboy próprio, profissional avulso ou parceiro local.</div>
+
+            <form method="POST" action="/admin/{{ empresa.id }}/integracoes/entregadores-externos" id="entregadores-externos">
+              <div class="delivery-form-grid">
+                <div class="delivery-field">
+                  <label>Nome do entregador/parceiro</label>
+                  <input name="entrega_manual_nome" placeholder="Ex.: João, Torino Express, Motoboy Luca" required>
+                </div>
+                <div class="delivery-field">
+                  <label>WhatsApp/telefone</label>
+                  <input name="entrega_manual_telefone" placeholder="Ex.: +393331112233">
+                </div>
+                <div class="delivery-field full">
+                  <label>Observação padrão da retirada</label>
+                  <input name="entrega_manual_observacao" placeholder="Ex.: Retirar no balcão principal">
+                </div>
+              </div>
+              <div style="margin-top:14px"><button class="delivery-courier-save-v820" type="submit"><i class="fa-solid fa-floppy-disk"></i> Salvar entregador</button></div>
+            </form>
+
+            {% if entregadores_externos %}
+            <div class="delivery-courier-list-v820" aria-label="Entregadores cadastrados">
+              <div class="delivery-courier-list-head-v820"><span>Nome</span><span>Telefone/WhatsApp</span><span>Observação</span><span>Ações</span></div>
+              {% for parceiro in entregadores_externos %}
+              <div class="delivery-courier-row-v820">
+                <strong>{{ parceiro.nome }}</strong>
+                <span>{{ parceiro.telefone or 'Sem telefone' }}</span>
+                <span>{{ parceiro.observacao or 'Sem observação' }}</span>
+                <form method="POST" action="/admin/{{ empresa.id }}/integracoes/entregadores-externos/{{ parceiro.id }}/excluir" data-mf-confirm="Excluir este entregador externo?" data-mf-confirm-title="Excluir entregador" data-mf-confirm-button="Excluir">
+                  <button class="delivery-courier-delete-v820" type="submit"><i class="fa-solid fa-trash"></i> Excluir</button>
+                </form>
+              </div>
+              {% endfor %}
+            </div>
+            {% else %}
+            <div class="delivery-courier-empty-v820">Nenhum entregador externo cadastrado ainda.</div>
+            {% endif %}
+          </div>
+        </article>
+      </section>
+      {% endif %}
+    </div>
+  </main>
+</div>
+{% endblock %}
+{% block scripts %}
+<script id="mf-delivery-policies-admin-js">
+(function(){
+  var defaults={{ politicas_padrao|tojson }};
+  var isDeliveryBusiness={{ _delivery_business|tojson }};
+  var form=document.getElementById('deliveryPoliciesForm');
+  var courierPanel=document.getElementById('entrega-externa');
+  var fiscalCep=digits({{ (empresa.cep_fiscal or '')|tojson }});
+  var formDirty=false;
+  var ufs=['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
+
+  var mainButtons=document.querySelectorAll('[data-main-tab]');
+  var mainPanels=document.querySelectorAll('[data-main-panel]');
+  function activateMainTab(name){
+    mainButtons.forEach(function(item){item.classList.toggle('active',item.dataset.mainTab===name)});
+    mainPanels.forEach(function(panel){panel.classList.toggle('active',panel.dataset.mainPanel===name)});
+  }
+  mainButtons.forEach(function(button){button.addEventListener('click',function(){
+    activateMainTab(button.dataset.mainTab);
+    if(button.dataset.mainTab==='courier' && history.replaceState){history.replaceState(null,'','#entrega-externa')}
+    else if(window.location.hash==='#entrega-externa' && history.replaceState){history.replaceState(null,'',window.location.pathname+window.location.search)}
+  })});
+  if(courierPanel && window.location.hash==='#entrega-externa')activateMainTab('courier');
+
+  document.querySelectorAll('[data-policy-card]').forEach(function(card){
+    var buttons=card.querySelectorAll('[data-policy-lang]');
+    var panels=card.querySelectorAll('[data-policy-panel]');
+    buttons.forEach(function(button){button.addEventListener('click',function(){
+      buttons.forEach(function(item){item.classList.toggle('active',item===button)});
+      panels.forEach(function(panel){panel.classList.toggle('active',panel.dataset.policyPanel===button.dataset.policyLang)});
+    })});
+  });
+
+  document.querySelectorAll('[data-reset-policy]').forEach(function(button){button.addEventListener('click',function(){
+    var type=button.dataset.resetPolicy,lang=button.dataset.resetLang;
+    var field=document.querySelector('[name="politica_'+type+'_'+lang+'"]');
+    if(field&&defaults[type]&&defaults[type][lang]!==undefined){field.value=defaults[type][lang];field.focus();formDirty=true}
+  })});
+
+  function digits(value){return String(value||'').replace(/\D/g,'').slice(0,8)}
+  function formatCep(value){var d=digits(value);return d.length>5?d.slice(0,5)+'-'+d.slice(5):d}
+  function money(name){var el=document.querySelector('[name="'+name+'"]');return Math.max(0,Number(el&&el.value||0)||0)}
+  function setInvalid(el,invalid){if(el)el.classList.toggle('delivery-field-invalid',!!invalid)}
+  function normalizeText(value){return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim()}
+  function currentModel(){var checked=document.querySelector('[name="modelo_frete"]:checked');return checked?checked.value:'taxa_fixa'}
+
+  function bindCepInput(input){
+    if(!input||input.dataset.cepBound==='1')return;
+    input.dataset.cepBound='1';
+    input.addEventListener('input',function(){this.value=formatCep(this.value)});
+  }
+  document.querySelectorAll('.delivery-cep-input').forEach(bindCepInput);
+
+  var locationList=document.getElementById('deliveryLocationList');
+  var emptyLocations=document.getElementById('deliveryEmptyLocations');
+  function ufOptions(){return ufs.map(function(uf){return '<option value="'+uf+'"'+(uf==='SP'?' selected':'')+'>'+uf+'</option>'}).join('')}
+  function locationMarkup(){
+    return '<div class="delivery-range-index"></div>'+ 
+      '<div class="delivery-range-fields">'+
+        '<div class="delivery-field"><label>CEP para localizar o bairro</label><div class="delivery-location-cep-picker"><input class="delivery-location-cep-input" inputmode="numeric" maxlength="9" placeholder="00000-000" autocomplete="postal-code"><button class="delivery-location-cep-search" type="button"><i class="fa-solid fa-magnifying-glass-location"></i> Buscar CEP</button></div><span class="delivery-location-cep-status">Use um CEP de referência do bairro.</span></div>'+ 
+        '<div class="delivery-field"><label>Estado</label><select name="local_uf" class="delivery-location-uf">'+ufOptions()+'</select></div>'+ 
+        '<div class="delivery-field"><label>Cidade</label><div class="delivery-city-picker"><input name="local_cidade" class="delivery-city-input" maxlength="100" placeholder="Digite para buscar" autocomplete="off" spellcheck="false" aria-autocomplete="list"><div class="delivery-city-suggestions" role="listbox"></div></div><span class="delivery-city-status">Carregando cidades do estado...</span></div>'+ 
+        '<div class="delivery-field"><label>Bairro (opcional)</label><input name="local_bairro" maxlength="100" placeholder="Ex.: Centro"></div>'+ 
+        '<div class="delivery-field"><label>Frete</label><input name="local_valor" type="number" min="0" max="9999" step="0.01" value="0.00"></div>'+ 
+        '<div class="delivery-field"><label>Prazo</label><input name="local_prazo" maxlength="120" placeholder="Ex.: até 2 dias úteis"></div>'+ 
+        '<div class="delivery-field"><label>Pedido mínimo</label><input name="local_pedido_minimo" type="number" min="0" step="0.01" value="0.00"></div>'+ 
+        '<div class="delivery-field"><label>Status</label><select name="local_ativa"><option value="1">Ativa</option><option value="0">Desativada</option></select></div>'+ 
+      '</div>'+ 
+      '<button class="delivery-remove-range" type="button" aria-label="Excluir local"><i class="fa-regular fa-trash-can"></i></button>';
+  }
+  var IBGE_MUNICIPALITIES_BASE='https://servicodados.ibge.gov.br/api/v1/localidades/estados/';
+  var municipalityCache={};
+
+  function cityStatus(row,message,state){
+    var status=row.querySelector('.delivery-city-status');
+    if(!status)return;
+    status.textContent=message||'';
+    status.classList.remove('is-ok','is-error','is-loading');
+    if(state)status.classList.add('is-'+state);
+  }
+
+  function closeCitySuggestions(row){
+    var box=row&&row.querySelector('.delivery-city-suggestions');
+    if(box)box.classList.remove('is-open');
+  }
+
+  function loadMunicipalities(uf){
+    uf=String(uf||'').toUpperCase();
+    if(!/^[A-Z]{2}$/.test(uf))return Promise.reject(new Error('Estado inválido.'));
+    if(municipalityCache[uf])return municipalityCache[uf];
+
+    municipalityCache[uf]=fetch(
+      IBGE_MUNICIPALITIES_BASE+encodeURIComponent(uf)+'/municipios?orderBy=nome',
+      {headers:{'Accept':'application/json'}}
+    ).then(function(response){
+      if(!response.ok)throw new Error('Não foi possível carregar as cidades.');
+      return response.json();
+    }).then(function(data){
+      if(!Array.isArray(data))throw new Error('Lista de cidades inválida.');
+      return data.map(function(item){
+        return {
+          id:String(item&&item.id||''),
+          nome:String(item&&item.nome||'').trim(),
+          chave:normalizeText(item&&item.nome||'')
+        };
+      }).filter(function(item){return item.nome&&item.chave});
+    }).catch(function(error){
+      delete municipalityCache[uf];
+      throw error;
+    });
+
+    return municipalityCache[uf];
+  }
+
+  function setSelectedCity(row,city){
+    var input=row.querySelector('[name="local_cidade"]');
+    if(!input||!city)return;
+    input.value=city.nome;
+    input.dataset.citySelected=city.chave;
+    input.dataset.ibgeId=city.id;
+    setInvalid(input,false);
+    cityStatus(row,'Cidade oficial selecionada: '+city.nome,'ok');
+    closeCitySuggestions(row);
+    formDirty=true;
+  }
+
+  function renderCitySuggestions(row,cities,query){
+    var box=row.querySelector('.delivery-city-suggestions');
+    if(!box)return;
+    var key=normalizeText(query);
+    box.innerHTML='';
+    if(!key){box.classList.remove('is-open');return}
+
+    var matches=cities.filter(function(city){
+      return city.chave.indexOf(key)===0;
+    });
+    if(matches.length<8){
+      cities.some(function(city){
+        if(matches.length>=8)return true;
+        if(city.chave.indexOf(key)>0&&!matches.some(function(item){return item.id===city.id}))matches.push(city);
+        return false;
+      });
+    }
+    matches=matches.slice(0,8);
+
+    if(!matches.length){
+      var empty=document.createElement('div');
+      empty.className='delivery-city-option';
+      empty.textContent='Nenhuma cidade encontrada neste estado.';
+      box.appendChild(empty);
+      box.classList.add('is-open');
+      return;
+    }
+
+    matches.forEach(function(city){
+      var button=document.createElement('button');
+      button.type='button';
+      button.className='delivery-city-option';
+      button.setAttribute('role','option');
+      var name=document.createElement('span');
+      name.textContent=city.nome;
+      var uf=document.createElement('small');
+      uf.textContent=row.querySelector('[name="local_uf"]')?.value||'';
+      button.appendChild(name);
+      button.appendChild(uf);
+      button.addEventListener('mousedown',function(event){
+        event.preventDefault();
+        setSelectedCity(row,city);
+      });
+      box.appendChild(button);
+    });
+    box.classList.add('is-open');
+  }
+
+  function validateExactCity(row,cities,showError){
+    var input=row.querySelector('[name="local_cidade"]');
+    if(!input)return false;
+    var key=normalizeText(input.value);
+    var exact=cities.find(function(city){return city.chave===key});
+    if(exact){
+      if(input.value!==exact.nome)input.value=exact.nome;
+      input.dataset.citySelected=exact.chave;
+      input.dataset.ibgeId=exact.id;
+      setInvalid(input,false);
+      cityStatus(row,'Cidade oficial selecionada: '+exact.nome,'ok');
+      return true;
+    }
+    delete input.dataset.citySelected;
+    delete input.dataset.ibgeId;
+    if(showError){
+      setInvalid(input,true);
+      cityStatus(row,'Selecione uma cidade exibida na lista.','error');
+    }
+    return false;
+  }
+
+  function bindCityLookup(row){
+    if(!row||row.dataset.cityLookupBound==='1')return;
+    row.dataset.cityLookupBound='1';
+
+    var ufField=row.querySelector('[name="local_uf"]');
+    var input=row.querySelector('[name="local_cidade"]');
+    if(!ufField||!input)return;
+
+    var cities=[];
+    var loadToken=0;
+
+    function loadForUf(options){
+      options=options||{};
+      var token=++loadToken;
+      var uf=String(ufField.value||'').toUpperCase();
+      row.dataset.cityLookupState='loading';
+      cityStatus(row,'Carregando cidades de '+uf+'...','loading');
+      closeCitySuggestions(row);
+
+      return loadMunicipalities(uf).then(function(list){
+        if(token!==loadToken)return [];
+        cities=list;
+        row.dataset.cityLookupState='ready';
+        var current=String(input.value||'').trim();
+        if(current){
+          if(!validateExactCity(row,cities,false)){
+            cityStatus(row,'Digite e selecione a cidade correta na lista.','');
+          }
+        }else{
+          cityStatus(row,'Digite parte do nome e selecione uma sugestão.','');
+        }
+        if(options.openSuggestions&&current)renderCitySuggestions(row,cities,current);
+        return list;
+      }).catch(function(){
+        if(token!==loadToken)return [];
+        cities=[];
+        row.dataset.cityLookupState='error';
+        cityStatus(row,'Busca automática indisponível. O nome pode ser digitado manualmente.','error');
+        return [];
+      });
+    }
+
+    ufField.addEventListener('change',function(){
+      input.value='';
+      delete input.dataset.citySelected;
+      delete input.dataset.ibgeId;
+      setInvalid(input,false);
+      loadForUf();
+      formDirty=true;
+    });
+
+    input.addEventListener('input',function(){
+      delete input.dataset.citySelected;
+      delete input.dataset.ibgeId;
+      setInvalid(input,false);
+      if(row.dataset.cityLookupState==='ready'){
+        renderCitySuggestions(row,cities,input.value);
+        cityStatus(row,'Selecione uma das cidades sugeridas.','');
+      }else if(row.dataset.cityLookupState!=='loading'){
+        loadForUf({openSuggestions:true});
+      }
+    });
+
+    input.addEventListener('focus',function(){
+      if(row.dataset.cityLookupState==='ready')renderCitySuggestions(row,cities,input.value);
+      else loadForUf({openSuggestions:true});
+    });
+
+    input.addEventListener('blur',function(){
+      window.setTimeout(function(){
+        closeCitySuggestions(row);
+        if(row.dataset.cityLookupState==='ready'&&input.value.trim()){
+          validateExactCity(row,cities,false);
+        }
+      },150);
+    });
+
+    loadForUf();
+  }
+
+  document.addEventListener('click',function(event){
+    if(event.target.closest('.delivery-city-picker'))return;
+    document.querySelectorAll('.delivery-city-suggestions.is-open').forEach(function(box){
+      box.classList.remove('is-open');
+    });
+  });
+
+  function updateLocationIndexes(){
+    if(!locationList)return;
+    var rows=Array.from(locationList.querySelectorAll('.delivery-range-row'));
+    rows.forEach(function(row,index){var badge=row.querySelector('.delivery-range-index');if(badge)badge.textContent=String(index+1)});
+    if(emptyLocations)emptyLocations.style.display=rows.length?'none':'block';
+  }
+  function locationCepStatus(row,message,state){
+    var status=row&&row.querySelector('.delivery-location-cep-status');
+    if(!status)return;
+    status.textContent=message||'';
+    status.classList.remove('is-ok','is-error','is-loading');
+    if(state)status.classList.add('is-'+state);
+  }
+
+  function normalizeCepResponse(data){
+    data=data||{};
+    return {
+      cep:digits(data.cep||''),
+      uf:String(data.uf||data.state||'').trim().toUpperCase(),
+      cidade:String(data.localidade||data.city||'').trim(),
+      bairro:String(data.bairro||data.neighborhood||'').trim(),
+      logradouro:String(data.logradouro||data.street||'').trim()
+    };
+  }
+
+  function fetchLocationByCep(cep){
+    return fetch('https://viacep.com.br/ws/'+encodeURIComponent(cep)+'/json/',{
+      headers:{'Accept':'application/json'}
+    }).then(function(response){
+      if(!response.ok)throw new Error('ViaCEP indisponível.');
+      return response.json();
+    }).then(function(data){
+      if(data&&data.erro)throw new Error('CEP não encontrado.');
+      var result=normalizeCepResponse(data);
+      if(!result.uf||!result.cidade)throw new Error('CEP sem cidade.');
+      return result;
+    }).catch(function(){
+      return fetch('https://brasilapi.com.br/api/cep/v1/'+encodeURIComponent(cep),{
+        headers:{'Accept':'application/json'}
+      }).then(function(response){
+        if(!response.ok)throw new Error('CEP não encontrado.');
+        return response.json();
+      }).then(function(data){
+        var result=normalizeCepResponse(data);
+        if(!result.uf||!result.cidade)throw new Error('CEP sem cidade.');
+        return result;
+      });
+    });
+  }
+
+  function applyLocationFromCep(row,result){
+    var ufField=row.querySelector('[name="local_uf"]');
+    var cityField=row.querySelector('[name="local_cidade"]');
+    var districtField=row.querySelector('[name="local_bairro"]');
+    if(!ufField||!cityField||!districtField)return Promise.resolve();
+
+    var previousUf=String(ufField.value||'').toUpperCase();
+    ufField.value=result.uf;
+    if(previousUf!==result.uf){
+      ufField.dispatchEvent(new Event('change',{bubbles:true}));
+    }
+
+    return loadMunicipalities(result.uf).then(function(cities){
+      var cityKey=normalizeText(result.cidade);
+      var exact=cities.find(function(city){return city.chave===cityKey});
+      if(exact){
+        setSelectedCity(row,exact);
+      }else{
+        cityField.value=result.cidade;
+        cityField.dataset.citySelected=cityKey;
+        delete cityField.dataset.ibgeId;
+        setInvalid(cityField,false);
+        cityStatus(row,'Cidade preenchida pelo CEP: '+result.cidade,'ok');
+      }
+
+      districtField.value=result.bairro||'';
+      setInvalid(districtField,false);
+
+      var locationLabel=result.bairro
+        ? result.bairro+', '+result.cidade+'/'+result.uf
+        : result.cidade+'/'+result.uf;
+
+      if(result.bairro){
+        locationCepStatus(
+          row,
+          'CEP encontrado: '+locationLabel+'. Confira e informe o frete.',
+          'ok'
+        );
+      }else{
+        locationCepStatus(
+          row,
+          'CEP encontrado em '+locationLabel+', mas a base não informou o bairro. Digite o bairro manualmente.',
+          'error'
+        );
+        districtField.focus();
+      }
+      formDirty=true;
+    });
+  }
+
+  function bindLocationCepLookup(row){
+    if(!row||row.dataset.locationCepBound==='1')return;
+    row.dataset.locationCepBound='1';
+
+    var input=row.querySelector('.delivery-location-cep-input');
+    var button=row.querySelector('.delivery-location-cep-search');
+    if(!input||!button)return;
+
+    var timer=null;
+
+    function lookup(){
+      var cep=digits(input.value);
+      input.value=formatCep(cep);
+      if(cep.length!==8){
+        setInvalid(input,true);
+        locationCepStatus(row,'Digite os 8 números do CEP.','error');
+        input.focus();
+        return;
+      }
+      if(input.dataset.lastLookup===cep)return;
+
+      setInvalid(input,false);
+      button.disabled=true;
+      locationCepStatus(row,'Buscando endereço do CEP...','loading');
+
+      fetchLocationByCep(cep).then(function(result){
+        input.dataset.lastLookup=cep;
+        return applyLocationFromCep(row,result);
+      }).catch(function(){
+        delete input.dataset.lastLookup;
+        setInvalid(input,true);
+        locationCepStatus(
+          row,
+          'CEP não encontrado ou consulta indisponível. Confira o número e tente novamente.',
+          'error'
+        );
+      }).finally(function(){
+        button.disabled=false;
+      });
+    }
+
+    input.addEventListener('input',function(){
+      this.value=formatCep(this.value);
+      delete this.dataset.lastLookup;
+      setInvalid(this,false);
+      locationCepStatus(row,'Use um CEP de referência do bairro.','');
+      window.clearTimeout(timer);
+      if(digits(this.value).length===8){
+        timer=window.setTimeout(lookup,450);
+      }
+    });
+
+    input.addEventListener('keydown',function(event){
+      if(event.key==='Enter'){
+        event.preventDefault();
+        lookup();
+      }
+    });
+
+    input.addEventListener('blur',function(){
+      if(digits(this.value).length===8&&!this.dataset.lastLookup)lookup();
+    });
+
+    button.addEventListener('click',lookup);
+  }
+
+  function bindLocationRow(row){
+    var remove=row.querySelector('.delivery-remove-range');
+    if(remove)remove.addEventListener('click',function(){row.remove();formDirty=true;updateLocationIndexes()});
+    bindCityLookup(row);
+    bindLocationCepLookup(row);
+  }
+  if(locationList)locationList.querySelectorAll('.delivery-range-row').forEach(bindLocationRow);
+  var addLocation=document.getElementById('deliveryAddLocation');
+  if(addLocation)addLocation.addEventListener('click',function(){
+    var row=document.createElement('div');row.className='delivery-range-row';row.innerHTML=locationMarkup();locationList.appendChild(row);bindLocationRow(row);formDirty=true;updateLocationIndexes();row.querySelector('[name="local_cidade"]').focus();
+  });
+  updateLocationIndexes();
+
+  var fallback=document.getElementById('deliveryFallback');
+  var locationsCard=document.getElementById('deliveryLocationsCard');
+  var fallbackCard=document.getElementById('deliveryFallbackCard');
+  var distanceCard=document.getElementById('deliveryDistanceCard');
+  var fixedFeeCard=document.getElementById('deliveryFixedFeeCard');
+  var fixedDeadlineCard=document.getElementById('deliveryFixedDeadlineCard');
+  var pickupTimeCard=document.getElementById('deliveryPickupTimeCard');
+  var pickupEnabled=document.getElementById('pickupEnabled');
+
+  function initializeTimeEditor(hiddenId,valueId,unitId,allowDays){
+    var hidden=document.getElementById(hiddenId);
+    var value=document.getElementById(valueId);
+    var unit=document.getElementById(unitId);
+    if(!hidden||!value||!unit)return;
+
+    var total=Math.max(0,Math.round(Number(hidden.value||0)||0));
+    if(allowDays&&total>=1440&&total%1440===0){
+      value.value=String(total/1440);
+      unit.value='days';
+    }else if(total>=60&&total%60===0){
+      value.value=String(total/60);
+      unit.value='hours';
+    }else{
+      value.value=String(total);
+      unit.value='minutes';
+    }
+
+    function sync(){
+      var amount=Math.max(0,Number(value.value||0)||0);
+      var factor=unit.value==='days'?1440:(unit.value==='hours'?60:1);
+      hidden.value=String(Math.round(amount*factor));
+    }
+    value.addEventListener('input',sync);
+    unit.addEventListener('change',sync);
+    sync();
+  }
+
+  initializeTimeEditor('deliveryTimeMinutes','deliveryTimeValue','deliveryTimeUnit',true);
+  initializeTimeEditor('pickupTimeMinutes','pickupTimeValue','pickupTimeUnit',false);
+
+  function syncShippingVisibility(){
+    var model=currentModel();
+    var usesLocations=model==='cidade_regiao';
+    var usesDistance=model==='distancia'||(usesLocations&&fallback&&fallback.value==='distancia');
+    var usesFixed=model==='taxa_fixa'||(usesLocations&&fallback&&fallback.value==='taxa_fixa');
+    if(locationsCard)locationsCard.classList.toggle('delivery-hidden',!usesLocations);
+    if(fallbackCard)fallbackCard.classList.toggle('delivery-hidden',!usesLocations);
+    if(distanceCard)distanceCard.classList.toggle('delivery-hidden',!usesDistance);
+    if(fixedFeeCard)fixedFeeCard.classList.toggle('delivery-hidden',!usesFixed);
+    if(fixedDeadlineCard)fixedDeadlineCard.classList.toggle('delivery-hidden',model!=='taxa_fixa');
+    if(pickupTimeCard)pickupTimeCard.classList.toggle('delivery-hidden',!!pickupEnabled&&!pickupEnabled.checked);
+  }
+  document.querySelectorAll('[name="modelo_frete"]').forEach(function(input){input.addEventListener('change',syncShippingVisibility)});
+  if(fallback)fallback.addEventListener('change',syncShippingVisibility);
+  if(pickupEnabled)pickupEnabled.addEventListener('change',syncShippingVisibility);
+  syncShippingVisibility();
+
+  function currentLocations(){
+    if(!locationList)return [];
+    return Array.from(locationList.querySelectorAll('.delivery-range-row')).map(function(row){
+      var get=function(name){var el=row.querySelector('[name="'+name+'"]');return el?el.value:''};
+      return {row:row,uf:get('local_uf').trim().toUpperCase(),city:get('local_cidade').trim(),district:get('local_bairro').trim(),active:get('local_ativa')!=='0'};
+    });
+  }
+  function validateLocations(showMessage){
+    if(currentModel()!=='cidade_regiao')return true;
+    var valid=true,activeCount=0,keys={};
+    currentLocations().forEach(function(item){
+      item.row.querySelectorAll('input,select').forEach(function(el){setInvalid(el,false)});
+      var cityField=item.row.querySelector('[name="local_cidade"]');
+      var ufField=item.row.querySelector('[name="local_uf"]');
+      if(item.active)activeCount++;
+      if(item.active&&(!item.city||item.uf.length!==2)){
+        valid=false;setInvalid(cityField,!item.city);setInvalid(ufField,item.uf.length!==2);return;
+      }
+      if(item.active&&item.row.dataset.cityLookupState==='loading'){
+        valid=false;
+        setInvalid(cityField,true);
+        cityStatus(item.row,'Aguarde o carregamento das cidades antes de salvar.','loading');
+        return;
+      }
+      if(item.active&&item.row.dataset.cityLookupState==='ready'){
+        var selectedKey=normalizeText(cityField&&cityField.dataset.citySelected||'');
+        if(!selectedKey||selectedKey!==normalizeText(item.city)){
+          valid=false;
+          setInvalid(cityField,true);
+          cityStatus(item.row,'Selecione uma cidade exibida na lista.','error');
+          return;
+        }
+      }
+      if(item.active){
+        var key=item.uf+'|'+normalizeText(item.city)+'|'+normalizeText(item.district);
+        if(keys[key]){valid=false;setInvalid(cityField,true);setInvalid(keys[key].querySelector('[name="local_cidade"]'),true)}else keys[key]=item.row;
+      }
+    });
+    if(activeCount===0)valid=false;
+    if(showMessage&&!valid)mfAlert('Revise as cidades atendidas. Escolha uma cidade sugerida pelo sistema, informe o estado e não repita a mesma cidade/bairro em duas regras ativas.');
+    return valid;
+  }
+
+
+  if(form){
+    form.addEventListener('input',function(event){if(!event.target.closest('.policy-language-tabs'))formDirty=true});
+    form.addEventListener('change',function(){formDirty=true;syncShippingVisibility()});
+    form.addEventListener('submit',function(event){
+      if(!isDeliveryBusiness)return;
+      if(!validateLocations(true)){event.preventDefault();return}
+      var model=currentModel();
+      var usesDistance=model==='distancia'||(model==='cidade_regiao'&&fallback&&fallback.value==='distancia');
+      if(usesDistance){
+        var originField=document.querySelector('[name="cep_origem"]');
+        var origin=digits(originField?.value||'')||fiscalCep;
+        if(origin.length!==8){event.preventDefault();mfAlert('Informe um CEP de origem válido ou cadastre o CEP fiscal da empresa para usar o cálculo por distância.');originField?.focus()}
+      }
+    });
+  }
+})();
+</script>
+{% endblock %}

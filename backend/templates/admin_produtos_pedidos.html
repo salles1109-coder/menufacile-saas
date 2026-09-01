@@ -1,0 +1,657 @@
+{% extends "base.html" %}
+{% block body_attrs %} class="mf-ds-admin mf-ds-produtos-pedidos"{% endblock %}
+{% block title %}Pedidos de produtos - {{ empresa.nome }}{% endblock %}
+{% block head %}
+
+<style id="pp-ajustes-visuais-final">
+.pp-row-actions{
+  gap:4px!important;
+  flex-wrap:nowrap!important;
+}
+.pp-action{
+  height:28px!important;
+  min-height:28px!important;
+  padding:0 7px!important;
+  gap:4px!important;
+  border-radius:7px!important;
+  font-size:8px!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+}
+.pp-action i{
+  font-size:10px!important;
+}
+.pp-action.pp-print{
+  width:30px!important;
+  padding:0!important;
+}
+
+/* Tipografia maior nos cartões dos pedidos */
+.pp-order-id strong{
+  font-size:20px!important;
+  font-weight:900!important;
+  line-height:1.05!important;
+}
+.pp-order-id span{
+  margin-top:4px!important;
+  font-size:14px!important;
+  font-weight:850!important;
+  line-height:1.2!important;
+}
+.pp-order-id small{
+  margin-top:5px!important;
+  font-size:12px!important;
+  line-height:1.25!important;
+}
+.pp-order-meta{
+  display:flex!important;
+  align-items:center!important;
+  gap:6px!important;
+  color:#475467!important;
+  font-size:12px!important;
+  font-weight:750!important;
+  line-height:1.35!important;
+}
+.pp-order-meta i{
+  flex:0 0 auto!important;
+  color:#350064!important;
+  font-size:11px!important;
+}
+.pp-badge{
+  margin-top:8px!important;
+  padding:5px 9px!important;
+  font-size:11px!important;
+}
+.pp-item{
+  font-size:14px!important;
+  line-height:1.4!important;
+}
+.pp-item b{
+  font-size:14px!important;
+}
+.pp-total small{
+  font-size:11px!important;
+}
+.pp-total strong{
+  font-size:22px!important;
+  font-weight:900!important;
+}
+.pp-payment{
+  font-size:11px!important;
+}
+</style>
+
+<style>
+:root{--pp-blue:#173bc7;--pp-ink:#101828;--pp-muted:#667085;--pp-line:#dce3ef;--pp-bg:#f4f7fb}
+body{background:var(--pp-bg)}
+.premium-layout{display:grid;grid-template-columns:230px minmax(0,1fr);min-height:100vh}.premium-sidebar{background:#fff;border-right:1px solid var(--pp-line);padding:18px 14px}.premium-main{min-width:0}.premium-brand{display:flex;align-items:center;gap:10px;padding:0 4px 20px;border-bottom:1px solid #edf0f5;margin-bottom:18px}.premium-brand-icon{width:42px;height:42px;display:grid;place-items:center;background:#eef3ff;color:var(--pp-blue);border-radius:12px}.premium-brand strong,.premium-brand span{display:block}.premium-brand strong{color:#132a72;font-size:17px}.premium-brand span{color:#8a93a5;font-size:11px}.premium-nav{display:grid;gap:5px}.premium-nav-link{min-height:42px;display:flex;align-items:center;gap:11px;padding:8px 11px;color:#10213c;text-decoration:none;font-size:13px;font-weight:800;border-radius:11px}.premium-nav-link i{width:18px;text-align:center}.premium-nav-link:hover{background:#f4f6fb}.premium-nav-link.active{color:#fff;background:#350064}.premium-nav-title{margin:14px 10px 4px;color:#98a2b3;font-size:10px;font-weight:900;text-transform:uppercase}
+.premium-layout{grid-template-columns:210px minmax(0,1fr)!important}.premium-sidebar{width:210px!important;min-width:210px!important;max-width:210px!important;padding:16px 12px 14px!important}.premium-brand{min-height:74px!important;margin:0 0 14px!important;padding:0 0 16px!important}.premium-brand-icon{width:36px!important;height:36px!important;min-width:36px!important}.premium-brand strong{max-width:135px!important;font-size:16px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}.premium-nav{display:flex!important;flex-direction:column!important;gap:4px!important}.premium-nav-title{display:none!important}.premium-sidebar .premium-nav-link{width:100%!important;height:42px!important;min-height:42px!important;max-height:42px!important;padding:0 12px!important;margin:0!important;border-radius:14px!important;display:flex!important;align-items:center!important;gap:11px!important;color:#172033!important;background:transparent!important;font-size:13px!important;font-weight:700!important;line-height:1!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;box-shadow:none!important}.premium-sidebar .premium-nav-link i{width:18px!important;min-width:18px!important;max-width:18px!important;height:18px!important;display:flex!important;align-items:center!important;justify-content:center!important;color:#172033!important;font-size:15px!important;line-height:18px!important}.premium-sidebar .premium-nav-link:hover{color:#2d0057!important;background:#f6f4fa!important}.premium-sidebar .premium-nav-link.active{color:#fff!important;background:#2d0057!important}.premium-sidebar .premium-nav-link.active i{color:#fff!important}
+.premium-sidebar .premium-brand-icon{background:#f3edf7!important;color:#2d0057!important}.premium-sidebar .premium-brand strong{color:#2d0057!important}.premium-sidebar .premium-brand span{color:#8a93a5!important;font-size:10.5px!important}
+.pp-topbar{min-height:68px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 26px;background:#fff;border-bottom:1px solid var(--pp-line)}.pp-title{display:flex;align-items:center;gap:11px}.pp-title-icon{width:38px;height:38px;display:grid;place-items:center;color:var(--pp-blue);background:#eef3ff;border-radius:11px}.pp-title strong,.pp-title span{display:block}.pp-title strong{font-size:16px}.pp-title span{color:var(--pp-muted);font-size:11px}.pp-actions{display:flex;gap:9px}.pp-btn{min-height:40px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 14px;color:#22304b;background:#fff;border:1px solid var(--pp-line);border-radius:10px;text-decoration:none;font-size:12px;font-weight:800}.pp-btn.primary{color:#fff;background:var(--pp-blue);border-color:var(--pp-blue)}
+.pp-topbar.pp-topbar-standard{min-height:60px!important;padding:10px 26px!important}.pp-title.pp-title-standard{gap:10px!important}.pp-title.pp-title-standard .pp-title-icon{width:34px!important;height:34px!important;min-width:34px!important;border:1px solid #dfd7f4!important;border-radius:50%!important;background:#f7f3fb!important;color:#2d0057!important;font-size:12px!important}.pp-title.pp-title-standard strong{color:#2d0057!important;font-size:14px!important;line-height:1!important;font-weight:850!important}
+.pp-content{padding:22px 26px 48px}.pp-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px}.pp-metric{min-width:0;padding:16px;display:block;color:inherit;background:#fff;border:1px solid var(--pp-line);border-radius:14px;text-decoration:none;transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease}.pp-metric:hover{border-color:#c9b8dc;box-shadow:0 10px 26px rgba(53,0,100,.08);transform:translateY(-1px)}.pp-metric.active{border-color:#350064;box-shadow:0 0 0 2px rgba(53,0,100,.08)}.pp-metric small,.pp-metric strong{display:block}.pp-metric small{color:var(--pp-muted);font-size:11px;font-weight:750}.pp-metric small i{width:15px;color:#667085;text-align:center}.pp-metric strong{margin-top:7px;color:var(--pp-ink);font-size:22px;line-height:1.1}.pp-metric.active small,.pp-metric.active small i,.pp-metric.active strong{color:#350064}.pp-toolbar{display:grid;grid-template-columns:minmax(280px,1fr) auto;align-items:center;gap:12px;margin-bottom:15px}.pp-date{display:block;min-width:0}.pp-date-row{display:flex;align-items:center;gap:8px}.pp-date-picker{position:relative;width:190px;height:44px;padding:0 13px;display:flex;align-items:center;gap:9px;color:#344054;background:#fff;border:1px solid var(--pp-line);border-radius:11px;cursor:pointer;overflow:hidden;touch-action:manipulation}.pp-date-picker>i{display:block;color:#350064;font-size:15px;pointer-events:none}.pp-date-label{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;font-weight:800;pointer-events:none}.pp-date-native{position:absolute!important;inset:0!important;z-index:5!important;width:100%!important;height:100%!important;min-height:100%!important;margin:0!important;padding:0!important;opacity:.001!important;border:0!important;background:transparent!important;cursor:pointer!important;pointer-events:auto!important;-webkit-appearance:auto!important;appearance:auto!important}.pp-date-picker:focus-within{border-color:#350064;box-shadow:0 0 0 3px rgba(53,0,100,.08)}.pp-date-clear{width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;color:#667085;background:#fff;border:1px solid var(--pp-line);border-radius:10px;text-decoration:none}.pp-date-clear:hover{color:#350064;border-color:#c9b8dc;background:#faf8fc}.pp-mobile-primary-filters{display:none}
+.pp-mobile-filter-chip{display:none}
+.pp-status-filters{display:flex;align-items:center;gap:8px;min-width:0;margin:0 0 16px;padding:0 0 2px;overflow-x:auto;overscroll-behavior-inline:contain;scroll-snap-type:x proximity;scrollbar-width:none}.pp-status-filters::-webkit-scrollbar{display:none}.pp-status-chip{flex:0 0 auto;min-height:40px;text-decoration:none;padding:0 14px;display:inline-flex;align-items:center;justify-content:center;gap:8px;color:#526078;background:#fff;border:1px solid var(--pp-line);border-radius:12px;font:inherit;font-size:12px;font-weight:850;white-space:nowrap;cursor:pointer;scroll-snap-align:start;transition:background .18s ease,border-color .18s ease,color .18s ease,box-shadow .18s ease}.pp-status-chip:hover{color:#350064;border-color:#c9b8dc}.pp-status-chip.active{color:#fff;background:#350064;border-color:#350064;box-shadow:0 6px 16px rgba(53,0,100,.14)}.pp-status-chip-count{min-width:22px;height:22px;padding:0 6px;display:inline-flex;align-items:center;justify-content:center;color:#667085;background:#f1f4f8;border-radius:999px;font-size:10px;font-weight:900}.pp-status-chip.active .pp-status-chip-count{color:#350064;background:#fff}
+.pp-search{position:relative;min-width:250px}.pp-search i{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#8791a3}.pp-search input{width:100%;height:40px;padding:0 12px 0 35px;border:1px solid var(--pp-line);border-radius:10px;background:#fff;font:inherit}.pp-table-head{display:grid;grid-template-columns:minmax(220px,1.2fr) minmax(260px,1.5fr) 150px 230px;gap:18px;padding:0 17px 8px;color:#7a8496;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.05em}.pp-board{display:grid;gap:9px}.pp-order{display:grid;grid-template-columns:minmax(220px,1.2fr) minmax(260px,1.5fr) 150px 230px;gap:18px;align-items:center;padding:14px 16px;background:#fff;border:1px solid var(--pp-line);border-radius:13px;box-shadow:0 5px 18px rgba(16,24,40,.035);transition:.2s}.pp-order:hover{border-color:#b8c5df;box-shadow:0 10px 26px rgba(16,24,40,.07)}.pp-order-id{display:flex;align-items:flex-start;gap:11px}.pp-order-icon{width:40px;height:40px;display:grid;place-items:center;color:#fff;background:var(--pp-blue);border-radius:10px}.pp-order-id strong,.pp-order-id span,.pp-order-id small{display:block}.pp-order-id strong{font-size:16px}.pp-order-id span{margin-top:2px;font-size:11px;font-weight:800}.pp-order-id small{margin-top:3px;color:var(--pp-muted);font-size:10px}.pp-items{display:grid;gap:6px}.pp-item{display:flex;justify-content:space-between;gap:10px;color:#27354d;font-size:11px}.pp-item b{color:#111827}.pp-total small,.pp-total strong{display:block}.pp-total small{color:var(--pp-muted);font-size:10px}.pp-total strong{margin-top:3px;font-size:17px}.pp-payment{margin-top:7px;color:#526078;font-size:10px}.pp-pay-state{display:inline-flex;align-items:center;gap:5px;margin-top:6px;padding:5px 8px;border-radius:999px;font-size:9px;font-weight:900}.pp-pay-state.pago{color:#067647;background:#ecfdf3}.pp-pay-state.pendente{color:#9a6700;background:#fff7d6}.pp-pay-state.recusado,.pp-pay-state.erro,.pp-pay-state.cancelado,.pp-pay-state.expirado{color:#b42318;background:#fff1f0}.pp-pay-state.nao_iniciado{color:#475467;background:#f2f4f7}.pp-status{display:grid;gap:7px}.pp-status select{width:100%;height:38px;padding:0 9px;color:#17233b;background:#fff;border:1px solid var(--pp-line);border-radius:9px;font-size:11px;font-weight:800}.pp-client{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#44516a;background:#f7f9fc;border:1px solid #edf0f5;border-radius:8px;padding:7px 9px;font-size:10px;font-weight:700}.pp-row-actions{display:flex;gap:6px}.pp-action{height:32px;display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:0 9px;color:#344054;background:#fff;border:1px solid var(--pp-line);border-radius:8px;font-size:9px;font-weight:850;cursor:pointer}.pp-action.primary{color:#fff;background:#350064;border-color:#350064}.pp-details{display:none;grid-column:1/-1;padding:13px 14px;color:#475467;background:#f8f9fc;border-top:1px solid #edf0f5;border-radius:9px;font-size:11px}.pp-order.open .pp-details{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.pp-details strong,.pp-details span{display:block}.pp-details strong{color:#17233b;margin-bottom:3px}.pp-empty{padding:50px;text-align:center;color:var(--pp-muted);background:#fff;border:1px dashed #cfd7e6;border-radius:15px}.pp-badge{display:inline-flex;margin-top:7px;padding:4px 7px;color:#157347;background:#eaf8ef;border-radius:20px;font-size:9px;font-weight:900}.pp-btn{white-space:nowrap}
+@media(max-width:1050px){.pp-order{grid-template-columns:1fr 1fr}.pp-table-head{display:none}.pp-summary{grid-template-columns:repeat(2,1fr)}}
+.pp-age-label{display:inline-flex!important;align-items:center;gap:5px;margin-top:7px!important;padding:5px 8px;color:#9a6700!important;background:#fff7d6;border-radius:999px;font-size:9px!important;font-style:normal;font-weight:900!important;line-height:1.2!important}.pp-age-label i{font-size:8px}.pp-order-id small{white-space:normal!important}.pp-empty.pp-empty-pending h3{max-width:360px;margin-left:auto;margin-right:auto}
+
+@media(max-width:760px){.premium-layout{grid-template-columns:1fr}.premium-sidebar{display:none}.pp-topbar{align-items:center;flex-direction:row}.pp-content{padding:12px 12px 76px}.pp-order{grid-template-columns:1fr}.pp-actions{width:auto;overflow:visible}.pp-order.open .pp-details{grid-template-columns:1fr}}
+.pp-search{width:100%;min-width:0!important}.pp-search input{box-sizing:border-box}.pp-search i{pointer-events:none}.pp-table-head{margin-top:2px}
+.pp-search{position:relative!important}.pp-search i{position:absolute!important;z-index:2;left:14px!important;top:50%!important;width:18px;height:18px;display:flex;align-items:center;justify-content:center;transform:translateY(-50%)!important;color:#536078!important;font-size:13px!important;pointer-events:none}.pp-search input{height:44px!important;padding:0 42px 0 44px!important;color:#17233b!important;background:#fff!important;border:1px solid #cfd8e8!important;border-radius:12px!important;outline:0!important;box-shadow:0 0 0 4px rgba(23,59,199,.04)!important;font-size:12px!important}.pp-search input::placeholder{color:#8a94a6!important}.pp-search input:focus{border-color:#173bc7!important;box-shadow:0 0 0 4px rgba(23,59,199,.11)!important}
+.pp-detail-overlay{position:fixed;z-index:9999;inset:0;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(15,23,42,.58);backdrop-filter:blur(3px)}.pp-detail-overlay.open{display:flex}.pp-detail-modal{width:min(820px,96vw);max-height:90vh;overflow:auto;background:#fff;border-radius:18px;box-shadow:0 30px 80px rgba(15,23,42,.3)}.pp-detail-head{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:18px 22px;background:#fff;border-bottom:1px solid #e7ebf2}.pp-detail-head strong{font-size:18px}.pp-detail-close{width:38px;height:38px;border:0;border-radius:10px;background:#f1f4f8;cursor:pointer}.pp-detail-body{padding:20px 22px}.pp-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.pp-detail-card{padding:14px;background:#f8fafc;border:1px solid #e6eaf1;border-radius:12px}.pp-detail-card.full{grid-column:1/-1}.pp-detail-card small,.pp-detail-card strong{display:block}.pp-detail-card small{margin-bottom:5px;color:#778196;font-size:10px;font-weight:800;text-transform:uppercase}.pp-detail-card strong{color:#17233b;font-size:12px;white-space:pre-line}.pp-detail-items{margin-top:16px;border:1px solid #e6eaf1;border-radius:12px;overflow:hidden}.pp-detail-item{display:grid;grid-template-columns:1fr 80px 100px;gap:10px;padding:12px 14px;border-bottom:1px solid #edf0f5;font-size:12px}.pp-detail-item:last-child{border-bottom:0}.pp-detail-total{display:flex;justify-content:flex-end;padding:15px;color:#101828;font-size:18px;font-weight:900}@media(max-width:600px){.pp-detail-grid{grid-template-columns:1fr}.pp-detail-card.full{grid-column:auto}.pp-detail-item{grid-template-columns:1fr auto}.pp-detail-item span:nth-child(2){display:none}}
+@media(max-width:760px){
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .mf-sidebar-toggle{
+    display:none!important;
+  }
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .pp-topbar.pp-topbar-standard{
+    position:sticky!important;
+    top:0!important;
+    z-index:70!important;
+    min-height:64px!important;
+    padding:10px 14px!important;
+    display:flex!important;
+    flex-direction:row!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:10px!important;
+    background:rgba(255,255,255,.98)!important;
+    border-bottom:1px solid #e3eaf3!important;
+    box-shadow:none!important;
+    backdrop-filter:blur(14px)!important;
+  }
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .pp-title.pp-title-standard{
+    min-width:0!important;
+    flex:1 1 auto!important;
+    display:flex!important;
+    align-items:center!important;
+    gap:10px!important;
+  }
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .pp-title.pp-title-standard .pp-title-icon{
+    width:38px!important;
+    min-width:38px!important;
+    height:38px!important;
+    border:1px solid #e4dcf1!important;
+    border-radius:50%!important;
+    background:#f7f3fb!important;
+    color:#2d0057!important;
+    font-size:13px!important;
+  }
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .pp-title.pp-title-standard strong{
+    display:block!important;
+    max-width:100%!important;
+    color:#17233b!important;
+    font-size:18px!important;
+    line-height:1.15!important;
+    font-weight:900!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .pp-actions{
+    display:none!important;
+  }
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .pp-content{
+    padding:12px 12px 84px!important;
+  }
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .pp-content > .pp-summary,
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .pp-search{
+    display:none!important;
+  }
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .pp-toolbar{
+    width:100%!important;
+    max-width:100%!important;
+    margin:0 0 14px!important;
+    padding:0!important;
+    display:block!important;
+  }
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .pp-date{
+    position:relative!important;
+    width:100%!important;
+    min-width:0!important;
+    display:block!important;
+  }
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .pp-date-row{
+    position:relative!important;
+    width:100%!important;
+    min-width:0!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    align-items:center!important;
+    gap:7px!important;
+  }
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .pp-date.has-date .pp-date-row{
+    grid-template-columns:minmax(0,1fr) 44px!important;
+  }
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .pp-date-picker{
+    grid-column:1!important;
+    position:relative!important;
+    width:100%!important;
+    min-width:0!important;
+    height:44px!important;
+    padding:0 13px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    gap:9px!important;
+    color:#344054!important;
+    background:#fff!important;
+    border:1px solid var(--pp-line)!important;
+    border-radius:12px!important;
+    overflow:hidden!important;
+    cursor:pointer!important;
+    touch-action:manipulation!important;
+  }
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .pp-date-picker>i{
+    position:relative!important;
+    z-index:12!important;
+    display:block!important;
+    color:#350064!important;
+    font-size:16px!important;
+    pointer-events:none!important;
+  }
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .pp-date-label{
+    position:relative!important;
+    z-index:12!important;
+    display:block!important;
+    min-width:0!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    white-space:nowrap!important;
+    font-size:11px!important;
+    font-weight:850!important;
+    pointer-events:none!important;
+  }
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .pp-date-native{
+    position:absolute!important;
+    inset:0!important;
+    z-index:8!important;
+    width:100%!important;
+    min-width:0!important;
+    height:100%!important;
+    min-height:44px!important;
+    margin:0!important;
+    padding:0!important;
+    opacity:1!important;
+    color:transparent!important;
+    -webkit-text-fill-color:transparent!important;
+    caret-color:transparent!important;
+    font-size:16px!important;
+    border:0!important;
+    border-radius:12px!important;
+    background:transparent!important;
+    cursor:pointer!important;
+    pointer-events:auto!important;
+    -webkit-appearance:auto!important;
+    appearance:auto!important;
+  }
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .pp-date-native::-webkit-datetime-edit,
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .pp-date-native::-webkit-datetime-edit-fields-wrapper,
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .pp-date-native::-webkit-datetime-edit-text,
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .pp-date-native::-webkit-datetime-edit-month-field,
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .pp-date-native::-webkit-datetime-edit-day-field,
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .pp-date-native::-webkit-datetime-edit-year-field{
+    color:transparent!important;
+    -webkit-text-fill-color:transparent!important;
+  }
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .pp-date-native::-webkit-calendar-picker-indicator{
+    position:absolute!important;
+    inset:0!important;
+    width:100%!important;
+    height:100%!important;
+    margin:0!important;
+    padding:0!important;
+    opacity:0!important;
+    cursor:pointer!important;
+  }
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .pp-mobile-primary-filters{
+    width:100%!important;
+    min-width:0!important;
+    margin-top:8px!important;
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:8px!important;
+  }
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .pp-mobile-filter-chip{
+    width:100%!important;
+    min-width:0!important;
+    height:44px!important;
+    padding:0 8px!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    color:#526078!important;
+    background:#fff!important;
+    border:1px solid var(--pp-line)!important;
+    border-radius:12px!important;
+    text-decoration:none!important;
+    font-size:10px!important;
+    line-height:1!important;
+    font-weight:850!important;
+    white-space:nowrap!important;
+  }
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .pp-mobile-filter-chip.active{
+    color:#fff!important;
+    background:#350064!important;
+    border-color:#350064!important;
+    box-shadow:0 6px 16px rgba(53,0,100,.14)!important;
+  }
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .pp-mobile-pending-count{
+    min-width:22px!important;
+    height:22px!important;
+    margin-left:5px!important;
+    padding:0 6px!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    border-radius:999px!important;
+    color:#350064!important;
+    background:#fff!important;
+    font-size:10px!important;
+    line-height:1!important;
+    font-weight:900!important;
+  }
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .pp-mobile-filter-chip:not(.active) .pp-mobile-pending-count{
+    color:#fff!important;
+    background:#350064!important;
+  }
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .pp-date-clear{
+    grid-column:2!important;
+    width:44px!important;
+    height:44px!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    color:#667085!important;
+    background:#fff!important;
+    border:1px solid var(--pp-line)!important;
+    border-radius:12px!important;
+    text-decoration:none!important;
+  }
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .pp-order-meta{
+    margin-top:7px!important;
+    color:#344054!important;
+    font-size:14px!important;
+    font-weight:800!important;
+    line-height:1.35!important;
+    white-space:normal!important;
+  }
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .pp-order-meta i{
+    font-size:13px!important;
+  }
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .pp-age-label{
+    max-width:100%!important;
+    white-space:normal!important;
+  }
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .pp-status-filters{
+    width:100%!important;
+    max-width:100%!important;
+    margin:0 0 14px!important;
+    padding:0 0 2px!important;
+    display:flex!important;
+    overflow-x:auto!important;
+  }
+  html body.mf-global-mobile-admin.mf-ds-produtos-pedidos .pp-board{
+    margin-top:0!important;
+  }
+}
+</style>
+{% endblock %}
+{% block page %}
+{% set _pode_dashboard = permissao_admin_sessao(request, 'dashboard') %}{% set _pode_cardapio = permissao_admin_sessao(request, 'cardapio') %}{% set _pode_pedidos = permissao_admin_sessao(request, 'pedidos') %}{% set _pode_reservas = permissao_admin_sessao(request, 'reservas') %}{% set _pode_financeiro = permissao_admin_sessao(request, 'financeiro') %}{% set _pode_fiscal = permissao_admin_sessao(request, 'fiscal') %}{% set _pode_configuracoes = permissao_admin_sessao(request, 'configuracoes') %}{% set _pode_integracoes = permissao_admin_sessao(request, 'integracoes') %}{% set _pode_menu_publico = permissao_admin_sessao(request, 'menu_publico') %}{% set _admin_total = perfil_admin_sessao(request) == 'administrador' %}
+<div class="premium-layout mf-admin-shell">
+{% include "includes/admin_sidebar.html" %}
+<main class="premium-main"><header class="pp-topbar pp-topbar-standard"><div class="pp-title pp-title-standard"><div class="pp-title-icon"><i class="fa-solid fa-boxes-packing"></i></div><div><strong>Pedidos de produtos</strong></div></div><div class="pp-actions"><a class="pp-btn" href="?filtro={{ filtro_selecionado }}{% if data_selecionada %}&data={{ data_selecionada }}{% endif %}"><i class="fa-solid fa-rotate"></i>Atualizar</a><a class="pp-btn primary" href="/menu/{{ empresa.slug }}" target="_blank"><i class="fa-solid fa-store"></i>Ver loja</a></div></header>
+<section class="pp-content">
+<div class="pp-summary" aria-label="Filtros principais dos pedidos">
+  <a class="pp-metric{% if filtro_ativo == 'ativos' %} active{% endif %}" href="?filtro=ativos{% if data_selecionada %}&data={{ data_selecionada }}{% endif %}" aria-current="{% if filtro_ativo == 'ativos' %}page{% else %}false{% endif %}">
+    <small><i class="fa-solid fa-inbox"></i> Pedidos ativos</small>
+    <strong>{{ metricas_pedidos.ativos }}</strong>
+  </a>
+  <a class="pp-metric{% if filtro_ativo == 'pendentes' %} active{% endif %}" href="?filtro=pendentes{% if data_selecionada %}&data={{ data_selecionada }}{% endif %}" aria-current="{% if filtro_ativo == 'pendentes' %}page{% else %}false{% endif %}">
+    <small><i class="fa-regular fa-clock"></i> Pendentes</small>
+    <strong>{{ metricas_pedidos.pendentes }}</strong>
+  </a>
+  <a class="pp-metric{% if filtro_ativo == 'concluidos' %} active{% endif %}" href="?filtro=concluidos{% if data_selecionada %}&data={{ data_selecionada }}{% endif %}" aria-current="{% if filtro_ativo == 'concluidos' %}page{% else %}false{% endif %}">
+    <small><i class="fa-regular fa-circle-check"></i> Concluídos</small>
+    <strong>{{ metricas_pedidos.concluidos }}</strong>
+  </a>
+  <a class="pp-metric{% if filtro_ativo == 'valor_pendente' %} active{% endif %}" href="?filtro=valor_pendente{% if data_selecionada %}&data={{ data_selecionada }}{% endif %}" aria-current="{% if filtro_ativo == 'valor_pendente' %}page{% else %}false{% endif %}">
+    <small><i class="fa-solid fa-wallet"></i> Valor pendente</small>
+    <strong>R$ {{ metricas_pedidos.valor_pendente }}</strong>
+  </a>
+</div>
+<div class="pp-toolbar pp-toolbar-clean">
+  <label class="pp-search pp-search-clean" for="ppSearch">
+    <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+    <input id="ppSearch" type="search" inputmode="search" placeholder="Buscar nº 003, cliente ou produto">
+  </label>
+  <form class="pp-date{% if data_selecionada %} has-date{% endif %}" method="get" aria-label="Filtrar pedidos por data">
+    <input type="hidden" name="filtro" value="{{ filtro_selecionado }}">
+    <div class="pp-date-row">
+      <div class="pp-date-picker" title="Escolher data">
+        <i class="fa-regular fa-calendar" aria-hidden="true"></i>
+        <span class="pp-date-label">{% if data_formatada %}{{ data_formatada }}{% else %}Todas as datas{% endif %}</span>
+        <input id="ppDateInput" class="pp-date-native" type="date" name="data" value="{{ data_selecionada }}" aria-label="Escolher uma data para filtrar os pedidos" onchange="this.form.submit()">
+      </div>
+      {% if data_selecionada %}<a class="pp-date-clear" href="?filtro={{ filtro_selecionado }}" aria-label="Limpar filtro de data" title="Limpar data"><i class="fa-solid fa-xmark"></i></a>{% endif %}
+    </div>
+    <div class="pp-mobile-primary-filters" aria-label="Filtros rápidos">
+      <a class="pp-mobile-filter-chip{% if filtro_selecionado == 'pendentes' %} active{% endif %}" href="?filtro=pendentes{% if data_selecionada %}&data={{ data_selecionada }}{% endif %}" aria-current="{% if filtro_selecionado == 'pendentes' %}page{% else %}false{% endif %}">Pendentes{% if metricas_pedidos.pendentes|int > 0 %}<span class="pp-mobile-pending-count" aria-label="{{ metricas_pedidos.pendentes }} pedidos pendentes">{{ metricas_pedidos.pendentes }}</span>{% endif %}</a>
+      <a class="pp-mobile-filter-chip{% if filtro_selecionado == 'concluidos' %} active{% endif %}" href="?filtro=concluidos{% if data_selecionada %}&data={{ data_selecionada }}{% endif %}" aria-current="{% if filtro_selecionado == 'concluidos' %}page{% else %}false{% endif %}">Concluídos</a>
+    </div>
+  </form>
+</div>
+<div class="pp-status-filters" id="ppStatusFilters" aria-label="Filtrar pedidos por status">
+  <a class="pp-status-chip{% if filtro_selecionado == 'todos' %} active{% endif %}" href="?filtro=todos{% if data_selecionada %}&data={{ data_selecionada }}{% endif %}" aria-current="{% if filtro_selecionado == 'todos' %}page{% else %}false{% endif %}">Todos <span class="pp-status-chip-count">{{ contagens_status.todos }}</span></a>
+  <a class="pp-status-chip{% if filtro_selecionado == 'novos' %} active{% endif %}" href="?filtro=novos{% if data_selecionada %}&data={{ data_selecionada }}{% endif %}" aria-current="{% if filtro_selecionado == 'novos' %}page{% else %}false{% endif %}">Novos <span class="pp-status-chip-count">{{ contagens_status.novos }}</span></a>
+  <a class="pp-status-chip{% if filtro_selecionado == 'aguardando_pagamento' %} active{% endif %}" href="?filtro=aguardando_pagamento{% if data_selecionada %}&data={{ data_selecionada }}{% endif %}" aria-current="{% if filtro_selecionado == 'aguardando_pagamento' %}page{% else %}false{% endif %}">Aguardando pagamento <span class="pp-status-chip-count">{{ contagens_status.aguardando_pagamento }}</span></a>
+  <a class="pp-status-chip{% if filtro_selecionado == 'pagos' %} active{% endif %}" href="?filtro=pagos{% if data_selecionada %}&data={{ data_selecionada }}{% endif %}" aria-current="{% if filtro_selecionado == 'pagos' %}page{% else %}false{% endif %}">Pagos <span class="pp-status-chip-count">{{ contagens_status.pagos }}</span></a>
+  <a class="pp-status-chip{% if filtro_selecionado == 'separacao' %} active{% endif %}" href="?filtro=separacao{% if data_selecionada %}&data={{ data_selecionada }}{% endif %}" aria-current="{% if filtro_selecionado == 'separacao' %}page{% else %}false{% endif %}">Separação <span class="pp-status-chip-count">{{ contagens_status.separacao }}</span></a>
+  <a class="pp-status-chip{% if filtro_selecionado == 'envio' %} active{% endif %}" href="?filtro=envio{% if data_selecionada %}&data={{ data_selecionada }}{% endif %}" aria-current="{% if filtro_selecionado == 'envio' %}page{% else %}false{% endif %}">Envio <span class="pp-status-chip-count">{{ contagens_status.envio }}</span></a>
+  <a class="pp-status-chip{% if filtro_selecionado == 'pronto_retirada' %} active{% endif %}" href="?filtro=pronto_retirada{% if data_selecionada %}&data={{ data_selecionada }}{% endif %}" aria-current="{% if filtro_selecionado == 'pronto_retirada' %}page{% else %}false{% endif %}">Pronto para retirada <span class="pp-status-chip-count">{{ contagens_status.pronto_retirada }}</span></a>
+  <a class="pp-status-chip{% if filtro_selecionado == 'cancelados' %} active{% endif %}" href="?filtro=cancelados{% if data_selecionada %}&data={{ data_selecionada }}{% endif %}" aria-current="{% if filtro_selecionado == 'cancelados' %}page{% else %}false{% endif %}">Cancelados <span class="pp-status-chip-count">{{ contagens_status.cancelados }}</span></a>
+</div>
+<div class="pp-board" id="ppBoard">{% for grupo in pedidos_com_itens %}{% set p=grupo.pedido %}<article class="pp-order" data-id="{{ p.id }}" data-status="{{ p.status }}" data-payment="{{ (p.status_pagamento or 'nao_iniciado')|lower }}" data-method="{{ (p.pagamento or '')|e }}" data-gateway="{{ (p.gateway_pagamento or '')|e }}" data-phone="{{ p.telefone_cliente or '' }}" data-number="#{{ '%03d'|format(p.numero_dia or p.id) }}" data-client="{{ p.nome_cliente or 'Cliente' }}" data-type="{{ p.tipo_pedido or 'Pedido' }}" data-total="{{ p.total or 0 }}" data-company="{{ empresa.nome|e }}"><div class="pp-order-id"><div class="pp-order-icon"><i class="fa-solid fa-box"></i></div><div><strong>#{{ '%03d'|format(p.numero_dia or p.id) }}</strong><span>{{ p.nome_cliente }}</span><small class="pp-order-meta"><i class="fa-regular fa-calendar" aria-hidden="true"></i>{% if grupo.rotulo_data %}{{ grupo.rotulo_data }} · {% endif %}{{ p.criado_em.strftime('%H:%M') if p.criado_em else '' }} · {{ p.tipo_pedido }}</small>{% if grupo.rotulo_pendencia %}<em class="pp-age-label"><i class="fa-regular fa-clock"></i>{{ grupo.rotulo_pendencia }}</em>{% endif %}<em class="pp-badge">{{ p.telefone_cliente }}</em></div></div><div class="pp-items">{% for item in grupo.itens %}<div class="pp-item"><span><b>{{ item.quantidade }}x</b> {{ item.nome_item }}</span><strong>R$ {{ ('%.2f'|format(item.subtotal or 0))|replace('.', ',') }}</strong></div>{% endfor %}</div><div class="pp-total"><small>Total do pedido</small><strong>R$ {{ ('%.2f'|format(p.total or 0))|replace('.', ',') }}</strong><div class="pp-payment"><i class="fa-regular fa-credit-card"></i> {{ p.pagamento or 'Não informado' }}</div>{% set ps=(p.status_pagamento or 'nao_iniciado')|lower %}<div class="pp-pay-state {{ ps }}"><i class="fa-solid {% if ps=='pago' %}fa-circle-check{% elif ps=='pendente' %}fa-clock{% elif ps in ['recusado','erro','cancelado','expirado'] %}fa-circle-xmark{% else %}fa-minus{% endif %}"></i>{% if ps=='pago' %}Pagamento pago{% elif ps=='pendente' %}Aguardando pagamento{% elif ps=='recusado' %}Pagamento recusado{% elif ps=='cancelado' %}Pagamento cancelado{% elif ps=='expirado' %}Pagamento expirado{% elif ps=='erro' %}Erro no pagamento{% else %}Pagamento não iniciado{% endif %}</div></div>{% set eh_entrega = (p.tipo_pedido or '')|lower == 'entrega' %}<div class="pp-status"><select onchange="ppAtualizarStatus({{ p.id }},this)"><option value="novo" {% if p.status in ['novo','recebido'] %}selected{% endif %}>Novo pedido</option><option value="aguardando_pagamento" {% if p.status=='aguardando_pagamento' %}selected{% endif %}>Aguardando pagamento</option><option value="pagamento confirmado" {% if p.status=='pagamento confirmado' %}selected{% endif %}>Pagamento confirmado</option><option value="em separacao" {% if p.status in ['em separacao','em preparo'] %}selected{% endif %}>Em separação</option>{% if eh_entrega %}<option value="enviado" {% if p.status=='enviado' %}selected{% endif %}>Enviado</option><option value="saiu para entrega" {% if p.status=='saiu para entrega' %}selected{% endif %}>Saiu para entrega</option>{% else %}<option value="pronto para retirada" {% if p.status=='pronto para retirada' %}selected{% endif %}>Pronto para retirada</option>{% endif %}<option value="cancelado" {% if p.status=='cancelado' %}selected{% endif %}>Cancelado</option><option value="finalizado" {% if p.status in ['finalizado','concluido','concluído'] %}selected{% endif %}>Concluído</option></select><div class="pp-client"><i class="fa-solid fa-location-dot"></i> {% if p.tipo_pedido == 'Entrega' %}{{ p.endereco_entrega }}, {{ p.cidade_entrega }}{% else %}Retirada na loja{% endif %}</div></div></article>{% else %}<div class="pp-empty{% if filtro_ativo in ['ativos','pendentes','valor_pendente'] %} pp-empty-pending{% endif %}"><i class="fa-solid fa-box-open"></i>{% if data_selecionada %}<h3>Nenhum pedido nesta data</h3><p>Não há pedidos para este filtro em {{ data_formatada }}.</p>{% elif filtro_ativo == 'pendentes' %}<h3>Nenhum pedido pendente</h3><p>Não há pedidos novos ou aguardando pagamento.</p>{% elif filtro_ativo == 'concluidos' %}<h3>Nenhum pedido concluído</h3><p>Os pedidos finalizados aparecerão aqui.</p>{% elif filtro_ativo == 'cancelados' %}<h3>Nenhum pedido cancelado</h3><p>Os pedidos cancelados aparecerão aqui.</p>{% elif filtro_ativo == 'valor_pendente' %}<h3>Nenhum pagamento pendente</h3><p>Não há valores aguardando confirmação.</p>{% elif filtro_ativo == 'ativos' %}<h3>Nenhum pedido ativo</h3><p>Todos os pedidos já foram concluídos ou cancelados.</p>{% elif filtro_ativo == 'novos' %}<h3>Nenhum pedido novo</h3><p>Os novos pedidos aparecerão aqui.</p>{% elif filtro_ativo == 'aguardando_pagamento' %}<h3>Nenhum pedido aguardando pagamento</h3><p>Não há pagamentos pendentes neste momento.</p>{% elif filtro_ativo == 'pagos' %}<h3>Nenhum pedido pago</h3><p>Os pagamentos confirmados aparecerão aqui.</p>{% elif filtro_ativo == 'separacao' %}<h3>Nenhum pedido em separação</h3><p>Os pedidos em preparação aparecerão aqui.</p>{% elif filtro_ativo == 'envio' %}<h3>Nenhum pedido em envio</h3><p>Os pedidos enviados aparecerão aqui.</p>{% elif filtro_ativo == 'pronto_retirada' %}<h3>Nenhum pedido pronto para retirada</h3><p>Os pedidos liberados para retirada aparecerão aqui.</p>{% else %}<h3>Nenhum pedido cadastrado</h3><p>Os novos pedidos aparecerão aqui.</p>{% endif %}</div>{% endfor %}</div>
+</section></main></div>
+<script>
+var ppFiltroServidor={{ filtro_selecionado|tojson }};
+function ppNormalizarFiltroStatus(valor){
+  return String(valor||'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/_/g,' ').replace(/\s+/g,' ');
+}
+function ppCardCombinaFiltro(status,pagamento,filtro){
+  var s=ppNormalizarFiltroStatus(status);
+  var p=ppNormalizarFiltroStatus(pagamento);
+  var f=String(filtro||'todos');
+  var concluido=['finalizado','concluido'].includes(s);
+  var cancelado=s==='cancelado';
+  var pagamentoPendente=['pendente','aguardando pagamento'].includes(p);
+  if(f==='todos')return true;
+  if(f==='ativos')return !concluido&&!cancelado;
+  if(f==='pendentes')return s==='novo'||s==='recebido'||s==='aguardando pagamento'||(!cancelado&&pagamentoPendente);
+  if(f==='concluidos')return concluido;
+  if(f==='cancelados')return cancelado;
+  if(f==='valor_pendente')return !cancelado&&pagamentoPendente;
+  if(f==='novos')return s==='novo'||s==='recebido';
+  if(f==='aguardando_pagamento')return !cancelado&&(s==='aguardando pagamento'||pagamentoPendente);
+  if(f==='pagos')return !cancelado&&(s==='pagamento confirmado'||p==='pago');
+  if(f==='separacao')return s==='em separacao'||s==='em preparo';
+  if(f==='envio')return s==='enviado'||s==='saiu para entrega';
+  if(f==='pronto_retirada')return s==='pronto para retirada';
+  return true;
+}
+function ppAplicarBusca(){
+  var q=(document.getElementById('ppSearch')?.value||'').toLowerCase().trim();
+  document.querySelectorAll('.pp-order').forEach(function(card){
+    card.style.display=!q||card.textContent.toLowerCase().includes(q)?'grid':'none';
+  });
+}
+function ppNormalizarStatusMensagem(valor){
+  return String(valor || '')
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g,'')
+    .replace(/_/g,' ')
+    .replace(/\s+/g,' ');
+}
+function ppMensagemWhatsApp(card){
+  var numero=card.querySelector('.pp-order-id strong')?.textContent.trim()||'';
+  var nomeCompleto=card.querySelector('.pp-order-id span')?.textContent.trim()||'Cliente';
+  var nome=nomeCompleto.split(/\s+/)[0]||'Cliente';
+  var status=ppNormalizarStatusMensagem(card.querySelector('.pp-status select')?.value||'novo');
+  if(status==='recebido')status='novo';
+  if(status==='em preparo')status='em separacao';
+  var pagamento=ppNormalizarStatusMensagem(card.dataset.payment||'nao iniciado');
+  var tipo=(card.querySelector('.pp-order-id small')?.textContent.split('·').pop()||'').trim();
+  var empresa={{ empresa.nome|tojson }};
+
+  var mensagens={
+    'aguardando pagamento':
+      'Olá, '+nome+'! 👋\n\nRecebemos o seu pedido '+numero+' na '+empresa+'.\n\n⏳ Estamos aguardando a confirmação do pagamento para prosseguir com o pedido.\n\nVocê pode acessar “Meus pedidos” no menu para continuar o pagamento.',
+    'novo':
+      'Olá, '+nome+'! 👋\n\nSeu pedido '+numero+' foi recebido pela '+empresa+'.\n\n✅ O pedido já está em nossa central e será analisado em breve.',
+    'pagamento confirmado':
+      'Olá, '+nome+'! ✅\n\nO pagamento do pedido '+numero+' foi confirmado com sucesso.\n\nSeu pedido já pode seguir para preparação/separação.',
+    'em separacao':
+      'Olá, '+nome+'! 📦\n\nSeu pedido '+numero+' está em separação/preparação.\n\nNossa equipe já está cuidando de tudo com atenção.',
+    'enviado':
+      'Olá, '+nome+'! 📦\n\nSeu pedido '+numero+' foi enviado.\n\nAcompanhe o recebimento pelos dados informados pela '+empresa+'.',
+    'saiu para entrega':
+      'Olá, '+nome+'! 🚚\n\nSeu pedido '+numero+' saiu para entrega e está a caminho.\n\nAcompanhe o recebimento no endereço informado.',
+    'pronto para retirada':
+      'Olá, '+nome+'! 🛍️\n\nSeu pedido '+numero+' está pronto para retirada na '+empresa+'.\n\nVocê já pode comparecer ao estabelecimento para retirá-lo.',
+    'finalizado':
+      'Olá, '+nome+'! 🎉\n\nO pedido '+numero+' foi concluído com sucesso.\n\nAgradecemos pela preferência e esperamos atender você novamente!',
+    'cancelado':
+      'Olá, '+nome+'. ❌\n\nO pedido '+numero+' foi cancelado.\n\nCaso precise de esclarecimentos, entre em contato com a '+empresa+'.'
+  };
+
+  if(status==='cancelado' && pagamento==='expirado'){
+    return 'Olá, '+nome+'. ⏰\n\nO prazo para pagamento do pedido '+numero+' expirou e o pedido foi cancelado automaticamente.\n\nCaso ainda queira os produtos, faça um novo pedido pelo menu da '+empresa+'.';
+  }
+  if(status==='cancelado' && pagamento==='cancelado'){
+    return 'Olá, '+nome+'. ❌\n\nO pedido '+numero+' e o pagamento pendente foram cancelados.\n\nCaso tenha alguma dúvida, entre em contato com a '+empresa+'.';
+  }
+  if(status==='enviado' && tipo.toLowerCase().includes('retirada')){
+    return mensagens['pronto para retirada'];
+  }
+  return mensagens[status]||('Olá, '+nome+'! Temos uma nova atualização sobre o pedido '+numero+'.');
+}
+function ppAbrirWhatsAppPedido(card){
+  var phone=(card.querySelector('.pp-badge')?.textContent||'').replace(/\D/g,'');
+  if(!phone){mfAlert('Telefone não informado para este cliente.');return;}
+  var mensagem=ppMensagemWhatsApp(card);
+  window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(mensagem),'_blank','noopener');
+}
+function ppEsc(value){return String(value??'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function ppRotuloPagamento(status){var s=String(status||'nao_iniciado').toLowerCase();return {pago:'Pago',pendente:'Aguardando pagamento',recusado:'Recusado',cancelado:'Cancelado',expirado:'Expirado',erro:'Erro no pagamento',nao_iniciado:'Não iniciado'}[s]||s}
+function ppFormatarData(valor){if(!valor)return '—';try{return new Date(valor).toLocaleString('pt-BR')}catch(e){return valor}}
+async function ppAbrirDetalhes(id){
+  var empresa=(location.pathname.match(/^\/admin\/(\d+)/)||[])[1];if(!empresa)return;
+  var overlay=document.getElementById('ppDetailOverlay');if(!overlay){overlay=document.createElement('div');overlay.id='ppDetailOverlay';overlay.className='pp-detail-overlay';overlay.innerHTML='<div class="pp-detail-modal"><div class="pp-detail-head"><strong id="ppDetailTitle">Detalhes do pedido</strong><button class="pp-detail-close" type="button" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button></div><div class="pp-detail-body" id="ppDetailBody"></div></div>';document.body.appendChild(overlay);overlay.querySelector('.pp-detail-close').onclick=function(){overlay.classList.remove('open')};overlay.onclick=function(e){if(e.target===overlay)overlay.classList.remove('open')}}
+  overlay.classList.add('open');document.getElementById('ppDetailBody').innerHTML='<div class="pp-empty">Carregando informações...</div>';
+  try{var response=await fetch('/admin/'+empresa+'/produtos-pedidos/'+id);var d=await response.json();if(!response.ok||d.error)throw new Error(d.error||'Não foi possível carregar o pedido.');document.getElementById('ppDetailTitle').textContent='Pedido '+d.numero;var endereco=[d.endereco,d.cidade,d.estado,d.cep].filter(Boolean).join(' · ');var items=(d.itens||[]).map(function(i){return '<div class="pp-detail-item"><strong>'+ppEsc(i.quantidade)+'x '+ppEsc(i.nome)+'</strong><span>R$ '+Number(i.preco||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'</span><b>R$ '+Number(i.subtotal||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'</b></div>'}).join('');document.getElementById('ppDetailBody').innerHTML='<div class="pp-detail-grid"><div class="pp-detail-card"><small>Cliente</small><strong>'+ppEsc(d.cliente)+'</strong></div><div class="pp-detail-card"><small>Telefone</small><strong>'+ppEsc(d.telefone)+'</strong></div><div class="pp-detail-card"><small>Recebimento</small><strong>'+ppEsc(d.tipo_pedido)+'</strong></div><div class="pp-detail-card"><small>Forma de pagamento</small><strong>'+ppEsc(d.pagamento||'Não informado')+'</strong></div><div class="pp-detail-card"><small>Status do pagamento</small><strong>'+ppEsc(ppRotuloPagamento(d.status_pagamento))+'</strong></div><div class="pp-detail-card"><small>Gateway</small><strong>'+ppEsc(d.gateway_pagamento||'—')+'</strong></div><div class="pp-detail-card"><small>ID do pagamento</small><strong>'+ppEsc(d.gateway_payment_id||'—')+'</strong></div><div class="pp-detail-card"><small>Status no gateway</small><strong>'+ppEsc(d.gateway_status||'—')+'</strong></div><div class="pp-detail-card"><small>Pago em</small><strong>'+ppEsc(ppFormatarData(d.pago_em))+'</strong></div><div class="pp-detail-card full"><small>Endereço completo</small><strong>'+ppEsc(endereco||'Retirada na loja')+'</strong></div><div class="pp-detail-card full"><small>Dados informados pelo cliente</small><strong>'+ppEsc(d.observacao||'Nenhuma informação adicional.')+'</strong></div></div><div class="pp-detail-items">'+items+'<div class="pp-detail-total">Total: R$ '+Number(d.total||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'</div></div>'}catch(e){document.getElementById('ppDetailBody').innerHTML='<div class="pp-empty">'+ppEsc(e.message)+'</div>'}
+}
+document.getElementById('ppSearch')?.addEventListener('input',ppAplicarBusca);
+ppAplicarBusca();
+async function ppAtualizarStatus(id,select){
+  var old=select.dataset.old||'';
+  select.disabled=true;
+  try{
+    var r=await fetch('/pedidos/'+id+'/status',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:select.value})});
+    var data=await r.json();
+    if(!r.ok||data.error)throw new Error(data.error||'Erro ao atualizar');
+    var card=select.closest('.pp-order');
+    card.dataset.status=select.value;
+    ppAplicarBusca();
+    if(select.value==='cancelado'&&['pendente','aguardando_pagamento'].includes(card.dataset.payment||'')){
+      card.dataset.payment='cancelado';
+      var state=card.querySelector('.pp-pay-state');
+      if(state){state.className='pp-pay-state cancelado';state.innerHTML='<i class="fa-solid fa-circle-xmark"></i>Pagamento cancelado'}
+    }
+    select.dataset.old=select.value;
+    ppAbrirWhatsAppPedido(card);
+
+    var status=String(select.value||'').toLowerCase();
+    var pagamento=String(card.dataset.payment||'').toLowerCase();
+    var permanece=ppCardCombinaFiltro(status,pagamento,ppFiltroServidor);
+    if(!permanece){
+      card.style.transition='opacity .18s ease,transform .18s ease';
+      card.style.opacity='0';
+      card.style.transform='translateY(-6px)';
+      setTimeout(function(){card.remove();ppAplicarBusca();if(!document.querySelector('.pp-order'))location.reload()},190);
+    }
+  }catch(e){
+    mfAlert(e.message);
+    if(old)select.value=old;
+  }finally{
+    select.disabled=false;
+  }
+}
+document.querySelectorAll('.pp-status select').forEach(function(s){s.dataset.old=s.value;var status=s.closest('.pp-status');var actions=document.createElement('div');actions.className='pp-row-actions';actions.innerHTML='<button type="button" class="pp-action primary"><i class="fa-regular fa-eye"></i> Detalhes</button><button type="button" class="pp-action pp-whats"><i class="fa-brands fa-whatsapp"></i> Avisar</button><button type="button" class="pp-action pp-print"><i class="fa-solid fa-print"></i></button>';status.appendChild(actions);var card=s.closest('.pp-order');var idMatch=(s.getAttribute('onchange')||'').match(/\((\d+)/);var pedidoId=idMatch?idMatch[1]:'';actions.querySelector('.pp-action.primary').onclick=function(){if(pedidoId)ppAbrirDetalhes(pedidoId)};actions.querySelector('.pp-print').onclick=function(){window.print()};actions.querySelector('.pp-whats').onclick=function(){ppAbrirWhatsAppPedido(card)}});
+</script>
+<style id="mf-sidebar-exact-final">
+:root{--mf-sidebar-w:210px!important}.premium-layout{grid-template-columns:210px minmax(0,1fr)!important}.premium-sidebar{width:210px!important;min-width:210px!important;max-width:210px!important;padding:16px 12px 14px!important}.premium-sidebar .premium-brand{height:74px!important;min-height:74px!important;margin:0 0 14px!important;padding:0 0 16px!important;gap:10px!important;border-bottom:1px solid #edf2f7!important}.premium-sidebar .premium-brand-icon{width:36px!important;height:36px!important;min-width:36px!important;background:#f3edf7!important;color:#2d0057!important;font-size:16px!important}.premium-sidebar .premium-brand strong{color:#2d0057!important;font-size:16px!important;line-height:1.1!important}.premium-sidebar .premium-brand span{font-size:10.5px!important;line-height:1.15!important}.premium-sidebar .premium-nav{gap:4px!important}.premium-sidebar .premium-nav-link{height:42px!important;min-height:42px!important;max-height:42px!important;padding:0 12px!important;gap:11px!important;border-radius:14px!important;font-size:13px!important;font-weight:700!important;line-height:42px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}.premium-sidebar .premium-nav-link[href$="/reservas"]{font-size:12px!important}.premium-sidebar .premium-nav-link i{width:18px!important;min-width:18px!important;max-width:18px!important;font-size:15px!important}.premium-sidebar .premium-nav-link.active{color:#fff!important;background:#2d0057!important}.premium-sidebar .premium-nav-link.active i{color:#fff!important}
+</style>
+
+
+
+
+<style id="pp-search-clean-single-source">
+/* Campo de busca: uma única caixa, sem CSS duplicado no input */
+.pp-search-clean{
+  position:relative!important;
+  width:100%!important;
+  min-width:0!important;
+  height:44px!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:10px!important;
+  padding:0 14px!important;
+  border:1px solid #cfd8e8!important;
+  border-radius:14px!important;
+  background:#fff!important;
+  box-shadow:0 0 0 4px rgba(23,59,199,.04)!important;
+  box-sizing:border-box!important;
+  cursor:text!important;
+}
+
+.pp-search-clean > i{
+  position:static!important;
+  inset:auto!important;
+  transform:none!important;
+  z-index:auto!important;
+  width:16px!important;
+  height:16px!important;
+  flex:0 0 16px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  color:#667085!important;
+  font-size:13px!important;
+  line-height:1!important;
+  pointer-events:none!important;
+}
+
+.pp-search-clean > #ppSearch{
+  all:unset!important;
+  box-sizing:border-box!important;
+  display:block!important;
+  flex:1 1 auto!important;
+  width:100%!important;
+  min-width:0!important;
+  height:42px!important;
+  color:#17233b!important;
+  font-family:inherit!important;
+  font-size:14px!important;
+  font-weight:400!important;
+  line-height:42px!important;
+  cursor:text!important;
+  appearance:none!important;
+  -webkit-appearance:none!important;
+}
+
+.pp-search-clean > #ppSearch::placeholder{
+  color:#98a2b3!important;
+  opacity:1!important;
+}
+
+.pp-search-clean:focus-within{
+  border-color:#173bc7!important;
+  box-shadow:0 0 0 4px rgba(23,59,199,.10)!important;
+}
+
+.pp-search-clean > #ppSearch::-webkit-search-cancel-button{
+  cursor:pointer!important;
+}
+</style>
+
+<style id="pp-pix-manual-v905">
+.pp-confirm-manual-v905{width:100%;min-height:36px;border:1px solid #86efac;border-radius:9px;background:#ecfdf3;color:#067647;font-size:10px;font-weight:900;cursor:pointer}.pp-confirm-manual-v905:disabled{opacity:.55;cursor:wait}
+</style>
+<script id="pp-pix-manual-v905-js">
+(function(){
+  function isManual(card){const m=String(card.dataset.method||'').toLowerCase();const g=String(card.dataset.gateway||'').toLowerCase();return g==='pix_manual'||m.includes('pix pela chave')||m==='pix manual';}
+  function isPending(card){return ['pendente','aguardando_pagamento','aguardando pagamento'].includes(String(card.dataset.payment||'').toLowerCase());}
+  async function confirmar(card,btn){
+    if(!card||!card.dataset.id)return;
+    if(!window.confirm('Confirmar que o Pix pela chave foi recebido?'))return;
+    btn.disabled=true;btn.textContent='Confirmando...';
+    try{
+      const r=await fetch('/pedidos/'+encodeURIComponent(card.dataset.id)+'/confirmar-pagamento-manual',{method:'POST',headers:{'Accept':'application/json'}});
+      const d=await r.json().catch(()=>({}));if(!r.ok||d.error)throw new Error(d.error||'Não foi possível confirmar o Pix.');
+      window.location.reload();
+    }catch(e){window.alert(e.message||'Não foi possível confirmar o Pix.');btn.disabled=false;btn.textContent='Confirmar Pix recebido';}
+  }
+  document.querySelectorAll('.pp-order').forEach(card=>{
+    if(!isManual(card)||!isPending(card))return;
+    const area=card.querySelector('.pp-status');if(!area||area.querySelector('.pp-confirm-manual-v905'))return;
+    const btn=document.createElement('button');btn.type='button';btn.className='pp-confirm-manual-v905';btn.textContent='Confirmar Pix recebido';btn.onclick=()=>confirmar(card,btn);area.prepend(btn);
+  });
+})();
+</script>
+
+{% endblock %}
+
+

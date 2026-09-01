@@ -1,0 +1,484 @@
+{% extends "base.html" %}
+{% macro moeda(valor) -%}
+R$ {{ "{:,.2f}".format(valor or 0).replace(",", "X").replace(".", ",").replace("X", ".") }}
+{%- endmacro %}
+
+{% block title %}{{ {'pt': 'Imprimir pedido', 'it': 'Stampa ordine', 'en': 'Print order'}.get(lang, 'Imprimir pedido') }} #{{ "%03d"|format(pedido.numero_dia or pedido.id) }}{% endblock %}
+{% block head %}
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+  font-family:Arial,sans-serif;
+  background:#f4f4f4;
+  color:#111827;
+  padding:24px;
+}
+
+.pagina{
+  width:100%;
+  max-width:760px;
+  margin:auto;
+  background:white;
+  padding:28px;
+  border-radius:18px;
+  box-shadow:0 10px 30px rgba(0,0,0,.12);
+}
+
+.topo{
+  display:flex;
+  justify-content:space-between;
+  gap:18px;
+  border-bottom:2px dashed #111827;
+  padding-bottom:16px;
+  margin-bottom:18px;
+}
+
+h1{
+  font-size:30px;
+  margin-bottom:6px;
+}
+
+.empresa{
+  color:#374151;
+  font-weight:700;
+}
+
+.status{
+  display:inline-block;
+  border:1px solid #111827;
+  padding:8px 12px;
+  border-radius:999px;
+  font-weight:900;
+}
+
+.bloco{
+  border-bottom:1px dashed #9ca3af;
+  padding:14px 0;
+  line-height:1.6;
+}
+
+.bloco:last-child{
+  border-bottom:none;
+}
+
+.bloco h2{
+  font-size:18px;
+  margin-bottom:8px;
+}
+
+.item{
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+  font-size:20px;
+  font-weight:900;
+  padding:8px 0;
+}
+
+.obs{
+  border:2px solid #111827;
+  padding:14px;
+  font-size:18px;
+  font-weight:900;
+}
+
+.total{
+  font-size:28px;
+  font-weight:900;
+  text-align:right;
+}
+
+.acoes{
+  max-width:760px;
+  margin:18px auto 0;
+  display:flex;
+  gap:10px;
+}
+
+button,a{
+  border:none;
+  border-radius:12px;
+  padding:13px 16px;
+  background:#0d4b31;
+  color:white;
+  font-weight:900;
+  text-decoration:none;
+  cursor:pointer;
+}
+
+a{
+  background:#667085;
+}
+
+.btn-qz{background:#061b8f}
+.btn-soft{background:#eef3ff;color:#061b8f;border:1px solid #dbe6f3}
+.print-status-box{max-width:760px;margin:14px auto 0;background:#fff;border:1px solid #dbe6f3;border-radius:14px;padding:12px;color:#667085;font-weight:800;line-height:1.45}
+
+body.print-58 .pagina{max-width:58mm;font-size:12px;padding:10px;border-radius:0}
+body.print-58 h1{font-size:20px}
+body.print-58 .item{font-size:14px}
+body.print-58 .total{font-size:18px}
+
+body.print-80 .pagina{max-width:80mm;font-size:13px;padding:12px;border-radius:0}
+body.print-80 h1{font-size:22px}
+body.print-80 .item{font-size:15px}
+body.print-80 .total{font-size:20px}
+
+@media print{
+  @page{margin:4mm}
+  body.print-58{width:58mm}
+  body.print-80{width:80mm}
+  body{
+    background:white;
+    padding:0;
+  }
+
+  .pagina{
+    max-width:none;
+    box-shadow:none;
+    border-radius:0;
+    padding:0;
+  }
+
+  .acoes{
+    display:none;
+  }
+}
+
+/* v380 - sidebar fixo padronizado em todas as telas */
+.side,
+.sidebar,
+.premium-sidebar,
+aside.side,
+aside.sidebar{
+  width:230px !important;
+  min-width:230px !important;
+  max-width:230px !important;
+  flex:0 0 230px !important;
+  background:#fff !important;
+  border-right:1px solid #d9e4f4 !important;
+  padding:18px 14px !important;
+  overflow-x:hidden !important;
+}
+
+.app{
+  display:grid !important;
+  grid-template-columns:230px minmax(0,1fr) !important;
+}
+
+.brand,
+.logo-area,
+.sidebar-brand,
+.side-brand{
+  min-height:74px !important;
+  padding:0 0 16px 0 !important;
+  margin:0 0 14px 0 !important;
+  border-bottom:1px solid #edf2f7 !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:12px !important;
+}
+
+.brand .logo,
+.brand-icon,
+.store-icon,
+.sidebar-logo{
+  width:40px !important;
+  height:40px !important;
+  min-width:40px !important;
+  border-radius:14px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+
+.brand strong,
+.brand-title,
+.sidebar-title{
+  font-size:18px !important;
+  line-height:1.05 !important;
+  font-weight:1000 !important;
+  color:#061b8f !important;
+  display:block !important;
+  white-space:normal !important;
+}
+
+.brand small,
+.brand-subtitle,
+.sidebar-subtitle{
+  font-size:12px !important;
+  line-height:1.1 !important;
+  font-weight:900 !important;
+  color:#667085 !important;
+  display:block !important;
+  margin-top:3px !important;
+}
+
+.nav,
+.side-nav,
+.sidebar-nav{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:8px !important;
+}
+
+.nav a,
+.side a,
+.sidebar a,
+.premium-sidebar a,
+.side-link,
+.nav-link{
+  min-height:42px !important;
+  height:auto !important;
+  padding:10px 13px !important;
+  border-radius:13px !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:12px !important;
+  font-size:13px !important;
+  line-height:1.12 !important;
+  font-weight:950 !important;
+  color:#344054 !important;
+  text-decoration:none !important;
+  white-space:normal !important;
+  word-break:normal !important;
+  overflow-wrap:normal !important;
+}
+
+.nav a i,
+.side a i,
+.sidebar a i,
+.premium-sidebar a i,
+.side-link i,
+.nav-link i{
+  width:18px !important;
+  min-width:18px !important;
+  text-align:center !important;
+  font-size:14px !important;
+  color:#667085 !important;
+}
+
+.nav a.active,
+.side a.active,
+.sidebar a.active,
+.premium-sidebar a.active,
+.side-link.active,
+.nav-link.active{
+  background:#061b8f !important;
+  color:#fff !important;
+  box-shadow:0 12px 24px rgba(6,27,143,.18) !important;
+}
+
+.nav a.active i,
+.side a.active i,
+.sidebar a.active i,
+.premium-sidebar a.active i,
+.side-link.active i,
+.nav-link.active i{
+  color:#fff !important;
+}
+
+.nav-title,
+.sidebar-section-title,
+.side-section-title{
+  margin:18px 0 8px !important;
+  padding:0 6px !important;
+  font-size:12px !important;
+  line-height:1 !important;
+  letter-spacing:.04em !important;
+  font-weight:1000 !important;
+  color:#98a2b3 !important;
+  text-transform:uppercase !important;
+}
+
+/* evita que "Reservas / Agendamentos" aumente o menu ou mude largura */
+.nav a span,
+.side a span,
+.sidebar a span,
+.premium-sidebar a span,
+.side-link span,
+.nav-link span{
+  display:inline-block !important;
+  max-width:160px !important;
+}
+
+/* mobile: mantém comportamento responsivo sem quebrar */
+@media(max-width:900px){
+  .app{
+    display:block !important;
+  }
+  .side,
+  .sidebar,
+  .premium-sidebar,
+  aside.side,
+  aside.sidebar{
+    width:100% !important;
+    max-width:none !important;
+    min-width:0 !important;
+    border-right:0 !important;
+    border-bottom:1px solid #d9e4f4 !important;
+  }
+}
+
+</style>
+
+<style id="mf-pt-overflow-guard">
+  .premium-top-actions, .premium-sidebar, .premium-content, .premium-card, .admin-card, body {
+    overflow-wrap: anywhere;
+  }
+</style>
+{% endblock %}
+{% block body_attrs %} class="print-{{ impressao_config.impressao_largura if impressao_config else '80' }}" {% endblock %}
+{% block page %}
+<div class="pagina">
+  <div class="topo">
+    <div>
+      <h1>{{ {'pt': 'Pedido', 'it': 'Ordine', 'en': 'Order'}.get(lang, 'Pedido') }} #{{ "%03d"|format(pedido.numero_dia or pedido.id) }}</h1>
+      <div class="empresa">{{ empresa.nome }}</div>
+    </div>
+
+    <div class="status">{{ {"novo":{"pt":"novo","it":"Nuovo","en":"New"},"Novo":{"pt":"novo","it":"Nuovo","en":"New"},"em preparo":{"pt":"em preparo","it":"In preparazione","en":"In preparation"},"pronto":{"pt":"pronto","it":"Pronto","en":"Ready"},"finalizado":{"pt":"finalizado","it":"Completato","en":"Completed"},"cancelado":{"pt":"cancelado","it":"Annullato","en":"Canceled"}}.get(pedido.status, {}).get(lang, pedido.status) }}</div>
+  </div>
+
+  <div class="bloco">
+    <h2>{{ {'pt': 'Informações do pedido', 'it': "Informazioni dell'ordine", 'en': 'Order information'}.get(lang, 'Informações do pedido') }}</h2>
+    <strong>{{ {'pt': 'Tipo', 'it': 'Tipo', 'en': 'Type'}.get(lang, 'Tipo') }}:</strong> {{ t("entrega", idioma_empresa(empresa if empresa is defined else None)) if pedido.tipo_pedido == "Entrega" else t("retirada", idioma_empresa(empresa if empresa is defined else None)) if pedido.tipo_pedido in ["Retirada", "Retirada no local", "Ritiro", "Pickup"] else pedido.tipo_pedido }}<br>
+    <strong>{{ {'pt': 'Recebido', 'it': 'Ricevuto', 'en': 'Received'}.get(lang, 'Recebido') }}:</strong> {{ pedido.criado_em.strftime("%d/%m/%Y %H:%M") if pedido.criado_em else "-" }}<br>
+    <strong>{{ {'pt': 'Tempo informado ao cliente', 'it': 'Tempo comunicato al cliente', 'en': 'Time informed to customer'}.get(lang, 'Tempo informado ao cliente') }}:</strong> {{ pedido.tempo_estimado_minutos or "-" }} min<br>
+    <strong>{{ {'pt': 'Pagamento', 'it': 'Pagamento', 'en': 'Payment'}.get(lang, 'Pagamento') }}:</strong> {{ t("cartao", idioma_empresa(empresa if empresa is defined else None)) if pedido.pagamento in ["Cartão", "Cartao", "Carta", "Card"] else t("dinheiro", idioma_empresa(empresa if empresa is defined else None)) if pedido.pagamento in ["Dinheiro", "Contanti", "Cash"] else pedido.pagamento or "-" }}
+    {% if pedido.tipo_pedido == "Entrega" and pedido.precisa_troco %}
+      <br><strong>{{ {'pt': 'Troco para', 'it': 'Resto per', 'en': 'Change for'}.get(lang, 'Troco para') }}:</strong> {{ moeda(pedido.troco_para or 0) }}
+    {% endif %}
+  </div>
+
+  <div class="bloco">
+    <h2>{{ {'pt': 'Cliente', 'it': 'Cliente', 'en': 'Customer'}.get(lang, 'Cliente') }}</h2>
+    <strong>{{ {'pt': 'Nome', 'it': 'Nome', 'en': 'Name'}.get(lang, 'Nome') }}:</strong> {{ pedido.nome_cliente }}<br>
+    <strong>{{ {'pt': 'Telefone', 'it': 'Telefono', 'en': 'Phone'}.get(lang, 'Telefone') }}:</strong> {{ pedido.telefone_cliente or "-" }}
+  </div>
+
+  {% if pedido.tipo_pedido == "Entrega" %}
+    <div class="bloco">
+      <h2>{{ {'pt': 'Endereço de entrega', 'it': 'Indirizzo di consegna', 'en': 'Delivery address'}.get(lang, 'Endereço de entrega') }}</h2>
+      {{ pedido.endereco_entrega or "-" }}<br>
+      <strong>{{ {'pt': 'CEP', 'it': 'CAP', 'en': 'Postal code'}.get(lang, 'CEP') }}:</strong> {{ pedido.cap_entrega or "-" }}
+      · <strong>{{ {'pt': 'Cidade', 'it': 'Città', 'en': 'City'}.get(lang, 'Cidade') }}:</strong> {{ pedido.cidade_entrega or "-" }}
+      · <strong>{{ {'pt': 'UF', 'it': 'Provincia', 'en': 'State'}.get(lang, 'UF') }}:</strong> {{ pedido.provincia_entrega or "-" }}<br>
+      {% if pedido.referencia_entrega %}
+        <strong>{{ {'pt': 'Referência', 'it': 'Riferimento', 'en': 'Reference'}.get(lang, 'Referência') }}:</strong> {{ pedido.referencia_entrega }}
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <div class="bloco">
+    <h2>{{ {'pt': 'Itens', 'it': 'Articoli', 'en': 'Items'}.get(lang, 'Itens') }}</h2>
+    {% for item in itens %}
+      <div class="item">
+        <span>{{ item.quantidade }}x {{ item.nome_item }}</span>
+        <span>{{ moeda(item.subtotal or 0) }}</span>
+      </div>
+    {% endfor %}
+  </div>
+
+  {% if pedido.observacao %}
+    <div class="bloco">
+      <h2>{{ {'pt': 'Observação do cliente', 'it': 'Osservazione del cliente', 'en': 'Customer note'}.get(lang, 'Observação do cliente') }}</h2>
+      <div class="obs">{{ pedido.observacao }}</div>
+    </div>
+  {% endif %}
+
+  <div class="bloco">
+    <div class="total">
+      {{ {'pt': 'Total', 'it': 'Totale', 'en': 'Total'}.get(lang, 'Total') }}: {{ moeda(pedido.total or 0) }}
+    </div>
+  </div>
+</div>
+
+<div class="acoes">
+  <button onclick="imprimirNavegador()">{{ {'pt': 'Imprimir navegador', 'it': 'Stampa dal browser', 'en': 'Print in browser'}.get(lang, 'Imprimir navegador') }}</button>
+  <button class="btn-qz" onclick="imprimirQZ()" type="button">{{ {'pt': 'Imprimir via QZ Tray', 'it': 'Stampa tramite QZ Tray', 'en': 'Print via QZ Tray'}.get(lang, 'Imprimir via QZ Tray') }}</button>
+  <button class="btn-soft" onclick="detectarQZ()" type="button">{{ {'pt': 'Detectar QZ', 'it': 'Rileva QZ', 'en': 'Detect QZ'}.get(lang, 'Detectar QZ') }}</button>
+  <a href="/admin/{{ empresa.id }}/pedidos">{{ {'pt': 'Voltar à central', 'it': 'Torna alla centrale', 'en': 'Back to center'}.get(lang, 'Voltar à central') }}</a>
+</div>
+
+<div class="print-status-box" id="printStatusBox">
+  {{ {'pt': 'Modo configurado', 'it': 'Modalità configurata', 'en': 'Configured mode'}.get(lang, 'Modo configurado') }}: {{ impressao_config.impressao_modo if impressao_config else 'navegador' }} ·
+  {{ {'pt': 'conexão', 'it': 'connessione', 'en': 'connection'}.get(lang, 'conexão') }}: {{ impressao_config.impressao_conexao if impressao_config else 'navegador' }} ·
+  {{ {'pt': 'largura', 'it': 'larghezza', 'en': 'width'}.get(lang, 'largura') }}: {{ impressao_config.impressao_largura if impressao_config else '80' }}.
+</div>
+
+<script>
+const MF_PRINT_CONFIG = {{ (impressao_config or {})|tojson }};
+
+function statusPrint(msg){
+  const box = document.getElementById('printStatusBox');
+  if(box){ box.textContent = msg; }
+  console.log('[MenuFacile Impressão]', msg);
+}
+
+function imprimirNavegador(){
+  statusPrint('{{ {'pt': 'Abrindo impressão pelo navegador.', 'it': 'Apertura della stampa dal browser.', 'en': 'Opening browser print.'}.get(lang, 'Abrindo impressão pelo navegador.') }}');
+  window.print();
+}
+
+async function detectarQZ(){
+  if(!window.qz){
+    statusPrint('{{ {'pt': 'QZ Tray não está carregado nesta página. O modo navegador continua disponível.', 'it': 'QZ Tray non è caricato in questa pagina. La modalità browser resta disponibile.', 'en': 'QZ Tray is not loaded on this page. Browser mode remains available.'}.get(lang, 'QZ Tray não está carregado nesta página. O modo navegador continua disponível.') }}');
+    return false;
+  }
+  try{
+    if(!qz.websocket.isActive()) await qz.websocket.connect();
+    statusPrint('{{ {'pt': 'QZ Tray detectado e conectado.', 'it': 'QZ Tray rilevato e connesso.', 'en': 'QZ Tray detected and connected.'}.get(lang, 'QZ Tray detectado e conectado.') }}');
+    return true;
+  }catch(e){
+    statusPrint('{{ {'pt': 'QZ Tray não conectou', 'it': 'QZ Tray non si è connesso', 'en': 'QZ Tray did not connect'}.get(lang, 'QZ Tray não conectou') }}: '+(e && e.message ? e.message : e));
+    return false;
+  }
+}
+
+function textoPedidoParaImpressao(){
+  const linhas = [];
+  linhas.push('{{ empresa.nome|e }}');
+  linhas.push('{{ {'pt': 'Pedido', 'it': 'Ordine', 'en': 'Order'}.get(lang, 'Pedido') }} #{{ "%03d"|format(pedido.numero_dia or pedido.id) }}');
+  linhas.push('{{ {'pt': 'Cliente', 'it': 'Cliente', 'en': 'Customer'}.get(lang, 'Cliente') }}: {{ pedido.nome_cliente|e }}');
+  linhas.push('{{ {'pt': 'Tipo', 'it': 'Tipo', 'en': 'Type'}.get(lang, 'Tipo') }}: {% if pedido.tipo_pedido == "Entrega" %}{{ {'pt': 'Entrega', 'it': 'Consegna', 'en': 'Delivery'}.get(lang, 'Entrega') }}{% elif pedido.tipo_pedido in ["Retirada", "Retirada no local", "Ritiro", "Pickup"] %}{{ {'pt': 'Retirada', 'it': 'Ritiro', 'en': 'Pickup'}.get(lang, 'Retirada') }}{% else %}{{ pedido.tipo_pedido|e }}{% endif %}');
+  linhas.push('------------------------------');
+  {% for item in itens %}
+  linhas.push('{{ item.quantidade }}x {{ item.nome_item|e }} - {{ moeda(item.subtotal or 0)|trim }}');
+  {% endfor %}
+  linhas.push('------------------------------');
+  linhas.push('{{ {'pt': 'Total', 'it': 'Totale', 'en': 'Total'}.get(lang, 'Total') }}: {{ moeda(pedido.total or 0)|trim }}');
+  {% if pedido.observacao %}
+  linhas.push('{{ {'pt': 'Observação', 'it': 'Osservazione', 'en': 'Note'}.get(lang, 'Observação') }}: {{ pedido.observacao|e }}');
+  {% endif %}
+  linhas.push('');
+  linhas.push('');
+  linhas.push('');
+  return linhas.join('\n');
+}
+
+async function imprimirQZ(){
+  const conectado = await detectarQZ();
+
+  if(!conectado){
+    statusPrint('{{ {'pt': 'QZ Tray não detectado. Abra o QZ Tray no computador do cliente ou use o botão Imprimir navegador.', 'it': 'QZ Tray non rilevato. Apri QZ Tray sul computer del cliente oppure usa Stampa dal browser.', 'en': "QZ Tray not detected. Open QZ Tray on the customer's computer or use Print in browser."}.get(lang, 'QZ Tray não detectado. Abra o QZ Tray no computador do cliente ou use o botão Imprimir navegador.') }}');
+    return;
+  }
+
+  try{
+    const nome = MF_PRINT_CONFIG.impressora_nome || await qz.printers.getDefault();
+    const cfg = qz.configs.create(nome);
+    const data = [{ type:'raw', format:'plain', data: textoPedidoParaImpressao() }];
+    await qz.print(cfg, data);
+    statusPrint('{{ {'pt': 'Pedido enviado para QZ Tray', 'it': 'Ordine inviato a QZ Tray', 'en': 'Order sent to QZ Tray'}.get(lang, 'Pedido enviado para QZ Tray') }}: '+nome);
+  }catch(e){
+    statusPrint('{{ {'pt': 'Erro ao imprimir via QZ Tray. Use o botão Imprimir navegador. Detalhe', 'it': 'Errore durante la stampa tramite QZ Tray. Usa Stampa dal browser. Dettaglio', 'en': 'Error printing via QZ Tray. Use Print in browser. Detail'}.get(lang, 'Erro ao imprimir via QZ Tray. Use o botão Imprimir navegador. Detalhe') }}: '+(e && e.message ? e.message : e));
+  }
+}
+
+window.addEventListener("load", function(){
+  statusPrint('{{ {'pt': 'Página de impressão pronta. Escolha Imprimir navegador ou Imprimir via QZ Tray.', 'it': 'Pagina di stampa pronta. Scegli Stampa dal browser o Stampa tramite QZ Tray.', 'en': 'Print page ready. Choose Print in browser or Print via QZ Tray.'}.get(lang, 'Página de impressão pronta. Escolha Imprimir navegador ou Imprimir via QZ Tray.') }}');
+});
+</script>
+{% endblock %}

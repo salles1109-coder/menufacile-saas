@@ -1,0 +1,356 @@
+/* MenuFacile Agenda v28 — cards e modal, sem alterar a lógica */
+body.mf-ds-reservas #agendaGrid .slot.mf-v27-booked{
+  min-height:132px;
+  padding:14px 14px 13px;
+  border-width:1px;
+  border-left-width:4px;
+  border-radius:18px;
+  background:#fffaf1;
+  border-color:#f6cf91;
+  box-shadow:0 8px 22px rgba(24,39,75,.06);
+  cursor:pointer;
+}
+body.mf-ds-reservas #agendaGrid .slot.mf-v27-booked .x{display:none!important}
+body.mf-ds-reservas #agendaGrid .slot.mf-v27-booked>.time,
+body.mf-ds-reservas #agendaGrid .slot.mf-v27-booked>.chip,
+body.mf-ds-reservas #agendaGrid .slot.mf-v27-booked>p{display:none!important}
+.mf-v27-slot-card{display:grid;gap:7px;min-width:0}
+.mf-v27-slot-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.mf-v27-slot-time{font-size:21px;line-height:1;font-weight:1000;color:#9a5100;letter-spacing:-.03em}
+.mf-v27-slot-status{display:inline-flex;align-items:center;min-height:24px;padding:0 9px;border-radius:999px;font-size:9px;font-weight:1000;text-transform:uppercase;white-space:nowrap}
+.mf-v27-slot-client{font-size:13px;line-height:1.2;font-weight:1000;color:#101f49;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mf-v27-slot-service{font-size:11px;line-height:1.3;font-weight:850;color:#35415a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mf-v27-slot-prof{font-size:10px;line-height:1.2;font-weight:850;color:#7b8798}
+.mf-v27-pendente{border-left-color:#f59e0b!important;background:#fffaf1!important}.mf-v27-pendente .mf-v27-slot-status{background:#fff0c9;color:#a75a00}
+.mf-v27-confirmada{border-left-color:#2563eb!important;background:#f5f9ff!important}.mf-v27-confirmada .mf-v27-slot-status{background:#dbeafe;color:#1746af}
+.mf-v27-paga,.mf-v27-concluida{border-left-color:#16a34a!important;background:#f4fff8!important}.mf-v27-paga .mf-v27-slot-status,.mf-v27-concluida .mf-v27-slot-status{background:#dcfce7;color:#08743f}
+.mf-v27-cancelada{border-left-color:#94a3b8!important;background:#f8fafc!important}.mf-v27-cancelada .mf-v27-slot-status{background:#e8edf3;color:#596579}
+.mf-v27-recusada{border-left-color:#ef4444!important;background:#fff6f6!important}.mf-v27-recusada .mf-v27-slot-status{background:#fee2e2;color:#b42318}
+
+body.mf-ds-reservas .modal-agenda{align-items:center!important;justify-content:center!important;padding:18px!important}
+body.mf-ds-reservas .modal-agenda-card{width:min(440px,100%)!important;max-width:440px!important;max-height:88vh!important;border-radius:24px!important;padding:20px!important;margin:auto!important;box-shadow:0 28px 80px rgba(15,23,42,.28)!important}
+body.mf-ds-reservas .modal-agenda-close{left:auto!important;right:14px!important;top:14px!important;width:32px!important;height:32px!important;display:grid!important;place-items:center!important}
+body.mf-ds-reservas .modal-agenda-prof{padding-right:42px!important;font-size:12px!important;margin-bottom:8px!important}
+body.mf-ds-reservas .modal-agenda-meta{margin-bottom:8px!important}
+body.mf-ds-reservas .modal-agenda-card h2{font-size:22px!important;line-height:1.12!important;margin:8px 0 13px!important;padding-right:8px!important}
+body.mf-ds-reservas .modal-agenda-info{display:grid!important;gap:8px!important;padding:14px!important;border-radius:16px!important;background:#f7f9fc!important}
+.mf-v27-info-row{display:grid;grid-template-columns:92px minmax(0,1fr);gap:8px;align-items:start;font-size:12px;line-height:1.35}
+.mf-v27-info-row strong{color:#0b2d91!important}.mf-v27-info-row span{color:#687386;font-weight:850;overflow-wrap:anywhere}
+body.mf-ds-reservas .modal-agenda-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:9px!important;margin-top:14px!important}
+body.mf-ds-reservas .modal-agenda-actions .btn{min-height:42px!important;border-radius:13px!important;font-size:12px!important;padding:0 12px!important;box-shadow:none!important}
+body.mf-ds-reservas .modal-agenda-actions .btn.green{background:#066338!important}
+body.mf-ds-reservas .modal-agenda-actions .btn.blue{background:#1029a9!important}
+body.mf-ds-reservas .modal-agenda-actions .btn.red{background:#ff514b!important}
+body.mf-ds-reservas .modal-agenda-actions .btn.gray{background:#6d7990!important}
+body.mf-ds-reservas .modal-agenda-actions .btn.soft{background:#edf3ff!important;color:#0b2d91!important;border:1px solid #d9e4f8!important}
+
+@media(max-width:768px){
+  body.mf-ds-reservas #agendaGrid .slot.mf-v27-booked{min-height:102px!important;padding:12px 13px!important}
+  .mf-v27-slot-time{font-size:18px}.mf-v27-slot-client{font-size:12px}.mf-v27-slot-service{font-size:10px}
+  body.mf-ds-reservas .modal-agenda-card{width:min(92vw,390px)!important;max-width:390px!important;padding:18px 14px!important}
+  body.mf-ds-reservas .modal-agenda-card h2{font-size:19px!important}
+  .mf-v27-info-row{grid-template-columns:82px minmax(0,1fr);font-size:11px}
+  body.mf-ds-reservas .modal-agenda-actions .btn{min-height:40px!important;font-size:11px!important}
+}
+
+
+/* v28 — correção de largura do card e modal reutilizável */
+@media(min-width:769px){
+  body.mf-ds-reservas #agendaGrid{
+    grid-template-columns:repeat(auto-fill,minmax(190px,1fr))!important;
+  }
+}
+body.mf-ds-reservas #agendaGrid .slot.mf-v27-booked{
+  min-width:0!important;
+  overflow:hidden!important;
+}
+.mf-v27-slot-top{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  justify-items:start!important;
+  gap:7px!important;
+}
+.mf-v27-slot-time{
+  display:block!important;
+  width:100%!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  word-break:normal!important;
+  overflow-wrap:normal!important;
+}
+.mf-v27-slot-status{
+  justify-self:start!important;
+  max-width:100%!important;
+  white-space:nowrap!important;
+}
+body.mf-ds-reservas .modal-agenda:not(.show){display:none!important}
+body.mf-ds-reservas .modal-agenda.show{display:flex!important}
+body.mf-ds-reservas .modal-agenda{overscroll-behavior:contain!important}
+body.mf-ds-reservas .modal-agenda-card{position:relative!important;overflow:auto!important}
+@media(max-width:768px){
+  body.mf-ds-reservas #agendaGrid .slot.mf-v27-booked{min-width:0!important;width:100%!important}
+  .mf-v27-slot-top{grid-template-columns:minmax(0,1fr) auto!important;align-items:center!important;gap:8px!important}
+  .mf-v27-slot-time{font-size:17px!important}
+}
+
+/* v31 — todos os cards da Agenda com o mesmo tamanho e largura */
+body.mf-ds-reservas #agendaGrid{
+  align-items:stretch!important;
+}
+body.mf-ds-reservas #agendaGrid .slot{
+  width:100%!important;
+  min-width:0!important;
+  min-height:132px!important;
+  height:auto!important;
+  box-sizing:border-box!important;
+  padding:14px!important;
+  border-radius:18px!important;
+  overflow:hidden!important;
+}
+body.mf-ds-reservas #agendaGrid .slot.mf-v27-booked{
+  width:100%!important;
+  min-height:132px!important;
+  padding:14px!important;
+}
+
+@media(max-width:768px){
+  body.mf-ds-reservas #agendaGrid{
+    grid-template-columns:minmax(0,1fr)!important;
+    width:100%!important;
+  }
+  body.mf-ds-reservas #agendaGrid .slot,
+  body.mf-ds-reservas #agendaGrid .slot.mf-v27-booked{
+    width:100%!important;
+    max-width:none!important;
+    min-height:112px!important;
+    padding:13px!important;
+    margin:0!important;
+  }
+}
+
+/* v32 — ajustes mobile: esconder "Agenda do dia" e trocar o X para a direita */
+@media(max-width:768px){
+  body.mf-ds-reservas #agendaDia .card-head .square,
+  body.mf-ds-reservas #agendaDia .card-head h2{
+    display:none!important;
+  }
+  body.mf-ds-reservas #agendaDia .card-head{
+    margin-bottom:10px!important;
+    gap:8px!important;
+    justify-content:space-between!important;
+  }
+  body.mf-ds-reservas #agendaDia .card-head > form{
+    margin-left:0!important;
+    flex:1 1 auto!important;
+  }
+  body.mf-ds-reservas #agendaDia .card-head .imprimir-dia-btn{
+    margin-left:0!important;
+  }
+  body.mf-ds-reservas #agendaGrid .slot .x{
+    left:auto!important;
+    right:10px!important;
+    top:10px!important;
+  }
+}
+
+/* v33 — força definitiva do X no canto superior direito no mobile */
+@media(max-width:768px){
+  body.mf-ds-reservas #agendaGrid .slot{position:relative!important;}
+  body.mf-ds-reservas #agendaGrid .slot > button.x{
+    position:absolute!important;
+    left:auto!important;
+    right:10px!important;
+    top:10px!important;
+    margin:0!important;
+    z-index:4!important;
+    order:initial!important;
+    transform:none!important;
+  }
+}
+
+/* v34 — modal: X à direita e data brasileira */
+body.mf-ds-reservas #modalAgendaReserva .modal-agenda-card > .modal-agenda-close{
+  position:absolute!important;
+  inset-inline-start:auto!important;
+  inset-inline-end:14px!important;
+  left:auto!important;
+  right:14px!important;
+  top:14px!important;
+  margin:0!important;
+  transform:none!important;
+  z-index:5!important;
+}
+
+
+/* v35 — Pix e troca de forma de pagamento */
+body.mf-ds-reservas #modalPagamentoReserva .modal-agenda-actions{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+}
+body.mf-ds-reservas #modalPagamentoReserva .mf-pagamento-pix{
+  background:#147a68!important;
+  color:#fff!important;
+}
+@media(max-width:420px){
+  body.mf-ds-reservas #modalPagamentoReserva .modal-agenda-actions{
+    grid-template-columns:1fr 1fr!important;
+  }
+}
+
+
+/* v37 — edição de agendamento */
+body.mf-ds-reservas .modal-agenda-actions .mf-edit-reserva-btn{background:#7c3aed!important;color:#fff!important}
+.mf-edit-agenda-card{width:min(440px,100%)!important}
+.mf-edit-agenda-subtitle{margin:4px 0 16px;color:#667085;font-size:12px;font-weight:800}
+.mf-edit-agenda-form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mf-edit-agenda-form label{display:grid;gap:6px;min-width:0}
+.mf-edit-agenda-form label span{font-size:11px;font-weight:950;color:#344054}
+.mf-edit-agenda-form .input{width:100%;min-width:0;height:44px}
+.mf-edit-agenda-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+.mf-edit-agenda-actions .btn{min-height:44px;border-radius:13px}
+@media(max-width:768px){.mf-edit-agenda-form{grid-template-columns:1fr}.mf-edit-agenda-card{width:min(92vw,390px)!important}.mf-edit-agenda-actions{grid-template-columns:1fr 1fr}}
+
+
+/* v39 — cabeçalho do modal: profissional, data e status na mesma linha */
+body.mf-ds-reservas #modalAgendaReserva .modal-agenda-prof{
+  display:flex!important;
+  align-items:center!important;
+  gap:8px!important;
+  padding-right:48px!important;
+  margin:0 0 9px!important;
+  min-width:0!important;
+  color:#092596!important;
+}
+body.mf-ds-reservas #modalAgendaReserva #modalAgendaProfData{
+  font-size:16px!important;
+  line-height:1.15!important;
+  font-weight:1000!important;
+  white-space:nowrap!important;
+}
+body.mf-ds-reservas #modalAgendaReserva .modal-agenda-prof #modalAgendaStatus{
+  flex:0 0 auto!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  min-height:28px!important;
+  padding:0 10px!important;
+  margin:0!important;
+  border-radius:999px!important;
+  font-size:10px!important;
+  line-height:1!important;
+  font-weight:1000!important;
+  white-space:nowrap!important;
+}
+body.mf-ds-reservas #modalAgendaReserva .modal-agenda-meta{
+  margin-top:0!important;
+}
+@media(max-width:768px){
+  body.mf-ds-reservas #modalAgendaReserva .modal-agenda-prof{
+    gap:6px!important;
+    padding-right:42px!important;
+  }
+  body.mf-ds-reservas #modalAgendaReserva #modalAgendaProfData{
+    font-size:14px!important;
+  }
+  body.mf-ds-reservas #modalAgendaReserva .modal-agenda-prof #modalAgendaStatus{
+    min-height:25px!important;
+    padding:0 8px!important;
+    font-size:9px!important;
+  }
+}
+
+/* V276 — modal detalhado e registro financeiro separado do atendimento */
+body.mf-ds-reservas #modalAgendaReserva .modal-agenda-card{
+  width:min(610px,calc(100vw - 36px))!important;
+  max-width:610px!important;
+  max-height:92vh!important;
+  padding:20px!important;
+}
+body.mf-ds-reservas #modalAgendaReserva .mf-agenda-detail-grid{
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:12px!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+}
+body.mf-ds-reservas #modalAgendaReserva .mf-agenda-detail-section{
+  display:block!important;
+  min-width:0!important;
+  padding:14px!important;
+  border:1px solid #e4ebf5!important;
+  border-radius:16px!important;
+  background:#f8fbff!important;
+}
+body.mf-ds-reservas #modalAgendaReserva .mf-agenda-finance-section{
+  grid-column:1/-1!important;
+  background:#fbfcff!important;
+}
+body.mf-ds-reservas .mf-agenda-detail-title{display:flex!important;align-items:center!important;gap:8px!important;color:#1237c9!important;font-size:12px!important;font-weight:1000!important;text-transform:uppercase!important;letter-spacing:.04em!important;margin-bottom:10px!important}
+body.mf-ds-reservas .mf-agenda-detail-row{display:flex!important;justify-content:space-between!important;align-items:flex-start!important;gap:14px!important;padding:6px 0!important;color:#667085!important;font-size:13px!important;line-height:1.35!important}
+body.mf-ds-reservas .mf-agenda-detail-row strong{color:#344054!important;flex:0 0 auto!important}
+body.mf-ds-reservas .mf-agenda-detail-row span{text-align:right!important;font-weight:900!important;color:#667085!important;overflow-wrap:anywhere!important}
+body.mf-ds-reservas .mf-agenda-restante-row{border-top:1px solid #e4ebf5!important;margin-top:4px!important;padding-top:10px!important}
+body.mf-ds-reservas .mf-agenda-restante-row span{color:#c2410c!important;font-size:15px!important}
+body.mf-ds-reservas .mf-payment-status{display:inline-flex!important;align-items:center!important;justify-content:center!important;padding:4px 9px!important;border-radius:999px!important;background:#fff4d8!important;color:#9a5b08!important;font-size:11px!important}
+body.mf-ds-reservas .mf-payment-status[data-state="parcial"]{background:#eef3ff!important;color:#1237c9!important}
+body.mf-ds-reservas .mf-payment-status[data-state="pago"]{background:#e8f8ee!important;color:#087443!important}
+
+body.mf-ds-reservas #modalPagamentoReserva .mf-payment-register-card{
+  width:min(560px,calc(100vw - 36px))!important;
+  max-width:560px!important;
+  max-height:92vh!important;
+  padding:22px!important;
+}
+body.mf-ds-reservas .mf-payment-register-head{display:flex!important;gap:12px!important;align-items:flex-start!important;padding-right:38px!important}
+body.mf-ds-reservas .mf-payment-register-head h2{margin:0!important;text-transform:none!important;font-size:24px!important}
+body.mf-ds-reservas .mf-payment-register-head p{margin:5px 0 0!important;color:#667085!important;font-size:12px!important;font-weight:800!important;line-height:1.4!important}
+body.mf-ds-reservas .mf-payment-register-icon{width:44px!important;height:44px!important;border-radius:14px!important;background:#eef3ff!important;color:#1237c9!important;display:grid!important;place-items:center!important;flex:0 0 auto!important}
+body.mf-ds-reservas .mf-payment-register-summary{display:grid!important;gap:4px!important;margin:18px 0 12px!important;padding:14px!important;border:1px solid #dfe8f4!important;border-radius:16px!important;background:#f8fbff!important}
+body.mf-ds-reservas .mf-payment-register-summary strong{color:#1237c9!important;font-size:13px!important}
+body.mf-ds-reservas .mf-payment-register-summary span{font-weight:1000!important;color:#172033!important}
+body.mf-ds-reservas .mf-payment-register-summary small{color:#667085!important;font-weight:800!important}
+body.mf-ds-reservas .mf-payment-register-values{display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:10px!important;margin-bottom:16px!important}
+body.mf-ds-reservas .mf-payment-register-values>div{padding:12px!important;border:1px solid #e1e8f2!important;border-radius:14px!important;background:#fff!important;display:grid!important;gap:4px!important}
+body.mf-ds-reservas .mf-payment-register-values span{font-size:11px!important;color:#667085!important;font-weight:900!important}
+body.mf-ds-reservas .mf-payment-register-values strong{font-size:17px!important;color:#172033!important}
+body.mf-ds-reservas .mf-payment-register-values .is-remaining{background:#fff9f2!important;border-color:#fed7aa!important}
+body.mf-ds-reservas .mf-payment-register-values .is-remaining strong{color:#c2410c!important}
+body.mf-ds-reservas .mf-payment-register-form{display:grid!important;grid-template-columns:1fr 1fr!important;gap:12px!important}
+body.mf-ds-reservas .mf-payment-register-form label{display:grid!important;gap:6px!important;min-width:0!important}
+body.mf-ds-reservas .mf-payment-register-form label>span{font-size:12px!important;color:#344054!important;font-weight:950!important}
+body.mf-ds-reservas .mf-payment-register-form .input{width:100%!important;min-width:0!important}
+body.mf-ds-reservas .mf-payment-register-note{grid-column:1/-1!important}
+body.mf-ds-reservas .mf-payment-register-note textarea.input{height:auto!important;min-height:78px!important;padding:11px 12px!important;resize:vertical!important;line-height:1.4!important}
+body.mf-ds-reservas .mf-money-input{display:flex!important;align-items:center!important;border:1px solid #d2ddec!important;border-radius:14px!important;background:#fff!important;overflow:hidden!important}
+body.mf-ds-reservas .mf-money-input>span{padding-left:12px!important;color:#667085!important;font-weight:1000!important}
+body.mf-ds-reservas .mf-money-input .input{border:0!important;border-radius:0!important;box-shadow:none!important;padding-left:7px!important}
+body.mf-ds-reservas .mf-payment-history{margin-top:14px!important;padding:12px!important;border-radius:14px!important;background:#f8fafc!important;border:1px solid #e4e7ec!important}
+body.mf-ds-reservas .mf-payment-history>strong{font-size:12px!important;color:#344054!important}
+body.mf-ds-reservas .mf-payment-history pre{white-space:pre-wrap!important;margin:8px 0 0!important;font:800 11px/1.45 Inter,Arial,sans-serif!important;color:#667085!important}
+body.mf-ds-reservas .mf-payment-register-actions{display:grid!important;grid-template-columns:1fr 1.5fr!important;gap:10px!important;margin-top:16px!important}
+@media(max-width:620px){
+  body.mf-ds-reservas #modalAgendaReserva .modal-agenda-card,
+  body.mf-ds-reservas #modalPagamentoReserva .mf-payment-register-card{width:min(94vw,520px)!important;max-width:none!important;padding:17px!important;border-radius:20px!important}
+  body.mf-ds-reservas #modalAgendaReserva .mf-agenda-detail-grid,
+  body.mf-ds-reservas .mf-payment-register-form{grid-template-columns:1fr!important}
+  body.mf-ds-reservas #modalAgendaReserva .mf-agenda-finance-section,
+  body.mf-ds-reservas .mf-payment-register-note{grid-column:auto!important}
+  body.mf-ds-reservas .mf-payment-register-values{grid-template-columns:1fr 1fr!important}
+  body.mf-ds-reservas .mf-payment-register-values .is-remaining{grid-column:1/-1!important}
+  body.mf-ds-reservas .mf-payment-register-actions{grid-template-columns:1fr!important}
+}
+
+
+/* V277 — atualização suave e ações pós-conclusão */
+body.mf-agenda-soft-refresh #agendaDia,
+body.mf-agenda-soft-refresh #reservasGrid,
+body.mf-agenda-soft-refresh #entitiesCard,
+body.mf-agenda-soft-refresh #setupCard{opacity:.72;transition:opacity .16s ease;pointer-events:none}
+body:not(.mf-agenda-soft-refresh) #agendaDia,
+body:not(.mf-agenda-soft-refresh) #reservasGrid{transition:opacity .16s ease}
+body.mf-ds-reservas .mf-modal-reopen-action{background:#fff7ed!important;color:#b45309!important;border:1px solid #fed7aa!important}
+body.mf-ds-reservas .mf-modal-edit-action{background:#7c3aed!important;color:#fff!important}
+
+/* V278 — status automático após o horário */
+#agendaGrid .slot.mf-v27-aguardando_conclusao .mf-v27-slot-status{background:#fff1bf;color:#7a5000}
+#agendaGrid .slot.mf-v27-aguardando_conclusao{border-color:#e5bd55}

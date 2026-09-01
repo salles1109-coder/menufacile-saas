@@ -1,0 +1,24 @@
+{#
+  MenuFacile Checkout Universal — V3
+  Carregado pelos três menus públicos: pedidos, produtos e serviços.
+  A lógica específica de montagem da origem permanece no template de cada menu,
+  enquanto SDK, configuração, utilitários e estilos-base são compartilhados.
+#}
+{% if empresa.pagamentos_online_ativo and empresa.mercadopago_public_key %}
+<script src="https://sdk.mercadopago.com/js/v2"></script>
+{% endif %}
+<link rel="stylesheet" href="/static/css/checkout-universal.css?v=3.5.0-v932">
+<script>
+window.MenuFacileCheckoutConfig = Object.freeze({
+  empresaId: {{ empresa.id }},
+  ativo: {{ 'true' if empresa.pagamentos_online_ativo else 'false' }},
+  publicKey: {{ (empresa.mercadopago_public_key or '')|tojson }},
+  aceitaPix: {{ 'true' if empresa.aceita_pix_online else 'false' }},
+  aceitaCartao: {{ 'true' if empresa.aceita_cartao_online else 'false' }},
+  aceitaDinheiro: {{ 'true' if empresa.aceita_dinheiro else 'false' }},
+  aceitaCartaoEntrega: {{ 'true' if empresa.aceita_cartao_entrega else 'false' }},
+  idioma: {{ menu_lang|tojson }},
+  origem: {{ checkout_origem|default('pedido')|tojson }}
+});
+</script>
+<script src="/static/js/checkout-universal.js?v=3.5.0-v932"></script>

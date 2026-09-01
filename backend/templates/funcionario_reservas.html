@@ -1,0 +1,2558 @@
+{% set lang = 'pt' %}
+<!DOCTYPE html>
+{% extends "base.html" %}
+{% block body_attrs %} class="mf-ds-admin mf-ds-employee mf-ds-employee-reservas" data-negocio-servico="{{ 1 if negocio_servico else 0 }}" data-empresa-nome="{{ empresa.nome|e }}"{% endblock %}
+{% block title %}Agendamentos - {{ empresa.nome }}{% endblock %}
+{% block head %}
+<style>
+:root{--blue:#061b8f;--green:#075333;--red:#e65353;--orange:#b45309;--text:#07152d;--muted:#667085;--bg:#eef4fb;--card:#fff;--line:#dbe6f5;--soft:#f7fbff;--shadow:0 18px 45px rgba(15,35,90,.07)}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#f7fbff,#eef4fb);font-family:Inter,Arial,sans-serif;color:var(--text)}button,input,select{font-family:inherit}a{text-decoration:none;color:inherit}.layout{display:grid;grid-template-columns:250px 1fr;min-height:100vh}.side{background:#fff;border-right:1px solid var(--line);padding:18px 14px;position:sticky;top:0;height:100vh}.brand{display:flex;gap:10px;align-items:center;margin-bottom:22px}.brand .ico{width:38px;height:38px;border-radius:12px;background:#eef3ff;color:var(--blue);display:grid;place-items:center}.brand strong{display:block;color:var(--blue);font-weight:1000}.brand span{font-size:12px;color:var(--muted);font-weight:800}.nav{display:grid;gap:8px}.nav a{min-height:42px;border-radius:12px;padding:0 12px;display:flex;gap:10px;align-items:center;color:#53627a;font-weight:900;font-size:13px}.nav a.active,.nav a:hover{background:var(--blue);color:#fff}.main{min-width:0}.topbar{background:rgba(255,255,255,.92);border-bottom:1px solid var(--line);min-height:64px;display:flex;align-items:center;justify-content:space-between;padding:12px 24px;position:sticky;top:0;z-index:10}.top-title strong{display:block;color:var(--blue);font-size:19px}.top-title span{font-size:12px;color:var(--muted);font-weight:800}.top-actions{display:flex;gap:8px;flex-wrap:wrap}.pill{min-height:36px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--blue);display:inline-flex;align-items:center;gap:7px;padding:0 12px;font-size:12px;font-weight:950}.content{max-width:1400px;margin:0 auto;padding:24px}.page-title{font-size:32px;font-weight:1000;letter-spacing:-.04em;margin:0}.subtitle{color:var(--muted);font-weight:800;margin:5px 0 18px}.card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:18px;box-shadow:var(--shadow);margin-bottom:18px}.card-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}.card-head .square{width:38px;height:38px;border-radius:14px;background:#f1f6ff;display:grid;place-items:center;color:var(--blue)}.card-head h2{margin:0;font-size:24px;letter-spacing:-.03em}.collapse-btn{margin-left:auto;width:38px;height:38px;border:1px solid var(--line);border-radius:14px;background:#f6f8ff;color:var(--blue);font-weight:1000}.collapsed .card-body{display:none}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:end}.field{display:grid;gap:6px}.field label{font-size:12px;font-weight:950;color:#344054}.input,select{height:42px;border:1px solid #d2ddec;border-radius:14px;padding:0 12px;font-weight:900;color:var(--text);background:#fff}.btn{border:0;border-radius:14px;min-height:42px;padding:0 16px;font-weight:1000;cursor:pointer}.btn.green{background:var(--green);color:#fff}.btn.blue{background:var(--blue);color:#fff}.btn.gray{background:#667085;color:#fff}.btn.red{background:#ff5148;color:#fff}.btn.soft{background:#eef3ff;color:var(--blue);border:1px solid var(--line)}.tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}.tab{min-height:48px;border:1px solid var(--line);border-radius:16px;background:#fff;color:#53627a;padding:0 16px;font-weight:1000;cursor:pointer}.tab.active{background:#f5f3ff;border-color:#b9a7ff;color:#7c3aed}.count{display:inline-flex;min-width:24px;height:24px;border-radius:999px;background:#eef3ff;color:var(--blue);align-items:center;justify-content:center;margin-left:8px;font-size:12px}.prof-tabs{display:flex;gap:10px;overflow:auto;border:1px solid var(--line);border-radius:18px;padding:12px;background:#fbfdff;margin-bottom:14px}.agenda-profissionais-fixa{margin-top:-2px;margin-bottom:14px}.prof-tab{border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--blue);padding:0 16px;min-height:42px;font-weight:1000;white-space:nowrap;cursor:pointer}.prof-tab.active{background:var(--blue);color:#fff}.agenda-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:12px}.slot{border:1px solid #bfe8d3;border-radius:16px;background:#f5fffa;padding:12px;position:relative;min-height:112px}.slot.busy{background:#fff8ed;border-color:#ffd7a3;cursor:pointer}.slot .time{font-size:24px;font-weight:1000;color:var(--blue)}.slot.busy .time{color:#b45309}.slot .chip{display:inline-flex;margin:8px 0 6px;border-radius:999px;padding:5px 8px;font-size:10px;font-weight:1000;background:#d9fae8;color:#087443;text-transform:uppercase}.slot.busy .chip{background:#ffedc7;color:#b45309}.slot .x{position:absolute;right:8px;top:8px;width:24px;height:24px;border-radius:999px;border:0;background:#eef2f6;color:#667085}.slot.busy .x{display:none}.slot p{margin:0;color:#344054;font-size:12px;font-weight:900;line-height:1.35}.reservas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}.reserva-card{background:#fff;border:1px solid #dce6f5;border-radius:18px;box-shadow:0 12px 28px rgba(15,35,90,.06);padding:16px;min-height:260px;display:flex;flex-direction:column;position:relative;overflow:hidden}.reserva-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:#98a2b3}.reserva-card[data-status="pendente"]:before{background:#f59e0b}.reserva-card[data-status="confirmada"]:before,.reserva-card[data-status="concluida"]:before,.reserva-card[data-status="paga"]:before{background:var(--blue)}.reserva-card[data-status="cancelada"]:before,.reserva-card[data-status="recusada"]:before{background:#ef4444}.reserva-top{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.reserva-prof{display:flex;align-items:center;gap:8px;color:var(--blue);font-weight:1000;font-size:14px;text-transform:uppercase;margin-bottom:8px}.reserva-prof .emoji{font-size:16px}.reserva-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}.codigo{border-radius:999px;background:#eef3ff;color:var(--blue);padding:6px 9px;font-size:12px;font-weight:1000}.badge{border-radius:999px;background:#eef3ff;color:var(--blue);padding:6px 9px;font-size:12px;font-weight:1000}.badge.ok{background:#eaf8ef;color:#075333}.reserva-card h3{font-size:19px;line-height:1.18;margin:12px 0;text-transform:uppercase}.info-box{background:#f8fbff;border:1px solid #edf2f7;border-radius:14px;padding:12px;color:#667085;font-size:13px;font-weight:850;line-height:1.45}.info-box strong{color:var(--blue)}.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:auto;padding-top:16px}.actions .btn{min-height:40px}.empty{border:1px dashed #d5dce8;border-radius:14px;padding:18px;color:var(--muted);font-weight:800}.preview{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.preview-chip{border:1px solid var(--line);border-radius:14px;background:#fff;padding:12px 18px;color:var(--blue);font-weight:1000}.preview-chip.selected{background:#eef3ff;border-color:var(--blue)}@media(max-width:900px){.layout{grid-template-columns:1fr}.side{display:none}.content{padding:14px}.topbar{position:relative}.reservas-grid{grid-template-columns:1fr}.agenda-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}.page-title{font-size:26px}}
+
+.modal-agenda{position:fixed;inset:0;background:rgba(15,23,42,.55);display:none;align-items:center;justify-content:center;z-index:99999;padding:18px}.modal-agenda.show{display:flex}.modal-agenda-card{width:min(520px,100%);background:#fff;border-radius:22px;padding:20px;box-shadow:0 24px 70px rgba(0,0,0,.25);position:relative}.modal-agenda-close{position:absolute;right:14px;top:14px;width:34px;height:34px;border:0;border-radius:999px;background:#eef2f6;color:#667085;font-weight:1000}.modal-agenda-prof{display:flex;align-items:center;gap:8px;color:var(--blue);font-weight:1000;font-size:14px;text-transform:uppercase;margin:2px 0 10px}.modal-agenda-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}.modal-agenda-card h2{margin:10px 0 12px;font-size:24px;color:var(--blue);line-height:1.15;text-transform:uppercase}.modal-agenda-info{background:#f8fbff;border:1px solid #edf2f7;border-radius:14px;padding:12px;color:#667085;font-weight:850;line-height:1.5}.modal-agenda-info strong{color:var(--blue)}.modal-agenda-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
+
+/* v321 - modo tela cheia para Agendamentos + atualização suave */
+.fullscreen-toggle{
+  position:fixed;right:22px;bottom:86px;z-index:9999;
+  width:54px;height:54px;border:0;border-radius:18px;
+  background:var(--blue);color:#fff;box-shadow:0 18px 40px rgba(15,35,90,.22);
+  display:grid;place-items:center;font-size:18px;cursor:pointer;
+}
+body.mf-fullscreen .side,
+body.mf-fullscreen .topbar,
+body.mf-fullscreen .page-title,
+body.mf-fullscreen .subtitle,
+body.mf-fullscreen #agendaSetupCard,
+body.mf-fullscreen #agendaDia{
+  display:none !important;
+}
+body.mf-fullscreen .layout{display:block !important;min-height:100vh !important;}
+body.mf-fullscreen .main{width:100% !important;min-height:100vh !important;}
+body.mf-fullscreen .content{max-width:none !important;width:100% !important;margin:0 !important;padding:22px !important;}
+body.mf-fullscreen #agendamentosCard{margin:0 !important;min-height:calc(100vh - 44px) !important;box-shadow:none !important;}
+body.mf-fullscreen #agendamentosCard .reservas-grid{grid-template-columns:repeat(auto-fill,minmax(285px,1fr)) !important;}
+body.mf-fullscreen .fullscreen-toggle{right:28px;bottom:28px;}
+@media(max-width:900px){body.mf-fullscreen .content{padding:12px !important}.fullscreen-toggle{right:14px;bottom:78px}}
+
+
+
+/* v340 - MOBILE FUNCIONÁRIO SEM DÓ: cabe em 360/390px */
+@media (max-width: 700px){
+
+  :root{
+    --mobile-pad:8px;
+  }
+
+  *{
+    box-sizing:border-box !important;
+  }
+
+  html,
+  body{
+    width:100vw !important;
+    max-width:100vw !important;
+    min-width:0 !important;
+    margin:0 !important;
+    padding:0 !important;
+    overflow-x:hidden !important;
+    background:#eef4fb !important;
+  }
+
+  body{
+    position:relative !important;
+  }
+
+  .layout,
+  .main,
+  .content,
+  main,
+  section{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    margin-left:0 !important;
+    margin-right:0 !important;
+    overflow-x:hidden !important;
+  }
+
+  .layout{
+    display:block !important;
+    min-height:100vh !important;
+  }
+
+  .side{
+    display:none !important;
+  }
+
+  .main{
+    display:block !important;
+    padding:0 !important;
+  }
+
+  .topbar{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    margin:0 !important;
+    padding:8px var(--mobile-pad) !important;
+    display:grid !important;
+    grid-template-columns:1fr auto !important;
+    gap:6px !important;
+    align-items:start !important;
+    overflow:hidden !important;
+  }
+
+  .top-title{
+    min-width:0 !important;
+    overflow:hidden !important;
+  }
+
+  .top-title strong{
+    display:block !important;
+    font-size:16px !important;
+    line-height:1.05 !important;
+    white-space:normal !important;
+    overflow-wrap:anywhere !important;
+  }
+
+  .top-title span{
+    display:block !important;
+    font-size:11px !important;
+    line-height:1.2 !important;
+    white-space:normal !important;
+    overflow-wrap:anywhere !important;
+  }
+
+  .top-actions{
+    display:flex !important;
+    flex-direction:column !important;
+    gap:5px !important;
+    align-items:stretch !important;
+    min-width:0 !important;
+  }
+
+  .top-actions .pill{
+    height:30px !important;
+    min-height:30px !important;
+    padding:5px 9px !important;
+    font-size:11px !important;
+    border-radius:12px !important;
+    white-space:nowrap !important;
+  }
+
+  .content{
+    padding:10px var(--mobile-pad) 78px !important;
+  }
+
+  .page-title{
+    width:100% !important;
+    max-width:100% !important;
+    margin:6px 0 4px !important;
+    font-size:21px !important;
+    line-height:1.05 !important;
+    white-space:normal !important;
+    overflow-wrap:anywhere !important;
+    word-break:normal !important;
+  }
+
+  .subtitle{
+    width:100% !important;
+    max-width:100% !important;
+    margin:0 0 10px !important;
+    font-size:12px !important;
+    line-height:1.2 !important;
+    white-space:normal !important;
+    overflow-wrap:anywhere !important;
+  }
+
+  .card{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    margin:0 0 10px !important;
+    padding:10px !important;
+    border-radius:16px !important;
+    overflow:hidden !important;
+  }
+
+  .card-head{
+    width:100% !important;
+    min-width:0 !important;
+    display:flex !important;
+    align-items:center !important;
+    gap:8px !important;
+    flex-wrap:nowrap !important;
+    overflow:hidden !important;
+  }
+
+  .square{
+    width:36px !important;
+    height:36px !important;
+    min-width:36px !important;
+    flex:0 0 36px !important;
+    border-radius:12px !important;
+  }
+
+  .card-head h2{
+    flex:1 1 auto !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    margin:0 !important;
+    font-size:20px !important;
+    line-height:1.08 !important;
+    white-space:normal !important;
+    overflow-wrap:anywhere !important;
+  }
+
+  .collapse-btn{
+    width:34px !important;
+    height:34px !important;
+    min-width:34px !important;
+    margin-left:auto !important;
+    flex:0 0 34px !important;
+  }
+
+  .card-body{
+    width:100% !important;
+    min-width:0 !important;
+    padding-top:8px !important;
+    overflow:hidden !important;
+  }
+
+  #setupCard .card-body{
+    display:none !important;
+  }
+
+  #agendaDia .card-head{
+    display:grid !important;
+    grid-template-columns:36px minmax(0, 1fr) minmax(128px, 142px) 34px !important;
+    gap:7px !important;
+  }
+
+  #agendaDia .card-head h2{
+    font-size:19px !important;
+    line-height:1.05 !important;
+  }
+
+  #formDataAgenda{
+    width:100% !important;
+    min-width:0 !important;
+    margin:0 !important;
+  }
+
+  #dataAgendaDia{
+    width:100% !important;
+    height:38px !important;
+    min-width:0 !important;
+    padding:8px 8px !important;
+    font-size:12px !important;
+    border-radius:13px !important;
+  }
+
+  .row{
+    width:100% !important;
+    min-width:0 !important;
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:stretch !important;
+    gap:8px !important;
+  }
+
+  .field,
+  .input,
+  select,
+  input{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+  }
+
+  .prof-tabs,
+  .agenda-profissionais-fixa{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    display:flex !important;
+    flex-wrap:nowrap !important;
+    gap:7px !important;
+    overflow-x:auto !important;
+    overflow-y:hidden !important;
+    padding:8px !important;
+    justify-content:flex-start !important;
+    -webkit-overflow-scrolling:touch !important;
+    scrollbar-width:thin !important;
+  }
+
+  .prof-tab{
+    flex:0 0 auto !important;
+    min-width:auto !important;
+    max-width:none !important;
+    height:36px !important;
+    padding:8px 13px !important;
+    border-radius:16px !important;
+    font-size:12px !important;
+    white-space:nowrap !important;
+  }
+
+  .prof-tab .count,
+  .tab .count{
+    min-width:22px !important;
+    height:22px !important;
+    font-size:11px !important;
+  }
+
+  .tabs{
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+    gap:8px !important;
+    overflow:hidden !important;
+  }
+
+  .tabs .tab{
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    height:44px !important;
+    padding:9px 8px !important;
+    border-radius:14px !important;
+    font-size:12px !important;
+    justify-content:center !important;
+    white-space:nowrap !important;
+  }
+
+  .agenda-grid,
+  .reservas-grid{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    display:grid !important;
+    grid-template-columns:1fr !important;
+    gap:10px !important;
+    overflow:hidden !important;
+  }
+
+  .slot,
+  .reserva-card{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    margin:0 !important;
+    padding:11px !important;
+    border-radius:16px !important;
+    overflow:hidden !important;
+  }
+
+  .reserva-prof,
+  .reserva-meta{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    display:flex !important;
+    flex-wrap:wrap !important;
+    gap:6px !important;
+  }
+
+  .reserva-prof span,
+  .reserva-meta span{
+    min-width:0 !important;
+    max-width:100% !important;
+    overflow-wrap:anywhere !important;
+  }
+
+  .codigo,
+  .badge{
+    font-size:11px !important;
+    padding:6px 8px !important;
+  }
+
+  .reserva-card h3{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    margin:12px 0 10px !important;
+    font-size:17px !important;
+    line-height:1.12 !important;
+    white-space:normal !important;
+    overflow-wrap:anywhere !important;
+    word-break:break-word !important;
+  }
+
+  .info-box{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    padding:11px !important;
+    font-size:11px !important;
+    line-height:1.35 !important;
+    overflow-wrap:anywhere !important;
+    word-break:break-word !important;
+  }
+
+  .actions{
+    width:100% !important;
+    max-width:100% !important;
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+    gap:7px !important;
+    margin-top:10px !important;
+  }
+
+  .actions .btn{
+    width:100% !important;
+    min-width:0 !important;
+    height:40px !important;
+    padding:8px 5px !important;
+    font-size:11px !important;
+    border-radius:13px !important;
+    white-space:nowrap !important;
+  }
+
+  .modal-agenda{
+    padding:8px !important;
+    align-items:flex-start !important;
+    overflow:auto !important;
+  }
+
+  .modal-agenda-card{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    margin-top:14px !important;
+    padding:14px !important;
+    border-radius:18px !important;
+  }
+
+  .modal-agenda-actions{
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+    gap:7px !important;
+  }
+
+  .modal-agenda-actions .btn{
+    font-size:11px !important;
+    padding:9px 5px !important;
+  }
+
+  .fullscreen-toggle{
+    right:10px !important;
+    bottom:68px !important;
+    width:48px !important;
+    height:48px !important;
+    border-radius:16px !important;
+  }
+
+  body.mf-fullscreen .layout,
+  body.mf-fullscreen .main,
+  body.mf-fullscreen .content{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    margin:0 !important;
+    overflow:hidden !important;
+  }
+
+  body.mf-fullscreen .content{
+    padding:8px 7px 78px !important;
+  }
+
+  body.mf-fullscreen #agendamentosCard .reservas-grid{
+    grid-template-columns:1fr !important;
+  }
+}
+
+@media (max-width: 380px){
+  .page-title{font-size:20px !important;}
+  .card-head h2{font-size:18px !important;}
+  #agendaDia .card-head{
+    grid-template-columns:34px minmax(0, 1fr) 124px 32px !important;
+    gap:5px !important;
+  }
+  #agendaDia .card-head h2{font-size:17px !important;}
+  .tabs .tab{font-size:11px !important;padding:8px 5px !important;}
+  .reserva-card h3{font-size:16px !important;}
+  .actions .btn{font-size:10px !important;}
+}
+
+
+/* v341 - abas de Agendamentos lado a lado no mobile */
+@media (max-width: 700px){
+  #statusTabs.tabs{
+    display:flex !important;
+    flex-direction:row !important;
+    flex-wrap:nowrap !important;
+    overflow-x:auto !important;
+    overflow-y:hidden !important;
+    gap:8px !important;
+    padding:4px 2px 8px !important;
+    justify-content:flex-start !important;
+    -webkit-overflow-scrolling:touch !important;
+    scrollbar-width:thin !important;
+  }
+
+  #statusTabs.tabs .tab{
+    flex:0 0 auto !important;
+    width:auto !important;
+    min-width:118px !important;
+    max-width:none !important;
+    height:40px !important;
+    padding:9px 12px !important;
+    border-radius:15px !important;
+    font-size:12px !important;
+    white-space:nowrap !important;
+  }
+}
+
+
+/* v342 - cards de agendamento mais compactos no mobile */
+@media (max-width: 700px){
+  .reservas-grid{
+    gap:9px !important;
+  }
+
+  .reserva-card{
+    padding:9px !important;
+    border-radius:14px !important;
+  }
+
+  .reserva-prof{
+    gap:4px !important;
+    font-size:11px !important;
+    line-height:1.1 !important;
+    margin-bottom:5px !important;
+  }
+
+  .reserva-prof .emoji{
+    font-size:15px !important;
+  }
+
+  .reserva-meta{
+    gap:5px !important;
+    margin-bottom:6px !important;
+  }
+
+  .codigo,
+  .badge{
+    font-size:10px !important;
+    padding:4px 7px !important;
+    border-radius:10px !important;
+  }
+
+  .reserva-card h3{
+    font-size:15px !important;
+    line-height:1.08 !important;
+    margin:8px 0 8px !important;
+  }
+
+  .info-box{
+    padding:8px !important;
+    font-size:10px !important;
+    line-height:1.25 !important;
+    border-radius:12px !important;
+  }
+
+  .actions{
+    gap:6px !important;
+    margin-top:8px !important;
+  }
+
+  .actions .btn{
+    height:34px !important;
+    min-height:34px !important;
+    padding:6px 4px !important;
+    font-size:10px !important;
+    border-radius:11px !important;
+  }
+
+  .fullscreen-toggle{
+    width:44px !important;
+    height:44px !important;
+    border-radius:14px !important;
+  }
+}
+
+
+/* v344 - sidebar funcionário respeita permissões */
+.side .logout-link{margin-top:14px;background:#fff1f1;color:#d92d20}
+.side .logout-link:hover{background:#d92d20;color:#fff}
+
+
+/* v345 - idiomas e botões lado a lado no funcionário reservas */
+.lang-switch{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  padding:4px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:999px;
+  box-shadow:0 8px 18px rgba(15,35,90,.06);
+}
+.lang-switch a{
+  width:32px;
+  height:32px;
+  border-radius:999px;
+  display:grid;
+  place-items:center;
+  font-size:12px;
+  font-weight:1000;
+  color:var(--blue);
+}
+.lang-switch a.active{
+  background:#087047;
+  color:#fff;
+}
+.top-actions{
+  display:flex !important;
+  align-items:center !important;
+  gap:8px !important;
+  flex-wrap:wrap !important;
+}
+.top-buttons{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:nowrap;
+}
+
+@media (max-width:700px){
+  .topbar{
+    grid-template-columns:1fr !important;
+  }
+  .top-actions{
+    width:100% !important;
+    flex-direction:row !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    gap:8px !important;
+    flex-wrap:nowrap !important;
+    overflow-x:auto !important;
+  }
+  .top-buttons{
+    display:flex !important;
+    flex-direction:row !important;
+    gap:7px !important;
+    flex-wrap:nowrap !important;
+  }
+  .lang-switch{
+    flex:0 0 auto !important;
+  }
+  .lang-switch a{
+    width:30px !important;
+    height:30px !important;
+    font-size:11px !important;
+  }
+  .top-actions .pill{
+    height:32px !important;
+    min-height:32px !important;
+    padding:6px 10px !important;
+    font-size:11px !important;
+    border-radius:999px !important;
+  }
+}
+
+
+/* v380 - sidebar fixo padronizado em todas as telas */
+.side,
+.sidebar,
+.premium-sidebar,
+aside.side,
+aside.sidebar{
+  width:230px !important;
+  min-width:230px !important;
+  max-width:230px !important;
+  flex:0 0 230px !important;
+  background:#fff !important;
+  border-right:1px solid #d9e4f4 !important;
+  padding:18px 14px !important;
+  overflow-x:hidden !important;
+}
+
+.app{
+  display:grid !important;
+  grid-template-columns:230px minmax(0,1fr) !important;
+}
+
+.brand,
+.logo-area,
+.sidebar-brand,
+.side-brand{
+  min-height:74px !important;
+  padding:0 0 16px 0 !important;
+  margin:0 0 14px 0 !important;
+  border-bottom:1px solid #edf2f7 !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:12px !important;
+}
+
+.brand .logo,
+.brand-icon,
+.store-icon,
+.sidebar-logo{
+  width:40px !important;
+  height:40px !important;
+  min-width:40px !important;
+  border-radius:14px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+
+.brand strong,
+.brand-title,
+.sidebar-title{
+  font-size:18px !important;
+  line-height:1.05 !important;
+  font-weight:1000 !important;
+  color:#061b8f !important;
+  display:block !important;
+  white-space:normal !important;
+}
+
+.brand small,
+.brand-subtitle,
+.sidebar-subtitle{
+  font-size:12px !important;
+  line-height:1.1 !important;
+  font-weight:900 !important;
+  color:#667085 !important;
+  display:block !important;
+  margin-top:3px !important;
+}
+
+.nav,
+.side-nav,
+.sidebar-nav{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:8px !important;
+}
+
+.nav a,
+.side a,
+.sidebar a,
+.premium-sidebar a,
+.side-link,
+.nav-link{
+  min-height:42px !important;
+  height:auto !important;
+  padding:10px 13px !important;
+  border-radius:13px !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:12px !important;
+  font-size:13px !important;
+  line-height:1.12 !important;
+  font-weight:950 !important;
+  color:#344054 !important;
+  text-decoration:none !important;
+  white-space:normal !important;
+  word-break:normal !important;
+  overflow-wrap:normal !important;
+}
+
+.nav a i,
+.side a i,
+.sidebar a i,
+.premium-sidebar a i,
+.side-link i,
+.nav-link i{
+  width:18px !important;
+  min-width:18px !important;
+  text-align:center !important;
+  font-size:14px !important;
+  color:#667085 !important;
+}
+
+.nav a.active,
+.side a.active,
+.sidebar a.active,
+.premium-sidebar a.active,
+.side-link.active,
+.nav-link.active{
+  background:#061b8f !important;
+  color:#fff !important;
+  box-shadow:0 12px 24px rgba(6,27,143,.18) !important;
+}
+
+.nav a.active i,
+.side a.active i,
+.sidebar a.active i,
+.premium-sidebar a.active i,
+.side-link.active i,
+.nav-link.active i{
+  color:#fff !important;
+}
+
+.nav-title,
+.sidebar-section-title,
+.side-section-title{
+  margin:18px 0 8px !important;
+  padding:0 6px !important;
+  font-size:12px !important;
+  line-height:1 !important;
+  letter-spacing:.04em !important;
+  font-weight:1000 !important;
+  color:#98a2b3 !important;
+  text-transform:uppercase !important;
+}
+
+/* evita que "Reservas / Agendamentos" aumente o menu ou mude largura */
+.nav a span,
+.side a span,
+.sidebar a span,
+.premium-sidebar a span,
+.side-link span,
+.nav-link span{
+  display:inline-block !important;
+  max-width:160px !important;
+}
+
+/* mobile: mantém comportamento responsivo sem quebrar */
+@media(max-width:900px){
+  .app{
+    display:block !important;
+  }
+  .side,
+  .sidebar,
+  .premium-sidebar,
+  aside.side,
+  aside.sidebar{
+    width:100% !important;
+    max-width:none !important;
+    min-width:0 !important;
+    border-right:0 !important;
+    border-bottom:1px solid #d9e4f4 !important;
+  }
+}
+
+.page-title-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}.page-title-row i{width:24px;height:24px;display:grid;place-items:center;border-radius:999px;background:#eef3ff;color:#061b8f;font-size:12px}.page-title-row .page-title{margin:0}.subtitle{display:none!important}</style>
+
+<script id="v351_sync_localstorage_idioma_funcionario_reservas">
+(function(){
+  ['mf_funcionario_lang','idioma_funcionario','idioma_empresa','lang','idioma','menu_lang','painel_lang'].forEach(function(chave){localStorage.setItem(chave,'pt')});
+  document.documentElement.lang='pt';
+})();
+</script>
+
+
+<script id="v352-sync-idioma-funcionario-reservas">
+(function(){
+  ['mf_funcionario_lang','idioma_funcionario','idioma_empresa','lang','idioma','menu_lang','painel_lang'].forEach(function(chave){localStorage.setItem(chave,'pt')});
+  document.documentElement.lang='pt';
+})();
+</script>
+<!-- MENUFACILE ADMIN LAYOUT FIX - padroniza sidebar e área principal -->
+<style id="menufacile-admin-layout-fix">
+:root{
+  --mf-sidebar-w: 220px;
+  --mf-page-max: 1440px;
+  --mf-page-pad-x: 28px;
+  --mf-page-pad-y: 22px;
+}
+html,body{overflow-x:hidden;}
+.layout,.premium-layout{
+  display:grid !important;
+  grid-template-columns:var(--mf-sidebar-w) minmax(0,1fr) !important;
+  min-height:100vh !important;
+  background:#f4f8fd !important;
+}
+.sidebar,.premium-sidebar{
+  width:var(--mf-sidebar-w) !important;
+  min-width:var(--mf-sidebar-w) !important;
+  max-width:var(--mf-sidebar-w) !important;
+  height:100vh !important;
+  position:sticky !important;
+  top:0 !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  padding:20px 14px !important;
+  background:#fff !important;
+  border-right:1px solid #dbe6f3 !important;
+}
+.nav-title,.premium-nav-title{display:none !important;}
+.brand,.premium-brand{
+  margin-bottom:18px !important;
+  padding-bottom:18px !important;
+}
+.brand strong,.premium-brand strong{font-size:17px !important;line-height:1.12 !important;}
+.brand span,.premium-brand span{font-size:11px !important;line-height:1.2 !important;}
+.nav-section,.premium-nav,.nav{gap:7px !important;}
+.nav-link,.premium-nav-link,.nav a{
+  min-height:44px !important;
+  border-radius:13px !important;
+  padding:10px 12px !important;
+  font-size:13px !important;
+  line-height:1.15 !important;
+}
+.main,.premium-main{
+  min-width:0 !important;
+  width:100% !important;
+  padding:0 !important;
+  background:#f4f8fd !important;
+}
+.topbar,.premium-topbar{
+  height:64px !important;
+  min-height:64px !important;
+  padding:0 var(--mf-page-pad-x) !important;
+  border-bottom:1px solid #dbe6f3 !important;
+  background:rgba(255,255,255,.92) !important;
+}
+.content,.premium-content{
+  width:100% !important;
+  max-width:var(--mf-page-max) !important;
+  margin:0 auto !important;
+  padding:var(--mf-page-pad-y) var(--mf-page-pad-x) 56px !important;
+}
+.premium-content > .container,
+.content > .container,
+.main > .container,
+.premium-main > .container{
+  width:100% !important;
+  max-width:var(--mf-page-max) !important;
+  margin:0 auto !important;
+  padding-left:0 !important;
+  padding-right:0 !important;
+}
+.page-head,.page-title,.premium-page-title,.header{
+  margin:0 0 18px !important;
+  padding:0 !important;
+}
+.page-head h1,.page-title h1,.premium-page-title h1,.content h1,.premium-content h1{
+  margin-top:0 !important;
+  letter-spacing:-.04em;
+}
+.card,.premium-card,.panel,.box,section.card{
+  border-radius:18px !important;
+}
+.grid-2,.cards-grid{gap:14px !important;}
+@media(max-width:900px){
+  .layout,.premium-layout{grid-template-columns:1fr !important;}
+  .sidebar,.premium-sidebar{position:relative !important;width:100% !important;max-width:none !important;min-width:0 !important;height:auto !important;}
+  .content,.premium-content{padding:18px 14px 44px !important;}
+  .topbar,.premium-topbar{padding:0 14px !important;}
+}
+</style>
+
+<style id="v395-funcionario-reservas-mobile-clean-print">
+/* v395 — funcionário reservas mobile limpo + imprimir. Desktop intacto. */
+@media(max-width:700px){
+
+  html,body{
+    width:100%!important;
+    max-width:100%!important;
+    overflow-x:hidden!important;
+    background:#eef4fb!important;
+  }
+
+  .layout{
+    display:block!important;
+    width:100%!important;
+    min-height:100vh!important;
+  }
+
+  .side{
+    display:none!important;
+  }
+
+  .main,
+  .content{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    overflow-x:hidden!important;
+  }
+
+  /* remove topo duplicado no celular: fica só o título principal da página */
+  .topbar{
+    display:none!important;
+  }
+
+  .content{
+    padding:12px 10px 84px!important;
+  }
+
+  .page-title{
+    font-size:22px!important;
+    line-height:24px!important;
+    margin:0 0 4px!important;
+    color:#061b8f!important;
+  }
+
+  .subtitle{
+    font-size:12px!important;
+    line-height:15px!important;
+    margin:0 0 12px!important;
+    color:#667085!important;
+  }
+
+  .card{
+    width:100%!important;
+    max-width:100%!important;
+    padding:12px!important;
+    margin:0 0 10px!important;
+    border-radius:17px!important;
+    overflow:hidden!important;
+  }
+
+  .card-head{
+    display:grid!important;
+    grid-template-columns:34px minmax(0,1fr) 34px!important;
+    gap:9px!important;
+    align-items:center!important;
+    margin-bottom:10px!important;
+  }
+
+  .square{
+    width:34px!important;
+    height:34px!important;
+    min-width:34px!important;
+    border-radius:12px!important;
+  }
+
+  .card-head h2{
+    font-size:20px!important;
+    line-height:22px!important;
+    margin:0!important;
+  }
+
+  .collapse-btn{
+    width:34px!important;
+    height:34px!important;
+    min-width:34px!important;
+    border-radius:12px!important;
+    margin-left:0!important;
+  }
+
+  /* Agenda do dia organizada igual admin */
+  #agendaDia .card-head{
+    grid-template-columns:34px minmax(0,1fr) 34px!important;
+  }
+
+  #agendaDia #formDataAgenda{
+    grid-column:1 / -1!important;
+    width:100%!important;
+    margin:0!important;
+    display:grid!important;
+    grid-template-columns:1fr!important;
+  }
+
+  #dataAgendaDia{
+    width:100%!important;
+    height:38px!important;
+    min-height:38px!important;
+    border-radius:12px!important;
+    font-size:13px!important;
+  }
+
+  .imprimir-dia-btn{
+    grid-column:1 / -1!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-height:38px!important;
+    height:38px!important;
+    padding:0 10px!important;
+    border-radius:12px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:7px!important;
+    font-size:12px!important;
+    font-weight:950!important;
+    background:#eef3ff!important;
+    color:#061b8f!important;
+    border:1px solid #dbe6f5!important;
+  }
+
+  .prof-tabs,
+  .agenda-profissionais-fixa{
+    width:100%!important;
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    gap:7px!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    padding:8px!important;
+    border-radius:14px!important;
+    margin-bottom:8px!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+
+  .prof-tab{
+    flex:0 0 auto!important;
+    height:36px!important;
+    min-height:36px!important;
+    padding:0 12px!important;
+    border-radius:14px!important;
+    font-size:11px!important;
+    white-space:nowrap!important;
+  }
+
+  #statusTabs.tabs{
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    gap:7px!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    padding:4px 2px 9px!important;
+    margin-bottom:10px!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+
+  #statusTabs.tabs .tab{
+    flex:0 0 auto!important;
+    min-width:104px!important;
+    height:38px!important;
+    min-height:38px!important;
+    padding:0 10px!important;
+    border-radius:13px!important;
+    font-size:11px!important;
+  }
+
+  .count{
+    min-width:20px!important;
+    height:20px!important;
+    font-size:10px!important;
+    margin-left:5px!important;
+  }
+
+  .reservas-grid{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:9px!important;
+    width:100%!important;
+    overflow:visible!important;
+  }
+
+  .reserva-card{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    min-height:0!important;
+    padding:10px!important;
+    border-radius:15px!important;
+  }
+
+  .reserva-prof{
+    font-size:10.5px!important;
+    line-height:12px!important;
+    gap:5px!important;
+    margin-bottom:6px!important;
+  }
+
+  .reserva-prof .emoji{
+    font-size:14px!important;
+  }
+
+  .reserva-meta{
+    gap:5px!important;
+    margin-bottom:6px!important;
+  }
+
+  .codigo,
+  .badge{
+    font-size:9.5px!important;
+    min-height:20px!important;
+    padding:4px 6px!important;
+    border-radius:999px!important;
+  }
+
+  .reserva-card h3{
+    font-size:15px!important;
+    line-height:17px!important;
+    margin:8px 0!important;
+  }
+
+  .info-box{
+    padding:8px!important;
+    border-radius:12px!important;
+    font-size:10.5px!important;
+    line-height:13px!important;
+    overflow-wrap:anywhere!important;
+    word-break:break-word!important;
+  }
+
+  .actions{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:7px!important;
+    margin-top:8px!important;
+    padding-top:8px!important;
+  }
+
+  .actions .btn{
+    width:100%!important;
+    min-width:0!important;
+    height:36px!important;
+    min-height:36px!important;
+    padding:0 6px!important;
+    font-size:10.5px!important;
+    border-radius:11px!important;
+  }
+
+  .fullscreen-toggle{
+    right:10px!important;
+    bottom:68px!important;
+    width:46px!important;
+    height:46px!important;
+    border-radius:15px!important;
+  }
+
+  /* fullscreen mobile: mantém limpo e compacto */
+  body.mf-fullscreen .content{
+    padding:7px 7px 72px!important;
+  }
+
+  body.mf-fullscreen #agendamentosCard{
+    padding:9px!important;
+    border-radius:15px!important;
+    margin:0!important;
+  }
+
+  body.mf-fullscreen #agendamentosCard .card-head{
+    margin-bottom:8px!important;
+  }
+
+  body.mf-fullscreen #agendamentosCard .card-head h2{
+    font-size:19px!important;
+    line-height:21px!important;
+  }
+
+  body.mf-fullscreen .reserva-card{
+    padding:8px!important;
+    border-radius:13px!important;
+  }
+
+  body.mf-fullscreen .reserva-card h3{
+    font-size:14px!important;
+    line-height:16px!important;
+    margin:7px 0!important;
+  }
+
+  body.mf-fullscreen .info-box{
+    padding:7px!important;
+    font-size:9.8px!important;
+    line-height:12px!important;
+  }
+
+  body.mf-fullscreen .actions .btn{
+    height:32px!important;
+    min-height:32px!important;
+    font-size:9.5px!important;
+    border-radius:10px!important;
+  }
+
+  body.mf-fullscreen .fullscreen-toggle{
+    right:8px!important;
+    bottom:50px!important;
+    width:42px!important;
+    height:42px!important;
+    border-radius:14px!important;
+  }
+}
+
+@media(max-width:380px){
+  .content{padding-left:7px!important;padding-right:7px!important;}
+  .page-title{font-size:20px!important;line-height:22px!important;}
+  .card-head h2{font-size:18px!important;line-height:20px!important;}
+  .reserva-card h3{font-size:14px!important;line-height:16px!important;}
+  .info-box{font-size:9.6px!important;line-height:12px!important;}
+  .actions .btn{font-size:9.5px!important;}
+}
+</style>
+
+
+<style id="v398-func-reservas-mobile-pedidos-style">
+/* v398 — Reservas funcionário com cabeçalho mobile igual ao Pedidos. Desktop intacto. */
+@media(max-width:700px){
+
+  html,body{
+    width:100%!important;
+    max-width:100%!important;
+    overflow-x:hidden!important;
+    background:#eef4fb!important;
+  }
+
+  .layout{
+    display:block!important;
+    width:100%!important;
+    min-height:100vh!important;
+  }
+
+  .side{
+    display:none!important;
+  }
+
+  .main,
+  .content{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    overflow-x:hidden!important;
+  }
+
+  /* remove cabeçalho duplicado antigo */
+  .topbar{
+    display:none!important;
+  }
+
+  .content{
+    padding:12px 10px 84px!important;
+  }
+
+  .page-title{
+    font-size:22px!important;
+    line-height:24px!important;
+    margin:0 0 4px!important;
+    color:#061b8f!important;
+    letter-spacing:-.04em!important;
+  }
+
+  .subtitle{
+    font-size:12px!important;
+    line-height:15px!important;
+    margin:0 0 10px!important;
+    color:#667085!important;
+    font-weight:850!important;
+  }
+
+  /* barra de botões igual ao padrão bonito de Pedidos */
+  .v398-mobile-actions{
+    width:100%!important;
+    display:flex!important;
+    flex-direction:row!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    gap:8px!important;
+    flex-wrap:nowrap!important;
+    overflow-x:auto!important;
+    padding:0 0 12px!important;
+    margin:0!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+
+  .v398-mobile-actions .pill{
+    flex:0 0 auto!important;
+    height:36px!important;
+    min-height:36px!important;
+    padding:0 12px!important;
+    border-radius:999px!important;
+    font-size:11px!important;
+    font-weight:950!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    gap:7px!important;
+    background:#fff!important;
+    border:1px solid #dbe6f5!important;
+    color:#061b8f!important;
+  }
+
+  .v398-mobile-actions .lang-switch{
+    flex:0 0 auto!important;
+    display:inline-flex!important;
+    gap:4px!important;
+    padding:4px!important;
+    background:#fff!important;
+    border:1px solid #dbe6f5!important;
+    border-radius:999px!important;
+    box-shadow:0 8px 18px rgba(15,35,90,.04)!important;
+  }
+
+  .v398-mobile-actions .lang-switch a{
+    width:32px!important;
+    height:32px!important;
+    border-radius:999px!important;
+    display:grid!important;
+    place-items:center!important;
+    font-size:11px!important;
+    font-weight:1000!important;
+    color:#061b8f!important;
+  }
+
+  .v398-mobile-actions .lang-switch a.active{
+    background:#075333!important;
+    color:#fff!important;
+  }
+
+  .card{
+    width:100%!important;
+    max-width:100%!important;
+    padding:12px!important;
+    margin:0 0 10px!important;
+    border-radius:17px!important;
+    overflow:hidden!important;
+  }
+
+  .card-head{
+    display:grid!important;
+    grid-template-columns:34px minmax(0,1fr) 34px!important;
+    gap:9px!important;
+    align-items:center!important;
+    margin-bottom:10px!important;
+  }
+
+  .square{
+    width:34px!important;
+    height:34px!important;
+    min-width:34px!important;
+    border-radius:12px!important;
+  }
+
+  .card-head h2{
+    font-size:20px!important;
+    line-height:22px!important;
+    margin:0!important;
+  }
+
+  .collapse-btn{
+    width:34px!important;
+    height:34px!important;
+    min-width:34px!important;
+    border-radius:12px!important;
+    margin-left:0!important;
+  }
+
+  #agendaDia .card-head{
+    grid-template-columns:34px minmax(0,1fr) 34px!important;
+  }
+
+  #agendaDia #formDataAgenda{
+    grid-column:1 / -1!important;
+    width:100%!important;
+    margin:0!important;
+    display:grid!important;
+    grid-template-columns:1fr!important;
+  }
+
+  #dataAgendaDia{
+    width:100%!important;
+    height:38px!important;
+    min-height:38px!important;
+    border-radius:12px!important;
+    font-size:13px!important;
+  }
+
+  .imprimir-dia-btn{
+    grid-column:1 / -1!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-height:38px!important;
+    height:38px!important;
+    padding:0 10px!important;
+    border-radius:12px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:7px!important;
+    font-size:12px!important;
+    font-weight:950!important;
+    background:#eef3ff!important;
+    color:#061b8f!important;
+    border:1px solid #dbe6f5!important;
+  }
+
+  .prof-tabs,
+  .agenda-profissionais-fixa{
+    width:100%!important;
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    gap:7px!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    padding:8px!important;
+    border-radius:14px!important;
+    margin-bottom:8px!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+
+  .prof-tab{
+    flex:0 0 auto!important;
+    height:36px!important;
+    min-height:36px!important;
+    padding:0 12px!important;
+    border-radius:14px!important;
+    font-size:11px!important;
+    white-space:nowrap!important;
+  }
+
+  #statusTabs.tabs{
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    gap:7px!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    padding:4px 2px 9px!important;
+    margin-bottom:10px!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+
+  #statusTabs.tabs .tab{
+    flex:0 0 auto!important;
+    min-width:104px!important;
+    height:38px!important;
+    min-height:38px!important;
+    padding:0 10px!important;
+    border-radius:13px!important;
+    font-size:11px!important;
+  }
+
+  .count{
+    min-width:20px!important;
+    height:20px!important;
+    font-size:10px!important;
+    margin-left:5px!important;
+  }
+
+  .reservas-grid{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:9px!important;
+    width:100%!important;
+    overflow:visible!important;
+  }
+
+  .reserva-card{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    min-height:0!important;
+    padding:10px!important;
+    border-radius:15px!important;
+  }
+
+  .reserva-prof{
+    font-size:10.5px!important;
+    line-height:12px!important;
+    gap:5px!important;
+    margin-bottom:6px!important;
+  }
+
+  .reserva-prof .emoji{
+    font-size:14px!important;
+  }
+
+  .reserva-meta{
+    gap:5px!important;
+    margin-bottom:6px!important;
+  }
+
+  .codigo,
+  .badge{
+    font-size:9.5px!important;
+    min-height:20px!important;
+    padding:4px 6px!important;
+    border-radius:999px!important;
+  }
+
+  .reserva-card h3{
+    font-size:15px!important;
+    line-height:17px!important;
+    margin:8px 0!important;
+  }
+
+  .info-box{
+    padding:8px!important;
+    border-radius:12px!important;
+    font-size:10.5px!important;
+    line-height:13px!important;
+    overflow-wrap:anywhere!important;
+    word-break:break-word!important;
+  }
+
+  .actions{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:7px!important;
+    margin-top:8px!important;
+    padding-top:8px!important;
+  }
+
+  .actions .btn{
+    width:100%!important;
+    min-width:0!important;
+    height:36px!important;
+    min-height:36px!important;
+    padding:0 6px!important;
+    font-size:10.5px!important;
+    border-radius:11px!important;
+  }
+
+  .fullscreen-toggle{
+    right:10px!important;
+    bottom:68px!important;
+    width:46px!important;
+    height:46px!important;
+    border-radius:15px!important;
+  }
+}
+
+@media(max-width:380px){
+  .content{padding-left:7px!important;padding-right:7px!important;}
+  .page-title{font-size:20px!important;line-height:22px!important;}
+  .card-head h2{font-size:18px!important;line-height:20px!important;}
+  .reserva-card h3{font-size:14px!important;line-height:16px!important;}
+  .info-box{font-size:9.6px!important;line-height:12px!important;}
+  .actions .btn{font-size:9.5px!important;}
+}
+</style>
+
+
+<style id="v399-data-imprimir-lado-mobile">
+/* v399 — Data e Imprimir lado a lado no mobile */
+@media(max-width:700px){
+  #agendaDia .card-head{
+    grid-template-columns:34px minmax(0,1fr) 34px!important;
+  }
+
+  #agendaDia #formDataAgenda{
+    grid-column:1 / 3!important;
+    width:100%!important;
+    margin:0!important;
+    display:block!important;
+  }
+
+  #dataAgendaDia{
+    width:100%!important;
+    height:36px!important;
+    min-height:36px!important;
+    font-size:12px!important;
+    border-radius:12px!important;
+    padding:0 9px!important;
+  }
+
+  #agendaDia .imprimir-dia-btn{
+    grid-column:3 / 4!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    height:36px!important;
+    min-height:36px!important;
+    padding:0!important;
+    border-radius:12px!important;
+    font-size:0!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+  }
+
+  #agendaDia .imprimir-dia-btn i{
+    font-size:13px!important;
+    margin:0!important;
+  }
+}
+
+@media(min-width:381px) and (max-width:700px){
+  #agendaDia .card-head{
+    grid-template-columns:34px minmax(0,1fr) 86px!important;
+  }
+
+  #agendaDia .imprimir-dia-btn{
+    font-size:11px!important;
+    gap:5px!important;
+    padding:0 8px!important;
+  }
+
+  #agendaDia .imprimir-dia-btn i{
+    font-size:12px!important;
+  }
+}
+</style>
+
+{% endblock %}
+{% block page %}
+{% set _pode_cardapio = permissao_admin_sessao(request, 'cardapio') %}
+{% set _pode_produtos = permissao_admin_sessao(request, 'produtos') %}
+{% set _pode_pedidos = permissao_admin_sessao(request, 'pedidos') %}
+{% set _pode_reservas = permissao_admin_sessao(request, 'reservas') %}
+{% include "partials/funcionario_mobile_header.html" %}
+<style id="mf-employee-reservas-v3">@media(max-width:900px){.topbar .top-actions,.v398-mobile-actions,.top-buttons,.lang-switch{display:none!important}#setupCard .card-head,#agendaDia .card-head{margin-bottom:6px!important}#setupCard.card,#agendaDia.card{padding:10px!important;border-radius:16px!important}#setupCard .card-body{padding-top:4px!important}#setupCard .square,#agendaDia .square,#setupCard .collapse-btn,#agendaDia .collapse-btn{width:32px!important;height:32px!important;min-width:32px!important;border-radius:10px!important}#setupCard .card-head h2,#agendaDia .card-head h2{font-size:17px!important;line-height:1.2!important}#agendaDia #formDataAgenda{grid-column:2 / 3!important;margin:0!important}#agendaDia .imprimir-dia-btn{grid-column:2 / 3!important;width:auto!important;min-width:92px!important;justify-self:start!important;margin-top:6px!important}#agendaDia .card-head{grid-template-columns:32px minmax(0,1fr) 32px!important;align-items:start!important}#agendaDia .prof-tabs,#agendaDia .agenda-profissionais-fixa{padding:6px!important;margin-bottom:6px!important}#agendaDia .prof-tab{height:34px!important;min-height:34px!important;padding:0 10px!important;font-size:10.5px!important}}</style>
+<style id="mf-employee-reservas-mobile-fix">
+@media(max-width:900px){
+  .topbar, .top-buttons, .topbar .lang-switch, .topbar .top-actions, .v398-mobile-actions{display:none!important}
+  .content{padding-top:10px!important}
+  .page-title{margin-bottom:2px!important}
+  .subtitle{margin-bottom:10px!important}
+  #setupCard, #agendaDia{padding:10px!important;border-radius:16px!important}
+  #setupCard .card-head, #agendaDia .card-head{margin-bottom:6px!important}
+  #setupCard .card-head h2, #agendaDia .card-head h2{font-size:18px!important;line-height:20px!important}
+  #setupCard .card-body{padding-top:4px!important}
+  #agendaDia #formDataAgenda{grid-column:1 / -1!important;width:auto!important;max-width:170px!important;display:block!important;margin:0!important}
+  #dataAgendaDia{width:170px!important;max-width:170px!important}
+  #agendaDia .imprimir-dia-btn{grid-column:1 / -1!important;width:auto!important;max-width:max-content!important;min-width:104px!important;height:34px!important;min-height:34px!important;padding:0 10px!important;border-radius:12px!important}
+}
+</style>
+<button id="mfFullscreenBtn" class="fullscreen-toggle" type="button" title="{% if lang == "it" %}Schermo intero{% elif lang == "en" %}Full screen{% else %}Tela cheia{% endif %}" onclick="toggleModoTelaCheia()"><i class="fa-solid fa-expand"></i></button>
+<div class="layout">
+<aside class="side"><div class="brand"><div class="ico"><i class="fa-solid fa-store"></i></div><div><strong>{{ empresa.nome }}</strong><span>{% if lang == "it" %}Pannello{% elif lang == "en" %}Panel{% else %}Painel{% endif %}</span></div></div><nav class="nav"><a href="/funcionario/{{ empresa.id }}"><i class="fa-solid fa-house"></i>{% if lang == "it" %}Inizio{% elif lang == "en" %}Home{% else %}Início{% endif %}</a>{% if _pode_produtos %}<a href="/funcionario/{{ empresa.id }}/produtos"><i class="fa-solid fa-box"></i>Produtos</a>{% endif %}{% if permissao_admin_sessao(request, 'pedidos') %}<a href="/funcionario/{{ empresa.id }}/pedidos"><i class="fa-solid fa-bag-shopping"></i>{% if lang == "it" %}Ordini{% elif lang == "en" %}Orders{% else %}Pedidos{% endif %}</a>{% endif %}{% if permissao_admin_sessao(request, 'reservas') %}<a class="active" href="/funcionario/{{ empresa.id }}/reservas"><i class="fa-regular fa-calendar"></i>{% if lang == "it" %}Prenotazioni{% elif lang == "en" %}Reservations{% else %}Reservas{% endif %}</a>{% endif %}{% if permissao_admin_sessao(request, 'cardapio') %}<a href="/funcionario/{{ empresa.id }}/cardapio"><i class="fa-solid fa-utensils"></i>{% if lang == "it" %}Menu / Servizi{% elif lang == "en" %}Menu / Services{% else %}Menu / Serviços{% endif %}</a>{% endif %}<a href="/logout" class="logout-link"><i class="fa-solid fa-right-from-bracket"></i>{% if lang == "it" %}Uscire{% elif lang == "en" %}Sign out{% else %}Sair{% endif %}</a></nav></aside>
+<main class="main"><header class="topbar"><div class="top-title"><strong>{% if lang == "it" %}Appuntamenti{% elif lang == "en" %}Appointments{% else %}Agendamentos{% endif %}</strong><span>{% if lang == "it" %}Orari, posti e richieste del giorno{% elif lang == "en" %}Hours, slots and daily requests{% else %}Horários, vagas e solicitações do dia{% endif %}</span></div><div class="top-actions">
+  <div class="top-buttons">
+    <a class="pill" href="/menu/{{ empresa.slug or empresa.id }}"><i class="fa-solid fa-globe"></i>{% if lang == "it" %}Menu{% elif lang == "en" %}Menu{% else %}Menu{% endif %}</a>
+    <a class="pill" href="/funcionario/{{ empresa.id }}"><i class="fa-solid fa-house"></i>{% if lang == "it" %}Pannello{% elif lang == "en" %}Panel{% else %}Painel{% endif %}</a>
+  </div>
+</div></header>
+<section class="content"><div class="page-title-row"><i class="fa-regular fa-calendar" aria-hidden="true"></i><h1 class="page-title">{% if lang == "it" %}Prenotazioni / Appuntamenti{% elif lang == "en" %}Reservations / Appointments{% else %}Reservas / Agendamentos{% endif %}</h1></div>
+
+<div class="v398-mobile-actions" style="display:none!important">
+  <a class="pill" href="/funcionario/{{ empresa.id }}"><i class="fa-solid fa-arrow-left"></i>{% if lang == "it" %}Pannello{% elif lang == "en" %}Panel{% else %}Painel{% endif %}</a>
+</div>
+
+
+<section class="card collapsed" id="setupCard"><div class="card-head"><div class="square"><i class="fa-solid fa-clock"></i></div><h2>Configurar horários</h2><button class="collapse-btn" type="button" data-card-target="setupCard" aria-expanded="false" aria-label="Abrir configuração de horários"><i class="fa-solid fa-chevron-down"></i></button></div><div class="card-body">
+  <div class="row">
+    <div class="field" style="flex:1;min-width:220px"><label>{% if lang == "it" %}Professionista{% elif lang == "en" %}Professional{% else %}Profissional{% endif %}</label><select id="profissionalAgenda" class="input">{% for p in profissionais %}{% if p.ativo %}<option value="{{ p.id }}">{{ p.nome }}</option>{% endif %}{% endfor %}</select></div>
+    <button class="btn red" type="button" onclick="removerProfissionalSelecionado()">{% if lang == "it" %}Rimuovi{% elif lang == "en" %}Remove{% else %}Remover{% endif %}</button>
+    <div class="field" style="flex:1;min-width:220px"><label>{% if lang == "it" %}Nuovo professionista{% elif lang == "en" %}New professional{% else %}Novo profissional{% endif %}</label><input id="novoProfissionalNome" class="input" placeholder="{% if lang == "it" %}Nome del professionista{% elif lang == "en" %}Professional name{% else %}Nome do profissional{% endif %}"></div><button class="btn gray" type="button" onclick="adicionarProfissional()">{% if lang == "it" %}Aggiungi{% elif lang == "en" %}Add{% else %}Adicionar{% endif %}</button>
+  </div><div class="row" style="margin-top:12px"><div class="field"><label>{% if lang == "it" %}Data{% elif lang == "en" %}Date{% else %}Data{% endif %}</label><input id="dataAgendaSetup" type="date" class="input" value="{{ data_selecionada }}"></div><div class="field"><label>{% if lang == "it" %}Inizio{% elif lang == "en" %}Start{% else %}Início{% endif %}</label><input id="horaInicio" type="time" class="input" value="08:00"></div><div class="field"><label>{% if lang == "it" %}Fine{% elif lang == "en" %}End{% else %}Fim{% endif %}</label><input id="horaFim" type="time" class="input" value="18:00"></div><div class="field"><label>{% if lang == "it" %}Intervallo{% elif lang == "en" %}Interval{% else %}Intervalo{% endif %}</label><select id="intervalo" class="input"><option value="15">15 min</option><option value="30" selected>30 min</option><option value="60">60 min</option></select></div><button class="btn green" type="button" onclick="gerarPreview()">{% if lang == "it" %}Genera orari{% elif lang == "en" %}Generate hours{% else %}Gerar horários{% endif %}</button><button class="btn blue" type="button" onclick="salvarHorarios()">{% if lang == "it" %}Salva selezionati{% elif lang == "en" %}Save selected{% else %}Salvar marcados{% endif %}</button><button class="btn red" type="button" onclick="limparHorariosDia()">{% if lang == "it" %}Pulisci orari{% elif lang == "en" %}Clear hours{% else %}Limpar horários{% endif %}</button></div><div id="previewHorarios" class="preview"></div>
+</div></section>
+
+<style id="mf-employee-reservas-v4">
+@media(max-width:900px){
+  #agendaDia .card-head{
+    display:grid!important;
+    grid-template-columns:32px minmax(0,1fr) auto 32px!important;
+    grid-template-areas:
+      "icon title print toggle"
+      "date date date date"!important;
+    align-items:center!important;
+    column-gap:8px!important;
+    row-gap:8px!important;
+  }
+  #agendaDia .card-head .square{grid-area:icon}
+  #agendaDia .card-head h2{grid-area:title;margin:0!important}
+  #agendaDia .imprimir-dia-btn{
+    grid-area:print!important;
+    grid-column:auto!important;
+    width:auto!important;
+    max-width:max-content!important;
+    min-width:0!important;
+    height:34px!important;
+    min-height:34px!important;
+    margin:0!important;
+    padding:0 10px!important;
+    justify-self:end!important;
+    align-self:center!important;
+  }
+  #agendaDia .collapse-btn{grid-area:toggle;justify-self:end!important}
+  #agendaDia #formDataAgenda{
+    grid-area:date!important;
+    grid-column:1 / -1!important;
+    width:100%!important;
+    max-width:none!important;
+    margin:0!important;
+  }
+  #agendaDia #formDataAgenda .input,
+  #agendaDia #formDataAgenda input[type="date"]{width:100%!important}
+}
+</style>
+<style id="mf-employee-reservas-v5">
+@media(max-width:900px){
+  #agendaDia .card-head{
+    display:grid!important;
+    grid-template-columns:26px minmax(56px,max-content) minmax(106px,1fr) auto 30px!important;
+    grid-template-areas:"icon title date print toggle"!important;
+    align-items:center!important;
+    column-gap:6px!important;
+    row-gap:0!important;
+  }
+  #agendaDia .card-head .square{grid-area:icon;width:26px!important;height:26px!important;min-width:26px!important;border-radius:8px!important}
+  #agendaDia .card-head h2{grid-area:title;margin:0!important;font-size:15px!important;line-height:1!important;white-space:nowrap!important}
+  #agendaDia #formDataAgenda{grid-area:date!important;grid-column:auto!important;width:100%!important;max-width:132px!important;display:block!important;margin:0!important}
+  #agendaDia #dataAgendaDia{height:32px!important;min-height:32px!important;padding:0 10px!important;border-radius:10px!important;font-size:12px!important}
+  #agendaDia .imprimir-dia-btn{grid-area:print!important;grid-column:auto!important;height:32px!important;min-height:32px!important;padding:0 8px!important;border-radius:10px!important;font-size:11px!important;gap:5px!important;min-width:0!important;white-space:nowrap!important}
+  #agendaDia .imprimir-dia-btn i{font-size:11px!important}
+  #agendaDia .collapse-btn{grid-area:toggle!important;justify-self:end!important;width:30px!important;height:30px!important;min-width:30px!important;border-radius:10px!important}
+}
+</style>
+<style id="mf-employee-reservas-v6">
+@media(max-width:900px){
+  #agendaDia .card-head{
+    display:grid!important;
+    grid-template-columns:20px minmax(0,1fr) 96px 32px 28px!important;
+    grid-template-areas:"icon title date print toggle"!important;
+    align-items:center!important;
+    gap:6px!important;
+  }
+  #agendaDia .card-head .square{grid-area:icon!important;width:20px!important;height:20px!important;min-width:20px!important;border-radius:7px!important}
+  #agendaDia .card-head h2{grid-area:title!important;margin:0!important;font-size:14px!important;line-height:1.05!important;white-space:nowrap!important;overflow:hidden;text-overflow:ellipsis}
+  #agendaDia #formDataAgenda{grid-area:date!important;grid-column:auto!important;width:96px!important;max-width:96px!important;min-width:96px!important;margin:0!important;display:block!important}
+  #agendaDia #dataAgendaDia{width:96px!important;max-width:96px!important;height:30px!important;min-height:30px!important;padding:0 8px!important;border-radius:9px!important;font-size:10.5px!important}
+  #agendaDia .imprimir-dia-btn{grid-area:print!important;grid-column:auto!important;width:32px!important;min-width:32px!important;max-width:32px!important;height:30px!important;min-height:30px!important;padding:0!important;border-radius:9px!important;display:grid!important;place-items:center!important;font-size:0!important;gap:0!important}
+  #agendaDia .imprimir-dia-btn i{font-size:12px!important;margin:0!important}
+  #agendaDia .collapse-btn{grid-area:toggle!important;width:28px!important;height:28px!important;min-width:28px!important;border-radius:9px!important}
+}
+@media(max-width:370px){
+  #agendaDia .card-head{grid-template-columns:18px minmax(0,1fr) 90px 30px 26px!important;gap:5px!important}
+  #agendaDia .card-head h2{font-size:13px!important}
+  #agendaDia #formDataAgenda,#agendaDia #dataAgendaDia{width:90px!important;max-width:90px!important;min-width:90px!important}
+  #agendaDia #dataAgendaDia{font-size:10px!important;padding:0 6px!important}
+  #agendaDia .imprimir-dia-btn{width:30px!important;min-width:30px!important;max-width:30px!important;height:28px!important;min-height:28px!important}
+  #agendaDia .collapse-btn{width:26px!important;height:26px!important;min-width:26px!important}
+}
+</style>
+
+<style id="mf-agenda-cabecalho-final">
+@media(max-width:900px){
+  body.mf-ds-employee-reservas #agendaDia .card-head{
+    display:grid!important;
+    grid-template-columns:22px minmax(82px,1fr) 100px 62px 32px!important;
+    grid-template-areas:"icon title date print toggle"!important;
+    align-items:center!important;
+    gap:5px!important;
+    margin:0!important;
+  }
+  body.mf-ds-employee-reservas #agendaDia .card-head .square{
+    grid-area:icon!important;
+    width:22px!important;
+    height:22px!important;
+    min-width:22px!important;
+    margin:0!important;
+    border-radius:8px!important;
+  }
+  body.mf-ds-employee-reservas #agendaDia .card-head h2{
+    grid-area:title!important;
+    margin:0!important;
+    font-size:14px!important;
+    line-height:1.05!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+  body.mf-ds-employee-reservas #agendaDia #formDataAgenda{
+    grid-area:date!important;
+    display:block!important;
+    width:100px!important;
+    min-width:100px!important;
+    max-width:100px!important;
+    height:32px!important;
+    min-height:32px!important;
+    margin:0!important;
+    padding:0!important;
+    border:0!important;
+    border-radius:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+    overflow:visible!important;
+  }
+  body.mf-ds-employee-reservas #agendaDia #dataAgendaDia{
+    display:block!important;
+    width:100px!important;
+    min-width:100px!important;
+    max-width:100px!important;
+    height:32px!important;
+    min-height:32px!important;
+    margin:0!important;
+    padding:0 7px!important;
+    border:1px solid #d2ddec!important;
+    border-radius:10px!important;
+    background:#fff!important;
+    font-size:11px!important;
+    line-height:32px!important;
+    box-shadow:none!important;
+  }
+  body.mf-ds-employee-reservas #agendaDia .imprimir-dia-btn{
+    grid-area:print!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    width:62px!important;
+    min-width:62px!important;
+    max-width:62px!important;
+    height:32px!important;
+    min-height:32px!important;
+    margin:0!important;
+    padding:0 6px!important;
+    border-radius:10px!important;
+    gap:4px!important;
+    font-size:10px!important;
+    line-height:1!important;
+    white-space:nowrap!important;
+  }
+  body.mf-ds-employee-reservas #agendaDia .imprimir-dia-btn i{
+    margin:0!important;
+    font-size:11px!important;
+  }
+  body.mf-ds-employee-reservas #agendaDia .collapse-btn{
+    grid-area:toggle!important;
+    width:32px!important;
+    height:32px!important;
+    min-width:32px!important;
+    max-width:32px!important;
+    margin:0!important;
+    padding:0!important;
+    border-radius:10px!important;
+  }
+}
+@media(max-width:370px){
+  body.mf-ds-employee-reservas #agendaDia .card-head{
+    grid-template-columns:20px minmax(72px,1fr) 94px 58px 30px!important;
+    gap:4px!important;
+  }
+  body.mf-ds-employee-reservas #agendaDia .card-head h2{
+    font-size:13px!important;
+  }
+  body.mf-ds-employee-reservas #agendaDia #formDataAgenda,
+  body.mf-ds-employee-reservas #agendaDia #dataAgendaDia{
+    width:94px!important;
+    min-width:94px!important;
+    max-width:94px!important;
+  }
+  body.mf-ds-employee-reservas #agendaDia .imprimir-dia-btn{
+    width:58px!important;
+    min-width:58px!important;
+    max-width:58px!important;
+    font-size:9.5px!important;
+  }
+  body.mf-ds-employee-reservas #agendaDia .collapse-btn{
+    width:30px!important;
+    height:30px!important;
+    min-width:30px!important;
+    max-width:30px!important;
+  }
+}
+</style>
+<section class="card collapsed" id="agendaDia"><div class="card-head"><div class="square"></div><h2>{% if lang == "it" %}Agenda del giorno{% elif lang == "en" %}Day schedule{% else %}Agenda do dia{% endif %}</h2><form id="formDataAgenda" method="get" class="agenda-date-inline"><input id="dataAgendaDia" name="data" type="date" class="input" value="{{ data_selecionada }}" onchange="document.getElementById('formDataAgenda').submit()"></form><a class="btn soft imprimir-dia-btn" target="_blank" href="/admin/{{ empresa.id }}/reservas/imprimir?data={{ data_selecionada }}&lang={{ lang }}"><i class="fa-solid fa-print"></i>{% if lang == "it" %}Stampare{% elif lang == "en" %}Print{% else %}Imprimir{% endif %}</a><button class="collapse-btn" type="button" data-card-target="agendaDia" aria-expanded="false" aria-label="Abrir agenda do dia"><i class="fa-solid fa-chevron-down"></i></button></div><div class="prof-tabs agenda-profissionais-fixa" id="profTabsAgenda">{% for p in profissionais %}{% if p.ativo %}<button type="button" class="prof-tab" data-prof="{{ p.nome|e }}">{{ p.nome }} <span class="count">0</span></button>{% endif %}{% endfor %}</div><div class="card-body"><div class="agenda-grid" id="agendaGrid">
+{% for data, horarios in horarios_por_dia.items() %}{% for h in horarios %}{% set prof = namespace(nome='') %}{% for p in profissionais %}{% if h.profissional_id and p.id == h.profissional_id %}{% set prof.nome = p.nome %}{% endif %}{% endfor %}{% if not prof.nome and ' - ' in h.horario %}{% set prof.nome = h.horario.split(' - ', 1)[1] %}{% endif %}{% set hora_limpa = h.horario.split(' - ', 1)[0] %}{% set key1 = data ~ '_' ~ h.horario %}{% set key2 = data ~ '_' ~ h.horario ~ '_' ~ (h.profissional_id or 'sem_profissional') %}{% set st = estatisticas_por_horario.get(key2) or estatisticas_por_horario.get(key1) or {'reservas':0} %}<div class="slot {% if st.reservas and st.reservas > 0 %}busy{% endif %}" data-date="{{ data }}" data-prof="{{ prof.nome|e }}" data-hour="{{ hora_limpa }}" data-count="{{ st.reservas or 0 }}" onclick="abrirReservaAgendaSlot(this)"><button class="x" type="button" onclick="event.stopPropagation(); excluirHorario('{{ h.id }}')">×</button><div class="time">{{ hora_limpa }}</div><span class="chip">{% if st.reservas and st.reservas > 0 %}{% if lang == "it" %}Occupato{% elif lang == "en" %}Busy{% else %}Ocupado{% endif %}{% else %}{% if lang == "it" %}Libero{% elif lang == "en" %}Free{% else %}Livre{% endif %}{% endif %}</span><p><strong>{% if st.reservas and st.reservas > 0 %}{{ st.reservas }} {% if lang == "it" %}appuntamento/i{% elif lang == "en" %}appointment(s){% else %}agendamento(s){% endif %}{% else %}{% if lang == "it" %}Disponibile{% elif lang == "en" %}Available{% else %}Disponível{% endif %}{% endif %}</strong><br>{{ prof.nome or '{% if lang == "it" %}Senza professionista{% elif lang == "en" %}No professional{% else %}Sem profissional{% endif %}' }}</p></div>{% endfor %}{% endfor %}
+</div><div id="agendaEmpty" class="empty" style="display:none">{% if lang == "it" %}Nessun orario per questa data/professionista.{% elif lang == "en" %}No hours for this date/professional.{% else %}Nenhum horário para esta data/profissional.{% endif %}</div></div></section>
+
+<section class="card" id="agendamentosCard"><div class="card-head"><div class="square" style="background:#fff8e8"></div><h2>{% if lang == "it" %}Appuntamenti{% elif lang == "en" %}Appointments{% else %}Agendamentos{% endif %}</h2></div><div class="tabs" id="statusTabs"><button type="button" class="tab active" data-status="todas">{% if lang == "it" %}Tutte{% elif lang == "en" %}All{% else %}Todas{% endif %} <span class="count">0</span></button><button type="button" class="tab" data-status="pendente">{% if lang == "it" %}In attesa{% elif lang == "en" %}Pending{% else %}Pendentes{% endif %} <span class="count">0</span></button><button type="button" class="tab" data-status="confirmada">{% if lang == "it" %}Confermate{% elif lang == "en" %}Confirmed{% else %}Confirmadas{% endif %} <span class="count">0</span></button><button type="button" class="tab" data-status="paga">{% if lang == "it" %}Pagate{% elif lang == "en" %}Paid{% else %}Pagas{% endif %} <span class="count">0</span></button><button type="button" class="tab" data-status="cancelada">{% if lang == "it" %}Annullate{% elif lang == "en" %}Cancelled{% else %}Canceladas{% endif %} <span class="count">0</span></button><button type="button" class="tab" data-status="recusada">{% if lang == "it" %}Rifiutate{% elif lang == "en" %}Declined{% else %}Recusadas{% endif %} <span class="count">0</span></button></div><div class="reservas-grid" id="reservasGrid">
+{% for data, reservas in reservas_por_dia.items() %}{% for r in reservas %}{% set prof = namespace(nome='{% if lang == "it" %}Non informato{% elif lang == "en" %}Not informed{% else %}Não informado{% endif %}') %}{% for p in profissionais %}{% if r.profissional_id and p.id == r.profissional_id %}{% set prof.nome = p.nome %}{% endif %}{% endfor %}{% if prof.nome == '{% if lang == "it" %}Non informato{% elif lang == "en" %}Not informed{% else %}Não informado{% endif %}' and ' - ' in r.horario %}{% set prof.nome = r.horario.split(' - ', 1)[1] %}{% endif %}{% set hora_card = r.horario.split(' - ', 1)[0] %}{% set status_card = (r.status or 'pendente')|lower %}<article class="reserva-card" data-id="{{ r.id }}" data-status="{{ status_card }}" data-date="{{ data }}" data-prof="{{ prof.nome|e }}" data-hour="{{ hora_card }}" data-code="{{ r.codigo or ('RSV-' ~ '%03d'|format(r.numero_dia or r.id)) }}" data-cliente="{{ r.nome_cliente|e }}" data-telefone="{{ r.telefone_cliente|e }}" data-pessoas="{{ r.pessoas or 1 }}" data-token="{{ (r.public_token or '')|e }}" data-mesa="{{ prof.nome|e }}" data-observacao="{{ (r.observacao or '')|e }}" data-servico="{{ (r.observacao or 'Sem observação')|e }}"><div class="reserva-prof"><span class="emoji">👩</span><span>{{ prof.nome }} — {{ data|data_br }}</span></div><div class="reserva-meta"><span class="codigo">{{ r.codigo or ('RSV-' ~ '%03d'|format(r.numero_dia or r.id)) }}</span>{% if status_card in ['concluida','paga'] %}<span class="badge">{% if lang == "it" %}Pagata{% elif lang == "en" %}Paid{% else %}Paga{% endif %}</span>{% elif status_card == 'confirmada' %}<span class="badge">{% if lang == "it" %}Confermata{% elif lang == "en" %}Confirmed{% else %}Confirmada{% endif %}</span>{% elif status_card == 'pendente' %}<span class="badge">{% if lang == "it" %}In attesa{% elif lang == "en" %}Pending{% else %}Pendente{% endif %}</span>{% elif status_card == 'cancelada' %}<span class="badge">{% if lang == "it" %}Annullata{% elif lang == "en" %}Cancelled{% else %}Cancelada{% endif %}</span>{% elif status_card == 'recusada' %}<span class="badge">{% if lang == "it" %}Rifiutata{% elif lang == "en" %}Declined{% else %}Recusada{% endif %}</span>{% endif %}{% if r.pagamento %}<span class="badge ok">{{ r.pagamento }}</span>{% endif %}</div><h3>{{ hora_card }} — {{ r.nome_cliente }}</h3><div class="info-box"><strong>{% if lang == "it" %}Clienti{% elif lang == "en" %}Clients{% else %}Clientes{% endif %}:</strong> {{ r.pessoas or 1 }}<br><strong>{% if lang == "it" %}Telefono{% elif lang == "en" %}Phone{% else %}Telefone{% endif %}:</strong> {{ r.telefone_cliente }}<br><strong>{% if lang == "it" %}Servizio{% elif lang == "en" %}Service{% else %}Serviço{% endif %}:</strong> {{ r.observacao or 'Sem observação' }}<br><strong>{% if lang == "it" %}Professionista{% elif lang == "en" %}Professional{% else %}Profissional{% endif %}:</strong> {{ prof.nome }}<br><strong>{% if lang == "it" %}Data{% elif lang == "en" %}Date{% else %}Data{% endif %}:</strong> {{ data|data_br }}</div><div class="actions"><button class="btn green" onclick="atualizarReservaComAviso(this.closest('.reserva-card'),'confirmada')">{% if lang == "it" %}Confermare{% elif lang == "en" %}Confirm{% else %}Confirmar{% endif %}</button><button class="btn soft" onclick="avisarWhatsappReserva(this.closest('.reserva-card'))"><i class="fa-brands fa-whatsapp"></i>{% if lang == "it" %}Avvisa{% elif lang == "en" %}Notify{% else %}Avisar{% endif %}</button>{% if status_card == 'confirmada' %}<button class="btn blue" onclick="finalizarReservaFinanceiroCard(this.closest('.reserva-card'))"><i class="fa-solid fa-cash-register"></i>{% if lang == "it" %}Pagato{% elif lang == "en" %}Paid{% else %}Pago{% endif %}</button>{% endif %}<button class="btn red" onclick="atualizarReservaComAviso(this.closest('.reserva-card'),'recusada')">{% if lang == "it" %}Rifiutare{% elif lang == "en" %}Decline{% else %}Recusar{% endif %}</button><button class="btn gray" onclick="atualizarReservaComAviso(this.closest('.reserva-card'),'cancelada')">{% if lang == "it" %}Annullare{% elif lang == "en" %}Cancel{% else %}Cancelar{% endif %}</button></div></article>{% endfor %}{% endfor %}
+</div><div id="reservasEmpty" class="empty" style="display:none">{% if lang == "it" %}Nessun appuntamento con questo stato.{% elif lang == "en" %}No appointment with this status.{% else %}Nenhum agendamento neste status.{% endif %}</div></section>
+
+</section></main></div>
+
+{% include "partials/funcionario_mobile_nav.html" %}
+
+<div id="modalAgendaReserva" class="modal-agenda">
+  <div class="modal-agenda-card">
+    <button class="modal-agenda-close" type="button" onclick="fecharModalAgenda()">×</button>
+    <div class="modal-agenda-prof"><span>👩</span><span id="modalAgendaProfData">{% if lang == "it" %}PROFESSIONISTA — DATA{% elif lang == "en" %}PROFESSIONAL — DATE{% else %}PROFISSIONAL — DATA{% endif %}</span></div>
+    <div class="modal-agenda-meta"><span class="codigo" id="modalAgendaCodigo">RSV</span><span class="badge" id="modalAgendaStatus">{% if lang == "it" %}Stato{% elif lang == "en" %}Status{% else %}Status{% endif %}</span></div>
+    <h2 id="modalAgendaTitulo">{% if lang == "it" %}Ora — Cliente{% elif lang == "en" %}Time — Client{% else %}Horário — Cliente{% endif %}</h2>
+    <div class="modal-agenda-info">
+      <div><strong>{% if lang == "it" %}Cliente{% elif lang == "en" %}Client{% else %}Cliente{% endif %}:</strong> <span id="modalAgendaCliente">-</span></div>
+      <div><strong>{% if lang == "it" %}Telefono{% elif lang == "en" %}Phone{% else %}Telefone{% endif %}:</strong> <span id="modalAgendaTelefone">-</span></div>
+      <div><strong>{% if lang == "it" %}Servizio{% elif lang == "en" %}Service{% else %}Serviço{% endif %}:</strong> <span id="modalAgendaServico">-</span></div>
+    </div>
+    <div class="modal-agenda-actions">
+      <button class="btn green" type="button" onclick="acaoModalAgenda('confirmada')">{% if lang == "it" %}Confermare{% elif lang == "en" %}Confirm{% else %}Confirmar{% endif %}</button>
+      <button class="btn soft" type="button" onclick="avisarWhatsappReserva(modalAgendaCardAtual)"><i class="fa-brands fa-whatsapp"></i>{% if lang == "it" %}Avvisa{% elif lang == "en" %}Notify{% else %}Avisar{% endif %}</button>
+      <button id="modalAgendaPagoBtn" class="btn blue" type="button" onclick="finalizarReservaFinanceiroCard(modalAgendaCardAtual)"><i class="fa-solid fa-cash-register"></i>{% if lang == "it" %}Pagato{% elif lang == "en" %}Paid{% else %}Pago{% endif %}</button>
+      <button class="btn red" type="button" onclick="acaoModalAgenda('recusada')">{% if lang == "it" %}Rifiutare{% elif lang == "en" %}Decline{% else %}Recusar{% endif %}</button>
+      <button class="btn gray" type="button" onclick="acaoModalAgenda('cancelada')">{% if lang == "it" %}Annullare{% elif lang == "en" %}Cancel{% else %}Cancelar{% endif %}</button>
+    </div>
+  </div>
+</div>
+
+<div id="modalPagamentoReserva" class="modal-agenda">
+  <div class="modal-agenda-card" style="max-width:420px">
+    <button class="modal-agenda-close" type="button" onclick="fecharModalPagamentoReserva()">×</button>
+    <h2>{% if lang == "it" %}Forma di pagamento{% elif lang == "en" %}Payment method{% else %}Forma de pagamento{% endif %}</h2>
+    <p style="margin:8px 0 18px;color:#667085;font-weight:800">
+      {% if lang == "it" %}Scegli come è stato pagato questo appuntamento.{% elif lang == "en" %}Choose how this appointment was paid.{% else %}Escolha como esse atendimento foi pago.{% endif %}
+    </p>
+    <div class="modal-agenda-actions">
+      <button class="btn green" type="button" onclick="confirmarPagamentoReserva('Dinheiro')"><i class="fa-solid fa-money-bill-wave"></i>{% if lang == "it" %}Contanti{% elif lang == "en" %}Cash{% else %}Dinheiro{% endif %}</button>
+      <button class="btn blue" type="button" onclick="confirmarPagamentoReserva('Cartão')"><i class="fa-solid fa-credit-card"></i>{% if lang == "it" %}Carta{% elif lang == "en" %}Card{% else %}Cartão{% endif %}</button>
+      <button class="btn gray" type="button" onclick="fecharModalPagamentoReserva()">{% if lang == "it" %}Annulla{% elif lang == "en" %}Cancel{% else %}Cancelar{% endif %}</button>
+    </div>
+  </div>
+</div>
+
+<script>
+
+const IDIOMA_EMPRESA = "{{ lang|default('pt') }}";
+const EMPRESA_NOME = "{{ empresa.nome|e }}";
+
+function textoConfirmacaoReserva(chave){
+  const l = (IDIOMA_EMPRESA || 'pt').toLowerCase();
+  const textos = {
+    excluir_horario:{
+      pt:'Excluir horário?',
+      it:'Eliminare questo orario?',
+      en:'Delete this time slot?'
+    },
+    limpar_horarios:{
+      pt:'Limpar os horários livres deste profissional nesta data?',
+      it:'Cancellare gli orari liberi di questo professionista in questa data?',
+      en:'Clear the free time slots for this professional on this date?'
+    },
+    remover_profissional:{
+      pt:'Remover este profissional? O histórico de reservas será mantido.',
+      it:'Rimuovere questo professionista? Lo storico delle prenotazioni sarà mantenuto.',
+      en:'Remove this professional? Reservation history will be kept.'
+    },
+    escolha_data:{
+      pt:'Escolha a data.',
+      it:'Scegli la data.',
+      en:'Choose the date.'
+    },
+    escolha_profissional:{
+      pt:'Escolha o profissional.',
+      it:'Scegli il professionista.',
+      en:'Choose the professional.'
+    }
+  };
+  const idioma = textos[chave] && textos[chave][l] ? l : 'pt';
+  return textos[chave] ? textos[chave][idioma] : chave;
+}
+
+function labelStatusReserva(status){
+  const s = normStatus(status || 'pendente');
+  const l = (IDIOMA_EMPRESA || 'pt').toLowerCase();
+  const labels = {
+    pt:{confirmada:'Confirmada', paga:'Paga', cancelada:'Cancelada', recusada:'Recusada', pendente:'Pendente'},
+    it:{confirmada:'Confermata', paga:'Pagata', cancelada:'Annullata', recusada:'Rifiutata', pendente:'In attesa'},
+    en:{confirmada:'Confirmed', paga:'Paid', cancelada:'Cancelled', recusada:'Declined', pendente:'Pending'}
+  };
+  const lang = labels[l] ? l : 'pt';
+  return labels[lang][s] || labels[lang].pendente;
+}
+
+function formatarDataMensagem(data){
+  const v = String(data || '');
+  const m = v.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  return m ? `${m[3]}/${m[2]}/${m[1]}` : v;
+}
+
+function limparServicoMensagem(servico, profissional){
+  let s = String(servico || '').replace(/\s+/g,' ').trim();
+  if(!s) return '';
+  s = s.replace(/^Serviços selecionados:\s*/i,'').trim();
+  s = s.replace(/^Servicos selecionados:\s*/i,'').trim();
+  s = s.replace(/^Servizi selezionati:\s*/i,'').trim();
+  s = s.replace(/^Selected services:\s*/i,'').trim();
+  s = s.replace(/^\d+x\s*/i,'').trim();
+  s = s.split(/\s+Total\s*:/i)[0].trim();
+  s = s.split(/\s+Totale\s*:/i)[0].trim();
+  s = s.split(/\s+Professional\s*:/i)[0].trim();
+  s = s.split(/\s+Professionista\s*:/i)[0].trim();
+  s = s.split(/\s+Profissional\s*:/i)[0].trim();
+  s = s.replace(/\s+—\s*€\s*[\d.,]+.*/,'').trim();
+  return s;
+}
+
+function aplicarModoTelaCheia(ativo){
+  document.body.classList.toggle('mf-fullscreen', !!ativo);
+  localStorage.setItem('mf_reservas_fullscreen', ativo ? '1' : '0');
+  const ico = document.querySelector('#mfFullscreenBtn i');
+  if(ico){
+    ico.className = ativo ? 'fa-solid fa-compress' : 'fa-solid fa-expand';
+  }
+}
+function toggleModoTelaCheia(){
+  const ativo = !document.body.classList.contains('mf-fullscreen');
+  aplicarModoTelaCheia(ativo);
+  if(ativo && document.documentElement.requestFullscreen){
+    document.documentElement.requestFullscreen().catch(()=>{});
+  }else if(!ativo && document.fullscreenElement && document.exitFullscreen){
+    document.exitFullscreen().catch(()=>{});
+  }
+}
+function iniciarModoTelaCheiaReservas(){
+  // Padrão desta tela: abre em modo painel/tela cheia visual.
+  // Se o usuário sair pelo botão, mantemos a escolha dele.
+  const salvo = localStorage.getItem('mf_reservas_fullscreen');
+  aplicarModoTelaCheia(salvo === null ? true : salvo === '1');
+}
+function bindStatusTabs(){
+  document.querySelectorAll('#statusTabs .tab').forEach(b=>{
+    b.onclick = () => filtrarAgendamentos(b.dataset.status);
+  });
+}
+function bindProfTabs(){
+  document.querySelectorAll('#profTabsAgenda .prof-tab').forEach(btn=>{
+    btn.onclick = () => setProf(btn.dataset.prof);
+  });
+}
+async function atualizarPainelReservasSuave(){
+  if(document.hidden) return;
+  if(document.querySelector('.modal-agenda.show')) return;
+  const ativo = document.activeElement;
+  if(ativo && ['INPUT','SELECT','TEXTAREA'].includes(ativo.tagName)) return;
+
+  const statusAtual = document.querySelector('#statusTabs .tab.active')?.dataset.status || 'todas';
+  const profAtualAntes = document.querySelector('#profTabsAgenda .prof-tab.active')?.dataset.prof || localStorage.getItem('mf_admin_prof_agenda') || '';
+  try{
+    const url = new URL(window.location.href);
+    url.searchParams.set('_auto', Date.now());
+    const html = await fetch(url.toString(), {cache:'no-store'}).then(r=>r.text());
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    ['statusTabs','reservasGrid','reservasEmpty','profTabsAgenda','agendaGrid','agendaEmpty'].forEach(id=>{
+      const novo = doc.getElementById(id);
+      const atual = document.getElementById(id);
+      if(novo && atual){ atual.innerHTML = novo.innerHTML; }
+    });
+    bindStatusTabs();
+    bindProfTabs();
+    contarAgendamentos();
+    filtrarAgendamentos(statusAtual);
+    if(profAtualAntes){ localStorage.setItem('mf_admin_prof_agenda', profAtualAntes); }
+    initAgenda();
+  }catch(e){
+    console.log('Atualização suave falhou:', e);
+  }
+}
+function iniciarAtualizacaoSuaveReservas(){
+  setInterval(atualizarPainelReservasSuave, 20000);
+}
+
+function toggleCard(id){
+  const el=document.getElementById(id); if(!el) return;
+  const collapsed=el.classList.toggle('collapsed');
+  const btn=el.querySelector('.collapse-btn[data-card-target]');
+  const ico=btn ? btn.querySelector('i') : el.querySelector('.collapse-btn i');
+  if(btn){btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');}
+  if(ico){ico.classList.toggle('fa-chevron-down', collapsed); ico.classList.toggle('fa-chevron-up', !collapsed);}
+}
+document.addEventListener('click',function(event){
+  const btn=event.target.closest('.collapse-btn[data-card-target]');
+  if(!btn)return;
+  event.preventDefault();
+  event.stopPropagation();
+  toggleCard(btn.dataset.cardTarget);
+});
+function normStatus(s){s=String(s||'').toLowerCase().trim(); if(['finalizada','finalizado','concluida','concluido','paga','pago','pagata','paid'].includes(s)) return 'paga'; if(['confirmado','confirmada'].includes(s)) return 'confirmada'; if(['cancelado','cancelada','cancelled'].includes(s)) return 'cancelada'; if(['recusado','recusada','rifiutata','refused','declined'].includes(s)) return 'recusada'; return s||'pendente'}
+function filtrarAgendamentos(status){status=status||'todas'; const cards=[...document.querySelectorAll('#reservasGrid .reserva-card')]; let vis=0; cards.forEach(c=>{const st=normStatus(c.dataset.status); const show=status==='todas'||st===status; c.style.display=show?'':'none'; if(show) vis++;}); document.getElementById('reservasEmpty').style.display=vis?'none':'block'; document.querySelectorAll('#statusTabs .tab').forEach(b=>b.classList.toggle('active',b.dataset.status===status));}
+function contarAgendamentos(){const counts={todas:0,pendente:0,confirmada:0,paga:0,cancelada:0,recusada:0}; document.querySelectorAll('#reservasGrid .reserva-card').forEach(c=>{const st=normStatus(c.dataset.status); counts.todas++; if(counts[st]!==undefined) counts[st]++;}); document.querySelectorAll('#statusTabs .tab').forEach(b=>{const span=b.querySelector('.count'); if(span) span.textContent=counts[b.dataset.status]||0;});}
+bindStatusTabs();
+function agendaDate(){return document.getElementById('dataAgendaDia').value}
+function setProf(prof){document.querySelectorAll('#profTabsAgenda .prof-tab').forEach(b=>b.classList.toggle('active',b.dataset.prof===prof)); localStorage.setItem('mf_admin_prof_agenda', prof); filtrarAgenda();}
+function profAtual(){const a=document.querySelector('#profTabsAgenda .prof-tab.active'); return a ? a.dataset.prof : (document.querySelector('#profTabsAgenda .prof-tab')?.dataset.prof||'')}
+function filtrarAgenda(){const data=agendaDate(); const prof=profAtual(); let vis=0; document.querySelectorAll('#agendaGrid .slot').forEach(s=>{const show=s.dataset.date===data && (!prof || s.dataset.prof===prof); s.style.display=show?'':'none'; if(show) vis++;}); document.getElementById('agendaEmpty').style.display=vis?'none':'block'; contarAgenda();}
+function contarAgenda(){const data=agendaDate(); document.querySelectorAll('#profTabsAgenda .prof-tab').forEach(btn=>{const prof=btn.dataset.prof; let n=0; document.querySelectorAll('#agendaGrid .slot').forEach(s=>{if(s.dataset.date===data && s.dataset.prof===prof){n += Number(s.dataset.count||0)}}); const span=btn.querySelector('.count'); if(span) span.textContent=n;});}
+bindProfTabs();
+function initAgenda(){const saved=localStorage.getItem('mf_admin_prof_agenda'); const btn=saved?[...document.querySelectorAll('#profTabsAgenda .prof-tab')].find(b=>b.dataset.prof===saved):null; (btn||document.querySelector('#profTabsAgenda .prof-tab'))?.classList.add('active'); filtrarAgenda();}
+function atualizarReserva(id,status){fetch(`/reservas/${id}/status`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status})}).then(r=>r.json()).then(j=>{if(j.error) mfAlert(j.error); else location.reload();});}
+function normalizarTelefoneWhatsApp(tel){
+  tel = String(tel || '').replace(/\D/g,'');
+  if(!tel) return '';
+  return tel;
+}
+
+function dadosReservaDoCard(card){
+  if(!card) return {};
+  return {
+    id: card.dataset.id || '',
+    telefone: card.dataset.telefone || '',
+    cliente: card.dataset.cliente || 'Cliente',
+    data: card.dataset.date || '',
+    hora: card.dataset.hour || '',
+    profissional: card.dataset.prof || 'Profissional',
+    servico: card.dataset.servico || '',
+    codigo: card.dataset.code || 'RSV',
+    status: normStatus(card.dataset.status || 'pendente')
+  };
+}
+
+function textoStatusReserva(status, lang){
+  const s = normStatus(status || 'pendente');
+  const l = (lang || IDIOMA_EMPRESA || 'pt').toLowerCase();
+  const mapa = {
+    pt:{confirmada:'Sua reserva foi CONFIRMADA ✅', cancelada:'Sua reserva foi CANCELADA ❌', recusada:'Sua reserva foi RECUSADA ❌', pendente:'Recebemos sua solicitação ⏳'},
+    it:{confirmada:'La tua prenotazione è stata CONFERMATA ✅', cancelada:'La tua prenotazione è stata ANNULLATA ❌', recusada:'La tua prenotazione è stata RIFIUTATA ❌', pendente:'Abbiamo ricevuto la tua richiesta ⏳'},
+    en:{confirmada:'Your appointment has been CONFIRMED ✅', cancelada:'Your appointment has been CANCELLED ❌', recusada:'Your appointment has been DECLINED ❌', pendente:'We have received your request ⏳'}
+  };
+  const idioma = mapa[l] ? l : 'pt';
+  return mapa[idioma][s] || mapa[idioma].pendente;
+}
+
+function montarMensagemWhatsAppReserva(dados, tipo){
+  dados = dados || {};
+  const lang = (IDIOMA_EMPRESA || 'pt').toLowerCase();
+  const idioma = ['pt','it','en'].includes(lang) ? lang : 'pt';
+  const status = tipo || dados.status || 'pendente';
+  const textoStatus = textoStatusReserva(status, idioma);
+  const data = formatarDataMensagem(dados.data || '');
+  const servico = limparServicoMensagem(dados.servico || '', dados.profissional || '');
+
+  if(idioma === 'it'){
+    return [
+      `Ciao ${dados.cliente || ''} 👋`,
+      '',
+      textoStatus,
+      '',
+      data ? `📅 ${data}` : '',
+      dados.hora ? `🕘 ${dados.hora}` : '',
+      dados.profissional ? `👩 ${dados.profissional}` : '',
+      servico ? `💈 ${servico}` : '',
+      '',
+      EMPRESA_NOME || ''
+    ].filter(Boolean).join('\n');
+  }
+
+  if(idioma === 'en'){
+    return [
+      `Hello ${dados.cliente || ''} 👋`,
+      '',
+      textoStatus,
+      '',
+      data ? `📅 ${data}` : '',
+      dados.hora ? `🕘 ${dados.hora}` : '',
+      dados.profissional ? `👩 ${dados.profissional}` : '',
+      servico ? `💈 ${servico}` : '',
+      '',
+      EMPRESA_NOME || ''
+    ].filter(Boolean).join('\n');
+  }
+
+  return [
+    `Olá ${dados.cliente || ''} 👋`,
+    '',
+    textoStatus,
+    '',
+    data ? `📅 ${data}` : '',
+    dados.hora ? `🕘 ${dados.hora}` : '',
+    dados.profissional ? `👩 ${dados.profissional}` : '',
+    servico ? `💈 ${servico}` : '',
+    '',
+    EMPRESA_NOME || ''
+  ].filter(Boolean).join('\n');
+}
+
+function abrirWhatsAppReserva(dados, tipo){
+  const tel = normalizarTelefoneWhatsApp(dados.telefone);
+  if(!tel){
+    mfAlert(IDIOMA_EMPRESA === 'it' ? 'Telefono mancante' : IDIOMA_EMPRESA === 'en' ? 'No phone number' : 'Sem telefone');
+    return;
+  }
+  const mensagem = montarMensagemWhatsAppReserva(dados, tipo);
+  window.open('https://wa.me/' + tel + '?text=' + encodeURIComponent(mensagem), '_blank');
+}
+
+
+
+let reservaPagamentoAtual = null;
+
+function textoReservaFinanceiro(chave){
+  const l = (IDIOMA_EMPRESA || 'pt').toLowerCase();
+  const textos = {
+    erro:{
+      pt:'Não foi possível finalizar no financeiro.',
+      it:'Non è stato possibile finalizzare nelle finanze.',
+      en:'Could not finalize in finance.'
+    }
+  };
+  const idioma = textos[chave] && textos[chave][l] ? l : 'pt';
+  return textos[chave] ? textos[chave][idioma] : chave;
+}
+
+function abrirModalPagamentoReserva(card){
+  if(!card) return;
+  reservaPagamentoAtual = card;
+  const modal = document.getElementById('modalPagamentoReserva');
+  if(modal){ modal.classList.add('show'); }
+}
+
+function fecharModalPagamentoReserva(){
+  const modal = document.getElementById('modalPagamentoReserva');
+  if(modal){ modal.classList.remove('show'); }
+  reservaPagamentoAtual = null;
+}
+
+function extrairValorReservaServico(servico){
+  const texto = String(servico || '').replace(',', '.');
+  let m = texto.match(/Total:\s*€\s*([0-9.]+)/i);
+  if(m) return Number(m[1] || 0);
+  m = texto.match(/€\s*([0-9.]+)/);
+  if(m) return Number(m[1] || 0);
+  return 0;
+}
+
+async function confirmarPagamentoReserva(pagamento){
+  const card = reservaPagamentoAtual;
+  if(!card) return;
+  const dados = dadosReservaDoCard(card);
+  const valor = extrairValorReservaServico(dados.servico);
+
+  try{
+    const resp = await fetch(`/reservas/${dados.id}/concluir`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({valor, pagamento})
+    });
+    const json = await resp.json();
+    if(json.error){
+      mfAlert(json.error);
+      return;
+    }
+    fecharModalPagamentoReserva();
+    location.reload();
+  }catch(e){
+    mfAlert(textoReservaFinanceiro('erro'));
+  }
+}
+
+function finalizarReservaFinanceiroCard(card){
+  abrirModalPagamentoReserva(card);
+}
+
+function avisarWhatsappReserva(card, tipo){
+  const dados = dadosReservaDoCard(card);
+  abrirWhatsAppReserva(dados, tipo || dados.status || 'pendente');
+}
+
+function atualizarReservaComAviso(card, status){
+  const dados = dadosReservaDoCard(card);
+  dados.status = status;
+  atualizarReserva(dados.id, status);
+}
+
+function avisarWhatsapp(tel){
+  const dados = {telefone: tel, cliente: 'Cliente', status: 'lembrete'};
+  abrirWhatsAppReserva(dados, 'lembrete');
+}
+
+let modalAgendaReservaId = null;
+let modalAgendaTelefoneAtual = '';
+let modalAgendaCardAtual = null;
+function normHoraAgenda(v){return String(v||'').trim().split(' - ')[0].slice(0,5);}
+function abrirReservaAgendaSlot(slot){
+  if(!slot || !slot.classList.contains('busy')) return;
+  const data = slot.dataset.date || '';
+  const prof = slot.dataset.prof || '';
+  const hora = normHoraAgenda(slot.dataset.hour || slot.querySelector('.time')?.textContent || '');
+  const cards = Array.from(document.querySelectorAll('#reservasGrid .reserva-card'));
+  const card = cards.find(c => (c.dataset.date||'')===data && (c.dataset.prof||'')===prof && normHoraAgenda(c.dataset.hour)===hora);
+  if(!card){ mfAlert(IDIOMA_EMPRESA === 'it' ? 'Non ho trovato i dati di questa prenotazione.' : IDIOMA_EMPRESA === 'en' ? 'I could not find this reservation data.' : 'Não encontrei os dados desta reserva nos Agendamentos.'); return; }
+  abrirModalReservaCard(card);
+}
+function abrirModalReservaCard(card){
+  modalAgendaCardAtual = card;
+  modalAgendaReservaId = card.dataset.id || '';
+  modalAgendaTelefoneAtual = card.dataset.telefone || '';
+  const statusNorm = normStatus(card.dataset.status || 'pendente');
+  const statusLabel = labelStatusReserva(statusNorm);
+  document.getElementById('modalAgendaProfData').textContent = `${(card.dataset.prof || 'Profissional').toUpperCase()} — ${card.dataset.date || '-'}`;
+  document.getElementById('modalAgendaCodigo').textContent = card.dataset.code || 'RSV';
+  document.getElementById('modalAgendaStatus').textContent = statusLabel;
+  document.getElementById('modalAgendaTitulo').textContent = `${card.dataset.hour || ''} — ${card.dataset.cliente || 'Cliente'}`;
+  document.getElementById('modalAgendaCliente').textContent = card.dataset.cliente || '-';
+  document.getElementById('modalAgendaTelefone').textContent = card.dataset.telefone || '-';
+  document.getElementById('modalAgendaServico').textContent = card.dataset.servico || '-';
+  const btnPagoModal = document.getElementById('modalAgendaPagoBtn');
+  if(btnPagoModal){ btnPagoModal.style.display = statusNorm === 'confirmada' ? '' : 'none'; }
+  document.getElementById('modalAgendaReserva').classList.add('show');
+}
+function fecharModalAgenda(){document.getElementById('modalAgendaReserva').classList.remove('show')}
+function acaoModalAgenda(status){if(!modalAgendaReservaId){mfAlert(IDIOMA_EMPRESA === 'it' ? 'Prenotazione non trovata.' : IDIOMA_EMPRESA === 'en' ? 'Reservation not found.' : 'Reserva não encontrada.');return;} atualizarReservaComAviso(modalAgendaCardAtual,status);}
+function min(t){let [h,m]=String(t||'00:00').split(':').map(Number);return h*60+m} function hora(v){return String(Math.floor(v/60)).padStart(2,'0')+':'+String(v%60).padStart(2,'0')}
+function gerarPreview(){const box=document.getElementById('previewHorarios'); box.innerHTML=''; for(let t=min(horaInicio.value);t<=min(horaFim.value);t+=Number(intervalo.value||30)){let b=document.createElement('button');b.type='button';b.className='preview-chip selected';b.textContent=hora(t);b.onclick=()=>b.classList.toggle('selected');box.appendChild(b)}}
+
+async function limparHorariosLivresDoDia(confirmar=true){
+  const dataEl = document.getElementById('dataAgendaSetup');
+  const profEl = document.getElementById('profissionalAgenda');
+  const data = dataEl ? String(dataEl.value || '').trim() : '';
+  const profRaw = profEl ? String(profEl.value || '').trim() : '';
+
+  if(!data){ mfAlert(textoConfirmacaoReserva('escolha_data')); return false; }
+  if(!profRaw){ mfAlert(textoConfirmacaoReserva('escolha_profissional')); return false; }
+
+  const profNum = Number(profRaw);
+  if(!Number.isFinite(profNum) || profNum <= 0){
+    mfAlert('Escolha um profissional válido da lista.');
+    return false;
+  }
+
+  if(confirmar && !(await mfConfirm('Limpar horários livres deste profissional nesta data? Horários com reserva serão mantidos.', {title:'Limpar horários',type:'warning',confirmText:'Limpar'}))){
+    return false;
+  }
+
+  const r = await fetch('/horarios-reserva/limpar-dia', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      empresa_id: {{ empresa.id }},
+      data: data,
+      profissional_id: profNum
+    })
+  });
+
+  const j = await r.json().catch(() => ({}));
+  if(j.error){
+    mfAlert(j.error);
+    return false;
+  }
+  return j;
+}
+
+async function limparHorariosDia(){
+  const dataEl = document.getElementById('dataAgendaSetup');
+  const data = dataEl ? String(dataEl.value || '').trim() : '';
+  const res = await limparHorariosLivresDoDia(true);
+  if(res){
+    location.href=`/funcionario/{{ empresa.id }}/reservas?data=${encodeURIComponent(data)}&_r=${Date.now()}`;
+  }
+}
+
+async function salvarHorarios(){
+  const dataEl = document.getElementById('dataAgendaSetup');
+  const profEl = document.getElementById('profissionalAgenda');
+  const box = document.getElementById('previewHorarios');
+  const data = dataEl ? String(dataEl.value || '').trim() : '';
+  const profRaw = profEl ? String(profEl.value || '').trim() : '';
+
+  // Pega os marcados. Se por algum motivo a classe selected sumir, salva todos os horários gerados.
+  let chips = Array.from(document.querySelectorAll('#previewHorarios .preview-chip.selected'));
+  if(!chips.length) chips = Array.from(document.querySelectorAll('#previewHorarios .preview-chip'));
+  const hs = chips.map(x => String(x.textContent || '').trim()).filter(Boolean);
+
+  if(!data){ mfAlert(textoConfirmacaoReserva('escolha_data')); return; }
+  if(!profRaw){ mfAlert(textoConfirmacaoReserva('escolha_profissional')); return; }
+  if(!hs.length){ mfAlert('Clique em Gerar horários antes de salvar.'); return; }
+
+  const btn = document.querySelector('button[onclick="salvarHorarios()"]');
+  if(btn){ btn.disabled = true; btn.textContent = 'Salvando...'; }
+
+  // Salvar marcados SUBSTITUI os horários livres desse profissional/data.
+  // Horários ocupados por reservas são mantidos por segurança.
+  const limpeza = await limparHorariosLivresDoDia(false);
+  if(!limpeza){
+    if(btn){ btn.disabled = false; btn.textContent = 'Salvar marcados'; }
+    return;
+  }
+
+  let ok = 0;
+  let erros = 0;
+  for(const h of hs){
+    const payload = {
+      empresa_id: {{ empresa.id }},
+      data: data,
+      horario: h,
+      capacidade_maxima: 1
+    };
+
+    // Se o option tiver ID, envia profissional_id. Se for nome antigo, salva no horário como compatibilidade.
+    const profNum = Number(profRaw);
+    if(Number.isFinite(profNum) && profNum > 0){
+      payload.profissional_id = profNum;
+    }else{
+      payload.horario = `${h} - ${profRaw}`;
+    }
+
+    try{
+      const r = await fetch('/horarios-reserva', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(payload)
+      });
+      const j = await r.json().catch(() => ({}));
+      if(r.ok && !j.error) ok++; else erros++;
+    }catch(e){
+      erros++;
+    }
+  }
+
+  if(ok > 0){
+    location.href=`/funcionario/{{ empresa.id }}/reservas?data=${encodeURIComponent(data)}&_r=${Date.now()}`;
+  }else{
+    if(btn){ btn.disabled = false; btn.textContent = 'Salvar marcados'; }
+    mfAlert('Não foi possível salvar os horários. Veja o terminal/console.');
+  }
+}
+async function adicionarProfissional(){
+  const nome=String(document.getElementById('novoProfissionalNome')?.value||'').trim();
+  if(!nome){
+    if(window.mfAlert){await mfAlert('Digite o nome do profissional.',{title:'Nome obrigatório',type:'warning'});}else{mfAlert('Digite o nome do profissional.');}
+    return;
+  }
+  const botao=document.querySelector('button[onclick="adicionarProfissional()"]');
+  if(botao){botao.disabled=true;botao.textContent='Cadastrando...';}
+  try{
+    const r=await fetch('/profissionais',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({empresa_id:{{ empresa.id }},nome:nome,ativo:true})});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok||j.error) throw new Error(j.error||'Não foi possível cadastrar o profissional.');
+
+    const profissionalId=Number(j.id||0);
+    const data=String(document.getElementById('dataAgendaSetup')?.value||'').trim();
+    const inicio=String(document.getElementById('horaInicio')?.value||'08:00');
+    const fim=String(document.getElementById('horaFim')?.value||'18:00');
+    const passo=Math.max(15,Number(document.getElementById('intervalo')?.value||30));
+    let horarios=[];
+    for(let t=min(inicio), limite=min(fim); t<=limite; t+=passo) horarios.push(hora(t));
+
+    let salvos=0;
+    if(profissionalId>0 && data && horarios.length){
+      for(const horario of horarios){
+        const resp=await fetch('/horarios-reserva',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({empresa_id:{{ empresa.id }},data:data,horario:horario,profissional_id:profissionalId,capacidade_maxima:1})});
+        const dados=await resp.json().catch(()=>({}));
+        if(resp.ok&&!dados.error) salvos++;
+      }
+    }
+
+    if(window.mfAlert){
+      await mfAlert(salvos>0 ? 'Profissional cadastrado e horários criados para a data selecionada.' : 'Profissional cadastrado. Abra Configurar horários para definir a agenda.',{title:'Profissional cadastrado',type:'success'});
+    }
+    location.href=`/funcionario/{{ empresa.id }}/reservas?data=${encodeURIComponent(data||'{{ data_selecionada }}')}&_r=${Date.now()}`;
+  }catch(e){
+    if(window.mfAlert){await mfAlert(e.message,{title:'Erro ao cadastrar',type:'error'});}else{mfAlert(e.message);}
+    if(botao){botao.disabled=false;botao.textContent='Adicionar';}
+  }
+}
+async function removerProfissionalSelecionado(){const sel=document.getElementById('profissionalAgenda'); if(!sel || !sel.value)return mfAlert('Selecione um profissional.'); const nome=sel.options[sel.selectedIndex]?.textContent || 'este profissional'; if(!(await mfConfirm('Remover '+nome+' da agenda? O histórico de reservas será mantido.', {title:'Remover profissional',type:'warning',confirmText:'Remover'})))return; const r=await fetch('/profissionais/'+encodeURIComponent(sel.value),{method:'DELETE'}); const j=await r.json().catch(()=>({})); if(j.error){mfAlert(j.error); return;} await mfAlert(j.message || 'Profissional removido.',{title:'Profissional removido',type:'success'}); location.reload();}
+async function excluirHorario(id){if(!(await mfConfirm(textoConfirmacaoReserva('excluir_horario'), {title:'Excluir horário',type:'warning',confirmText:'Excluir'})))return; fetch('/horarios-reserva/'+id,{method:'DELETE'}).then(()=>location.reload())}
+bindStatusTabs(); bindProfTabs(); contarAgendamentos(); filtrarAgendamentos('todas'); initAgenda(); iniciarModoTelaCheiaReservas(); iniciarAtualizacaoSuaveReservas();
+(function(){const el=document.getElementById('agendaDia'); if(el){el.classList.add('collapsed'); const ico=el.querySelector('.collapse-btn i'); if(ico){ico.classList.remove('fa-chevron-up'); ico.classList.add('fa-chevron-down');}}})();
+</script>
+
+<script id="v395-limpar-servico-tecnico-mobile">
+(function(){
+  if(window.__V395_LIMPAR_SERVICO__) return;
+  window.__V395_LIMPAR_SERVICO__ = true;
+
+  function limparCards(){
+    document.querySelectorAll(".info-box").forEach(function(box){
+      if(box.dataset.v395Cleaned === "1") return;
+      box.innerHTML = box.innerHTML
+        .replace(/\\n/g, " ")
+        .replace(/\s*FINANCEIRO_SERVICO\s+valor\s*=\s*[\d.,]+/gi, "")
+        .replace(/\s*financeiro_servico\s+valor\s*=\s*[\d.,]+/gi, "")
+        .replace(/\s*pagamento\s*=\s*/gi, " <strong>Pagamento:</strong> ")
+        .replace(/\s{2,}/g, " ");
+      box.dataset.v395Cleaned = "1";
+    });
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", limparCards);
+  }else{
+    limparCards();
+  }
+
+  setInterval(limparCards, 1500);
+})();
+</script>
+
+
+<script id="v398-limpar-servico-tecnico-mobile">
+(function(){
+  if(window.__V398_LIMPAR_SERVICO__) return;
+  window.__V398_LIMPAR_SERVICO__ = true;
+
+  function limparCards(){
+    document.querySelectorAll(".info-box").forEach(function(box){
+      if(box.dataset.v398Cleaned === "1") return;
+      box.innerHTML = box.innerHTML
+        .replace(/\\n/g, " ")
+        .replace(/\s*FINANCEIRO_SERVICO\s+valor\s*=\s*[\d.,]+/gi, "")
+        .replace(/\s*financeiro_servico\s+valor\s*=\s*[\d.,]+/gi, "")
+        .replace(/\s*pagamento\s*=\s*/gi, " <strong>Pagamento:</strong> ")
+        .replace(/\s{2,}/g, " ");
+      box.dataset.v398Cleaned = "1";
+    });
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", limparCards);
+  }else{
+    limparCards();
+  }
+
+  setInterval(limparCards, 1500);
+})();
+</script>
+{% endblock %}
+
+<style id="mf-wa-choice-style">.mf-wa-choice{position:fixed;inset:0;background:rgba(15,23,42,.55);display:none;align-items:center;justify-content:center;padding:18px;z-index:999999}.mf-wa-choice.open{display:flex}.mf-wa-choice-card{width:min(430px,100%);background:#fff;border-radius:22px;padding:22px;box-shadow:0 24px 70px rgba(0,0,0,.25)}.mf-wa-choice-card h3{margin:0 0 8px;color:#1237c9;font-size:22px}.mf-wa-choice-card p{color:#667085;font-weight:700}.mf-wa-choice-actions{display:grid;gap:10px;margin-top:18px}.mf-wa-choice-actions button{min-height:48px;border:0;border-radius:14px;font-weight:900;font-size:14px;cursor:pointer}.mf-wa-confirm{background:#087443;color:#fff}.mf-wa-remind{background:#eef3ff;color:#1237c9}.mf-wa-cancel{background:#f2f4f7;color:#475467}</style>
+<script id="mf-reservas-ptbr-wa">(function(){if(window.__MF_RESERVAS_PTBR_WA__)return;window.__MF_RESERVAS_PTBR_WA__=true;function br(v){v=String(v||'').trim();let m=v.match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?`${m[3]}-${m[2]}-${m[1]}`:v.replace(/(\d{4})-(\d{2})-(\d{2})/g,'$3-$2-$1')}document.querySelectorAll('.reserva-card').forEach(c=>{c.querySelectorAll('*').forEach(el=>{if(el.children.length===0&&/\d{4}-\d{2}-\d{2}/.test(el.textContent))el.textContent=br(el.textContent)});if(c.dataset.date)c.dataset.date=br(c.dataset.date)});function modal(){let m=document.getElementById('mfWaChoice');if(m)return m;m=document.createElement('div');m.id='mfWaChoice';m.className='mf-wa-choice';m.innerHTML='<div class="mf-wa-choice-card"><h3>Enviar mensagem pelo WhatsApp</h3><p>Escolha a mensagem que deseja preparar para o cliente.</p><div class="mf-wa-choice-actions"><button class="mf-wa-confirm">Confirmar horário ou reserva</button><button class="mf-wa-remind">Enviar lembrete</button><button class="mf-wa-cancel">Voltar</button></div></div>';document.body.appendChild(m);m.querySelector('.mf-wa-cancel').onclick=()=>m.classList.remove('open');m.onclick=e=>{if(e.target===m)m.classList.remove('open')};return m}function cleanPhone(v){return String(v||'').replace(/\D/g,'')}function open(card,type){const nome=card.dataset.cliente||'cliente',data=br(card.dataset.date||''),hora=card.dataset.hour||'',serv=card.dataset.servico||card.dataset.observacao||'',empresa=document.querySelector('[data-empresa-nome]')?.dataset.empresaNome||document.title.split('-')[0].trim()||'MenuFacile';let msg=type==='confirm'?`Olá, ${nome}!\n\nSeu horário/reserva foi confirmado.\nData: ${data}\nHorário: ${hora}${serv?`\nDetalhes: ${serv}`:''}\n\n${empresa}`:`Olá, ${nome}!\n\nPassando para lembrar do seu horário/reserva no dia ${data}, às ${hora}.${serv?`\nDetalhes: ${serv}`:''}\n\nAguardamos você!\n${empresa}`;const tel=cleanPhone(card.dataset.telefone);window.open(`https://wa.me/${tel}?text=${encodeURIComponent(msg)}`,'_blank')}document.addEventListener('click',e=>{const b=e.target.closest('.reserva-card .btn.soft');if(!b)return;e.preventDefault();e.stopImmediatePropagation();const card=b.closest('.reserva-card'),m=modal();m.classList.add('open');m.querySelector('.mf-wa-confirm').onclick=()=>{m.classList.remove('open');open(card,'confirm')};m.querySelector('.mf-wa-remind').onclick=()=>{m.classList.remove('open');open(card,'remind')}},true)})();</script>

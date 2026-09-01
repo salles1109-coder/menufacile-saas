@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ dados.tipo_titulo }} — {{ empresa.nome }}</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#eef3f9;color:#17233b;font-family:Arial,sans-serif}.sheet{width:min(820px,calc(100% - 28px));margin:24px auto;background:#fff;border:1px solid #d9e3ef;border-radius:18px;padding:28px;box-shadow:0 14px 38px rgba(15,35,90,.10)}.top{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;border-bottom:2px solid #0b2aa3;padding-bottom:18px}.brand h1{margin:0;color:#071c91;font-size:25px}.brand p,.meta p{margin:5px 0;color:#667085;font-size:13px}.meta{text-align:right}.title{margin:22px 0 12px;font-size:21px;color:#071c91}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 24px;padding:15px;border:1px solid #dce6f2;border-radius:14px;background:#f8fbff}.row{display:flex;justify-content:space-between;gap:16px;padding:7px 0;border-bottom:1px solid #edf1f6}.row:last-child{border-bottom:0}.label{color:#667085;font-weight:700}.value{text-align:right;font-weight:800}.section{margin-top:18px}.section h3{font-size:15px;color:#071c91;margin:0 0 9px}.items{width:100%;border-collapse:collapse}.items th,.items td{padding:10px;border-bottom:1px solid #e4eaf2;text-align:left}.items th{font-size:12px;color:#667085;background:#f6f9fd}.items td:nth-child(n+2),.items th:nth-child(n+2){text-align:right}.receipt{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #edf1f6}.totals{margin-left:auto;width:min(100%,390px)}.total{font-size:18px;color:#071c91}.actions{display:flex;justify-content:center;gap:10px;margin:20px auto}.actions button{border:0;border-radius:10px;padding:11px 18px;font-weight:800;cursor:pointer}.print{background:#071c91;color:#fff}.close{background:#edf2fb;color:#17233b}.foot{text-align:center;margin-top:24px;color:#7b8799;font-size:12px}@media(max-width:620px){.sheet{width:100%;margin:0;border:0;border-radius:0;padding:18px}.top{display:block}.meta{text-align:left;margin-top:12px}.grid{grid-template-columns:1fr}.actions{position:sticky;bottom:0;background:#fff;padding:10px 0}.actions button{flex:1}}@media print{body{background:#fff}.sheet{width:100%;margin:0;border:0;box-shadow:none;padding:0}.actions{display:none}.foot{margin-top:18px}@page{margin:12mm}}
+</style>
+</head>
+<body>
+<main class="sheet">
+  <div class="top"><div class="brand"><h1>{{ empresa.nome }}</h1><p>{{ empresa.razao_social or empresa.ragione_sociale or '' }}</p><p>{{ empresa.endereco or '' }}{% if empresa.cidade %} · {{ empresa.cidade }}{% endif %}</p><p>{{ empresa.telefone_whatsapp or empresa.telefone_fixo or '' }}</p></div><div class="meta"><strong>{{ dados.tipo_titulo }}</strong><p>{{ dados.codigo }}{% if dados.codigo_interno %} · {{ dados.codigo_interno }}{% endif %}</p><p>Impresso em {{ impresso_em }}</p></div></div>
+  <h2 class="title">Detalhes do registro</h2>
+  <section class="grid">
+    <div class="row"><span class="label">Data</span><span class="value">{{ dados.data }}</span></div>
+    <div class="row"><span class="label">Horário</span><span class="value">{{ dados.horario }}</span></div>
+    <div class="row"><span class="label">Cliente</span><span class="value">{{ dados.cliente or 'Não informado' }}</span></div>
+    <div class="row"><span class="label">Telefone</span><span class="value">{{ dados.telefone or 'Não informado' }}</span></div>
+    {% if dados.cpf %}<div class="row"><span class="label">CPF</span><span class="value">{{ dados.cpf }}</span></div>{% endif %}
+    {% if dados.profissional %}<div class="row"><span class="label">Profissional</span><span class="value">{{ dados.profissional }}</span></div>{% endif %}
+    <div class="row"><span class="label">Descrição</span><span class="value">{{ dados.descricao }}</span></div>
+    <div class="row"><span class="label">Status</span><span class="value">{{ dados.status }}</span></div>
+    {% if dados.endereco %}<div class="row"><span class="label">Entrega</span><span class="value">{{ dados.endereco }} {{ dados.cap }} {{ dados.cidade }}</span></div>{% endif %}
+  </section>
+  {% if itens %}<section class="section"><h3>Itens</h3><table class="items"><thead><tr><th>Item</th><th>Qtd.</th><th>Unitário</th><th>Subtotal</th></tr></thead><tbody>{% for item in itens %}<tr><td>{{ item.nome }}</td><td>{{ item.quantidade }}</td><td>R$ {{ '%.2f'|format(item.preco_unitario)|replace('.', ',') }}</td><td>R$ {{ '%.2f'|format(item.subtotal)|replace('.', ',') }}</td></tr>{% endfor %}</tbody></table></section>{% endif %}
+  {% if recebimentos %}<section class="section"><h3>Recebimentos</h3>{% for r in recebimentos %}<div class="receipt"><span><strong>{{ r.forma }}</strong>{% if r.tipo %}<small> · {{ r.tipo }}</small>{% endif %}{% if r.data %}<small><br>{{ r.data }}</small>{% endif %}</span><strong>R$ {{ '%.2f'|format(r.valor)|replace('.', ',') }}</strong></div>{% endfor %}</section>{% endif %}
+  <section class="section totals">
+    <div class="row"><span class="label">Subtotal</span><span class="value">R$ {{ '%.2f'|format(dados.subtotal)|replace('.', ',') }}</span></div>
+    {% if dados.taxa_entrega %}<div class="row"><span class="label">Taxa de entrega</span><span class="value">R$ {{ '%.2f'|format(dados.taxa_entrega)|replace('.', ',') }}</span></div>{% endif %}
+    <div class="row total"><span class="label">Valor total</span><span class="value">R$ {{ '%.2f'|format(dados.valor_total)|replace('.', ',') }}</span></div>
+    <div class="row"><span class="label">Recebido</span><span class="value">R$ {{ '%.2f'|format(dados.valor_recebido)|replace('.', ',') }}</span></div>
+    <div class="row"><span class="label">Pendente</span><span class="value">R$ {{ '%.2f'|format(dados.valor_pendente)|replace('.', ',') }}</span></div>
+    <div class="row"><span class="label">Pagamento</span><span class="value">{{ dados.forma_pagamento }}</span></div>
+    {% if dados.pagamento_detalhe %}<div class="row"><span class="label">Detalhamento</span><span class="value">{{ dados.pagamento_detalhe }}</span></div>{% endif %}
+    <div class="row"><span class="label">Status do pagamento</span><span class="value">{{ dados.status_pagamento }}</span></div>
+  </section>
+  {% if dados.observacao %}<section class="section"><h3>Observações</h3><div class="grid" style="display:block;white-space:pre-wrap">{{ dados.observacao }}</div></section>{% endif %}
+  <div class="actions"><button class="close" onclick="window.close()">Fechar</button><button class="print" onclick="window.print()">Imprimir</button></div>
+  <div class="foot">Documento gerado pelo MenuFacile.</div>
+</main>
+</body></html>

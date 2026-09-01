@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirmar {{ 'agendamento' if negocio_servico else 'reserva' }}{% if empresa %} — {{ empresa.nome }}{% endif %}</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:22px;background:#f3f6fb;color:#172033;font-family:Inter,Arial,sans-serif}.card{width:min(100%,520px);overflow:hidden;border:1px solid #dfe6f0;border-radius:24px;background:#fff;box-shadow:0 20px 55px rgba(15,35,70,.14)}.top{padding:26px 26px 20px;background:linear-gradient(135deg,#08268f,#1748d4);color:#fff}.brand{margin:0 0 7px;font-size:13px;font-weight:800;opacity:.86}.top h1{margin:0;font-size:25px;line-height:1.15}.body{padding:24px 26px 28px}.message{margin:0 0 18px;padding:14px 15px;border-radius:14px;background:#eef4ff;color:#123a9a;font-weight:750;line-height:1.45}.message.ok{background:#eaf8ef;color:#08713d}.message.cancel{background:#fff0ef;color:#b42318}.message.warn{background:#fff7df;color:#8b5b00}.details{display:grid;gap:0;margin:0 0 22px;border:1px solid #e4e9f1;border-radius:16px;overflow:hidden}.row{display:grid;grid-template-columns:132px 1fr;gap:12px;padding:12px 14px;border-bottom:1px solid #edf0f5}.row:last-child{border-bottom:0}.row span{color:#667085;font-size:13px;font-weight:750}.row strong{font-size:14px;overflow-wrap:anywhere}.question{margin:0 0 13px;text-align:center;font-size:14px;font-weight:800}.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.actions button{min-height:48px;border:0;border-radius:13px;padding:10px 13px;color:#fff;font-size:14px;font-weight:850;cursor:pointer}.confirm{background:#159455}.cancel-button{background:#d13b32}.footer{margin:18px 0 0;text-align:center;color:#7b8495;font-size:12px}.error-title{margin:0 0 10px;color:#b42318;font-size:23px}.error-text{margin:0;color:#5c6678;line-height:1.5}@media(max-width:480px){body{padding:14px}.top,.body{padding-left:19px;padding-right:19px}.top h1{font-size:22px}.row{grid-template-columns:1fr;gap:4px}.actions{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <main class="card">
+    {% if erro %}
+      <div class="top"><p class="brand">MenuFacile</p><h1>Não foi possível abrir este link</h1></div>
+      <div class="body"><h2 class="error-title">Link indisponível</h2><p class="error-text">{{ erro }}</p></div>
+    {% else %}
+      <div class="top">
+        <p class="brand">{{ empresa.nome if empresa else 'MenuFacile' }}</p>
+        <h1>{{ 'Confirme seu agendamento' if negocio_servico else 'Confirme sua reserva' }}</h1>
+      </div>
+      <div class="body">
+        {% if resultado == 'confirmada' %}
+          <p class="message ok">Presença confirmada com sucesso. O estabelecimento já recebeu sua confirmação.</p>
+        {% elif resultado == 'cancelada' %}
+          <p class="message cancel">{{ 'Agendamento cancelado' if negocio_servico else 'Reserva cancelada' }} com sucesso.</p>
+        {% elif resultado == 'indisponivel' or resposta_bloqueada %}
+          <p class="message warn">Esta solicitação já foi finalizada e não pode mais ser alterada por este link.</p>
+        {% else %}
+          <p class="message">Olá, {{ reserva.nome_cliente }}! Confira os dados e escolha uma opção abaixo.</p>
+        {% endif %}
+
+        <section class="details">
+          <div class="row"><span>Data</span><strong>{{ data_br }}</strong></div>
+          <div class="row"><span>Horário</span><strong>{{ reserva.horario.split(' - ', 1)[0] }}</strong></div>
+          {% if negocio_servico %}
+            <div class="row"><span>Profissional</span><strong>{{ profissional.nome if profissional else 'Não informado' }}</strong></div>
+            <div class="row"><span>Serviço</span><strong>{{ reserva.observacao or 'Não informado' }}</strong></div>
+          {% else %}
+            <div class="row"><span>Pessoas</span><strong>{{ reserva.pessoas or 1 }}</strong></div>
+            <div class="row"><span>Mesa / área</span><strong>{{ profissional.nome if profissional else 'Não informada' }}</strong></div>
+            {% if reserva.observacao %}<div class="row"><span>Observação</span><strong>{{ reserva.observacao }}</strong></div>{% endif %}
+          {% endif %}
+          <div class="row"><span>Status atual</span><strong>{{ (reserva.status or 'pendente')|capitalize }}</strong></div>
+        </section>
+
+        {% if resultado not in ['confirmada','cancelada','indisponivel'] and not resposta_bloqueada %}
+          <p class="question">Você confirma sua presença ou deseja cancelar?</p>
+          <form class="actions" method="post" action="/reserva/{{ reserva.id }}/responder?token={{ token|e }}">
+            <button class="confirm" type="submit" name="acao" value="confirmar">Confirmar presença</button>
+            <button class="cancel-button" type="submit" name="acao" value="cancelar">Cancelar {{ 'agendamento' if negocio_servico else 'reserva' }}</button>
+          </form>
+        {% endif %}
+        <p class="footer">Resposta segura enviada pelo MenuFacile.</p>
+      </div>
+    {% endif %}
+  </main>
+</body>
+</html>

@@ -1,0 +1,233 @@
+/* MenuFacile — painel operacional do funcionário, mobile-first */
+:root{
+  --mf-employee-blue:#061b8f;
+  --mf-employee-ink:#102033;
+  --mf-employee-muted:#667085;
+  --mf-employee-bg:#f2f6fc;
+  --mf-employee-line:#dbe6f3;
+  --mf-employee-card:#fff;
+  --mf-employee-green:#075333;
+  --mf-employee-red:#d92d20;
+  --mf-employee-orange:#f97316;
+  --mf-safe-bottom:env(safe-area-inset-bottom,0px);
+}
+
+.mf-employee-mobile-header,
+.mf-employee-bottom-nav{display:none}
+
+@media(max-width:900px){
+  html,body{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+    overflow-x:hidden;
+    background:var(--mf-employee-bg);
+  }
+  body.mf-ds-employee{
+    padding:0 0 calc(74px + var(--mf-safe-bottom));
+    color:var(--mf-employee-ink);
+  }
+  body.mf-ds-employee .side,
+  body.mf-ds-employee aside.side,
+  body.mf-ds-employee .sidebar,
+  body.mf-ds-employee .premium-sidebar{display:none!important}
+
+  body.mf-ds-employee .app,
+  body.mf-ds-employee .layout{
+    display:block!important;
+    width:100%!important;
+    min-width:0!important;
+    min-height:auto!important;
+  }
+  body.mf-ds-employee .main{
+    width:100%!important;
+    min-width:0!important;
+    padding:0 12px 18px!important;
+    overflow:visible!important;
+  }
+  body.mf-ds-employee .content{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    padding:12px 0 18px!important;
+  }
+
+  .mf-employee-mobile-header{
+    position:sticky;
+    top:0;
+    z-index:1000;
+    min-height:66px;
+    padding:10px 12px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    background:rgba(255,255,255,.97);
+    border-bottom:1px solid var(--mf-employee-line);
+    box-shadow:0 8px 24px rgba(15,35,90,.06);
+    backdrop-filter:blur(12px);
+  }
+  .mf-employee-brand{display:flex;align-items:center;gap:10px;min-width:0}
+  .mf-employee-logo{
+    width:42px;height:42px;min-width:42px;border-radius:14px;
+    display:grid;place-items:center;background:#eef3ff;color:var(--mf-employee-blue);font-size:18px;
+  }
+  .mf-employee-brand-copy{min-width:0}
+  .mf-employee-brand-copy strong{
+    display:block;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    color:var(--mf-employee-blue);font-size:15px;line-height:1.1;font-weight:950;
+  }
+  .mf-employee-brand-copy span{
+    display:block;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    margin-top:3px;color:var(--mf-employee-muted);font-size:11px;font-weight:800;
+  }
+  .mf-employee-header-actions{display:flex;align-items:center;gap:7px;flex:0 0 auto}
+  .mf-employee-lang{display:flex;align-items:center;gap:2px;padding:3px;background:#f4f7fc;border:1px solid var(--mf-employee-line);border-radius:999px}
+  .mf-employee-lang a{min-width:29px;height:29px;display:grid;place-items:center;border-radius:999px;color:#667085;font-size:10px;font-weight:950}
+  .mf-employee-lang a.active{background:var(--mf-employee-blue);color:#fff}
+  .mf-employee-logout{width:36px;height:36px;display:grid;place-items:center;border-radius:12px;background:#fff1f2;color:#be123c;border:1px solid #fecdd3}
+
+  body.mf-ds-employee .mobilebar{display:none!important}
+  .mf-employee-bottom-nav{
+    position:fixed;left:0;right:0;bottom:0;z-index:1100;
+    display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);
+    min-height:66px;padding:5px 5px calc(5px + var(--mf-safe-bottom));
+    background:rgba(255,255,255,.98);border-top:1px solid var(--mf-employee-line);
+    box-shadow:0 -10px 30px rgba(15,35,90,.08);backdrop-filter:blur(12px);
+  }
+  .mf-employee-bottom-nav a{
+    min-width:0;min-height:56px;padding:5px 2px;border-radius:13px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+    color:#667085;font-size:9.5px;line-height:1;font-weight:900;text-align:center;
+  }
+  .mf-employee-bottom-nav a i{font-size:17px}
+  .mf-employee-bottom-nav a span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mf-employee-bottom-nav a.active{background:#eef3ff;color:var(--mf-employee-blue)}
+
+  body.mf-ds-employee .top,
+  body.mf-ds-employee .topbar{
+    position:relative!important;top:auto!important;width:100%!important;min-height:auto!important;
+    margin:0!important;padding:16px 2px 12px!important;background:transparent!important;border:0!important;
+    display:flex!important;align-items:flex-start!important;gap:8px!important;
+  }
+  body.mf-ds-employee .top-actions{display:none!important}
+  body.mf-ds-employee .hello h1,
+  body.mf-ds-employee .page-title{
+    margin:0!important;color:var(--mf-employee-ink)!important;font-size:23px!important;
+    line-height:1.08!important;letter-spacing:-.55px!important;font-weight:950!important;
+  }
+  body.mf-ds-employee .hello p,
+  body.mf-ds-employee .subtitle{
+    margin:5px 0 0!important;color:var(--mf-employee-muted)!important;font-size:12px!important;line-height:1.4!important;font-weight:750!important;
+  }
+
+  body.mf-ds-employee .card,
+  body.mf-ds-employee .kpi,
+  body.mf-ds-employee .pedido-card,
+  body.mf-ds-employee .reserva-card,
+  body.mf-ds-employee .item-card{
+    max-width:100%!important;border-radius:18px!important;border:1px solid var(--mf-employee-line)!important;
+    box-shadow:0 9px 24px rgba(15,35,90,.055)!important;
+  }
+  body.mf-ds-employee .card{padding:14px!important;margin-bottom:11px!important}
+  body.mf-ds-employee .card h2{font-size:18px!important;line-height:1.15!important}
+
+  body.mf-ds-employee .grid,
+  body.mf-ds-employee .grid-2,
+  body.mf-ds-employee .grid-3,
+  body.mf-ds-employee .stats,
+  body.mf-ds-employee .form-grid,
+  body.mf-ds-employee .filters,
+  body.mf-ds-employee .kpis,
+  body.mf-ds-employee .reservas-grid{
+    grid-template-columns:1fr!important;gap:10px!important;width:100%!important;min-width:0!important;
+  }
+  body.mf-ds-employee .kpis{grid-template-columns:1fr 1fr!important}
+  body.mf-ds-employee .kpi{padding:12px!important;min-width:0!important}
+  body.mf-ds-employee .kpi strong{font-size:20px!important;overflow:hidden;text-overflow:ellipsis}
+
+  body.mf-ds-employee input,
+  body.mf-ds-employee select,
+  body.mf-ds-employee textarea{
+    width:100%!important;max-width:100%!important;min-height:45px!important;border-radius:13px!important;
+    padding:10px 12px!important;font-size:16px!important;
+  }
+  body.mf-ds-employee textarea{min-height:82px!important}
+  body.mf-ds-employee button,
+  body.mf-ds-employee .btn{
+    min-height:44px!important;border-radius:13px!important;padding:9px 12px!important;font-size:13px!important;
+  }
+
+  body.mf-ds-employee .actions,
+  body.mf-ds-employee .card-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;width:100%!important}
+  body.mf-ds-employee .actions>*{width:100%!important}
+
+  body.mf-ds-employee .modal,
+  body.mf-ds-employee .func-modal,
+  body.mf-ds-employee .modal-agenda{padding:10px!important;align-items:flex-end!important}
+  body.mf-ds-employee .modal-card,
+  body.mf-ds-employee .func-modal-card,
+  body.mf-ds-employee .modal-agenda-card{
+    width:100%!important;max-width:100%!important;max-height:88vh!important;margin:0!important;
+    border-radius:22px 22px 14px 14px!important;padding:17px!important;overflow-y:auto!important;
+  }
+
+  /* Dashboard */
+  body.mf-ds-employee-dashboard .top{padding-bottom:10px!important}
+  body.mf-ds-employee-dashboard .lang-switch{display:none!important}
+  body.mf-ds-employee-dashboard .grid{display:grid!important}
+  body.mf-ds-employee-dashboard .module{
+    min-height:104px!important;padding:15px!important;display:flex!important;justify-content:center!important;
+  }
+  body.mf-ds-employee-dashboard .module-icon{width:40px!important;height:40px!important;border-radius:14px!important;margin-bottom:10px!important}
+  body.mf-ds-employee-dashboard .module h2{margin:0 0 4px!important;font-size:17px!important}
+  body.mf-ds-employee-dashboard .module p{font-size:12px!important;line-height:1.35!important}
+
+  /* Cardápio / serviços */
+  body.mf-ds-employee-cardapio .items-grid,
+  body.mf-ds-employee-cardapio .cat-list{display:grid!important;grid-template-columns:1fr!important;gap:9px!important}
+  body.mf-ds-employee-cardapio .cat-row{grid-template-columns:1fr!important;gap:9px!important;padding:12px!important}
+  body.mf-ds-employee-cardapio .item-card{padding:13px!important}
+  body.mf-ds-employee-cardapio .item-price{font-size:19px!important}
+  body.mf-ds-employee-cardapio .item-card h3{font-size:16px!important}
+  body.mf-ds-employee-cardapio details{grid-column:1/-1!important}
+
+  /* Pedidos */
+  body.mf-ds-employee-pedidos .tabs{margin:0 0 10px!important;padding:2px 0 8px!important;gap:7px!important;overflow-x:auto!important;flex-wrap:nowrap!important}
+  body.mf-ds-employee-pedidos .tab{min-height:42px!important;padding:0 11px!important;border-radius:13px!important;font-size:11px!important}
+  body.mf-ds-employee-pedidos .kanban-wrap{overflow:visible!important}
+  body.mf-ds-employee-pedidos .kanban,
+  body.mf-ds-employee-pedidos .kanban.single{display:block!important;min-width:0!important;width:100%!important}
+  body.mf-ds-employee-pedidos .coluna{padding:9px!important;border-radius:18px!important;min-height:0!important}
+  body.mf-ds-employee-pedidos .pedido-card{padding:14px!important;margin-bottom:10px!important}
+  body.mf-ds-employee-pedidos .pedido-top{align-items:center!important}
+  body.mf-ds-employee-pedidos .pedido-status-select{max-width:145px!important;font-size:12px!important;padding:8px!important}
+  body.mf-ds-employee-pedidos .item-line{font-size:12px!important}
+  body.mf-ds-employee-pedidos .total-card strong{font-size:22px!important}
+
+  /* Agenda */
+  body.mf-ds-employee-reservas .topbar{display:none!important}
+  body.mf-ds-employee-reservas .content{padding-top:14px!important}
+  body.mf-ds-employee-reservas .card{padding:13px!important}
+  body.mf-ds-employee-reservas .card-head{gap:8px!important;margin-bottom:10px!important}
+  body.mf-ds-employee-reservas .card-head h2{font-size:18px!important}
+  body.mf-ds-employee-reservas .prof-tabs,
+  body.mf-ds-employee-reservas .tabs{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto!important;gap:7px!important;padding:8px!important}
+  body.mf-ds-employee-reservas .prof-tab,
+  body.mf-ds-employee-reservas .tab{min-height:40px!important;padding:0 11px!important;font-size:11px!important;white-space:nowrap!important}
+  body.mf-ds-employee-reservas .agenda-grid{grid-template-columns:1fr 1fr!important;gap:8px!important}
+  body.mf-ds-employee-reservas .slot{min-height:98px!important;padding:10px!important;border-radius:14px!important}
+  body.mf-ds-employee-reservas .slot .time{font-size:20px!important}
+  body.mf-ds-employee-reservas .reserva-card{min-height:0!important;padding:14px!important}
+  body.mf-ds-employee-reservas .reserva-card h3{font-size:16px!important;margin:9px 0!important}
+  body.mf-ds-employee-reservas .info-box{font-size:12px!important;padding:10px!important}
+  body.mf-ds-employee-reservas .fullscreen-toggle{display:none!important}
+}
+
+@media(max-width:370px){
+  .mf-employee-brand-copy strong,.mf-employee-brand-copy span{max-width:116px}
+  .mf-employee-lang a{min-width:27px}
+  .mf-employee-bottom-nav a{font-size:8.5px}
+  body.mf-ds-employee .main{padding-left:9px!important;padding-right:9px!important}
+  body.mf-ds-employee-reservas .agenda-grid{grid-template-columns:1fr!important}
+}

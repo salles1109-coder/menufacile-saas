@@ -1,0 +1,2466 @@
+{% extends "base.html" %}
+{% macro enc_status_picker(order, empresa, modo_real) -%}
+  {% if modo_real %}
+  <div class="enc-status-quick" data-enc-status-quick>
+    <button class="enc-status {{ order.status_class }} enc-status-trigger" type="button" data-enc-status-trigger aria-haspopup="menu" aria-expanded="false">{{ order.status }}</button>
+    <div class="enc-status-menu" data-enc-status-menu role="menu" hidden>
+      {% set quick_statuses = [('nova','Nova'),('confirmada','Confirmada'),('producao','Em produção'),('pronta','Pronta'),('entregue','Finalizada'),('cancelada','Cancelada')] %}
+      {% for status_value, status_label in quick_statuses %}
+      {% set option_key = 'finalizada' if status_value == 'entregue' else status_value %}
+      <form method="post" action="/admin/{{ empresa.id }}/encomendas/{{ order.id }}/status" class="enc-status-menu-form">
+        <input type="hidden" name="status" value="{{ status_value }}">
+        <button type="submit" class="enc-status-menu-item{% if order.status_key == option_key %} current{% endif %}" role="menuitem"{% if order.status_key == option_key %} disabled{% endif %}>
+          <span class="enc-status-menu-dot {{ option_key }}"></span>{{ status_label }}{% if order.status_key == option_key %}<i class="fa-solid fa-check"></i>{% endif %}
+        </button>
+      </form>
+      {% endfor %}
+    </div>
+  </div>
+  {% else %}
+  <span class="enc-status {{ order.status_class }}">{{ order.status }}</span>
+  {% endif %}
+{%- endmacro %}
+{% block title %}Encomendas — {{ empresa.nome }}{% endblock %}
+{% block body_attrs %} class="mf-encomendas-v761 mf-ds-admin mf-global-mobile-admin"{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="/static/css/encomendas-v762.css?v=762">
+<style>
+  .enc-finance-status{display:flex;flex-direction:column;gap:4px;min-width:0}
+  .enc-finance-chip{display:inline-flex;align-items:center;gap:7px;width:max-content;max-width:100%;padding:5px 9px;border-radius:999px;font-size:12px;font-weight:800;line-height:1.15;border:1px solid transparent}
+  .enc-finance-chip::before{content:"";width:7px;height:7px;border-radius:50%;flex:0 0 7px;background:currentColor;opacity:.9}
+  .enc-finance-chip.pending{color:#9a6200;background:#fff7e6;border-color:#f3deb1}
+  .enc-finance-chip.success{color:#13733c;background:#effaf3;border-color:#ccebd7}
+  .enc-finance-chip.danger{color:#b42318;background:#fff2f0;border-color:#f5d0cc}
+  .enc-finance-chip.neutral{color:#53606f;background:#f5f7f9;border-color:#e2e7ec}
+  .enc-finance-detail{font-size:12px;font-weight:750;color:#556174;line-height:1.3}
+  .enc-whatsapp-client{display:inline-flex!important;align-items:center!important;justify-content:center!important;flex:0 0 40px!important;width:40px!important;min-width:40px!important;height:40px!important;padding:0!important;border-radius:13px!important;color:#16854b!important;background:#f1fbf5!important;border:1px solid #d3efde!important;box-shadow:none!important}
+  .enc-whatsapp-client:hover{background:#e7f8ed!important;border-color:#bfe5ce!important;transform:translateY(-1px)}
+  .enc-whatsapp-client i{font-size:18px}
+  .enc-cancelled-box{margin-top:22px;border:1px solid #eadfdc;border-radius:18px;background:#fffafa;overflow:hidden}
+  .enc-cancelled-box>summary{display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none;padding:15px 18px;font-weight:850;color:#6f433e}
+  .enc-cancelled-box>summary::-webkit-details-marker{display:none}
+  .enc-cancelled-box>summary i{color:#b75b50}
+  .enc-cancelled-count{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;padding:0 7px;border-radius:999px;background:#f7e4e1;color:#a13f35;font-size:12px}
+  .enc-cancelled-grid{padding:0 14px 14px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .enc-cancelled-grid .enc-order{opacity:.94;border-color:#eadfdd}
+
+  /* v791 — navegação principal por status: clara, neutra e rápida para operação diária. */
+  .enc-status-access{margin:18px 0 20px}
+  .enc-status-access-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:9px}
+  .enc-status-access-head strong{font-size:14px;color:#27313f}
+  .enc-status-access-head span{font-size:12px;color:#7a8492}
+  .enc-status-nav{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;padding:8px;border:1px solid #e7ebef;border-radius:18px;background:#fff;box-shadow:0 6px 20px rgba(24,35,52,.035)}
+  .enc-status-filter{--enc-status-color:#7b8794;position:relative;display:flex;align-items:center;gap:9px;min-width:0;min-height:58px;padding:9px 10px;border:1px solid transparent;border-radius:13px;background:transparent;color:#4c5867;text-align:left;cursor:pointer;transition:.18s ease}
+  .enc-status-filter:hover{background:#f8fafb;border-color:#edf0f3}
+  .enc-status-filter.active{background:#f8fafb;border-color:#dfe5ea;box-shadow:0 2px 8px rgba(32,45,62,.045)}
+  .enc-status-filter::before{content:"";width:8px;height:8px;flex:0 0 8px;border-radius:999px;background:var(--enc-status-color)}
+  .enc-status-filter .enc-status-label{min-width:0;display:flex;flex:1;flex-direction:column;gap:2px}
+  .enc-status-filter .enc-status-label strong{overflow:hidden;text-overflow:ellipsis;font-size:12px;line-height:1.15;color:#364150;white-space:normal}
+  .enc-status-filter .enc-status-label small{font-size:10px;line-height:1.1;font-weight:650;color:#8a94a1}
+  .enc-status-filter .enc-status-number{display:inline-flex;align-items:center;justify-content:center;min-width:27px;height:27px;padding:0 7px;border-radius:999px;background:#f1f4f6;color:#2f3946;font-size:12px;font-weight:900}
+  .enc-status-filter.active .enc-status-number{background:#fff}
+  .enc-status-filter.waiting{--enc-status-color:#e3a228}
+  .enc-status-filter.new{--enc-status-color:#4f7db7}
+  .enc-status-filter.confirmed{--enc-status-color:#6487a8}
+  .enc-status-filter.production{--enc-status-color:#8b6cb4}
+  .enc-status-filter.ready{--enc-status-color:#3f9a68}
+  .enc-status-filter.done{--enc-status-color:#8a939d}
+  .enc-status-filter.cancelled{--enc-status-color:#c7685d}
+  .enc-btn:disabled{opacity:.62;cursor:not-allowed;filter:saturate(.55);box-shadow:none}
+  .enc-btn.payment-locked{background:#f2f4f7!important;color:#687386!important;border-color:#dfe4ea!important}
+  .enc-flow[data-enc-status-panel="fluxo"]{margin-top:0}
+  .enc-flow-head{margin-bottom:12px}
+  .enc-cancelled-box{background:#fff;border-color:#e5e9ed}
+  .enc-cancelled-box>summary{color:#5b626b}
+  .enc-cancelled-box>summary i{color:#c7685d}
+  .enc-cancelled-count{background:#f6f2f1;color:#a75248}
+
+  /* v793 — Central enxuta, neutra e orientada à ação. */
+  .enc-page{padding-top:18px!important}
+  .enc-metrics{gap:10px!important;margin-bottom:12px!important}
+  .enc-metric{min-height:72px!important;padding:11px 14px!important;border-radius:15px!important;background:#fff!important;border-color:#dfe5eb!important;box-shadow:0 2px 8px rgba(24,35,52,.025)!important}
+  .enc-metric::after{width:46px!important;height:46px!important;right:-12px!important;bottom:-16px!important;background:#f3f6f7!important}
+  .enc-metric small{font-size:9.5px!important;letter-spacing:.035em!important;color:#657181!important}
+  .enc-metric strong{margin-top:5px!important;font-size:21px!important;letter-spacing:-.35px!important;color:#172033!important}
+  .enc-metric em{margin-top:4px!important;font-size:9.5px!important;color:#7b8794!important}
+  .enc-metric.attention{background:#fff!important;border-color:#d9e1e8!important}
+  .enc-metric.attention small,.enc-metric.attention strong{color:#243246!important}
+  .enc-currency-icon{font-size:10px;font-weight:950;line-height:1;color:#657181}
+  .enc-toolbar{margin-bottom:12px!important;gap:10px!important}
+  .enc-toolbar-right{display:flex;align-items:center;gap:8px;min-width:0}
+  .enc-search{position:relative!important;height:40px!important;min-width:320px!important;padding:0 13px 0 39px!important;gap:0!important;border:1px solid #dce3ea!important;border-radius:12px!important;background:#fff!important;color:#7b8794!important;box-shadow:0 2px 8px rgba(24,35,52,.025)!important}
+  .enc-search>i{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:13px;color:#5e6b79}
+  .enc-search input{font-size:12px!important;width:100%!important}
+  .enc-search:focus-within{border-color:#aeb9c5!important;box-shadow:0 0 0 3px rgba(63,79,96,.08)!important}
+  .enc-date-mini{display:inline-flex;align-items:center;gap:7px;height:40px;padding:0 12px;border:1px solid #dce3ea;border-radius:12px;background:#fff;color:#586576;font-size:11px;font-weight:750;white-space:nowrap}
+  .enc-fullscreen-btn{height:40px!important;min-height:40px!important;white-space:nowrap}
+  .enc-action-loading{opacity:.78;cursor:wait!important;pointer-events:none}
+  .enc-status-access{margin:10px 0 14px!important}
+  .enc-status-nav{grid-template-columns:repeat(6,minmax(0,1fr))!important;padding:6px!important;border-radius:15px!important;gap:6px!important;box-shadow:none!important}
+  .enc-status-filter{min-height:50px!important;padding:7px 9px!important;border-radius:11px!important}
+  .enc-status-filter .enc-status-label strong{font-size:11.5px!important}
+  .enc-status-filter .enc-status-label small{font-size:9.3px!important}
+  .enc-status-filter .enc-status-number{min-width:25px!important;height:25px!important;font-size:11px!important}
+  .enc-status-filter.new{--enc-status-color:#526f91}
+  .enc-status-filter.confirmed{--enc-status-color:#67829b}
+  .enc-status-filter.production{--enc-status-color:#8068a5}
+  .enc-status-filter.ready{--enc-status-color:#428765}
+  .enc-status-filter.done{--enc-status-color:#7f8994}
+  .enc-status-filter.cancelled{--enc-status-color:#b86860}
+  .enc-inbox,.enc-flow,.enc-cancelled-box{border-color:#dfe5eb!important;background:#fff!important;box-shadow:0 3px 12px rgba(24,35,52,.025)!important}
+  .enc-inbox-head,.enc-flow-head{background:#fafbfc!important;border-bottom-color:#e8edf1!important}
+  .enc-inbox-title .enc-inbox-dot{background:#718096!important;box-shadow:none!important}
+  .enc-order,.enc-order.is-new{border-color:#dde4ea!important;background:#fff!important;box-shadow:0 3px 10px rgba(29,39,54,.03)!important}
+  .enc-order:hover{border-color:#cbd5df!important;box-shadow:0 7px 18px rgba(29,39,54,.055)!important}
+  .enc-fulfillment-strip,.enc-fulfillment-strip.delivery{background:#f7f9fb!important;border-color:#e1e7ec!important}
+  .enc-fulfillment-strip .enc-fulfillment-purpose>i,.enc-fulfillment-strip.delivery .enc-fulfillment-purpose>i{background:#eef2f5!important;color:#43566d!important}
+  .enc-fulfillment-strip small,.enc-fulfillment-strip.delivery small{color:#778391!important}
+  .enc-fulfillment-strip .enc-fulfillment-purpose strong,.enc-fulfillment-strip.delivery .enc-fulfillment-purpose strong{color:#27384d!important}
+  .enc-fulfillment-strip .enc-fulfillment-date,.enc-fulfillment-strip .enc-fulfillment-time,.enc-fulfillment-strip.delivery .enc-fulfillment-date,.enc-fulfillment-strip.delivery .enc-fulfillment-time{border-color:#e0e6eb!important;background:#fff!important}
+  .enc-fulfillment-strip .enc-fulfillment-time strong,.enc-fulfillment-strip.delivery .enc-fulfillment-time strong{color:#253d57!important}
+  .enc-btn.danger{color:#a43a34!important;background:#fff!important;border-color:#d8dee5!important}
+  .enc-btn.danger:hover{background:#faf6f5!important;border-color:#c9d0d8!important}
+  .enc-action-main{font-weight:850!important}
+  .enc-action-production{background:#4f6175!important;color:#fff!important;border-color:#4f6175!important}
+  .enc-action-ready{background:#5d6d85!important;color:#fff!important;border-color:#5d6d85!important}
+  .enc-action-finish{background:#2f7652!important;color:#fff!important;border-color:#2f7652!important}
+  .enc-action-delivery{background:#fff!important;color:#42556c!important;border-color:#cfd8e1!important}
+  .enc-action-notify{background:#f1faf5!important;color:#16854b!important;border-color:#caead6!important}
+  .enc-cancelled-box>summary{background:#fafbfc!important;color:#545f6c!important}
+  .enc-cancelled-count{background:#eef1f4!important;color:#5a6673!important}
+  .enc-driver-backdrop{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(17,24,39,.45);backdrop-filter:blur(3px)}
+  .enc-driver-backdrop.open{display:flex}
+  .enc-driver-modal{width:min(440px,100%);max-height:min(620px,86vh);overflow:auto;border:1px solid #dfe5ea;border-radius:20px;background:#fff;box-shadow:0 24px 70px rgba(17,24,39,.2)}
+  .enc-driver-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 17px;border-bottom:1px solid #e8edf1}
+  .enc-driver-head strong{font-size:15px;color:#1f2937}
+  .enc-driver-close{width:36px;height:36px;border:1px solid #dfe5ea;border-radius:11px;background:#fff;color:#667281;cursor:pointer}
+  .enc-driver-copy{padding:12px 17px 4px;color:#74808e;font-size:11px;line-height:1.45}
+  .enc-driver-list{display:grid;gap:8px;padding:12px 17px 17px}
+  .enc-driver-item{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:12px 13px;border:1px solid #dfe5ea;border-radius:13px;background:#fff;color:#263446;text-align:left;cursor:pointer}
+  .enc-driver-item:hover{background:#f7faf8;border-color:#cbd8d0}
+  .enc-driver-item span{display:flex;flex-direction:column;gap:3px;min-width:0}
+  .enc-driver-item strong{font-size:12px}.enc-driver-item small{font-size:10px;color:#7b8794}.enc-driver-item i{font-size:18px;color:#16854b}
+  .enc-driver-empty{padding:16px;border:1px dashed #d8dfe6;border-radius:13px;text-align:center;color:#6f7b88;font-size:11px}
+  .enc-page:fullscreen,.enc-page.enc-focus-mode{overflow:auto;background:#f4f7fa;padding:18px 22px 34px!important;max-width:none!important}
+  .enc-page.enc-focus-mode{position:fixed!important;inset:0!important;z-index:9998!important;width:100vw!important;height:100dvh!important;margin:0!important}
+  .enc-page:fullscreen .enc-toolbar,.enc-page.enc-focus-mode .enc-toolbar{position:sticky;top:0;z-index:20;padding:8px 0;background:#f4f7fa}
+  .enc-page:fullscreen .enc-metrics,.enc-page.enc-focus-mode .enc-metrics{margin-top:0}
+  @media (max-width:1050px){
+    .enc-status-nav{display:flex;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+    .enc-status-nav::-webkit-scrollbar{display:none}
+    .enc-status-filter{flex:0 0 150px}
+  }
+  @media (max-width:720px){
+    .enc-finance-chip{font-size:11px;padding:5px 8px}
+    .enc-finance-detail{font-size:11px}
+    .enc-whatsapp-client{flex-basis:38px!important;width:38px!important;min-width:38px!important;height:38px!important;border-radius:12px!important}
+    .enc-whatsapp-client i{font-size:17px}
+    .enc-cancelled-grid{grid-template-columns:1fr;padding:0 10px 10px}
+    .enc-cancelled-box>summary{padding:13px 14px}
+    .enc-status-access{margin:14px -2px 16px}
+    .enc-status-access-head{padding:0 2px;margin-bottom:7px}
+    .enc-status-access-head span{display:none}
+    .enc-status-nav{margin:0 -2px;padding:6px;border-radius:15px}
+    .enc-status-filter{flex-basis:137px;min-height:53px;padding:8px 9px;border-radius:11px}
+    .enc-status-filter .enc-status-label strong{font-size:11.5px}
+    .enc-status-filter .enc-status-label small{font-size:9.5px}
+    .enc-status-filter .enc-status-number{min-width:25px;height:25px;font-size:11px}
+  }
+
+  @media (max-width:720px){
+    .enc-page{padding-top:12px!important}
+    .enc-metrics{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important;margin-bottom:10px!important}
+    .enc-metric{min-height:64px!important;padding:9px 10px!important;border-radius:13px!important}
+    .enc-metric strong{font-size:18px!important}.enc-metric small,.enc-metric em{font-size:8.5px!important}
+    .enc-toolbar{display:flex!important;flex-direction:column!important;align-items:stretch!important}
+    .enc-toolbar-right{width:100%;display:grid;grid-template-columns:1fr auto;gap:7px}
+    .enc-search{min-width:0!important;width:100%!important;height:39px!important}
+    .enc-date-mini{display:none}
+    .enc-fullscreen-btn{width:42px!important;padding:0!important;justify-content:center!important}
+    .enc-fullscreen-btn span{display:none}
+    .enc-status-nav{display:flex!important;overflow-x:auto!important;margin:0 -1px!important;padding:5px!important}
+    .enc-status-filter{flex:0 0 132px!important;min-height:49px!important}
+    .enc-order-actions{display:flex!important;flex-wrap:wrap!important;gap:7px!important}
+    .enc-order-actions>form{min-width:calc(50% - 4px)!important;flex:1 1 calc(50% - 4px)!important}
+    .enc-order-actions>.enc-btn:not(.icon-only),.enc-order-actions>form .enc-btn{min-width:0!important;flex:1 1 auto!important}
+    .enc-action-delivery,.enc-action-notify{flex:1 1 calc(50% - 4px)!important}
+    .enc-driver-backdrop{padding:10px}.enc-driver-modal{border-radius:17px;max-height:90vh}
+    .enc-page:fullscreen,.enc-page.enc-focus-mode{padding:10px 9px 24px!important}
+  }
+
+  /* v796 — calendário nativo realmente clicável e botão somente com ícone. */
+  .enc-period-calendar{position:relative!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;width:40px!important;min-width:40px!important;height:40px!important;padding:0!important;overflow:hidden!important;cursor:pointer!important}
+  .enc-period-calendar>i{position:relative;z-index:1;pointer-events:none;font-size:14px}
+  .enc-calendar-input{position:absolute!important;inset:0!important;z-index:3!important;width:100%!important;height:100%!important;margin:0!important;padding:0!important;border:0!important;opacity:0!important;cursor:pointer!important;pointer-events:auto!important}
+  .enc-calendar-input::-webkit-calendar-picker-indicator{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;margin:0!important;padding:0!important;opacity:0!important;cursor:pointer!important}
+  .enc-status-quick{position:relative;display:inline-flex;flex:0 0 auto;z-index:6}
+  .enc-status-trigger{appearance:none;-webkit-appearance:none;font:inherit;cursor:pointer;outline:none;transition:.16s ease}
+  .enc-status-trigger:hover,.enc-status-trigger[aria-expanded="true"]{filter:brightness(.98);box-shadow:0 0 0 3px rgba(76,94,116,.08)}
+  .enc-status-menu{position:absolute;right:0;top:calc(100% + 7px);z-index:80;width:178px;padding:6px;border:1px solid #dfe5ea;border-radius:13px;background:#fff;box-shadow:0 16px 38px rgba(28,39,54,.16)}
+  .enc-status-menu-form{margin:0;padding:0}
+  .enc-status-menu-item{display:flex;align-items:center;gap:9px;width:100%;min-height:36px;padding:7px 9px;border:0;border-radius:9px;background:transparent;color:#344150;font:inherit;font-size:11px;font-weight:760;text-align:left;cursor:pointer}
+  .enc-status-menu-item:hover:not(:disabled){background:#f5f7f9}
+  .enc-status-menu-item.current{background:#f7f9fb;color:#697583;cursor:default}
+  .enc-status-menu-item i{margin-left:auto;font-size:10px;color:#526f91}
+  .enc-status-menu-dot{width:7px;height:7px;border-radius:50%;background:#7f8994;flex:0 0 7px}
+  .enc-status-menu-dot.nova{background:#526f91}.enc-status-menu-dot.confirmada{background:#67829b}.enc-status-menu-dot.producao{background:#8068a5}.enc-status-menu-dot.pronta{background:#428765}.enc-status-menu-dot.finalizada{background:#7f8994}.enc-status-menu-dot.cancelada{background:#b86860}
+  @media (max-width:720px){
+    .enc-toolbar-right{display:flex!important;justify-content:flex-end!important;width:100%!important}
+    .enc-status-menu{position:fixed;left:12px;right:12px;top:auto;bottom:12px;width:auto;max-height:70vh;overflow:auto;border-radius:16px;box-shadow:0 20px 55px rgba(20,28,40,.24)}
+    .enc-status-menu-item{min-height:42px;font-size:12px}
+  }
+
+  /* v797 — alinhamento mobile dos controles e etapas. */
+  @media (max-width:720px){
+    .enc-toolbar{
+      display:grid!important;
+      grid-template-columns:minmax(0,1fr) 40px!important;
+      align-items:center!important;
+      gap:7px!important;
+      width:100%!important;
+    }
+    .enc-periods{
+      display:grid!important;
+      grid-template-columns:auto auto minmax(78px,1fr) 36px!important;
+      align-items:center!important;
+      gap:2px!important;
+      width:100%!important;
+      min-width:0!important;
+      padding:4px!important;
+      border-radius:13px!important;
+    }
+    .enc-period{
+      min-width:0!important;
+      height:36px!important;
+      min-height:36px!important;
+      padding:0 8px!important;
+      display:inline-flex!important;
+      align-items:center!important;
+      justify-content:center!important;
+      white-space:nowrap!important;
+      font-size:10.5px!important;
+    }
+    .enc-period-calendar{
+      width:36px!important;
+      min-width:36px!important;
+      height:36px!important;
+      padding:0!important;
+    }
+    .enc-toolbar-right{
+      width:40px!important;
+      min-width:40px!important;
+      display:flex!important;
+      align-items:center!important;
+      justify-content:center!important;
+      gap:0!important;
+    }
+    .enc-fullscreen-btn{
+      width:40px!important;
+      min-width:40px!important;
+      height:40px!important;
+      min-height:40px!important;
+      margin:0!important;
+      padding:0!important;
+      border-radius:12px!important;
+    }
+    .enc-status-access{margin:10px 0 14px!important}
+    .enc-status-nav{
+      display:flex!important;
+      align-items:stretch!important;
+      gap:5px!important;
+      padding:5px!important;
+      margin:0!important;
+      overflow-x:auto!important;
+      scroll-snap-type:x proximity;
+      scroll-padding-left:5px;
+    }
+    .enc-status-filter{
+      flex:0 0 148px!important;
+      min-height:52px!important;
+      padding:7px 8px!important;
+      gap:7px!important;
+      scroll-snap-align:start;
+    }
+    .enc-status-filter::before{width:7px!important;height:7px!important;flex-basis:7px!important}
+    .enc-status-filter .enc-status-label{gap:2px!important}
+    .enc-status-filter .enc-status-label strong{
+      white-space:nowrap!important;
+      overflow:hidden!important;
+      text-overflow:ellipsis!important;
+      font-size:10.5px!important;
+      line-height:1.1!important;
+    }
+    .enc-status-filter .enc-status-label small{
+      white-space:nowrap!important;
+      overflow:hidden!important;
+      text-overflow:ellipsis!important;
+      font-size:8.8px!important;
+    }
+    .enc-status-filter .enc-status-number{
+      min-width:23px!important;
+      height:23px!important;
+      padding:0 6px!important;
+      font-size:10px!important;
+    }
+  }
+
+  /* v798 — mobile: cinco controles com largura, altura e espaçamento iguais. */
+  @media (max-width:720px){
+    .enc-toolbar{
+      display:grid!important;
+      grid-template-columns:repeat(5,minmax(0,1fr))!important;
+      align-items:stretch!important;
+      gap:5px!important;
+      width:100%!important;
+      margin-bottom:10px!important;
+    }
+    .enc-periods,.enc-toolbar-right{display:contents!important}
+    .enc-date-mini{display:none!important}
+    .enc-period,.enc-period-calendar,.enc-fullscreen-btn{
+      width:100%!important;
+      min-width:0!important;
+      height:38px!important;
+      min-height:38px!important;
+      margin:0!important;
+      padding:0 3px!important;
+      display:flex!important;
+      align-items:center!important;
+      justify-content:center!important;
+      border:1px solid #dce3ea!important;
+      border-radius:11px!important;
+      background:#fff!important;
+      color:#5f6b7a!important;
+      box-sizing:border-box!important;
+      box-shadow:none!important;
+      white-space:nowrap!important;
+      font-size:9.3px!important;
+      font-weight:780!important;
+      line-height:1!important;
+    }
+    .enc-period.active{
+      background:#172033!important;
+      color:#fff!important;
+      border-color:#172033!important;
+    }
+    .enc-period-calendar{overflow:hidden!important}
+    .enc-period-calendar>i,.enc-fullscreen-btn>i{font-size:13px!important}
+    .enc-fullscreen-btn span{display:none!important}
+    .enc-calendar-input{inset:0!important;width:100%!important;height:100%!important}
+  }
+
+  /* v799 — centraliza de forma absoluta o ícone do calendário no mobile. */
+  @media (max-width:720px){
+    .enc-period-calendar{
+      position:relative!important;
+      display:block!important;
+      padding:0!important;
+    }
+    .enc-period-calendar>i{
+      position:absolute!important;
+      left:50%!important;
+      top:50%!important;
+      z-index:2!important;
+      margin:0!important;
+      transform:translate(-50%,-50%)!important;
+      line-height:1!important;
+      pointer-events:none!important;
+    }
+    .enc-period-calendar .enc-calendar-input{
+      position:absolute!important;
+      inset:0!important;
+      z-index:3!important;
+      width:100%!important;
+      height:100%!important;
+      min-width:0!important;
+      margin:0!important;
+      padding:0!important;
+      border:0!important;
+      background:transparent!important;
+      color:transparent!important;
+      opacity:0!important;
+      appearance:none!important;
+      -webkit-appearance:none!important;
+      cursor:pointer!important;
+    }
+    .enc-period-calendar .enc-calendar-input::-webkit-calendar-picker-indicator{
+      position:absolute!important;
+      inset:0!important;
+      width:100%!important;
+      height:100%!important;
+      margin:0!important;
+      padding:0!important;
+      opacity:0!important;
+      cursor:pointer!important;
+    }
+  }
+
+/* v832 — período flexível e impressão operacional */
+.enc-toolbar-v832{gap:12px}
+.enc-periods-v832{align-items:center;gap:9px}
+.enc-range-v832{display:flex;align-items:center;gap:7px;padding:4px 8px;border:1px solid #dce3ea;border-radius:12px;background:#fff}
+.enc-range-v832 label{display:flex;align-items:center;gap:6px;color:#667085;font-size:10px;font-weight:900;white-space:nowrap}
+.enc-range-v832 input{height:30px;min-width:132px;padding:0 7px;border:0;border-radius:8px;background:#f8fafc;color:#344054;font:inherit;font-size:11px;font-weight:800;outline:none}
+.enc-range-v832 input:focus{box-shadow:0 0 0 2px rgba(18,55,201,.12)}
+.enc-range-separator-v832{color:#98a2b3;font-size:10px;font-weight:800}
+.enc-print-btn-v832{height:40px!important;min-height:40px!important;white-space:nowrap}
+@media(max-width:820px){
+  .enc-toolbar-v832{align-items:stretch!important;flex-direction:column!important}
+  .enc-periods-v832,.enc-toolbar-right-v832{width:100%;display:flex!important}
+  .enc-range-v832{flex:1;min-width:0;overflow:auto}
+  .enc-range-v832 input{min-width:118px}
+  .enc-toolbar-right-v832{justify-content:flex-end}
+}
+@media(max-width:560px){
+  .enc-periods-v832{align-items:stretch!important;flex-direction:column!important}
+  .enc-periods-v832>.enc-period{align-self:flex-start}
+  .enc-range-v832{width:100%;display:grid;grid-template-columns:1fr auto 1fr;gap:5px}
+  .enc-range-v832 label{display:grid;gap:3px}
+  .enc-range-v832 input{width:100%;min-width:0}
+  .enc-range-separator-v832{align-self:end;padding-bottom:9px}
+  .enc-date-mini-v832{display:none!important}
+  .enc-toolbar-right-v832{justify-content:flex-start!important}
+  .enc-print-btn-v832 span{display:inline!important}
+}
+
+
+/* v833 — toolbar mais limpa: sem período duplicado e filtros mais compactos. */
+.enc-toolbar-v832{align-items:center!important;gap:14px!important}
+.enc-periods-v832{gap:8px!important}
+.enc-periods-v832>.enc-period{
+  height:38px!important;
+  min-height:38px!important;
+  padding:0 14px!important;
+  border:1px solid #dce3ea!important;
+  border-radius:12px!important;
+  background:#fff!important;
+  color:#475467!important;
+  box-shadow:0 1px 2px rgba(15,23,42,.03)!important;
+  font-size:11px!important;
+  font-weight:850!important;
+}
+.enc-periods-v832>.enc-period.active{background:#172033!important;color:#fff!important;border-color:#172033!important}
+.enc-range-v832{gap:6px!important;padding:3px 7px!important;border-radius:12px!important;box-shadow:0 1px 2px rgba(15,23,42,.03)!important}
+.enc-range-v832 label{gap:5px!important;font-size:10px!important}
+.enc-range-v832 input{height:32px!important;min-width:126px!important;padding:0 8px!important;border:1px solid #e4e9ef!important;background:#fff!important;border-radius:9px!important;font-size:11px!important}
+.enc-range-separator-v832{font-size:9px!important}
+.enc-toolbar-right-v832{gap:8px!important}
+.enc-print-btn-v832,.enc-toolbar-right-v832 .enc-fullscreen-btn{height:38px!important;min-height:38px!important}
+@media(max-width:820px){
+  .enc-toolbar-v832{gap:10px!important}
+  .enc-toolbar-right-v832{justify-content:flex-start!important}
+}
+@media(max-width:560px){
+  .enc-periods-v832>.enc-period{height:36px!important;min-height:36px!important;padding:0 12px!important}
+  .enc-range-v832{padding:6px!important}
+  .enc-range-v832 input{height:34px!important;min-width:0!important}
+}
+
+/* v834 — seletor de período simplificado: De [data] → [data]. */
+.enc-range-v834{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:8px!important;
+  padding:4px 7px!important;
+  border:1px solid #dce3ea!important;
+  border-radius:13px!important;
+  background:#fff!important;
+}
+.enc-range-v834 label{display:inline-flex!important;align-items:center!important;gap:7px!important;margin:0!important}
+.enc-range-v834 .enc-range-start-v834>span{color:#344054!important;font-size:11px!important;font-weight:900!important}
+.enc-range-v834 .enc-range-end-v834{gap:0!important}
+.enc-range-v834 input{
+  height:34px!important;
+  min-width:132px!important;
+  padding:0 9px!important;
+  border:1px solid #dbe4ef!important;
+  border-radius:10px!important;
+  background:#fff!important;
+  color:#1d2939!important;
+  font-size:11px!important;
+  font-weight:800!important;
+}
+.enc-range-arrow-v834{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-width:18px!important;
+  color:#98a2b3!important;
+  font-size:14px!important;
+  font-weight:700!important;
+}
+@media(max-width:560px){
+  .enc-range-v834{display:grid!important;grid-template-columns:auto minmax(0,1fr) auto minmax(0,1fr)!important;width:100%!important;gap:6px!important}
+  .enc-range-v834 .enc-range-start-v834{display:contents!important}
+  .enc-range-v834 .enc-range-end-v834{display:contents!important}
+  .enc-range-v834 input{width:100%!important;min-width:0!important}
+}
+
+/* v835_ascii — cores suaves por status na central de Encomendas. */
+.enc-status-filter.new{background:#f5f8fd!important;border-color:#dce7f6!important}
+.enc-status-filter.new:hover{background:#eef4fb!important;border-color:#cddcf0!important}
+.enc-status-filter.new.active{background:#e9f1fb!important;border-color:#c6d7ee!important;box-shadow:0 5px 12px rgba(79,125,183,.12)!important}
+.enc-status-filter.new .enc-status-number{background:#fff!important;color:#365e95!important}
+
+.enc-status-filter.confirmed{background:#fff8e9!important;border-color:#f3dfad!important}
+.enc-status-filter.confirmed:hover{background:#fff4dc!important;border-color:#ecd493!important}
+.enc-status-filter.confirmed.active{background:#fff1d1!important;border-color:#e9c97c!important;box-shadow:0 5px 12px rgba(205,156,49,.14)!important}
+.enc-status-filter.confirmed .enc-status-number{background:#fff!important;color:#9a6c00!important}
+
+.enc-status-filter.production{background:#f8f4fd!important;border-color:#e3d8f2!important}
+.enc-status-filter.production:hover{background:#f2ebfb!important;border-color:#d5c4eb!important}
+.enc-status-filter.production.active{background:#eee5fa!important;border-color:#cbb4e7!important;box-shadow:0 5px 12px rgba(139,108,180,.15)!important}
+.enc-status-filter.production .enc-status-number{background:#fff!important;color:#7650a8!important}
+
+.enc-status-filter.ready{background:#effaf3!important;border-color:#cdebd8!important}
+.enc-status-filter.ready:hover{background:#e7f6ec!important;border-color:#bde1ca!important}
+.enc-status-filter.ready.active{background:#def2e6!important;border-color:#a9d5ba!important;box-shadow:0 5px 12px rgba(63,154,104,.14)!important}
+.enc-status-filter.ready .enc-status-number{background:#fff!important;color:#23734b!important}
+
+.enc-status-filter.done{background:#f4f7f8!important;border-color:#dde4e8!important}
+.enc-status-filter.done:hover{background:#eef2f4!important;border-color:#d3dce1!important}
+.enc-status-filter.done.active{background:#e9eef1!important;border-color:#cdd6dc!important;box-shadow:0 5px 12px rgba(111,126,138,.12)!important}
+.enc-status-filter.done .enc-status-number{background:#fff!important;color:#586573!important}
+
+.enc-status-filter.cancelled{background:#fff3f2!important;border-color:#f2d3cf!important}
+.enc-status-filter.cancelled:hover{background:#feeceb!important;border-color:#ebbeba!important}
+.enc-status-filter.cancelled.active{background:#fee3e1!important;border-color:#e5aaa4!important;box-shadow:0 5px 12px rgba(199,104,93,.14)!important}
+.enc-status-filter.cancelled .enc-status-number{background:#fff!important;color:#a54a41!important}
+
+.enc-order[data-enc-status="nova"],
+.enc-order.is-new{border-color:#d9e6f6!important;background:linear-gradient(180deg,rgba(79,125,183,.065),rgba(255,255,255,.99) 19%,#fff 100%)!important;box-shadow:0 3px 10px rgba(29,39,54,.03), inset 4px 0 0 #4f7db7!important}
+.enc-order[data-enc-status="confirmada"],
+.enc-order[data-enc-status-card="confirmada"]{border-color:#f0ddb0!important;background:linear-gradient(180deg,rgba(227,162,40,.07),rgba(255,255,255,.99) 19%,#fff 100%)!important;box-shadow:0 3px 10px rgba(29,39,54,.03), inset 4px 0 0 #d39b23!important}
+.enc-order[data-enc-status="producao"],
+.enc-order[data-enc-status-card="producao"]{border-color:#dfd3f0!important;background:linear-gradient(180deg,rgba(139,108,180,.08),rgba(255,255,255,.99) 19%,#fff 100%)!important;box-shadow:0 3px 10px rgba(29,39,54,.03), inset 4px 0 0 #8b6cb4!important}
+.enc-order[data-enc-status="pronta"],
+.enc-order[data-enc-status-card="pronta"]{border-color:#cae7d5!important;background:linear-gradient(180deg,rgba(63,154,104,.075),rgba(255,255,255,.99) 19%,#fff 100%)!important;box-shadow:0 3px 10px rgba(29,39,54,.03), inset 4px 0 0 #3f9a68!important}
+.enc-order[data-enc-status="finalizada"],
+.enc-order[data-enc-status-card="finalizada"]{border-color:#dbe3e8!important;background:linear-gradient(180deg,rgba(138,147,157,.07),rgba(255,255,255,.99) 19%,#fff 100%)!important;box-shadow:0 3px 10px rgba(29,39,54,.03), inset 4px 0 0 #8a939d!important}
+.enc-order[data-enc-status="cancelada"],
+.enc-order[data-enc-status-card="cancelada"]{border-color:#efd2ce!important;background:linear-gradient(180deg,rgba(199,104,93,.075),rgba(255,255,255,.99) 19%,#fff 100%)!important;box-shadow:0 3px 10px rgba(29,39,54,.03), inset 4px 0 0 #c7685d!important}
+
+.enc-order[data-enc-status="nova"] .enc-status,
+.enc-order.is-new .enc-status{color:#365e95!important;background:#eef4fb!important;border-color:#d6e3f5!important}
+.enc-order[data-enc-status="confirmada"] .enc-status,
+.enc-order[data-enc-status-card="confirmada"] .enc-status{color:#9a6c00!important;background:#fff4dc!important;border-color:#efd89d!important}
+.enc-order[data-enc-status="producao"] .enc-status,
+.enc-order[data-enc-status-card="producao"] .enc-status{color:#7650a8!important;background:#f1eafb!important;border-color:#dfd0f1!important}
+.enc-order[data-enc-status="pronta"] .enc-status,
+.enc-order[data-enc-status-card="pronta"] .enc-status{color:#23734b!important;background:#eaf6ee!important;border-color:#cae6d3!important}
+.enc-order[data-enc-status="finalizada"] .enc-status,
+.enc-order[data-enc-status-card="finalizada"] .enc-status{color:#586573!important;background:#eef2f4!important;border-color:#dbe3e7!important}
+.enc-order[data-enc-status="cancelada"] .enc-status,
+.enc-order[data-enc-status-card="cancelada"] .enc-status{color:#a54a41!important;background:#feeeec!important;border-color:#f1d0cb!important}
+
+
+/* v837_ascii — próximos 7 dias, período mais delicado e cores um pouco mais fortes. */
+.enc-periods-v832>.enc-period[data-enc-period="next7"]{padding:0 15px!important}
+.enc-range-v834{padding:2px 6px!important;border-radius:12px!important;gap:6px!important;box-shadow:0 1px 1px rgba(15,23,42,.02)!important}
+.enc-range-v834 label{gap:5px!important}
+.enc-range-v834 .enc-range-start-v834>span{font-size:10px!important;font-weight:850!important;color:#445067!important}
+.enc-range-v834 input{height:30px!important;min-width:116px!important;padding:0 8px!important;border-radius:9px!important;font-size:10.5px!important;border:1px solid #d9e2ec!important;background:#fff!important}
+.enc-range-v834 input:focus{box-shadow:0 0 0 2px rgba(18,55,201,.10)!important;border-color:#c7d4e2!important}
+.enc-range-arrow-v834{min-width:14px!important;font-size:12px!important;color:#95a1b2!important}
+@media(max-width:560px){
+  .enc-range-v834{gap:5px!important;padding:5px!important}
+  .enc-range-v834 input{height:32px!important;min-width:0!important}
+}
+.enc-status-filter.new{background:#eff5fd!important;border-color:#cfdff4!important}
+.enc-status-filter.new:hover{background:#e7f0fb!important;border-color:#bfd3ec!important}
+.enc-status-filter.new.active{background:#ddeafb!important;border-color:#b6ceed!important;box-shadow:0 6px 14px rgba(79,125,183,.14)!important}
+.enc-status-filter.confirmed{background:#fff4dc!important;border-color:#edd18a!important}
+.enc-status-filter.confirmed:hover{background:#ffefcc!important;border-color:#e8c26b!important}
+.enc-status-filter.confirmed.active{background:#ffe8b6!important;border-color:#dfb14a!important;box-shadow:0 6px 14px rgba(205,156,49,.16)!important}
+.enc-status-filter.production{background:#f3ebfc!important;border-color:#d8c4f0!important}
+.enc-status-filter.production:hover{background:#eee2fb!important;border-color:#cdb2ea!important}
+.enc-status-filter.production.active{background:#e7d7fb!important;border-color:#bf9be7!important;box-shadow:0 6px 14px rgba(139,108,180,.17)!important}
+.enc-status-filter.ready{background:#e9f7ee!important;border-color:#b9dfc9!important}
+.enc-status-filter.ready:hover{background:#e1f2e7!important;border-color:#a4d3b7!important}
+.enc-status-filter.ready.active{background:#d4ecdD!important;border-color:#8ec4a8!important;box-shadow:0 6px 14px rgba(63,154,104,.16)!important}
+.enc-status-filter.done{background:#edf2f5!important;border-color:#d0dbe2!important}
+.enc-status-filter.done:hover{background:#e7edf1!important;border-color:#c4d1d9!important}
+.enc-status-filter.done.active{background:#dde6ec!important;border-color:#bbc8d1!important;box-shadow:0 6px 14px rgba(111,126,138,.14)!important}
+.enc-status-filter.cancelled{background:#feecea!important;border-color:#e9b6ae!important}
+.enc-status-filter.cancelled:hover{background:#fee4e1!important;border-color:#e09b92!important}
+.enc-status-filter.cancelled.active{background:#fdd8d3!important;border-color:#d9857c!important;box-shadow:0 6px 14px rgba(199,104,93,.16)!important}
+.enc-order[data-enc-status="nova"],.enc-order.is-new{border-color:#cfe0f5!important;background:linear-gradient(180deg,rgba(79,125,183,.10),rgba(255,255,255,.99) 18%,#fff 100%)!important;box-shadow:0 4px 11px rgba(29,39,54,.035), inset 4px 0 0 #4f7db7!important}
+.enc-order[data-enc-status="confirmada"],.enc-order[data-enc-status-card="confirmada"]{border-color:#edd192!important;background:linear-gradient(180deg,rgba(227,162,40,.11),rgba(255,255,255,.99) 18%,#fff 100%)!important;box-shadow:0 4px 11px rgba(29,39,54,.035), inset 4px 0 0 #d39b23!important}
+.enc-order[data-enc-status="producao"],.enc-order[data-enc-status-card="producao"]{border-color:#d6c1ef!important;background:linear-gradient(180deg,rgba(139,108,180,.12),rgba(255,255,255,.99) 18%,#fff 100%)!important;box-shadow:0 4px 11px rgba(29,39,54,.035), inset 4px 0 0 #8b6cb4!important}
+.enc-order[data-enc-status="pronta"],.enc-order[data-enc-status-card="pronta"]{border-color:#badfc9!important;background:linear-gradient(180deg,rgba(63,154,104,.11),rgba(255,255,255,.99) 18%,#fff 100%)!important;box-shadow:0 4px 11px rgba(29,39,54,.035), inset 4px 0 0 #3f9a68!important}
+.enc-order[data-enc-status="finalizada"],.enc-order[data-enc-status-card="finalizada"]{border-color:#d1dbe2!important;background:linear-gradient(180deg,rgba(138,147,157,.10),rgba(255,255,255,.99) 18%,#fff 100%)!important;box-shadow:0 4px 11px rgba(29,39,54,.035), inset 4px 0 0 #8a939d!important}
+.enc-order[data-enc-status="cancelada"],.enc-order[data-enc-status-card="cancelada"]{border-color:#e6bbb5!important;background:linear-gradient(180deg,rgba(199,104,93,.11),rgba(255,255,255,.99) 18%,#fff 100%)!important;box-shadow:0 4px 11px rgba(29,39,54,.035), inset 4px 0 0 #c7685d!important}
+
+
+/* v839_ascii — resumo slim/clicável, Total global e impressão por contexto/status. */
+.enc-metrics-v839{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:8px!important;margin:0 0 10px!important}
+.enc-metric-v839{position:relative!important;min-height:58px!important;padding:0!important;border:1px solid #dce4eb!important;border-radius:13px!important;background:#fff!important;box-shadow:0 2px 6px rgba(24,35,52,.025)!important;overflow:hidden!important;transition:.16s ease!important}
+.enc-metric-v839::after{display:none!important}
+.enc-metric-v839:hover{transform:translateY(-1px);border-color:#cbd6df!important;box-shadow:0 6px 14px rgba(24,35,52,.06)!important}
+.enc-metric-v839.active{box-shadow:0 0 0 2px rgba(23,32,51,.08),0 5px 13px rgba(24,35,52,.055)!important}
+.enc-metric-hit{appearance:none;border:0;background:transparent;width:100%;min-height:58px;padding:8px 39px 7px 11px;text-align:left;cursor:pointer;color:inherit;font:inherit;display:block}
+.enc-metric-hit>span{display:flex;min-width:0;flex-direction:column;align-items:flex-start}
+.enc-metric-v839 small{font-size:9px!important;line-height:1!important;letter-spacing:.035em!important;color:#596779!important;font-weight:900!important}
+.enc-metric-v839 strong{margin-top:4px!important;font-size:18px!important;line-height:1!important;letter-spacing:-.2px!important;color:#162033!important}
+.enc-metric-v839 em{margin-top:4px!important;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:8.8px!important;line-height:1!important;color:#7b8795!important}
+.enc-metric-print{position:absolute;right:7px;top:50%;transform:translateY(-50%);display:inline-flex;align-items:center;justify-content:center;width:27px;height:27px;border:1px solid rgba(112,128,144,.20);border-radius:9px;background:rgba(255,255,255,.78);color:#657486;cursor:pointer;transition:.15s ease}
+.enc-metric-print:hover{background:#fff;color:#172033;border-color:#becbd7;box-shadow:0 3px 8px rgba(23,32,51,.08)}
+.enc-metric-print i{font-size:10px}
+.enc-metric-v839.total{background:#f5f7fa!important;border-color:#d6dee7!important}
+.enc-metric-v839.attention{background:#edf4fc!important;border-color:#c7daef!important}
+.enc-metric-v839.period{background:#fff5df!important;border-color:#ebcf88!important}
+.enc-metric-v839.production{background:#f1e9fb!important;border-color:#d3bdeb!important}
+.enc-metric-v839.receivable{background:#edf7f1!important;border-color:#bfdcc9!important}
+.enc-metric-v839.total.active{box-shadow:inset 3px 0 0 #64748b,0 0 0 2px rgba(100,116,139,.10)!important}
+.enc-metric-v839.attention.active{box-shadow:inset 3px 0 0 #4f7db7,0 0 0 2px rgba(79,125,183,.12)!important}
+.enc-metric-v839.period.active{box-shadow:inset 3px 0 0 #c68d20,0 0 0 2px rgba(198,141,32,.12)!important}
+.enc-metric-v839.production.active{box-shadow:inset 3px 0 0 #8068a5,0 0 0 2px rgba(128,104,165,.13)!important}
+.enc-metric-v839.receivable.active{box-shadow:inset 3px 0 0 #428765,0 0 0 2px rgba(66,135,101,.12)!important}
+.enc-status-filter{padding-right:6px!important}
+.enc-status-print-mini{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;flex:0 0 22px;border-radius:7px;background:rgba(255,255,255,.72);border:1px solid rgba(91,106,122,.13);color:#657486;transition:.14s ease}
+.enc-status-print-mini:hover{background:#fff;color:#172033;border-color:rgba(91,106,122,.25);box-shadow:0 2px 6px rgba(29,39,54,.08)}
+.enc-status-print-mini i{font-size:8.5px}
+.enc-empty-v839{margin:10px 0 14px;padding:24px 16px;border:1px dashed #d6dee6;border-radius:14px;background:#fbfcfd;color:#647083;text-align:center}
+.enc-empty-v839 i{display:block;margin-bottom:7px;font-size:18px;color:#8d99a7}
+.enc-empty-v839 strong{display:block;font-size:12px;color:#354052}
+.enc-empty-v839 span{display:block;margin-top:4px;font-size:10px;color:#8792a0}
+@media(max-width:1050px){
+  .enc-metrics-v839{display:flex!important;overflow-x:auto!important;scrollbar-width:none!important;padding-bottom:2px!important}
+  .enc-metrics-v839::-webkit-scrollbar{display:none}
+  .enc-metric-v839{flex:0 0 176px!important}
+}
+@media(max-width:720px){
+  .enc-metric-v839{flex-basis:158px!important;min-height:54px!important}
+  .enc-metric-hit{min-height:54px;padding:7px 35px 6px 9px}
+  .enc-metric-v839 strong{font-size:16px!important}
+  .enc-metric-v839 small,.enc-metric-v839 em{font-size:8.2px!important}
+  .enc-metric-print{right:6px;width:25px;height:25px}
+  .enc-status-print-mini{width:20px;height:20px;flex-basis:20px}
+}
+
+</style>
+
+
+<!-- V840 — Central Encomendas: período mobile organizado + Próximos 7 dias padrão -->
+<style id="v840-encomendas-periodo-mobile">
+@media (max-width: 560px){
+  .enc-toolbar.enc-toolbar-v832{
+    width:100%!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+    gap:9px!important;
+    overflow:visible!important;
+  }
+
+  .enc-periods.enc-periods-v832{
+    width:100%!important;
+    min-width:0!important;
+    display:grid!important;
+    grid-template-columns:88px minmax(0,1fr)!important;
+    align-items:stretch!important;
+    gap:8px!important;
+    overflow:visible!important;
+  }
+
+  .enc-periods-v832 > .enc-period{
+    width:100%!important;
+    min-width:0!important;
+    height:40px!important;
+    min-height:40px!important;
+    margin:0!important;
+    padding:0 10px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    white-space:nowrap!important;
+    font-size:11px!important;
+    line-height:1!important;
+    border-radius:12px!important;
+    box-sizing:border-box!important;
+  }
+
+  .enc-periods-v832 > .enc-period[data-enc-period="next7"]{
+    padding:0 12px!important;
+  }
+
+  .enc-range-v832.enc-range-v834{
+    grid-column:1 / -1!important;
+    width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+    padding:6px!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) 24px minmax(0,1fr)!important;
+    align-items:end!important;
+    gap:6px!important;
+    overflow:hidden!important;
+    border-radius:13px!important;
+    box-sizing:border-box!important;
+  }
+
+  .enc-range-v834 label{
+    min-width:0!important;
+    width:100%!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+    gap:4px!important;
+  }
+
+  .enc-range-v834 .enc-range-start-v834 > span{
+    display:block!important;
+    min-height:12px!important;
+    padding-left:2px!important;
+    font-size:9px!important;
+    line-height:1.2!important;
+  }
+
+  .enc-range-v834 .enc-range-end-v834::before{
+    content:"Até";
+    display:block;
+    min-height:12px;
+    padding-left:2px;
+    color:#445067;
+    font-size:9px;
+    line-height:1.2;
+    font-weight:850;
+  }
+
+  .enc-range-v834 input{
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:36px!important;
+    margin:0!important;
+    padding:0 7px!important;
+    font-size:10px!important;
+    border-radius:9px!important;
+    box-sizing:border-box!important;
+  }
+
+  .enc-range-arrow-v834{
+    width:24px!important;
+    min-width:24px!important;
+    height:36px!important;
+    padding:0!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    align-self:end!important;
+    color:#8290a4!important;
+    font-size:12px!important;
+  }
+
+  .enc-toolbar-right.enc-toolbar-right-v832{
+    width:100%!important;
+    min-width:0!important;
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:8px!important;
+    justify-content:stretch!important;
+    overflow:visible!important;
+  }
+
+  .enc-toolbar-right-v832 .enc-btn{
+    width:100%!important;
+    min-width:0!important;
+    height:40px!important;
+    min-height:40px!important;
+    margin:0!important;
+    padding:0 10px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:6px!important;
+    white-space:nowrap!important;
+    font-size:10.5px!important;
+    box-sizing:border-box!important;
+  }
+}
+</style>
+
+
+<!-- V941 — Central de Encomendas: faixa única de status, Total global e sem rolagem lateral. -->
+<style id="v941-encomendas-central-limpa">
+/* A faixa compacta é a única navegação-resumo da Central. */
+.enc-status-nav{
+  display:grid!important;
+  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  gap:6px!important;
+  overflow:visible!important;
+  scrollbar-width:none!important;
+}
+.enc-status-nav::-webkit-scrollbar{display:none!important}
+.enc-status-filter{
+  min-width:0!important;
+  width:auto!important;
+  max-width:none!important;
+  flex:none!important;
+}
+.enc-status-filter.total{
+  --enc-status-color:#64748b;
+  background:#f4f6f8!important;
+  border-color:#d8e0e7!important;
+}
+.enc-status-filter.total:hover{background:#edf1f4!important;border-color:#cbd5df!important}
+.enc-status-filter.total.active{
+  background:#e6ebef!important;
+  border-color:#bcc8d3!important;
+  box-shadow:0 6px 14px rgba(71,85,105,.13)!important;
+}
+.enc-status-filter.total .enc-status-number{background:#fff!important;color:#475569!important}
+.enc-status-filter.open{
+  --enc-status-color:#497f73;
+  background:#f2f8f6!important;
+  border-color:#d4e7e1!important;
+}
+.enc-status-filter.open:hover{background:#eaf4f1!important;border-color:#c1dbd3!important}
+.enc-status-filter.open.active{
+  background:#e2f0ec!important;
+  border-color:#aecfc5!important;
+  box-shadow:0 6px 14px rgba(73,127,115,.13)!important;
+}
+.enc-status-filter.open .enc-status-number{background:#fff!important;color:#37675d!important}
+
+
+
+/* Total: deixa a separação por data muito mais visível. */
+.enc-page.enc-view-total .enc-flow-head{
+  padding:12px 14px!important;
+  border:1px solid #d9e4ef!important;
+  border-radius:13px!important;
+  background:#f7fafc!important;
+}
+.enc-page.enc-view-total .enc-flow-head strong{font-size:14px!important;color:#23364c!important}
+.enc-page.enc-view-total .enc-flow-head span{color:#718096!important}
+.enc-page.enc-view-total .enc-day-title{
+  position:relative!important;
+  margin:14px 0 10px!important;
+  padding:10px 14px 10px 19px!important;
+  border:1px solid #cfdeec!important;
+  border-radius:11px!important;
+  background:#eef5fb!important;
+  color:#35516f!important;
+  font-size:10.5px!important;
+  font-weight:950!important;
+  letter-spacing:.055em!important;
+  text-transform:uppercase!important;
+}
+.enc-page.enc-view-total .enc-day-title::before{
+  content:"";
+  position:absolute;
+  left:8px;
+  top:50%;
+  width:4px;
+  height:18px;
+  border-radius:999px;
+  background:#5b7da3;
+  transform:translateY(-50%);
+}
+
+/* Telas médias: quebra em linhas, nunca cria scroll horizontal. */
+@media (max-width:1100px){
+  .enc-status-nav{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+}
+/* Celular: dois por linha, todos acessíveis sem arrastar para o lado. */
+@media (max-width:620px){
+  .enc-status-nav{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    margin:0!important;
+    padding:5px!important;
+  }
+  .enc-status-filter{
+    min-height:49px!important;
+    padding:7px 8px!important;
+  }
+  .enc-status-filter .enc-status-label strong{font-size:10.8px!important}
+  .enc-status-filter .enc-status-label small{font-size:8.7px!important}
+}
+</style>
+
+<style id="mf-v947-restaura-modal-original-v915">
+/* V947 — restaura o modal original V915/V849 sem alterar o restante da Central. */
+.enc-detail-modal-v849[hidden]{display:none!important}
+.enc-detail-modal-v849{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;padding:18px}
+.enc-detail-backdrop-v849{position:absolute;inset:0;background:rgba(19,31,55,.60);backdrop-filter:blur(3px)}
+.enc-detail-card-v849{position:relative;width:min(820px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:23px;padding:24px;box-shadow:0 30px 90px rgba(18,35,62,.30)}
+.enc-detail-head-v849{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;padding-bottom:15px;border-bottom:1px solid #e7ecf2}
+.enc-detail-head-v849 h3{margin:0;color:#17243b;font-size:21px}.enc-detail-head-v849 p{margin:4px 0 0;color:#78859a;font-size:12px;font-weight:650}
+.enc-detail-close-v849{width:38px;height:38px;border:0;border-radius:50%;background:#eef2f7;color:#344158;font-size:21px;cursor:pointer}
+.enc-detail-status-v849{display:inline-flex;align-items:center;margin-top:8px;padding:5px 9px;border-radius:999px;background:#eff7f2;color:#187447;font-size:11px;font-weight:850}
+.enc-detail-section-v849{margin-top:16px;padding:15px;border:1px solid #e3e9f0;border-radius:16px;background:#fff}
+.enc-detail-section-v849 h4{margin:0 0 11px;color:#25334a;font-size:13px}
+.enc-detail-grid-v849{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 18px}
+.enc-detail-field-v849{min-width:0;padding:8px 0;border-bottom:1px solid #f0f3f6}.enc-detail-field-v849.full{grid-column:1/-1}.enc-detail-field-v849 small{display:block;margin-bottom:3px;color:#8490a3;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.04em}.enc-detail-field-v849 strong,.enc-detail-field-v849 span{display:block;color:#1e2b40;font-size:12px;line-height:1.4;overflow-wrap:anywhere}
+.enc-detail-items-v849{display:grid;gap:8px}.enc-detail-item-v849{padding:11px 12px;border:1px solid #edf1f5;border-radius:12px;background:#fafbfd}.enc-detail-item-v849-top{display:flex;justify-content:space-between;gap:12px}.enc-detail-item-v849 strong{font-size:12px;color:#1e2b40}.enc-detail-item-v849 .price{white-space:nowrap}.enc-detail-item-v849 small{display:block;margin-top:4px;color:#748096;font-size:10.5px;line-height:1.35}
+.enc-detail-pay-values-v849{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:10px}.enc-detail-pay-value-v849{padding:10px 11px;border:1px solid #e1e7ef;border-radius:12px;background:#f9fbfd}.enc-detail-pay-value-v849 small{display:block;color:#7e8a9e;font-size:9px;font-weight:850;text-transform:uppercase}.enc-detail-pay-value-v849 strong{display:block;margin-top:4px;color:#17243b;font-size:15px}.enc-detail-pay-value-v849.pending strong{color:#c65308}
+.enc-detail-payment-lines-v849{display:grid;gap:8px}.enc-detail-payment-line-v849{display:grid;grid-template-columns:82px minmax(0,1fr) auto;align-items:center;gap:10px;padding:10px 11px;border:1px solid #e4eaf1;border-radius:12px}.enc-detail-payment-line-v849 .kind{font-size:10px;font-weight:900;color:#627086;text-transform:uppercase}.enc-detail-payment-line-v849 .method{font-size:12px;font-weight:850;color:#1d2b41}.enc-detail-payment-line-v849 .method small{display:block;margin-top:2px;color:#8591a2;font-size:9.5px;font-weight:700}.enc-detail-payment-line-v849 .amount{white-space:nowrap;font-size:12px;font-weight:900;color:#17243b}
+.enc-detail-empty-v849{color:#8994a5;font-size:11px;font-style:italic}
+@media(max-width:620px){.enc-detail-modal-v849{padding:10px}.enc-detail-card-v849{padding:17px;border-radius:18px}.enc-detail-grid-v849{grid-template-columns:1fr}.enc-detail-field-v849.full{grid-column:auto}.enc-detail-pay-values-v849{grid-template-columns:1fr 1fr}.enc-detail-pay-values-v849 .pending{grid-column:1/-1}.enc-detail-payment-line-v849{grid-template-columns:70px minmax(0,1fr)}.enc-detail-payment-line-v849 .amount{grid-column:2}}
+
+/* V948 — Central sem filtro de data por padrão; filtro só quando escolhido. */
+.mf-v948-toolbar{align-items:center!important}
+.mf-v948-date-filter{display:flex;align-items:center;gap:12px;min-width:0;flex-wrap:wrap}
+.mf-v948-today{display:flex;align-items:center;gap:8px;min-height:42px;padding:0 13px;border:1px solid #e0e6ee;border-radius:13px;background:#fff;color:#25364b;font-size:12px;font-weight:850;white-space:nowrap}
+.mf-v948-today i{color:#61738a;font-size:13px}
+.mf-v948-range{display:flex!important;align-items:center!important;gap:7px!important;flex-wrap:wrap!important}
+.mf-v948-range label{display:flex!important;align-items:center!important;gap:7px!important}
+.mf-v948-range label>span{display:inline!important;font-size:10px!important;font-weight:900!important;color:#64748b!important;text-transform:uppercase!important;letter-spacing:.03em!important}
+.mf-v948-clear-date{height:38px;border:1px solid #dfe6ed;border-radius:11px;background:#fff;color:#667085;font-weight:800;font-size:11px;padding:0 11px;display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+.mf-v948-clear-date:hover{background:#f8fafc;color:#334155}
+.mf-v948-clear-date[hidden]{display:none!important}
+.enc-status-nav{grid-template-columns:repeat(6,minmax(0,1fr))!important;overflow:visible!important}
+@media(max-width:1050px){
+  .enc-status-nav{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;overflow:visible!important}
+  .enc-status-filter{width:auto!important;min-width:0!important;flex:initial!important}
+}
+@media(max-width:640px){
+  .mf-v948-toolbar{gap:10px!important}
+  .mf-v948-date-filter{width:100%;gap:8px}
+  .mf-v948-today{width:100%;justify-content:center;white-space:normal;text-align:center}
+  .mf-v948-range{width:100%;display:grid!important;grid-template-columns:1fr 18px 1fr!important;gap:6px!important}
+  .mf-v948-range label{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:4px!important;min-width:0}
+  .mf-v948-range input{width:100%!important;min-width:0!important}
+  .mf-v948-clear-date{grid-column:1/-1;width:100%;justify-content:center}
+  .enc-status-nav{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;overflow:visible!important;margin:0!important;padding:5px!important}
+  .enc-status-filter{width:auto!important;min-width:0!important;flex:initial!important}
+}
+
+</style>
+
+{% endblock %}
+{% block page %}
+
+<style id="mf-v949-acabamento-central-encomendas">
+/* V949 — acabamento visual dos cards, filtro responsivo e menu de status ancorado. */
+.mf-v948-toolbar{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:14px!important}
+.mf-v948-date-filter{display:flex!important;align-items:center!important;gap:10px!important;flex-wrap:nowrap!important;min-width:0!important;padding:7px!important;border:1px solid #dfe6ee!important;border-radius:16px!important;background:#fff!important;box-shadow:0 3px 12px rgba(24,35,52,.035)!important}
+.mf-v948-today{min-height:42px!important;padding:0 13px!important;border:0!important;border-radius:11px!important;background:#f5f8fb!important;color:#26384e!important}
+.mf-v948-range{display:grid!important;grid-template-columns:minmax(150px,1fr) 18px minmax(150px,1fr) auto!important;align-items:end!important;gap:7px!important;flex:1!important}
+.mf-v948-range label{min-width:0!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:4px!important}
+.mf-v948-range label>span{display:block!important;padding-left:2px!important;color:#66758a!important;font-size:9px!important;font-weight:900!important;line-height:1!important}
+.mf-v948-range input{width:100%!important;min-width:0!important;height:38px!important;padding:0 10px!important;border:1px solid #dce4ec!important;border-radius:10px!important;background:#fff!important;color:#203047!important;font-size:11px!important;font-weight:750!important;box-sizing:border-box!important}
+.mf-v948-range input:focus{outline:none!important;border-color:#9fb1c5!important;box-shadow:0 0 0 3px rgba(82,111,145,.09)!important}
+.mf-v948-clear-date{align-self:end!important;height:38px!important;border-radius:10px!important;background:#f7f9fb!important}
+
+.enc-order-actions-v949{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;align-items:stretch!important}
+.enc-order-actions-v949>form,.enc-order-actions-v949>.enc-btn,.enc-order-actions-v949>a.enc-btn{width:100%!important;min-width:0!important;margin:0!important;flex:none!important}
+.enc-order-actions-v949>form{display:flex!important}
+.enc-order-actions-v949>form .enc-btn,.enc-order-actions-v949>.enc-btn,.enc-order-actions-v949>a.enc-btn{width:100%!important;min-width:0!important;min-height:42px!important;height:42px!important;padding:0 10px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;border-radius:12px!important;font-size:11px!important;line-height:1.1!important;text-align:center!important;white-space:normal!important;box-sizing:border-box!important}
+.enc-order-actions-v949 .enc-action-balance{min-height:42px!important;height:42px!important;font-size:10.5px!important}
+.enc-action-utilities-v949{grid-column:1/-1!important;display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:8px!important;min-width:0!important}
+.enc-action-utilities-v949 .enc-btn{width:44px!important;min-width:44px!important;max-width:44px!important;height:42px!important;min-height:42px!important;padding:0!important;flex:0 0 44px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;border-radius:12px!important}
+.enc-detail-only-v949{color:#087443!important;background:#f0faf5!important;border:1px solid #d5eee1!important}
+.enc-detail-only-v949:hover{background:#e8f7ef!important;border-color:#c4e5d3!important}
+.enc-action-utilities-v949 .enc-whatsapp-client{width:44px!important;min-width:44px!important;max-width:44px!important;flex-basis:44px!important}
+.enc-actions-confirmada-v949 .enc-action-utilities-v949,.enc-actions-producao-v949 .enc-action-utilities-v949{grid-column:2!important;grid-row:1!important;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+.enc-actions-confirmada-v949 .enc-action-utilities-v949 .enc-btn,.enc-actions-producao-v949 .enc-action-utilities-v949 .enc-btn{width:100%!important;min-width:0!important;max-width:none!important;flex:none!important}
+.enc-pay-split-row-v822>span,.enc-pay-split-row-v822 strong{white-space:nowrap!important}
+
+@media(max-width:720px){
+  .enc-order,.enc-order-head,.enc-status-quick{overflow:visible!important}
+  .enc-cancelled-box{overflow:visible!important}
+  .enc-status-menu{position:absolute!important;left:auto!important;right:0!important;top:calc(100% + 7px)!important;bottom:auto!important;width:178px!important;max-height:none!important;overflow:visible!important;border-radius:13px!important;box-shadow:0 16px 38px rgba(28,39,54,.18)!important}
+  .enc-status-menu-item{min-height:38px!important;font-size:11px!important}
+}
+@media(max-width:640px){
+  .mf-v948-toolbar{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:9px!important}
+  .mf-v948-date-filter{width:100%!important;display:block!important;padding:8px!important;border-radius:15px!important;box-sizing:border-box!important}
+  .mf-v948-today{width:100%!important;min-height:40px!important;justify-content:center!important;margin-bottom:8px!important;padding:0 10px!important;text-align:center!important;white-space:normal!important;box-sizing:border-box!important}
+  .mf-v948-range{width:100%!important;display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:8px!important}
+  .mf-v948-range .enc-range-separator-v832{display:none!important}
+  .mf-v948-range label{width:100%!important;min-width:0!important}
+  .mf-v948-range input{height:40px!important;font-size:11px!important;padding:0 8px!important}
+  .mf-v948-clear-date{grid-column:1/-1!important;width:100%!important;justify-content:center!important;margin-top:0!important}
+  .enc-toolbar-right-v832{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important}
+  .enc-toolbar-right-v832 .enc-btn{width:100%!important;min-width:0!important;height:40px!important;justify-content:center!important}
+  .enc-payment{display:grid!important;grid-template-columns:1fr!important;gap:8px!important}
+  .enc-payment>div{min-width:0!important}
+  .enc-finance-chip{max-width:100%!important;white-space:normal!important}
+  .enc-pay-split-v822{max-width:none!important;width:100%!important}
+  .enc-pay-split-row-v822{width:100%!important;box-sizing:border-box!important}
+  .enc-order-actions-v949{gap:7px!important}
+  .enc-order-actions-v949>form .enc-btn,.enc-order-actions-v949>.enc-btn,.enc-order-actions-v949>a.enc-btn,.enc-action-utilities-v949 .enc-btn{min-height:41px!important;height:41px!important;border-radius:11px!important;font-size:10.5px!important}
+  .enc-actions-confirmada-v949 .enc-action-utilities-v949,.enc-actions-producao-v949 .enc-action-utilities-v949{gap:7px!important}
+}
+
+</style>
+
+<style id="mf-v950-filtro-mobile-corrigido">
+/* V950 — somente correção do filtro opcional de datas no celular. */
+@media(max-width:640px){
+  .mf-v948-date-filter{
+    width:100%!important;
+    display:block!important;
+    padding:10px!important;
+    border:1px solid #dfe6ee!important;
+    border-radius:16px!important;
+    background:#fff!important;
+    box-shadow:0 3px 12px rgba(24,35,52,.035)!important;
+    box-sizing:border-box!important;
+    overflow:visible!important;
+  }
+  .mf-v948-today{
+    width:100%!important;
+    min-height:42px!important;
+    margin:0 0 10px!important;
+    padding:0 12px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:7px!important;
+    border-radius:11px!important;
+    background:#f5f8fb!important;
+    color:#26384e!important;
+    text-align:center!important;
+    white-space:normal!important;
+    box-sizing:border-box!important;
+  }
+  .mf-v948-range{
+    width:100%!important;
+    min-width:0!important;
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    align-items:start!important;
+    gap:9px!important;
+    padding:0!important;
+    margin:0!important;
+    border:0!important;
+    border-radius:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+    overflow:visible!important;
+  }
+  .mf-v948-range .enc-range-start-v834,
+  .mf-v948-range .enc-range-end-v834{
+    width:100%!important;
+    min-width:0!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+    gap:6px!important;
+    margin:0!important;
+  }
+  .mf-v948-range .enc-range-start-v834>span,
+  .mf-v948-range .enc-range-end-v834>span{
+    display:block!important;
+    padding:0 2px!important;
+    color:#536176!important;
+    font-size:9.5px!important;
+    font-weight:900!important;
+    line-height:1.1!important;
+    text-transform:uppercase!important;
+  }
+  .mf-v948-range input[type="date"]{
+    position:static!important;
+    inset:auto!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    height:42px!important;
+    margin:0!important;
+    padding:0 9px!important;
+    opacity:1!important;
+    appearance:auto!important;
+    -webkit-appearance:auto!important;
+    border:1px solid #d7e0ea!important;
+    border-radius:11px!important;
+    background:#fff!important;
+    color:#203047!important;
+    font-size:11px!important;
+    font-weight:800!important;
+    line-height:42px!important;
+    box-shadow:none!important;
+    box-sizing:border-box!important;
+    cursor:pointer!important;
+  }
+  .mf-v948-range input[type="date"]:focus{
+    outline:none!important;
+    border-color:#9fb1c5!important;
+    box-shadow:0 0 0 3px rgba(82,111,145,.09)!important;
+  }
+  .mf-v948-range input[type="date"]::-webkit-calendar-picker-indicator{
+    position:static!important;
+    inset:auto!important;
+    width:auto!important;
+    height:auto!important;
+    margin:0!important;
+    padding:2px!important;
+    opacity:1!important;
+    cursor:pointer!important;
+  }
+  .mf-v948-range .enc-range-separator-v832{display:none!important}
+  .mf-v948-clear-date{
+    grid-column:1/-1!important;
+    width:100%!important;
+    min-height:40px!important;
+    height:40px!important;
+    margin:1px 0 0!important;
+    padding:0 12px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:7px!important;
+    border:1px solid #dce4ec!important;
+    border-radius:11px!important;
+    background:#f7f9fb!important;
+    color:#59677a!important;
+    font-size:11px!important;
+    font-weight:850!important;
+    box-sizing:border-box!important;
+  }
+}
+@media(max-width:340px){
+  .mf-v948-range{grid-template-columns:1fr!important}
+  .mf-v948-clear-date{grid-column:1!important}
+}
+</style>
+
+<style id="mf-v953-filtro-mobile-linha-delicada">
+/* V953 — filtro mobile em uma unica linha: data -> data + Limpar. */
+@media(max-width:640px){
+  .mf-v948-date-filter{
+    padding:9px!important;
+    border-radius:15px!important;
+  }
+
+  .mf-v948-today{
+    min-height:40px!important;
+    margin:0 0 8px!important;
+    padding:7px 10px!important;
+    border-radius:11px!important;
+    font-size:11px!important;
+    line-height:1.2!important;
+  }
+
+  .mf-v948-range{
+    width:100%!important;
+    min-width:0!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) 14px minmax(0,1fr) auto!important;
+    align-items:center!important;
+    gap:5px!important;
+    padding:0!important;
+    margin:0!important;
+    overflow:visible!important;
+  }
+
+  .mf-v948-range .enc-range-start-v834,
+  .mf-v948-range .enc-range-end-v834{
+    display:block!important;
+    width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+  }
+
+  /* No celular, os proprios campos deixam claro o inicio e o fim. */
+  .mf-v948-range .enc-range-start-v834>span,
+  .mf-v948-range .enc-range-end-v834>span{
+    display:none!important;
+  }
+
+  .mf-v948-range .enc-range-end-v834::before{
+    content:none!important;
+    display:none!important;
+  }
+
+  .mf-v948-range input[type="date"]{
+    position:static!important;
+    inset:auto!important;
+    display:block!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    height:38px!important;
+    margin:0!important;
+    padding:0 7px!important;
+    border:1px solid #d9e2eb!important;
+    border-radius:10px!important;
+    background:#fff!important;
+    color:#23344a!important;
+    font-size:11.5px!important;
+    font-weight:750!important;
+    line-height:normal!important;
+    box-sizing:border-box!important;
+    opacity:1!important;
+    appearance:auto!important;
+    -webkit-appearance:auto!important;
+    box-shadow:none!important;
+  }
+
+  .mf-v948-range input[type="date"]:focus{
+    outline:none!important;
+    border-color:#aab9ca!important;
+    box-shadow:0 0 0 2px rgba(82,111,145,.08)!important;
+  }
+
+  .mf-v948-range input[type="date"]::-webkit-calendar-picker-indicator{
+    position:static!important;
+    width:15px!important;
+    height:15px!important;
+    margin:0 0 0 2px!important;
+    padding:0!important;
+    opacity:.78!important;
+    cursor:pointer!important;
+  }
+
+  .mf-v948-range .enc-range-separator-v832{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    width:14px!important;
+    height:38px!important;
+    color:#7c8da0!important;
+    font-size:13px!important;
+    font-weight:800!important;
+    line-height:1!important;
+  }
+
+  .mf-v948-clear-date{
+    grid-column:auto!important;
+    justify-self:auto!important;
+    align-self:center!important;
+    width:auto!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:34px!important;
+    min-height:34px!important;
+    margin:0!important;
+    padding:0 8px!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:4px!important;
+    border:0!important;
+    border-radius:9px!important;
+    background:transparent!important;
+    color:#68778a!important;
+    font-size:10.5px!important;
+    font-weight:800!important;
+    white-space:nowrap!important;
+    box-shadow:none!important;
+  }
+
+  .mf-v948-clear-date i{
+    font-size:9px!important;
+  }
+
+  .mf-v948-clear-date:hover{
+    background:#f4f7fa!important;
+    color:#40516a!important;
+  }
+}
+
+/* Mantem a mesma linha ate em celulares estreitos; apenas comprime tipografia. */
+@media(max-width:380px){
+  .mf-v948-date-filter{padding:7px!important}
+  .mf-v948-range{grid-template-columns:minmax(0,1fr) 12px minmax(0,1fr) auto!important;gap:3px!important}
+  .mf-v948-range input[type="date"]{height:36px!important;padding:0 4px!important;font-size:10px!important;border-radius:9px!important}
+  .mf-v948-range input[type="date"]::-webkit-calendar-picker-indicator{width:13px!important;height:13px!important;margin-left:1px!important}
+  .mf-v948-range .enc-range-separator-v832{width:12px!important;height:36px!important;font-size:12px!important}
+  .mf-v948-clear-date{height:32px!important;min-height:32px!important;padding:0 5px!important;font-size:9.5px!important;gap:3px!important}
+}
+</style>
+
+
+<style id="mf-v954-filtro-linha-desktop-mobile">
+/* V954/V955 — mesmo filtro delicado no celular e notebook; Limpar só aparece após data realmente escolhida. */
+.mf-v948-date-filter{
+  display:flex!important;
+  align-items:center!important;
+  gap:9px!important;
+  flex-wrap:nowrap!important;
+  min-width:0!important;
+}
+.mf-v948-range{
+  display:grid!important;
+  grid-template-columns:minmax(118px,1fr) 14px minmax(118px,1fr) auto!important;
+  align-items:center!important;
+  gap:6px!important;
+  min-width:0!important;
+  width:auto!important;
+  flex:1 1 auto!important;
+}
+.mf-v948-range .enc-range-start-v834,
+.mf-v948-range .enc-range-end-v834{
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  margin:0!important;
+}
+.mf-v948-range .enc-range-start-v834>span,
+.mf-v948-range .enc-range-end-v834>span{
+  display:none!important;
+}
+.mf-v948-range .enc-range-end-v834::before{
+  content:none!important;
+  display:none!important;
+}
+.mf-v948-range input[type="date"]{
+  position:static!important;
+  inset:auto!important;
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  height:40px!important;
+  margin:0!important;
+  padding:0 10px!important;
+  border:1px solid #d9e2eb!important;
+  border-radius:11px!important;
+  background:#fff!important;
+  color:#23344a!important;
+  font-size:12px!important;
+  font-weight:750!important;
+  line-height:normal!important;
+  box-sizing:border-box!important;
+  opacity:1!important;
+  appearance:auto!important;
+  -webkit-appearance:auto!important;
+  box-shadow:none!important;
+}
+.mf-v948-range input[type="date"]:focus{
+  outline:none!important;
+  border-color:#aab9ca!important;
+  box-shadow:0 0 0 2px rgba(82,111,145,.08)!important;
+}
+.mf-v948-range input[type="date"]::-webkit-calendar-picker-indicator{
+  position:static!important;
+  width:16px!important;
+  height:16px!important;
+  margin-left:3px!important;
+  padding:0!important;
+  opacity:.8!important;
+  cursor:pointer!important;
+}
+.mf-v948-range .enc-range-separator-v832{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:14px!important;
+  height:40px!important;
+  color:#7c8da0!important;
+  font-size:13px!important;
+  font-weight:800!important;
+  line-height:1!important;
+}
+.mf-v948-clear-date{
+  grid-column:auto!important;
+  justify-self:start!important;
+  align-self:center!important;
+  width:auto!important;
+  min-width:0!important;
+  max-width:none!important;
+  height:36px!important;
+  min-height:36px!important;
+  margin:0!important;
+  padding:0 9px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:4px!important;
+  border:0!important;
+  border-radius:9px!important;
+  background:transparent!important;
+  color:#68778a!important;
+  font-size:10.5px!important;
+  font-weight:800!important;
+  white-space:nowrap!important;
+  box-shadow:none!important;
+}
+/* Fundamental: o botão só existe visualmente depois de uma data ser escolhida. */
+.mf-v948-clear-date[hidden]{display:none!important}
+.mf-v948-clear-date:hover{background:#f4f7fa!important;color:#40516a!important}
+
+@media(max-width:640px){
+  .mf-v948-date-filter{
+    width:100%!important;
+    display:block!important;
+    padding:9px!important;
+    border-radius:15px!important;
+    box-sizing:border-box!important;
+  }
+  .mf-v948-today{
+    width:100%!important;
+    min-height:40px!important;
+    margin:0 0 8px!important;
+    padding:7px 10px!important;
+    justify-content:center!important;
+    border-radius:11px!important;
+    font-size:11px!important;
+    line-height:1.2!important;
+    box-sizing:border-box!important;
+  }
+  .mf-v948-range{
+    width:100%!important;
+    grid-template-columns:minmax(0,1fr) 14px minmax(0,1fr) auto!important;
+    gap:5px!important;
+  }
+  .mf-v948-range input[type="date"]{
+    height:40px!important;
+    padding:0 8px!important;
+    font-size:11.5px!important;
+    border-radius:10px!important;
+  }
+  .mf-v948-range .enc-range-separator-v832{height:40px!important}
+  .mf-v948-clear-date{
+    height:34px!important;
+    min-height:34px!important;
+    padding:0 7px!important;
+    font-size:10px!important;
+  }
+}
+@media(max-width:380px){
+  .mf-v948-date-filter{padding:7px!important}
+  .mf-v948-range{grid-template-columns:minmax(0,1fr) 12px minmax(0,1fr) auto!important;gap:3px!important}
+  .mf-v948-range input[type="date"]{height:38px!important;padding:0 5px!important;font-size:10.5px!important;border-radius:9px!important}
+  .mf-v948-range input[type="date"]::-webkit-calendar-picker-indicator{width:14px!important;height:14px!important;margin-left:1px!important}
+  .mf-v948-range .enc-range-separator-v832{width:12px!important;height:38px!important;font-size:12px!important}
+  .mf-v948-clear-date{height:32px!important;min-height:32px!important;padding:0 5px!important;font-size:9.5px!important}
+}
+
+/* V956 — o botão Limpar fica invisível por padrão e só é liberado
+   quando o JS confirma que pelo menos um campo de data possui valor real. */
+.mf-v948-range .mf-v948-clear-date{display:none!important}
+.mf-v948-range.mf-v956-has-date .mf-v948-clear-date:not([hidden]){display:inline-flex!important}
+/* V957 — o botão Limpar não existe no DOM sem data selecionada. */
+.mf-v957-clear-slot{display:contents}
+/* V958 — ao abrir/reabrir a Central o filtro sempre inicia vazio; o botão Limpar só nasce após um change real com data. */
+
+</style>
+
+<div class="enc-shell mf-admin-shell">
+  {% include "includes/admin_sidebar.html" %}
+  <main class="enc-main">
+    <header class="enc-topbar">
+      <div class="enc-heading">
+        <div class="enc-heading-icon"><i class="fa-solid fa-box-open"></i></div>
+        <div class="enc-heading-copy"><strong>Encomendas</strong><span>Organize recebimentos, produção e retiradas</span></div>
+      </div>
+      <div class="enc-top-actions">
+        <a class="enc-btn" href="/menu/{{ empresa.slug }}" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver menu</a>
+        <a class="enc-btn primary" href="/admin/{{ empresa.id }}/encomendas/cadastrar"><i class="fa-solid fa-plus"></i><span>Cadastrar encomenda</span></a>
+      </div>
+    </header>
+    <section class="enc-page" data-enc-company="{{ empresa.nome|e }}">
+      {% if not encomendas_modo_real %}<div class="enc-prototype-note"><i class="fa-solid fa-shield-halved"></i> Prévia visual do módulo Encomendas.</div>{% endif %}
+
+      <div class="enc-toolbar enc-toolbar-v832 mf-v948-toolbar">
+        <div class="mf-v948-date-filter" aria-label="Filtro opcional por período">
+          <div class="mf-v948-today" title="Data de hoje">
+            <i class="fa-regular fa-calendar"></i>
+            <span id="encTodayReadableV948">Hoje</span>
+          </div>
+          <div class="enc-range-v832 enc-range-v834 mf-v948-range" role="group" aria-label="Escolher período">
+            <label class="enc-range-start-v834"><span>De</span><input id="encDateFrom" type="date" aria-label="Data inicial" autocomplete="off"></label>
+            <span class="enc-range-separator-v832 enc-range-arrow-v834" aria-hidden="true">→</span>
+            <label class="enc-range-end-v834"><span>Até</span><input id="encDateTo" type="date" aria-label="Data final" autocomplete="off"></label>
+            <span class="mf-v957-clear-slot" data-enc-clear-slot-v957></span>
+          </div>
+        </div>
+        <div class="enc-toolbar-right enc-toolbar-right-v832">
+          <button class="enc-btn enc-print-btn-v832" type="button" data-enc-print aria-label="Imprimir encomendas desta visualização"><i class="fa-solid fa-print"></i><span>Imprimir</span></button>
+          <button class="enc-btn enc-fullscreen-btn" type="button" data-enc-fullscreen aria-label="Abrir Central em tela cheia"><i class="fa-solid fa-expand"></i><span>Tela cheia</span></button>
+        </div>
+      </div>
+      {% set enc_default_status = 'nova' %}
+      <section class="enc-status-access" aria-label="Etapas das encomendas">
+        <div class="enc-status-nav" role="tablist" aria-label="Status das encomendas">
+          <button class="enc-status-filter new{% if enc_default_status == 'nova' %} active{% endif %}" type="button" data-enc-status-filter="nova" role="tab" aria-selected="{{ 'true' if enc_default_status == 'nova' else 'false' }}"><span class="enc-status-label"><strong>Novas</strong><small>Aguardam ação</small></span><span class="enc-status-number">{{ enc_metricas.novas if enc_metricas is defined else 0 }}</span><span class="enc-status-print-mini" role="button" tabindex="0" data-enc-print-status="nova" title="Imprimir Novas" aria-label="Imprimir Novas"><i class="fa-solid fa-print"></i></span></button>
+          <button class="enc-status-filter confirmed{% if enc_default_status == 'confirmada' %} active{% endif %}" type="button" data-enc-status-filter="confirmada" role="tab" aria-selected="{{ 'true' if enc_default_status == 'confirmada' else 'false' }}"><span class="enc-status-label"><strong>Confirmadas</strong><small>Programadas</small></span><span class="enc-status-number">{{ enc_metricas.confirmadas if enc_metricas is defined else 0 }}</span><span class="enc-status-print-mini" role="button" tabindex="0" data-enc-print-status="confirmada" title="Imprimir Confirmadas" aria-label="Imprimir Confirmadas"><i class="fa-solid fa-print"></i></span></button>
+          <button class="enc-status-filter production{% if enc_default_status == 'producao' %} active{% endif %}" type="button" data-enc-status-filter="producao" role="tab" aria-selected="{{ 'true' if enc_default_status == 'producao' else 'false' }}"><span class="enc-status-label"><strong>Em produção</strong><small>Preparando agora</small></span><span class="enc-status-number">{{ enc_metricas.producao if enc_metricas is defined else 0 }}</span><span class="enc-status-print-mini" role="button" tabindex="0" data-enc-print-status="producao" title="Imprimir Em produção" aria-label="Imprimir Em produção"><i class="fa-solid fa-print"></i></span></button>
+          <button class="enc-status-filter ready{% if enc_default_status == 'pronta' %} active{% endif %}" type="button" data-enc-status-filter="pronta" role="tab" aria-selected="{{ 'true' if enc_default_status == 'pronta' else 'false' }}"><span class="enc-status-label"><strong>Prontas</strong><small>Retirada/entrega</small></span><span class="enc-status-number">{{ enc_metricas.prontas if enc_metricas is defined else 0 }}</span><span class="enc-status-print-mini" role="button" tabindex="0" data-enc-print-status="pronta" title="Imprimir Prontas" aria-label="Imprimir Prontas"><i class="fa-solid fa-print"></i></span></button>
+          <button class="enc-status-filter done{% if enc_default_status == 'finalizada' %} active{% endif %}" type="button" data-enc-status-filter="finalizada" role="tab" aria-selected="{{ 'true' if enc_default_status == 'finalizada' else 'false' }}"><span class="enc-status-label"><strong>Finalizadas</strong><small>Concluídas</small></span><span class="enc-status-number">{{ enc_metricas.finalizadas if enc_metricas is defined else 0 }}</span><span class="enc-status-print-mini" role="button" tabindex="0" data-enc-print-status="finalizada" title="Imprimir Finalizadas" aria-label="Imprimir Finalizadas"><i class="fa-solid fa-print"></i></span></button>
+          <button class="enc-status-filter cancelled{% if enc_default_status == 'cancelada' %} active{% endif %}" type="button" data-enc-status-filter="cancelada" role="tab" aria-selected="{{ 'true' if enc_default_status == 'cancelada' else 'false' }}"><span class="enc-status-label"><strong>Canceladas</strong><small>Recusadas/expiradas</small></span><span class="enc-status-number">{{ enc_metricas.canceladas if enc_metricas is defined else 0 }}</span><span class="enc-status-print-mini" role="button" tabindex="0" data-enc-print-status="cancelada" title="Imprimir Canceladas" aria-label="Imprimir Canceladas"><i class="fa-solid fa-print"></i></span></button>
+        </div>
+      </section>
+
+      <div class="enc-empty-v839" data-enc-view-empty hidden><i class="fa-regular fa-folder-open"></i><strong>Nenhuma encomenda encontrada</strong><span>Não há encomendas para esta visualização.</span></div>
+
+      <section class="enc-inbox" data-enc-status-panel="nova"{% if enc_default_status != 'nova' %} hidden{% endif %}>
+        <div class="enc-inbox-head">
+          <div class="enc-inbox-title"><i class="enc-inbox-dot"></i><strong>Novas</strong><span data-enc-inbox-count>{{ enc_metricas.recebidas if enc_metricas is defined else 0 }}</span></div>
+          <small>Encomendas que aguardam aceitar ou recusar</small>
+        </div>
+        <div class="enc-inbox-grid">
+          {% for order in encomendas_recebidas %}
+          <article class="enc-order is-new" data-enc-order data-enc-date="{{ order.data_iso|default('') }}" data-enc-status="nova" data-enc-number="{{ order.numero|e }}" data-enc-client="{{ order.cliente|e }}" data-enc-phone="{{ order.telefone|default('')|e }}" data-enc-kind="{{ order.tipo|default('')|e }}" data-enc-time="{{ order.hora|default('')|e }}" data-enc-address="{{ order.endereco|default('')|e }}">
+            <div class="enc-order-head enc-order-head-v762">
+              <div class="enc-order-primary">
+                <strong>#{{ order.numero }} · {{ order.cliente }}</strong>
+                <span>{{ order.telefone }}</span>
+                <em class="enc-received-at"><i class="fa-regular fa-bell"></i> {{ order.recebida }}</em>
+              </div>
+              {{ enc_status_picker(order, empresa, encomendas_modo_real) }}
+            </div>
+
+            <div class="enc-fulfillment-strip {% if 'Entrega' in order.tipo %}delivery{% endif %}">
+              <div class="enc-fulfillment-purpose">
+                <i class="fa-solid {{ 'fa-truck' if 'Entrega' in order.tipo else 'fa-store' }}"></i>
+                <div>
+                  <small>{% if 'Entrega' in order.tipo %}QUANDO DEVE SER ENTREGUE{% else %}QUANDO O CLIENTE VAI RETIRAR{% endif %}</small>
+                  <strong>{{ order.tipo }}</strong>
+                </div>
+              </div>
+              <div class="enc-fulfillment-date">
+                <small>DATA</small>
+                <strong><i class="fa-regular fa-calendar"></i> {{ order.data_retirada }}</strong>
+              </div>
+              <div class="enc-fulfillment-time">
+                <small>HORÁRIO</small>
+                <strong><i class="fa-regular fa-clock"></i> {{ order.hora }}</strong>
+              </div>
+            </div>
+
+            <div class="enc-order-items">
+              {% for item in order.itens %}<div class="enc-product-line"><strong>{{ item.nome }}</strong><span>{{ item.detalhe }}</span></div>{% endfor %}
+              {% if order.obs %}<div class="enc-personalization"><strong>Personalização:</strong> {{ order.obs }}</div>{% endif %}
+            </div>
+            <div class="enc-payment"><div><small>Total</small><strong>{{ order.total }}</strong></div><div class="enc-finance-status"><small>Pagamento</small><span class="enc-finance-chip {{ order.pagamento_tone|default('pending') }}">{% if order.pagamento_composicao %}Pagamento confirmado{% else %}{{ order.pagamento_titulo|default(order.pagamento) }}{% endif %}</span>{% if order.pagamento_composicao %}<span class="enc-finance-detail">{{ order.pagamento_composicao }}</span>{% elif order.pagamento_detalhe %}<span class="enc-finance-detail">{% if (order.valor_recebido_financeiro|default(0)) > 0 and (order.valor_pendente_financeiro|default(0)) > 0 %}
+<span class="enc-pay-split-v822">
+  <span class="enc-pay-split-row-v822 received">
+    <span>Recebido</span>
+    <strong>
+      R$ {{ ('%.2f'|format(order.valor_recebido_financeiro|default(0)))|replace('.', ',') }}
+    </strong>
+  </span>
+
+  <span class="enc-pay-split-row-v822 pending">
+    <span>
+      <i class="fa-solid fa-circle-exclamation"></i>
+      Falta receber
+    </span>
+    <strong>
+      R$ {{ ('%.2f'|format(order.valor_pendente_financeiro|default(0)))|replace('.', ',') }}
+    </strong>
+  </span>
+</span>
+{% else %}
+{{ order.pagamento_detalhe }}
+{% endif %}</span>{% endif %}</div></div>
+            <div class="enc-order-actions enc-order-actions-v949 enc-actions-new-v949">
+              {% if encomendas_modo_real %}
+              <form method="post" action="/admin/{{ empresa.id }}/encomendas/{{ order.id }}/status" style="flex:1;display:flex"><input type="hidden" name="status" value="confirmada">{% if order.pix_manual_pendente %}<button class="enc-btn primary" type="submit" title="Confirma que o sinal foi recebido e aceita a encomenda"><i class="fa-solid fa-circle-check"></i> Confirmar sinal e aceitar</button>{% elif order.aceite_bloqueado_pagamento %}<button class="enc-btn payment-locked" type="button" disabled title="Aguardando confirmação do pagamento online"><i class="fa-solid fa-lock"></i> Aguardando pagamento</button>{% else %}<button class="enc-btn primary" type="submit"><i class="fa-solid fa-check"></i> Aceitar</button>{% endif %}</form>
+              <form method="post" action="/admin/{{ empresa.id }}/encomendas/{{ order.id }}/status" style="flex:1;display:flex"><input type="hidden" name="status" value="recusada"><button class="enc-btn danger" type="submit">Recusar</button></form>
+              {% else %}
+              <button class="enc-btn primary" type="button" data-enc-accept><i class="fa-solid fa-check"></i> Aceitar</button><button class="enc-btn danger" type="button" data-enc-reject>Recusar</button>
+              {% endif %}
+              <div class="enc-action-utilities-v949">
+                <button class="enc-btn icon-only enc-detail-only-v949" type="button" data-enc-detail data-enc-detail-json="{{ order.detalhes_modal_json|e }}" aria-label="Ver detalhes" title="Ver detalhes"><i class="fa-regular fa-eye"></i></button>
+                {% if order.whatsapp_url %}<a class="enc-btn icon-only enc-whatsapp-client" href="{{ order.whatsapp_url }}" target="_blank" rel="noopener" aria-label="Abrir WhatsApp do cliente" title="WhatsApp do cliente"><i class="fa-brands fa-whatsapp"></i></a>{% endif %}
+              </div>
+            </div>
+          </article>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section class="enc-flow" data-enc-status-panel="fluxo"{% if enc_default_status not in ['confirmada','producao','pronta','finalizada'] %} hidden{% endif %}>
+        <div class="enc-flow-head"><strong data-enc-flow-title>Acompanhamento</strong><span data-enc-flow-subtitle>Confirmadas, produção, prontas e finalizadas</span></div>
+        {% for group in encomendas_fluxo %}
+        <div class="enc-day" data-enc-flow-day>
+          <div class="enc-day-title">{{ group.rotulo }}</div>
+          <div class="enc-list">
+            {% for order in group.itens %}
+            <article class="enc-order" data-enc-order data-enc-date="{{ order.data_iso|default('') }}" data-enc-status="{{ order.status_key|e }}" data-enc-number="{{ order.numero|e }}" data-enc-client="{{ order.cliente|e }}" data-enc-phone="{{ order.telefone|default('')|e }}" data-enc-kind="{{ order.tipo|default('')|e }}" data-enc-time="{{ order.hora|default('')|e }}" data-enc-address="{{ order.endereco|default('')|e }}" data-enc-status-card="{{ order.status_key }}"{% if enc_default_status in ['confirmada','producao','pronta','finalizada'] and order.status_key != enc_default_status %} hidden{% endif %}>
+              <div class="enc-order-head enc-order-head-v762">
+                <div class="enc-order-primary">
+                  <strong>#{{ order.numero }} · {{ order.cliente }}</strong>
+                  <span>{{ order.telefone }}</span>
+                </div>
+                {{ enc_status_picker(order, empresa, encomendas_modo_real) }}
+              </div>
+
+              <div class="enc-fulfillment-strip {% if order.tipo == 'Entrega' %}delivery{% endif %}">
+                <div class="enc-fulfillment-purpose">
+                  <i class="fa-solid {{ 'fa-truck' if order.tipo == 'Entrega' else 'fa-store' }}"></i>
+                  <div>
+                    <small>{% if order.tipo == 'Entrega' %}QUANDO DEVE SER ENTREGUE{% else %}QUANDO O CLIENTE VAI RETIRAR{% endif %}</small>
+                    <strong>{{ order.tipo }}</strong>
+                  </div>
+                </div>
+                <div class="enc-fulfillment-date">
+                  <small>DATA</small>
+                  <strong><i class="fa-regular fa-calendar"></i> {{ order.data_retirada }}</strong>
+                </div>
+                <div class="enc-fulfillment-time">
+                  <small>HORÁRIO</small>
+                  <strong><i class="fa-regular fa-clock"></i> {{ order.hora }}</strong>
+                </div>
+              </div>
+
+              <div class="enc-order-items">{% for item in order.itens %}<div class="enc-product-line"><strong>{{ item.nome }}</strong><span>{{ item.detalhe }}</span></div>{% endfor %}{% if order.obs %}<div class="enc-personalization">{{ order.obs }}</div>{% endif %}</div>
+              <div class="enc-payment"><div><small>Total</small><strong>{{ order.total }}</strong></div><div class="enc-finance-status"><small>Pagamento</small><span class="enc-finance-chip {{ order.pagamento_tone|default('pending') }}">{{ order.pagamento_titulo|default(order.pagamento) }}</span>{% if order.pagamento_detalhe %}<span class="enc-finance-detail">{% if (order.valor_recebido_financeiro|default(0)) > 0 and (order.valor_pendente_financeiro|default(0)) > 0 %}
+<span class="enc-pay-split-v822">
+  <span class="enc-pay-split-row-v822 received">
+    <span>Recebido</span>
+    <strong>
+      R$ {{ ('%.2f'|format(order.valor_recebido_financeiro|default(0)))|replace('.', ',') }}
+    </strong>
+  </span>
+
+  <span class="enc-pay-split-row-v822 pending">
+    <span>
+      <i class="fa-solid fa-circle-exclamation"></i>
+      Falta receber
+    </span>
+    <strong>
+      R$ {{ ('%.2f'|format(order.valor_pendente_financeiro|default(0)))|replace('.', ',') }}
+    </strong>
+  </span>
+</span>
+{% else %}
+{{ order.pagamento_detalhe }}
+{% endif %}</span>{% endif %}</div></div>
+              <div class="enc-order-actions enc-order-actions-v949 enc-actions-flow-v949 enc-actions-{{ order.status_key }}-v949">
+                {% set enc_v948_saldo_pendente = (order.valor_pendente_financeiro|default(0)) > 0 %}
+                {% set enc_v948_pode_confirmar_saldo = order.pode_confirmar_saldo or (order.status_key == 'pronta' and enc_v948_saldo_pendente) %}
+                {% if encomendas_modo_real and (enc_v948_pode_confirmar_saldo or order.pode_editar_saldo) %}
+                <button
+                  class="enc-btn primary enc-action-balance"
+                  type="button"
+                  data-enc-pay-open-v821
+                  data-action="/admin/{{ empresa.id }}/encomendas/{{ order.id }}/quitar-saldo"
+                  data-number="{{ order.numero|e }}"
+                  data-client="{{ order.cliente|e }}"
+                  data-total="{{ order.total_numero|default((order.valor_recebido_financeiro|default(0)) + (order.valor_pendente_financeiro|default(0))) }}"
+                  data-received="{{ order.valor_recebido_financeiro|default(0) }}"
+                  data-remaining="{{ order.valor_pendente_financeiro|default(0) }}"
+                  data-balance="{{ order.saldo_valor_original_numero|default(order.valor_pendente_financeiro|default(0)) }}"
+                  data-method="{{ order.saldo_forma_pagamento|default('')|e }}"
+                  data-datetime="{{ order.saldo_pago_em_input|default('')|e }}"
+                  data-note="{{ order.saldo_pagamento_observacao|default('')|e }}"
+                  data-edit="{{ '1' if order.pode_editar_saldo and not enc_v948_pode_confirmar_saldo else '0' }}"
+                >
+                  <i class="fa-solid fa-coins"></i>
+                  {% if enc_v948_pode_confirmar_saldo %}
+                    Confirmar pagamento do saldo
+                  {% else %}
+                    Editar pagamento
+                  {% endif %}
+                </button>
+                {% endif %}
+                {% if encomendas_modo_real and order.status_key == 'confirmada' %}
+                <form class="enc-action-form-main" method="post" action="/admin/{{ empresa.id }}/encomendas/{{ order.id }}/status" style="flex:1;display:flex"><input type="hidden" name="status" value="producao"><button class="enc-btn enc-action-main enc-action-production" type="submit"><i class="fa-solid fa-kitchen-set"></i> Iniciar produção</button></form>
+                {% elif encomendas_modo_real and order.status_key == 'producao' %}
+                <form class="enc-action-form-main" method="post" action="/admin/{{ empresa.id }}/encomendas/{{ order.id }}/status" style="flex:1;display:flex"><input type="hidden" name="status" value="pronta"><button class="enc-btn enc-action-main enc-action-ready" type="submit"><i class="fa-solid fa-check-double"></i> Marcar como pronta</button></form>
+                {% elif encomendas_modo_real and order.status_key == 'pronta' %}
+                <form class="enc-action-form-main" method="post" action="/admin/{{ empresa.id }}/encomendas/{{ order.id }}/status" style="flex:1;display:flex"><input type="hidden" name="status" value="entregue"><button class="enc-btn enc-action-main enc-action-finish" type="submit"><i class="fa-solid fa-circle-check"></i> Finalizar</button></form>
+                <button class="enc-btn enc-action-delivery" type="button" data-enc-delivery data-order-number="{{ order.numero }}" data-order-client="{{ order.cliente|e }}" data-order-phone="{{ order.telefone|e }}" data-order-kind="{{ order.tipo|e }}" data-order-date="{{ order.data_retirada|e }}" data-order-time="{{ order.hora|e }}" data-order-address="{{ order.endereco|default('')|e }}"><i class="fa-solid fa-motorcycle"></i> Delivery</button>
+                {% if order.whatsapp_url %}<a class="enc-btn enc-action-notify" href="{{ order.whatsapp_url }}" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Avisar cliente</a>{% endif %}
+                {% endif %}
+                <div class="enc-action-utilities-v949">
+                  <button class="enc-btn icon-only enc-detail-only-v949" type="button" data-enc-detail data-enc-detail-json="{{ order.detalhes_modal_json|e }}" aria-label="Ver detalhes" title="Ver detalhes"><i class="fa-regular fa-eye"></i></button>
+                  {% if order.whatsapp_url %}<a class="enc-btn icon-only enc-whatsapp-client" href="{{ order.whatsapp_url }}" target="_blank" rel="noopener" aria-label="Abrir WhatsApp do cliente" title="WhatsApp do cliente"><i class="fa-brands fa-whatsapp"></i></a>{% endif %}
+                </div>
+              </div>
+            </article>
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      </section>
+
+      {% if encomendas_canceladas is defined and encomendas_canceladas %}
+      <details class="enc-cancelled-box" data-enc-status-panel="cancelada"{% if enc_default_status != 'cancelada' %} hidden{% else %} open{% endif %}>
+        <summary><i class="fa-solid fa-ban"></i> Canceladas <span class="enc-cancelled-count" data-enc-cancelled-count>{{ enc_metricas.canceladas }}</span><span style="margin-left:auto;font-size:12px;font-weight:700;color:#8a7774">Recusadas, expiradas ou canceladas</span></summary>
+        <div class="enc-cancelled-grid">
+          {% for order in encomendas_canceladas %}
+          <article class="enc-order" data-enc-order data-enc-date="{{ order.data_iso|default('') }}" data-enc-status="cancelada" data-enc-number="{{ order.numero|e }}" data-enc-client="{{ order.cliente|e }}" data-enc-phone="{{ order.telefone|default('')|e }}" data-enc-kind="{{ order.tipo|default('')|e }}" data-enc-time="{{ order.hora|default('')|e }}" data-enc-address="{{ order.endereco|default('')|e }}">
+            <div class="enc-order-head enc-order-head-v762">
+              <div class="enc-order-primary">
+                <strong>#{{ order.numero }} · {{ order.cliente }}</strong>
+                <span>{{ order.telefone }}</span>
+              </div>
+              {{ enc_status_picker(order, empresa, encomendas_modo_real) }}
+            </div>
+            <div class="enc-fulfillment-strip {% if order.tipo == 'Entrega' %}delivery{% endif %}">
+              <div class="enc-fulfillment-purpose">
+                <i class="fa-solid {{ 'fa-truck' if order.tipo == 'Entrega' else 'fa-store' }}"></i>
+                <div><small>PREVISTA PARA</small><strong>{{ order.tipo }}</strong></div>
+              </div>
+              <div class="enc-fulfillment-date"><small>DATA</small><strong><i class="fa-regular fa-calendar"></i> {{ order.data_retirada }}</strong></div>
+              <div class="enc-fulfillment-time"><small>HORÁRIO</small><strong><i class="fa-regular fa-clock"></i> {{ order.hora }}</strong></div>
+            </div>
+            <div class="enc-order-items">{% for item in order.itens %}<div class="enc-product-line"><strong>{{ item.nome }}</strong><span>{{ item.detalhe }}</span></div>{% endfor %}</div>
+            <div class="enc-payment"><div><small>Total</small><strong>{{ order.total }}</strong></div><div class="enc-finance-status"><small>Pagamento</small><span class="enc-finance-chip {{ order.pagamento_tone|default('danger') }}">{{ order.pagamento_titulo|default(order.pagamento) }}</span>{% if order.pagamento_detalhe %}<span class="enc-finance-detail">{% if (order.valor_recebido_financeiro|default(0)) > 0 and (order.valor_pendente_financeiro|default(0)) > 0 %}
+<span class="enc-pay-split-v822">
+  <span class="enc-pay-split-row-v822 received">
+    <span>Recebido</span>
+    <strong>
+      R$ {{ ('%.2f'|format(order.valor_recebido_financeiro|default(0)))|replace('.', ',') }}
+    </strong>
+  </span>
+
+  <span class="enc-pay-split-row-v822 pending">
+    <span>
+      <i class="fa-solid fa-circle-exclamation"></i>
+      Falta receber
+    </span>
+    <strong>
+      R$ {{ ('%.2f'|format(order.valor_pendente_financeiro|default(0)))|replace('.', ',') }}
+    </strong>
+  </span>
+</span>
+{% else %}
+{{ order.pagamento_detalhe }}
+{% endif %}</span>{% endif %}</div></div>
+            <div class="enc-order-actions enc-order-actions-v949 enc-actions-cancelled-v949"><div class="enc-action-utilities-v949"><button class="enc-btn icon-only enc-detail-only-v949" type="button" data-enc-detail data-enc-detail-json="{{ order.detalhes_modal_json|e }}" aria-label="Ver detalhes" title="Ver detalhes"><i class="fa-regular fa-eye"></i></button>{% if order.whatsapp_url %}<a class="enc-btn icon-only enc-whatsapp-client" href="{{ order.whatsapp_url }}" target="_blank" rel="noopener" aria-label="Abrir WhatsApp do cliente" title="WhatsApp do cliente"><i class="fa-brands fa-whatsapp"></i></a>{% endif %}</div></div>
+          </article>
+          {% endfor %}
+        </div>
+      </details>
+      {% endif %}
+    </section>
+  </main>
+</div>
+<div class="enc-driver-backdrop" id="encDriverBackdrop" aria-hidden="true">
+  <div class="enc-driver-modal" role="dialog" aria-modal="true" aria-labelledby="encDriverTitle">
+    <div class="enc-driver-head"><strong id="encDriverTitle">Chamar entregador</strong><button class="enc-driver-close" type="button" data-enc-driver-close aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="enc-driver-copy">Escolha um motoboy/parceiro cadastrado. O WhatsApp abrirá com os dados da encomenda prontos para envio.</div>
+    <div class="enc-driver-list">
+      {% if entregadores_externos is defined and entregadores_externos %}
+        {% for driver in entregadores_externos %}
+        <button class="enc-driver-item" type="button" data-enc-driver data-driver-name="{{ driver.nome|e }}" data-driver-phone="{{ driver.telefone|default('')|e }}"><span><strong>{{ driver.nome }}</strong><small>{{ driver.telefone or 'Telefone não informado' }}</small></span><i class="fa-brands fa-whatsapp"></i></button>
+        {% endfor %}
+      {% else %}
+        <div class="enc-driver-empty">Nenhum entregador cadastrado. Cadastre em <strong>Integrações → Entregadores externos</strong>.</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<style>
+.enc-pay-modal-v821[hidden]{
+  display:none !important;
+}
+
+.enc-pay-modal-v821{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.enc-pay-backdrop-v821{
+  position:absolute;
+  inset:0;
+  background:rgba(19,31,55,.58);
+  backdrop-filter:blur(3px);
+}
+
+.enc-pay-card-v821{
+  position:relative;
+  width:min(650px,100%);
+  max-height:92vh;
+  overflow:auto;
+  background:#fff;
+  border-radius:24px;
+  padding:26px;
+  box-shadow:0 30px 90px rgba(18,35,62,.30);
+}
+
+.enc-pay-head-v821{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:18px;
+  margin-bottom:18px;
+}
+
+.enc-pay-head-v821 h3{
+  margin:0;
+  font-size:22px;
+  color:#17243b;
+}
+
+.enc-pay-head-v821 p{
+  margin:5px 0 0;
+  color:#748096;
+  font-size:14px;
+  font-weight:600;
+}
+
+.enc-pay-close-v821{
+  width:38px;
+  height:38px;
+  border:0;
+  border-radius:50%;
+  background:#eef2f7;
+  color:#344158;
+  font-size:22px;
+  cursor:pointer;
+}
+
+.enc-pay-order-v821{
+  border:1px solid #dfe6ef;
+  background:#f8faff;
+  border-radius:17px;
+  padding:15px 17px;
+  margin-bottom:14px;
+}
+
+.enc-pay-order-v821 strong{
+  display:block;
+  font-size:16px;
+  color:#17243b;
+}
+
+.enc-pay-order-v821 span{
+  display:block;
+  margin-top:3px;
+  color:#79859a;
+  font-size:13px;
+  font-weight:700;
+}
+
+.enc-pay-values-v821{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-bottom:20px;
+}
+
+.enc-pay-value-v821{
+  border:1px solid #dfe6ef;
+  border-radius:16px;
+  padding:13px 14px;
+  background:#fff;
+}
+
+.enc-pay-value-v821 small{
+  display:block;
+  margin-bottom:4px;
+  color:#7a879b;
+  font-size:12px;
+  font-weight:800;
+}
+
+.enc-pay-value-v821 strong{
+  color:#17243b;
+  font-size:19px;
+}
+
+.enc-pay-value-v821.remaining{
+  background:#fff8ef;
+  border-color:#ffd19b;
+}
+
+.enc-pay-value-v821.remaining strong{
+  color:#c25713;
+}
+
+.enc-pay-grid-v821{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+}
+
+.enc-pay-field-v821{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.enc-pay-field-v821.full{
+  grid-column:1/-1;
+}
+
+.enc-pay-field-v821 label{
+  color:#35435a;
+  font-size:13px;
+  font-weight:800;
+}
+
+.enc-pay-field-v821 input,
+.enc-pay-field-v821 select,
+.enc-pay-field-v821 textarea{
+  width:100%;
+  box-sizing:border-box;
+  border:1px solid #d5deea;
+  border-radius:13px;
+  background:#fff;
+  color:#17243b;
+  font:inherit;
+  outline:none;
+}
+
+.enc-pay-field-v821 input,
+.enc-pay-field-v821 select{
+  height:47px;
+  padding:0 13px;
+}
+
+.enc-pay-field-v821 textarea{
+  min-height:88px;
+  padding:12px 13px;
+  resize:vertical;
+}
+
+.enc-pay-field-v821 input:focus,
+.enc-pay-field-v821 select:focus,
+.enc-pay-field-v821 textarea:focus{
+  border-color:#8297b7;
+  box-shadow:0 0 0 3px rgba(86,119,164,.10);
+}
+
+.enc-pay-money-v821{
+  display:flex;
+  border:1px solid #d5deea;
+  border-radius:13px;
+  overflow:hidden;
+  background:#fff;
+}
+
+.enc-pay-money-v821 span{
+  display:flex;
+  align-items:center;
+  padding:0 13px;
+  background:#f4f7fa;
+  border-right:1px solid #d5deea;
+  color:#65738a;
+  font-weight:900;
+}
+
+.enc-pay-money-v821 input{
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+}
+
+.enc-pay-submit-v821{
+  width:100%;
+  margin-top:20px;
+  border:0;
+  border-radius:13px;
+  padding:14px 18px;
+  background:#087443;
+  color:#fff;
+  font-weight:900;
+  font-size:15px;
+  cursor:pointer;
+}
+
+.enc-pay-help-v821{
+  margin:12px 0 0;
+  color:#818c9e;
+  font-size:12px;
+  font-weight:600;
+  text-align:center;
+}
+
+@media(max-width:620px){
+  .enc-pay-modal-v821{
+    padding:12px;
+  }
+
+  .enc-pay-card-v821{
+    padding:19px;
+    border-radius:19px;
+  }
+
+  .enc-pay-values-v821{
+    grid-template-columns:1fr;
+  }
+
+  .enc-pay-grid-v821{
+    grid-template-columns:1fr;
+  }
+
+  .enc-pay-field-v821.full{
+    grid-column:auto;
+  }
+}
+</style>
+
+<div class="enc-pay-modal-v821" id="encPayModalV821" hidden>
+
+  <div
+    class="enc-pay-backdrop-v821"
+    data-enc-pay-close-v821
+  ></div>
+
+  <div
+    class="enc-pay-card-v821"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="encPayTitleV821"
+  >
+
+    <div class="enc-pay-head-v821">
+      <div>
+        <h3 id="encPayTitleV821">Confirmar recebimento</h3>
+        <p>
+          Registre como o valor restante da encomenda foi recebido.
+        </p>
+      </div>
+
+      <button
+        class="enc-pay-close-v821"
+        type="button"
+        data-enc-pay-close-v821
+        aria-label="Fechar"
+      >×</button>
+    </div>
+
+    <div class="enc-pay-order-v821">
+      <strong id="encPayOrderV821">Encomenda</strong>
+      <span id="encPayClientV821"></span>
+    </div>
+
+    <div class="enc-pay-values-v821">
+
+      <div class="enc-pay-value-v821">
+        <small>Total</small>
+        <strong id="encPayTotalV821">R$ 0,00</strong>
+      </div>
+
+      <div class="enc-pay-value-v821">
+        <small>Já recebido</small>
+        <strong id="encPayReceivedV821">R$ 0,00</strong>
+      </div>
+
+      <div class="enc-pay-value-v821 remaining">
+        <small>Restante</small>
+        <strong id="encPayRemainingV821">R$ 0,00</strong>
+      </div>
+
+    </div>
+
+    <form method="post" id="encPayFormV821">
+
+      <div class="enc-pay-grid-v821">
+
+        <div class="enc-pay-field-v821">
+          <label>Pagamento</label>
+          <select disabled>
+            <option>Saldo restante</option>
+          </select>
+        </div>
+
+        <div class="enc-pay-field-v821">
+          <label>Valor do saldo</label>
+
+          <div class="enc-pay-money-v821">
+            <span>R$</span>
+
+            <input
+              type="text"
+              name="valor_recebido"
+              id="encPayAmountV821"
+              readonly
+              required
+            >
+          </div>
+        </div>
+
+        <div class="enc-pay-field-v821">
+          <label for="encPayMethodV821">
+            Forma de pagamento
+          </label>
+
+          <select
+            name="forma_saldo"
+            id="encPayMethodV821"
+            required
+          >
+            <option value="">Selecione</option>
+            <option value="cartao_debito">Cartão débito</option>
+            <option value="cartao_credito">Cartão crédito</option>
+            <option value="dinheiro">Dinheiro</option>
+            <option value="pix_chave">Pix pela chave</option>
+            <option value="transferencia">Transferência</option>
+            <option value="outro">Outros</option>
+          </select>
+        </div>
+
+        <div class="enc-pay-field-v821">
+          <label for="encPayDateV821">
+            Data e horário
+          </label>
+
+          <input
+            type="datetime-local"
+            name="data_hora"
+            id="encPayDateV821"
+            required
+          >
+        </div>
+
+        <div class="enc-pay-field-v821 full">
+          <label for="encPayNoteV821">
+            Observação
+          </label>
+
+          <textarea
+            name="observacao_saldo"
+            id="encPayNoteV821"
+            maxlength="1000"
+            placeholder="Ex.: recebido no balcão, cartão débito..."
+          ></textarea>
+        </div>
+
+      </div>
+
+      <button
+        class="enc-pay-submit-v821"
+        id="encPaySubmitV821"
+        type="submit"
+      >
+        <i class="fa-solid fa-check"></i>
+        Confirmar recebimento
+      </button>
+
+      <p class="enc-pay-help-v821">
+        Depois você poderá abrir novamente e corrigir
+        a forma de pagamento, data ou observação.
+      </p>
+
+    </form>
+  </div>
+</div>
+
+<!-- MENUFACILE V965 — MODAL SALDO PADRAO APROVADO + CLIQUE DELEGADO -->
+<script>
+(function(){
+
+  const modal = document.getElementById('encPayModalV821');
+  const form = document.getElementById('encPayFormV821');
+
+  if (!modal || !form) return;
+
+  const title = document.getElementById('encPayTitleV821');
+  const orderEl = document.getElementById('encPayOrderV821');
+  const clientEl = document.getElementById('encPayClientV821');
+
+  const totalEl = document.getElementById('encPayTotalV821');
+  const receivedEl = document.getElementById('encPayReceivedV821');
+  const remainingEl = document.getElementById('encPayRemainingV821');
+
+  const amount = document.getElementById('encPayAmountV821');
+  const method = document.getElementById('encPayMethodV821');
+  const date = document.getElementById('encPayDateV821');
+  const note = document.getElementById('encPayNoteV821');
+  const submit = document.getElementById('encPaySubmitV821');
+
+  function money(value){
+    return Number(value || 0).toLocaleString(
+      'pt-BR',
+      {
+        style:'currency',
+        currency:'BRL'
+      }
+    );
+  }
+
+  function amountText(value){
+    return Number(value || 0).toLocaleString(
+      'pt-BR',
+      {
+        minimumFractionDigits:2,
+        maximumFractionDigits:2
+      }
+    );
+  }
+
+  function openModal(button){
+
+    const editing = button.dataset.edit === '1';
+
+    const total = Number(button.dataset.total || 0);
+    const received = Number(button.dataset.received || 0);
+    const remaining = Number(button.dataset.remaining || 0);
+    const balance = Number(button.dataset.balance || 0);
+
+    form.action = button.dataset.action || '';
+
+    orderEl.textContent =
+      '#' + (button.dataset.number || '') + ' · Encomenda';
+
+    clientEl.textContent =
+      button.dataset.client || '';
+
+    totalEl.textContent = money(total);
+    receivedEl.textContent = money(received);
+    remainingEl.textContent = money(remaining);
+
+    amount.value = amountText(balance);
+
+    method.value = button.dataset.method || '';
+    date.value = button.dataset.datetime || '';
+    note.value = button.dataset.note || '';
+
+    if (editing) {
+
+      title.textContent = 'Editar recebimento';
+
+      submit.innerHTML =
+        '<i class="fa-solid fa-check"></i> Salvar alteração';
+
+    } else {
+
+      title.textContent = 'Confirmar recebimento';
+
+      submit.innerHTML =
+        '<i class="fa-solid fa-check"></i> Confirmar recebimento';
+    }
+
+    modal.hidden = false;
+    document.body.style.overflow = 'hidden';
+
+    setTimeout(function(){
+      method.focus();
+    }, 60);
+  }
+
+  function closeModal(){
+    modal.hidden = true;
+    document.body.style.overflow = '';
+  }
+
+  /* V965 — clique delegado:
+     o botão de saldo também pode aparecer depois de uma atualização AJAX
+     do card (por exemplo, ao chegar em Prontas). Assim o modal abre mesmo
+     quando o botão não existia no carregamento inicial da página. */
+  document.addEventListener('click', function(event){
+    const button = event.target.closest('[data-enc-pay-open-v821]');
+    if (!button) return;
+
+    event.preventDefault();
+    openModal(button);
+  });
+
+  modal
+    .querySelectorAll('[data-enc-pay-close-v821]')
+    .forEach(function(button){
+
+      button.addEventListener('click', closeModal);
+
+    });
+
+  document.addEventListener('keydown', function(event){
+
+    if (event.key === 'Escape' && !modal.hidden){
+      closeModal();
+    }
+
+  });
+
+})();
+</script>
+
+
+
+<style>
+/* V822 — situação financeira visível no card */
+.enc-pay-split-v822{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  width:100%;
+  max-width:330px;
+  margin-top:7px;
+}
+
+.enc-pay-split-row-v822{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  min-height:32px;
+  padding:6px 10px;
+  border-radius:10px;
+  box-sizing:border-box;
+  font-size:12px;
+  font-weight:800;
+}
+
+.enc-pay-split-row-v822 span{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.enc-pay-split-row-v822 strong{
+  white-space:nowrap;
+  font-size:13px;
+}
+
+.enc-pay-split-row-v822.received{
+  color:#486072;
+  background:#f4f7f9;
+  border:1px solid #e5eaef;
+}
+
+.enc-pay-split-row-v822.received strong{
+  color:#25364b;
+}
+
+.enc-pay-split-row-v822.pending{
+  color:#a9500d;
+  background:#fff7ed;
+  border:1px solid #ffd4a8;
+}
+
+.enc-pay-split-row-v822.pending strong{
+  color:#c94f08;
+  font-size:14px;
+}
+
+.enc-pay-split-row-v822.pending i{
+  font-size:11px;
+}
+
+@media(max-width:600px){
+  .enc-pay-split-v822{
+    max-width:100%;
+  }
+}
+</style>
+
+
+<div class="enc-detail-modal-v849" id="encDetailModalV849" hidden>
+  <div class="enc-detail-backdrop-v849" data-enc-detail-close-v849></div>
+  <div class="enc-detail-card-v849" role="dialog" aria-modal="true" aria-labelledby="encDetailTitleV849">
+    <div class="enc-detail-head-v849">
+      <div><h3 id="encDetailTitleV849">Detalhes da encomenda</h3><p id="encDetailSubtitleV849"></p><span class="enc-detail-status-v849" id="encDetailStatusV849"></span></div>
+      <button class="enc-detail-close-v849" type="button" data-enc-detail-close-v849 aria-label="Fechar">×</button>
+    </div>
+    <section class="enc-detail-section-v849"><h4>Cliente</h4><div class="enc-detail-grid-v849">
+      <div class="enc-detail-field-v849"><small>Nome</small><strong id="encDetailClientV849"></strong></div>
+      <div class="enc-detail-field-v849"><small>WhatsApp / telefone</small><span id="encDetailPhoneV849"></span></div>
+      <div class="enc-detail-field-v849 full"><small>E-mail</small><span id="encDetailEmailV849"></span></div>
+    </div></section>
+    <section class="enc-detail-section-v849"><h4>Retirada / entrega</h4><div class="enc-detail-grid-v849">
+      <div class="enc-detail-field-v849"><small>Modalidade</small><strong id="encDetailTypeV849"></strong></div>
+      <div class="enc-detail-field-v849"><small>Data</small><span id="encDetailDateV849"></span></div>
+      <div class="enc-detail-field-v849"><small>Horário</small><span id="encDetailTimeV849"></span></div>
+      <div class="enc-detail-field-v849 full"><small>Endereço</small><span id="encDetailAddressV849"></span></div>
+    </div></section>
+    <section class="enc-detail-section-v849"><h4>Itens da encomenda</h4><div class="enc-detail-items-v849" id="encDetailItemsV849"></div></section>
+    <section class="enc-detail-section-v849"><h4>Pagamento</h4>
+      <div class="enc-detail-pay-values-v849"><div class="enc-detail-pay-value-v849"><small>Total</small><strong id="encDetailPayTotalV849">R$ 0,00</strong></div><div class="enc-detail-pay-value-v849"><small>Recebido</small><strong id="encDetailPayReceivedV849">R$ 0,00</strong></div><div class="enc-detail-pay-value-v849 pending"><small>A receber</small><strong id="encDetailPayPendingV849">R$ 0,00</strong></div></div>
+      <div class="enc-detail-payment-lines-v849" id="encDetailPaymentLinesV849"></div>
+    </section>
+    <section class="enc-detail-section-v849"><h4>Observações</h4><div id="encDetailObservationV849" class="enc-detail-empty-v849">Nenhuma observação.</div></section>
+  </div>
+</div>
+
+<script id="mf-v947-modal-original-v915-dados">
+(function(){
+  const modal=document.getElementById('encDetailModalV849');
+  if(!modal)return;
+  const q=(sel,root=document)=>root.querySelector(sel);
+  const qa=(sel,root=document)=>Array.from(root.querySelectorAll(sel));
+  const text=(sel,root=document)=>{const el=q(sel,root);return el?String(el.textContent||'').trim():''};
+  const set=(id,value,fallback='')=>{const el=document.getElementById(id);if(el)el.textContent=String(value||fallback||'')};
+  const money=n=>Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+  const numberFromMoney=value=>{
+    let s=String(value||'').replace(/[^0-9,.-]/g,'').trim();
+    if(!s)return 0;
+    if(s.includes(','))s=s.replace(/\./g,'').replace(',','.');
+    const n=Number(s);return Number.isFinite(n)?n:0;
+  };
+  const statusLabel=value=>({nova:'Nova',confirmada:'Confirmada',producao:'Em produção',pronta:'Pronta',finalizada:'Finalizada',entregue:'Finalizada',cancelada:'Cancelada',recusada:'Recusada'}[String(value||'').toLowerCase()]||value||'Status não informado');
+  const close=()=>{modal.hidden=true;document.body.style.overflow=''};
+  function paymentLine(kind,method,state,amount,sub){
+    const row=document.createElement('div');row.className='enc-detail-payment-line-v849';
+    const k=document.createElement('span');k.className='kind';k.textContent=kind;
+    const m=document.createElement('span');m.className='method';m.textContent=method||'Não informado';
+    const small=document.createElement('small');small.textContent=[state,sub].filter(Boolean).join(' · ');m.appendChild(small);
+    const a=document.createElement('strong');a.className='amount';a.textContent=money(amount);
+    row.append(k,m,a);return row;
+  }
+  function fallbackFromCard(button){
+    const card=button.closest('[data-enc-order]');
+    if(!card)return {};
+    const totalText=text('.enc-payment>div:first-child strong',card)||text('.enc-payment strong',card);
+    const total=numberFromMoney(totalText);
+    const receivedText=text('.enc-pay-split-row-v822.received strong',card);
+    const pendingText=text('.enc-pay-split-row-v822.pending strong',card);
+    let recebido=numberFromMoney(receivedText),pendente=numberFromMoney(pendingText);
+    const paymentTitle=text('.enc-finance-chip',card)||text('.enc-finance-status',card);
+    const paymentDetail=text('.enc-finance-detail',card);
+    if(!receivedText && /pagamento confirmado|pago/i.test(paymentTitle+' '+paymentDetail))recebido=total;
+    if(!pendingText)pendente=Math.max(0,total-recebido);
+    const itens=qa('.enc-product-line',card).map(el=>({
+      nome:text('strong',el)||'Item',detalhe:text('span',el),opcao:text('span',el),quantidade:1,subtotal:0
+    }));
+    const dataText=text('.enc-fulfillment-date strong',card).replace(/^.*?\s(?=[A-Za-zÀ-ÿ])/,'').trim()||card.dataset.encDate||'';
+    const obs=text('.enc-personalization',card);
+    return {
+      numero:card.dataset.encNumber||'',
+      status:statusLabel(card.dataset.encStatus||''),
+      cliente:card.dataset.encClient||'',
+      telefone:card.dataset.encPhone||'',
+      email:card.dataset.encEmail||'',
+      tipo:card.dataset.encKind||'',
+      data:dataText,
+      hora:card.dataset.encTime||'',
+      endereco:card.dataset.encAddress||'',
+      observacao:obs,
+      itens,
+      pagamento:{total,recebido,pendente,_fallback_title:paymentTitle,_fallback_detail:paymentDetail}
+    };
+  }
+  function mergeData(primary,fallback){
+    const p=(primary&&typeof primary==='object')?primary:{};
+    const f=fallback||{};
+    const out={...f,...p};
+    out.itens=Array.isArray(p.itens)&&p.itens.length?p.itens:(f.itens||[]);
+    out.pagamento={...(f.pagamento||{}),...((p.pagamento&&typeof p.pagamento==='object')?p.pagamento:{})};
+    return out;
+  }
+  function open(button){
+    const fallback=fallbackFromCard(button);
+    let parsed={};
+    const raw=String(button.dataset.encDetailJson||'').trim();
+    if(raw){try{parsed=JSON.parse(raw)}catch(_){parsed={}}}
+    const data=mergeData(parsed,fallback);
+    set('encDetailTitleV849','#'+(data.numero||'')+' · '+(data.cliente||'Detalhes da encomenda'));
+    set('encDetailSubtitleV849',data.tipo||'Encomenda');
+    set('encDetailStatusV849',data.status||statusLabel(fallback.status));
+    set('encDetailClientV849',data.cliente,'Não informado');
+    set('encDetailPhoneV849',data.telefone,'Não informado');
+    set('encDetailEmailV849',data.email,'Não informado');
+    set('encDetailTypeV849',data.tipo,'Não informado');
+    set('encDetailDateV849',data.data,'Não informado');
+    set('encDetailTimeV849',data.hora,'Não informado');
+    set('encDetailAddressV849',data.endereco,(String(data.tipo||'').toLowerCase().includes('retirada')?'Retirada na loja':'Não informado'));
+    const obs=document.getElementById('encDetailObservationV849');if(obs){obs.textContent=data.observacao||'Nenhuma observação.';obs.classList.toggle('enc-detail-empty-v849',!data.observacao)}
+    const items=document.getElementById('encDetailItemsV849');if(items){items.innerHTML='';(data.itens||[]).forEach(item=>{
+      const box=document.createElement('div');box.className='enc-detail-item-v849';
+      const top=document.createElement('div');top.className='enc-detail-item-v849-top';
+      const name=document.createElement('strong');name.textContent=item.nome||'Item';
+      const price=document.createElement('strong');price.className='price';price.textContent=Number(item.subtotal||0)>0?money(item.subtotal):'';
+      top.append(name,price);box.appendChild(top);
+      const info=[item.opcao||item.detalhe||'',Number(item.quantidade||0)>1?(Number(item.quantidade)+' un.'):'',item.recheio_sabor?('Sabor/recheio: '+item.recheio_sabor):'',item.personalizacao?('Personalização: '+item.personalizacao):''].filter(Boolean);
+      if(info.length){const small=document.createElement('small');small.textContent=info.join(' · ');box.appendChild(small)}
+      items.appendChild(box);
+    });if(!items.children.length){const empty=document.createElement('div');empty.className='enc-detail-empty-v849';empty.textContent='Nenhum item encontrado.';items.appendChild(empty)}}
+    const pay=data.pagamento||{};
+    set('encDetailPayTotalV849',money(pay.total||0));
+    set('encDetailPayReceivedV849',money(pay.recebido||0));
+    set('encDetailPayPendingV849',money(pay.pendente||0));
+    const lines=document.getElementById('encDetailPaymentLinesV849');if(lines){lines.innerHTML='';const signal=pay.sinal||{},balance=pay.saldo||{};
+      if(signal.existe)lines.appendChild(paymentLine('Sinal',signal.forma_label||'Não informado',signal.estado||'',signal.valor||0,''));
+      if(balance.existe){const received=String(balance.estado||'')==='Recebido';const method=received?(balance.forma_label||'Não informado'):'Ainda não recebido';const sub=received?(balance.pago_em||''):(balance.forma_prevista_label&&balance.forma_prevista_label!=='A combinar'?('Previsto: '+balance.forma_prevista_label):'');lines.appendChild(paymentLine(signal.existe?'Saldo':'Pagamento',method,balance.estado||'',balance.valor||0,sub));}
+      if(!lines.children.length && (pay._fallback_title||pay._fallback_detail)){lines.appendChild(paymentLine('Pagamento',pay._fallback_title||'Não informado',pay._fallback_detail||'',pay.recebido||pay.total||0,''));}
+      if(!lines.children.length){const empty=document.createElement('div');empty.className='enc-detail-empty-v849';empty.textContent='Nenhum pagamento registrado.';lines.appendChild(empty)}
+    }
+    modal.hidden=false;document.body.style.overflow='hidden';
+  }
+  document.addEventListener('click',function(e){
+    const btn=e.target.closest('[data-enc-detail]');if(!btn)return;
+    e.preventDefault();e.stopImmediatePropagation();open(btn);
+  },true);
+  modal.addEventListener('click',e=>{if(e.target.closest('[data-enc-detail-close-v849]'))close()});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!modal.hidden)close()});
+})();
+</script>
+<div class="enc-toast" id="encToast"></div>
+{% endblock %}
+{% block scripts %}<script src="/static/js/encomendas-v959.js?v=959"></script>{% endblock %}

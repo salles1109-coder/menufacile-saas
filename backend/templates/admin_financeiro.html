@@ -1,0 +1,540 @@
+{% extends "base.html" %}
+{% block body_attrs %} class="mf-ds-admin mf-v273-finance mf-v273-finance-{{ financeiro_tipo }}"{% endblock %}
+{% block title %}Financeiro - {{ empresa.nome }}{% endblock %}
+{% block head %}
+<style id="mf-finance-professional-v277">
+  .mf-finance-filter-grid{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))!important}
+  .mf-professional-summary-card{margin-top:18px}
+  .mf-finance-table tr.is-selected-professional td{background:#eef3ff!important}
+</style>
+<style id="mf-financeiro-v273-css">
+  .mf-finance-shell{display:grid;gap:18px}
+  .mf-finance-hero{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding:22px;border:1px solid #e7eaf0;border-radius:22px;background:linear-gradient(135deg,#fff 0%,#f7f8fb 100%);box-shadow:0 12px 32px rgba(15,23,42,.06)}
+  .mf-finance-hero h1{margin:5px 0 6px;font-size:25px;line-height:1.15;color:#111827}
+  .mf-finance-hero p{margin:0;color:#64748b;max-width:760px;line-height:1.5}
+  .mf-finance-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#64748b}
+  .mf-finance-type{display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border-radius:999px;background:#111827;color:white;font-size:12px;font-weight:800;white-space:nowrap}
+  .mf-finance-tabs{display:flex;gap:8px;overflow:auto;padding:3px 0 4px;scrollbar-width:none}
+  .mf-finance-tabs::-webkit-scrollbar{display:none}
+  .mf-finance-tab{display:inline-flex;align-items:center;gap:8px;min-height:42px;padding:0 15px;border:1px solid #e2e8f0;border-radius:13px;background:white;color:#334155;font-size:13px;font-weight:800;text-decoration:none;white-space:nowrap}
+  .mf-finance-tab.active{background:#111827;color:white;border-color:#111827}
+  .mf-finance-filter{padding:17px!important;border-radius:18px!important}
+  .mf-finance-filter-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr)) auto;gap:12px;align-items:end}
+  .mf-finance-filter .field{margin:0}
+  .mf-finance-filter label{display:block;margin:0 0 6px;font-size:12px;font-weight:800;color:#475569}
+  .mf-finance-filter input,.mf-finance-filter select{width:100%;height:43px;border:1px solid #dbe1ea;border-radius:12px;background:#fff;padding:0 11px;color:#111827}
+  .mf-finance-filter button{height:43px;border:0;border-radius:12px;padding:0 17px;background:#111827;color:#fff;font-weight:900;white-space:nowrap}
+  .mf-finance-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+  .mf-finance-kpi{min-height:132px;padding:17px;border:1px solid #e5e9f0;border-radius:18px;background:white;box-shadow:0 8px 22px rgba(15,23,42,.045)}
+  .mf-finance-kpi.primary{background:#111827;color:#fff;border-color:#111827}
+  .mf-finance-kpi .label{display:block;font-size:12px;font-weight:800;color:#64748b}
+  .mf-finance-kpi.primary .label,.mf-finance-kpi.primary small{color:#cbd5e1}
+  .mf-finance-kpi strong{display:block;margin:10px 0 7px;font-size:25px;line-height:1;color:#111827}
+  .mf-finance-kpi.primary strong{color:#fff}
+  .mf-finance-kpi small{display:block;color:#8491a4;font-size:11px;line-height:1.4}
+  .mf-finance-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+  .mf-finance-card{padding:18px;border:1px solid #e5e9f0;border-radius:18px;background:white;box-shadow:0 8px 22px rgba(15,23,42,.04)}
+  .mf-finance-card-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:14px}
+  .mf-finance-card h2{margin:0 0 4px;font-size:17px;color:#111827}
+  .mf-finance-card p{margin:0;color:#7c899b;font-size:12px;line-height:1.4}
+  .mf-finance-table-wrap{overflow:auto;border:1px solid #edf0f4;border-radius:14px}
+  .mf-finance-table{width:100%;min-width:680px;border-collapse:collapse}
+  .mf-finance-table th{padding:11px 12px;text-align:left;background:#f7f8fa;color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #e8ebf0;white-space:nowrap}
+  .mf-finance-table td{padding:12px;border-bottom:1px solid #edf0f4;color:#334155;font-size:13px;vertical-align:middle}
+  .mf-finance-table tr:last-child td{border-bottom:0}
+  .mf-finance-code{display:block;color:#111827;font-size:14px;font-weight:900;white-space:nowrap}
+  .mf-finance-date{display:block;margin-top:3px;color:#8a96a8;font-size:10px;white-space:nowrap}
+  .mf-finance-source,.mf-finance-status{display:inline-flex;align-items:center;min-height:25px;padding:0 9px;border-radius:999px;font-size:10px;font-weight:900;white-space:nowrap}
+  .mf-finance-source{background:#eef2ff;color:#4338ca}
+  .mf-finance-status.recebido{background:#dcfce7;color:#166534}
+  .mf-finance-status.parcial{background:#fef3c7;color:#92400e}
+  .mf-finance-status.pendente{background:#ffedd5;color:#9a3412}
+  .mf-finance-status.cancelado{background:#fee2e2;color:#991b1b}
+  .mf-finance-status.concluido,.mf-finance-status.sem_valor{background:#eef2f7;color:#475569}
+  .mf-finance-money{font-weight:900;color:#111827;white-space:nowrap}
+  .mf-finance-money.pending{color:#b45309}
+  .mf-finance-muted{color:#94a3b8}
+  .mf-finance-empty{padding:30px 16px;text-align:center;color:#64748b}
+  .mf-finance-actions{display:flex;gap:9px;flex-wrap:wrap}
+  .mf-finance-action{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:0 13px;border-radius:11px;border:1px solid #dce2ea;background:#fff;color:#334155;text-decoration:none;font-size:12px;font-weight:900}
+  .mf-finance-note{padding:13px 15px;border-radius:14px;background:#f8fafc;border:1px solid #e8edf3;color:#64748b;font-size:12px;line-height:1.5}
+  @media(max-width:1100px){.mf-finance-filter-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.mf-finance-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:760px){
+    .mf-finance-shell{gap:12px}.mf-finance-hero{padding:16px;border-radius:17px}.mf-finance-hero h1{font-size:20px}.mf-finance-type{display:none}
+    .mf-finance-filter-grid{grid-template-columns:1fr 1fr}.mf-finance-filter-grid .field:nth-last-child(1){grid-column:1/-1}.mf-finance-filter button{width:100%}
+    .mf-finance-kpis{grid-template-columns:1fr 1fr;gap:9px}.mf-finance-kpi{min-height:112px;padding:13px;border-radius:15px}.mf-finance-kpi strong{font-size:20px}
+    .mf-finance-grid{grid-template-columns:1fr}.mf-finance-card{padding:14px;border-radius:16px}
+    .mf-finance-table{min-width:760px}.mf-finance-table th,.mf-finance-table td{padding:10px}
+  }
+</style>
+<style id="mf-v315-finance-print-mobile-final">
+/* V315 — botão de impressão compacto e Financeiro preservado no mobile. */
+.mf-finance-print-icon{
+  width:38px!important;
+  min-width:38px!important;
+  height:38px!important;
+  min-height:38px!important;
+  padding:0!important;
+  gap:0!important;
+  border-radius:11px!important;
+  flex:0 0 38px!important;
+}
+.mf-finance-print-icon i{
+  margin:0!important;
+  font-size:14px!important;
+}
+.sr-only{
+  position:absolute!important;
+  width:1px!important;
+  height:1px!important;
+  padding:0!important;
+  margin:-1px!important;
+  overflow:hidden!important;
+  clip:rect(0,0,0,0)!important;
+  white-space:nowrap!important;
+  border:0!important;
+}
+@media(max-width:720px){
+  body.mf-v273-finance .mf-finance-table td[data-label]{
+    min-width:0!important;
+  }
+  body.mf-v273-finance .mf-finance-table td .mf-finance-print-icon{
+    width:36px!important;
+    min-width:36px!important;
+    height:36px!important;
+    min-height:36px!important;
+    max-width:36px!important;
+    margin-left:auto!important;
+    flex:0 0 36px!important;
+  }
+  body.mf-v273-finance .mf-finance-table td .mf-finance-print-icon i{
+    font-size:13px!important;
+  }
+}
+</style>
+
+<style id="mf-finance-v849-payment-detail">
+.mf-finance-payment-v849{display:flex;flex-direction:column;gap:3px;min-width:150px}.mf-finance-payment-v849 strong{color:#25334a;font-size:12px}.mf-finance-payment-v849 small{color:#768397;font-size:9.5px;line-height:1.35;font-weight:650;white-space:normal}.mf-finance-table td[data-label="Pagamento"]{min-width:210px}@media(max-width:760px){body.mf-v273-finance .mf-finance-payment-v849{max-width:100%!important;min-width:0!important;text-align:right}body.mf-v273-finance .mf-finance-payment-v849 small{font-size:10px}}
+</style>
+
+{% endblock %}
+{% block page %}
+{% set lang = (empresa.idioma or 'pt')[:2]|lower %}
+{% set txt = {
+  'pt': {
+    'title':'Financeiro','subtitle_restaurante':'Pedidos, reservas, encomendas e recebimentos do restaurante em uma visão separada.','subtitle_servicos':'Agendamentos, sinais, valores recebidos e valores pendentes da agenda.','subtitle_produtos':'Vendas, fretes e pagamentos da loja em uma visão própria.','restaurante':'Restaurante','servicos':'Serviços e Agenda','produtos':'Produtos e Loja','resumo':'Resumo','movimentos':'Movimentações','pagamentos':'Pagamentos','historico':'Histórico','filtros':'Filtros','inicio':'Data inicial','fim':'Data final','forma':'Pagamento','origem':'Origem','status':'Status','todos':'Todos','filtrar':'Aplicar filtros','recebido':'Recebido','a_receber':'A receber','valor_bruto':'Valor bruto','ticket':'Ticket médio','movimentacoes':'Movimentações','sinais':'Sinais recebidos','taxas':'Taxas de entrega','cancelados':'Cancelados','impostos':'Impostos estimados','origens':'Resumo por origem','formas':'Resumo por pagamento','quantidade':'Quantidade','total':'Total','cliente':'Cliente','descricao':'Descrição','valor':'Valor','pendente':'Pendente','data':'Data','codigo':'Código','data_horario':'Data / horário','acao':'Ação','imprimir':'Imprimir','sem_movimentos':'Nenhuma movimentação encontrada para os filtros selecionados.','codigo_diario':'O código visível reinicia diariamente. O histórico usa o ID interno permanente, a empresa, a data e a origem para não misturar registros.','exportar':'Exportar relatório fiscal','export_note':'Gera um Excel completo por período, com resumo, pedidos, serviços, recebimentos, pagamentos, cancelamentos, impostos e dados da empresa para conferência e envio ao contador.','parcial':'Parcial','concluido':'Concluído','sem_valor':'Sem valor','todos_status':'Todos os status'
+  },
+  'it': {
+    'title':'Finanze','subtitle_restaurante':'Ordini, prenotazioni e incassi del ristorante in una vista separata.','subtitle_servicos':'Appuntamenti, acconti, importi ricevuti e importi da ricevere.','subtitle_produtos':'Vendite, spedizioni e pagamenti del negozio in una vista dedicata.','restaurante':'Ristorante','servicos':'Servizi e Agenda','produtos':'Prodotti e Negozio','resumo':'Riepilogo','movimentos':'Movimenti','pagamentos':'Pagamenti','historico':'Storico','filtros':'Filtri','inicio':'Data iniziale','fim':'Data finale','forma':'Pagamento','origem':'Origine','status':'Stato','todos':'Tutti','filtrar':'Applica filtri','recebido':'Ricevuto','a_receber':'Da ricevere','valor_bruto':'Valore lordo','ticket':'Valore medio','movimentacoes':'Movimenti','sinais':'Acconti ricevuti','taxas':'Spese di consegna','cancelados':'Annullati','impostos':'Imposte stimate','origens':'Riepilogo per origine','formas':'Riepilogo per pagamento','quantidade':'Quantità','total':'Totale','cliente':'Cliente','descricao':'Descrizione','valor':'Valore','pendente':'Da ricevere','data':'Data','codigo':'Codice','data_horario':'Data / ora','acao':'Azione','imprimir':'Stampa','sem_movimentos':'Nessun movimento trovato con i filtri selezionati.','codigo_diario':'Il codice visibile riparte ogni giorno. Lo storico usa ID interno, azienda, data e origine per non confondere i registri.','exportar':'Esporta report fiscale','export_note':'Genera un Excel completo per periodo con riepilogo, ordini, servizi, incassi, pagamenti, annullamenti, imposte e dati aziendali per il commercialista.','parcial':'Parziale','concluido':'Concluso','sem_valor':'Senza valore','todos_status':'Tutti gli stati'
+  },
+  'en': {
+    'title':'Finance','subtitle_restaurante':'Restaurant orders, reservations and receipts in a separated view.','subtitle_servicos':'Appointments, deposits, received amounts and outstanding balances.','subtitle_produtos':'Store sales, shipping fees and payments in a dedicated view.','restaurante':'Restaurant','servicos':'Services and Schedule','produtos':'Products and Store','resumo':'Summary','movimentos':'Transactions','pagamentos':'Payments','historico':'History','filtros':'Filters','inicio':'Start date','fim':'End date','forma':'Payment','origem':'Source','status':'Status','todos':'All','filtrar':'Apply filters','recebido':'Received','a_receber':'Outstanding','valor_bruto':'Gross value','ticket':'Average ticket','movimentacoes':'Transactions','sinais':'Deposits received','taxas':'Delivery fees','cancelados':'Cancelled','impostos':'Estimated taxes','origens':'Summary by source','formas':'Summary by payment','quantidade':'Quantity','total':'Total','cliente':'Customer','descricao':'Description','valor':'Value','pendente':'Outstanding','data':'Date','codigo':'Code','data_horario':'Date / time','acao':'Action','imprimir':'Print','sem_movimentos':'No transactions found for the selected filters.','codigo_diario':'The visible code restarts every day. History uses the permanent internal ID, company, date and source to avoid mixing records.','exportar':'Export fiscal report','export_note':'Generates a complete Excel by period with summary, orders, services, receipts, payments, cancellations, taxes and company data for the accountant.','parcial':'Partial','concluido':'Completed','sem_valor':'No value','todos_status':'All statuses'
+  }
+}.get(lang, {}) %}
+{% macro moeda(valor) -%}R$ {{ "{:,.2f}".format(valor or 0).replace(",", "X").replace(".", ",").replace("X", ".") }}{%- endmacro %}
+{% set tipo_label = txt.get(financeiro_tipo, financeiro_tipo) %}
+{% set subtitle_key = 'subtitle_' ~ financeiro_tipo %}
+{% set payment_labels = {'pix_online':'Pix online','pix_manual':'Pix pela chave','pix_chave':'Pix pela chave','cartao_online':'Cartão online','cartao_atendimento':'Cartão presencial','cartao_presencial':'Cartão presencial','cartao_debito':'Cartão débito','cartao_credito':'Cartão crédito','dinheiro_atendimento':'Dinheiro','dinheiro':'Dinheiro','transferencia':'Transferência','outro':'Outros','pagamento_misto':'Pagamento misto','Pagamento misto':'Pagamento misto','a_combinar':'A combinar','a_definir':'A definir','Não informado':'Não informado','Dinheiro':'Dinheiro','Cartão':'Cartão'} %}
+{% set status_labels = {'recebido':txt.recebido,'parcial':txt.parcial,'pendente':txt.pendente,'cancelado':txt.cancelados,'concluido':txt.concluido,'sem_valor':txt.sem_valor} %}
+<div class="premium-layout mf-admin-shell">
+  {% include "includes/admin_sidebar.html" %}
+  <main class="premium-main">
+    <header class="premium-topbar"><div class="premium-page-title"><strong>{{ txt.title }}</strong><span>{{ empresa.nome }}</span></div></header>
+    <section class="premium-content">
+      <div class="mf-finance-shell">
+        <nav class="mf-finance-tabs" aria-label="Financeiro">
+          <a class="mf-finance-tab active" href="#resumo"><i class="fa-solid fa-chart-pie"></i>{{ txt.resumo }}</a>
+          <a class="mf-finance-tab" href="#movimentacoes"><i class="fa-solid fa-list"></i>{{ txt.movimentos }}</a>
+          <a class="mf-finance-tab" href="#pagamentos"><i class="fa-regular fa-credit-card"></i>{{ txt.pagamentos }}</a>
+          <a class="mf-finance-tab" href="#historico"><i class="fa-solid fa-clock-rotate-left"></i>{{ txt.historico }}</a>
+        </nav>
+
+        {% if erro_filtro %}<div class="notice">{{ erro_filtro }}</div>{% endif %}
+
+        <form class="card mf-finance-filter" method="GET" action="/admin/{{ empresa.id }}/financeiro">
+          <div class="mf-finance-filter-grid">
+            <div class="field"><label>{{ txt.inicio }}</label><input type="date" name="data_inicio" value="{{ data_inicio }}"></div>
+            <div class="field"><label>{{ txt.fim }}</label><input type="date" name="data_fim" value="{{ data_fim }}"></div>
+            <div class="field"><label>{{ txt.forma }}</label><select name="pagamento"><option value="todos">{{ txt.todos }}</option>{% for forma in pagamentos_disponiveis if forma != 'todos' %}<option value="{{ forma }}" {% if pagamento == forma %}selected{% endif %}>{{ payment_labels.get(forma, forma|replace('_',' ')|title) }}</option>{% endfor %}</select></div>
+            <div class="field"><label>{{ txt.origem }}</label><select name="origem"><option value="todos">{{ txt.todos }}</option>{% for valor,label in origens_disponiveis %}<option value="{{ valor }}" {% if origem == valor %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+            <div class="field"><label>{{ txt.status }}</label><select name="status_financeiro"><option value="todos">{{ txt.todos_status }}</option>{% for valor in ['recebido','parcial','pendente','cancelado','concluido','sem_valor'] %}<option value="{{ valor }}" {% if status_financeiro == valor %}selected{% endif %}>{{ status_labels.get(valor, valor) }}</option>{% endfor %}</select></div>
+            {% if financeiro_tipo == 'servicos' %}<div class="field"><label>Profissional</label><select name="profissional_id"><option value="todos">Todos os profissionais</option>{% for p in profissionais_financeiro %}<option value="{{ p.id }}" {% if profissional_id == p.id|string %}selected{% endif %}>{{ p.nome }}</option>{% endfor %}</select></div>{% endif %}
+            <div class="field"><button type="submit"><i class="fa-solid fa-filter"></i> {{ txt.filtrar }}</button></div>
+          </div>
+        </form>
+
+        <section id="resumo" class="mf-finance-kpis">
+          <article class="mf-finance-kpi primary"><span class="label">{{ txt.recebido }}</span><strong>{{ moeda(total_recebido) }}</strong><small>Valores efetivamente recebidos no período.</small></article>
+          <article class="mf-finance-kpi"><span class="label">{{ txt.a_receber }}</span><strong>{{ moeda(total_pendente) }}</strong><small>Saldo ainda pendente dos registros ativos.</small></article>
+          <article class="mf-finance-kpi"><span class="label">{{ txt.valor_bruto }}</span><strong>{{ moeda(total_bruto) }}</strong><small>Total previsto, sem somar registros cancelados.</small></article>
+          <article class="mf-finance-kpi"><span class="label">{{ txt.ticket }}</span><strong>{{ moeda(ticket_medio) }}</strong><small>Média dos registros que possuem valor.</small></article>
+        </section>
+
+        <section class="mf-finance-kpis">
+          <article class="mf-finance-kpi"><span class="label">{{ txt.movimentacoes }}</span><strong>{{ total_movimentos }}</strong><small>{{ total_recebidos }} recebidos · {{ total_parciais }} parciais.</small></article>
+          {% if financeiro_tipo == 'servicos' %}
+            <article class="mf-finance-kpi"><span class="label">{{ txt.sinais }}</span><strong>{{ moeda(sinais_recebidos) }}</strong><small>Pagamentos antecipados identificados.</small></article>
+            <article class="mf-finance-kpi"><span class="label">{{ txt.concluido }}</span><strong>{{ total_concluidos }}</strong><small>Agendamentos concluídos ou recebidos.</small></article>
+          {% elif financeiro_tipo == 'restaurante' %}
+            <article class="mf-finance-kpi"><span class="label">{{ txt.taxas }}</span><strong>{{ moeda(taxas_entrega_total) }}</strong><small>Taxas incluídas nos pedidos finalizados.</small></article>
+            <article class="mf-finance-kpi"><span class="label">{{ txt.sinais }}</span><strong>{{ moeda(sinais_recebidos) }}</strong><small>Sinais recebidos em reservas e encomendas.</small></article>
+          {% else %}
+            <article class="mf-finance-kpi"><span class="label">{{ txt.taxas }}</span><strong>{{ moeda(taxas_entrega_total) }}</strong><small>Fretes cobrados nas vendas finalizadas.</small></article>
+            <article class="mf-finance-kpi"><span class="label">{{ txt.impostos }}</span><strong>{{ moeda(iva_acumulada) }}</strong><small>Tributos gravados nos itens vendidos.</small></article>
+          {% endif %}
+          <article class="mf-finance-kpi"><span class="label">{{ txt.cancelados }}</span><strong>{{ total_cancelados }}</strong><small>Continuam no histórico sem inflar o valor bruto.</small></article>
+        </section>
+
+        {% if financeiro_tipo == 'servicos' %}
+        <section class="mf-finance-card mf-professional-summary-card">
+          <div class="mf-finance-card-head"><div><h2>Resumo por profissional</h2><p>Atendimentos, valores recebidos e saldos da equipe no período filtrado.</p></div></div>
+          <div class="mf-finance-table-wrap"><table class="mf-finance-table"><thead><tr><th>Profissional</th><th>Agendamentos</th><th>Concluídos</th><th>Cancelados</th><th>Recebido</th><th>A receber</th></tr></thead><tbody>
+          {% for r in resumo_profissionais %}<tr class="{% if profissional_id != 'todos' and profissional_id == r.id|string %}is-selected-professional{% endif %}"><td data-label="Profissional"><strong>{{ r.nome }}</strong></td><td data-label="Agendamentos">{{ r.agendamentos }}</td><td data-label="Concluídos">{{ r.concluidos }}</td><td data-label="Cancelados">{{ r.cancelados }}</td><td data-label="Recebido">{{ moeda(r.recebido) }}</td><td data-label="A receber">{{ moeda(r.pendente) }}</td></tr>{% else %}<tr><td colspan="6" class="mf-finance-empty">Nenhum profissional com movimentação no período.</td></tr>{% endfor %}
+          </tbody></table></div>
+        </section>
+        {% endif %}
+
+        <section id="pagamentos" class="mf-finance-grid">
+          <article class="mf-finance-card">
+            <div class="mf-finance-card-head"><div><h2>{{ txt.origens }}</h2><p>Separação conforme o tipo desta empresa.</p></div></div>
+            <div class="mf-finance-table-wrap"><table class="mf-finance-table"><thead><tr><th>{{ txt.origem }}</th><th>{{ txt.quantidade }}</th><th>{{ txt.recebido }}</th><th>{{ txt.a_receber }}</th></tr></thead><tbody>
+            {% for nome,r in resumo_origens.items() %}<tr><td data-label="{{ txt.origem }}"><strong>{{ nome }}</strong></td><td data-label="{{ txt.quantidade }}">{{ r.quantidade }}</td><td data-label="{{ txt.recebido }}">{{ moeda(r.recebido) }}</td><td data-label="{{ txt.a_receber }}">{{ moeda(r.pendente) }}</td></tr>{% else %}<tr><td colspan="4" class="mf-finance-empty">{{ txt.sem_movimentos }}</td></tr>{% endfor %}
+            </tbody></table></div>
+          </article>
+          <article class="mf-finance-card">
+            <div class="mf-finance-card-head"><div><h2>{{ txt.formas }}</h2><p>Recebido e pendente por forma escolhida.</p></div></div>
+            <div class="mf-finance-table-wrap"><table class="mf-finance-table"><thead><tr><th>{{ txt.forma }}</th><th>{{ txt.quantidade }}</th><th>{{ txt.recebido }}</th><th>{{ txt.a_receber }}</th></tr></thead><tbody>
+            {% for nome,r in resumo_pagamentos.items() %}<tr><td data-label="{{ txt.forma }}"><strong>{{ payment_labels.get(nome, nome|replace('_',' ')|title) }}</strong></td><td data-label="{{ txt.quantidade }}">{{ r.quantidade }}</td><td data-label="{{ txt.recebido }}">{{ moeda(r.recebido) }}</td><td data-label="{{ txt.a_receber }}">{{ moeda(r.pendente) }}</td></tr>{% else %}<tr><td colspan="4" class="mf-finance-empty">{{ txt.sem_movimentos }}</td></tr>{% endfor %}
+            </tbody></table></div>
+          </article>
+        </section>
+
+        <section id="historico" class="mf-finance-card">
+          <div class="mf-finance-card-head">
+            <div><h2>{{ txt.historico }}</h2><p>{{ txt.codigo_diario }}</p></div>
+            <div class="mf-finance-actions"><a class="mf-finance-action" href="/admin/{{ empresa.id }}/financeiro/relatorio.xlsx?data_inicio={{ data_inicio }}&data_fim={{ data_fim }}&pagamento={{ pagamento }}&origem={{ origem }}&idioma=pt&lang=pt"><i class="fa-solid fa-file-excel"></i>{{ txt.exportar }}</a></div>
+          </div>
+          <div class="mf-finance-note">{{ txt.export_note }}</div>
+          <div id="movimentacoes" class="mf-finance-table-wrap" style="margin-top:13px">
+            <table class="mf-finance-table">
+              <thead><tr><th>{{ txt.codigo }}</th><th>{{ txt.data_horario }}</th><th>{{ txt.origem }}</th><th>{{ txt.cliente }}</th>{% if financeiro_tipo == 'servicos' %}<th>Profissional</th>{% endif %}<th>{{ txt.descricao }}</th><th>{{ txt.forma }}</th><th>{{ txt.status }}</th><th>{{ txt.valor }}</th><th>{{ txt.recebido }}</th><th>{{ txt.pendente }}</th><th>{{ txt.acao }}</th></tr></thead>
+              <tbody>
+              {% for m in movimentos %}
+                <tr data-registro="{{ m.chave_registro }}">
+                  <td data-label="{{ txt.codigo }}"><span class="mf-finance-code">#{{ '%03d'|format(m.numero_dia or m.registro_id) }}</span></td>
+                  <td data-label="{{ txt.data_horario }}"><span class="mf-finance-date-time"><strong>{{ m.data_movimento.strftime('%d/%m/%Y') }}</strong><small>{{ m.data_movimento.strftime('%H:%M') }}</small></span></td>
+                  <td data-label="{{ txt.origem }}"><span class="mf-finance-source">{{ m.origem_nome }}</span></td>
+                  <td data-label="{{ txt.cliente }}"><strong>{{ m.cliente }}</strong></td>
+                  {% if financeiro_tipo == 'servicos' %}<td data-label="Profissional"><strong>{{ m.profissional_nome or 'Não informado' }}</strong></td>{% endif %}
+                  <td data-label="{{ txt.descricao }}"><span>{{ m.descricao }}</span></td>
+                  <td data-label="{{ txt.forma }}"><span class="mf-finance-payment-v849"><strong>{{ payment_labels.get(m.forma_pagamento, m.forma_pagamento|replace('_',' ')|title) }}</strong>{% if m.pagamento_detalhe %}<small>{{ m.pagamento_detalhe }}</small>{% endif %}</span></td>
+                  <td data-label="{{ txt.status }}"><span class="mf-finance-status {{ m.status_financeiro }}">{{ status_labels.get(m.status_financeiro, m.status_financeiro) }}</span></td>
+                  <td data-label="{{ txt.valor }}"><span class="mf-finance-money">{{ moeda(m.valor_total) }}</span></td>
+                  <td data-label="{{ txt.recebido }}"><span class="mf-finance-money">{{ moeda(m.valor_recebido) }}</span></td>
+                  <td data-label="{{ txt.pendente }}"><span class="mf-finance-money pending">{{ moeda(m.valor_pendente) }}</span></td>
+                  <td data-label="{{ txt.acao }}"><a class="mf-finance-action mf-finance-print-icon" href="{{ m.imprimir_url }}" target="_blank" rel="noopener" title="{{ txt.imprimir }}" aria-label="{{ txt.imprimir }}"><i class="fa-solid fa-print" aria-hidden="true"></i><span class="sr-only">{{ txt.imprimir }}</span></a></td>
+                </tr>
+              {% else %}<tr><td colspan="{{ 12 if financeiro_tipo == 'servicos' else 11 }}" class="mf-finance-empty">{{ txt.sem_movimentos }}</td></tr>{% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style id="mf-finance-v313-data-horario">
+/* V313 — data e horário do movimento visíveis e alinhados no histórico. */
+.mf-finance-date-time{
+  display:inline-flex;
+  flex-direction:column;
+  gap:2px;
+  white-space:nowrap;
+  line-height:1.1;
+}
+.mf-finance-date-time strong{font-size:13px;color:#17233b;font-weight:850}
+.mf-finance-date-time small{font-size:11px;color:#71809a;font-weight:750}
+@media(max-width:760px){
+  .mf-finance-date-time{align-items:flex-end;text-align:right}
+}
+</style>
+<style id="mf-finance-mobile-v298">
+/* V298 — Financeiro totalmente adaptado ao padrão mobile do admin. */
+@media(max-width:760px){
+  html,body{max-width:100%!important;overflow-x:hidden!important}
+  body.mf-v273-finance .mf-admin-shell{
+    display:block!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    overflow-x:hidden!important;
+  }
+  body.mf-v273-finance .premium-main{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+    padding:0!important;
+    overflow-x:hidden!important;
+  }
+  body.mf-v273-finance .premium-topbar{
+    width:100%!important;
+    min-width:0!important;
+    padding:13px 14px!important;
+  }
+  body.mf-v273-finance .premium-page-title{
+    min-width:0!important;
+  }
+  body.mf-v273-finance .premium-page-title strong,
+  body.mf-v273-finance .premium-page-title span{
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    white-space:nowrap!important;
+  }
+  body.mf-v273-finance .premium-content{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+    padding:12px 12px 92px!important;
+    overflow-x:hidden!important;
+    box-sizing:border-box!important;
+  }
+  body.mf-v273-finance .mf-finance-shell{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    gap:12px!important;
+  }
+
+  /* O cabeçalho grande foi removido; a topbar já identifica a página. */
+  body.mf-v273-finance .mf-finance-hero{display:none!important}
+
+  body.mf-v273-finance .mf-finance-tabs{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:8px!important;
+    width:100%!important;
+    max-width:100%!important;
+    overflow:visible!important;
+    padding:0!important;
+  }
+  body.mf-v273-finance .mf-finance-tab{
+    width:100%!important;
+    min-width:0!important;
+    min-height:46px!important;
+    padding:0 12px!important;
+    justify-content:flex-start!important;
+    border-radius:14px!important;
+    font-size:13px!important;
+    overflow:hidden!important;
+  }
+
+  body.mf-v273-finance .mf-finance-filter{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+    padding:14px!important;
+    border-radius:17px!important;
+    box-sizing:border-box!important;
+  }
+  body.mf-v273-finance .mf-finance-filter-grid{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:12px!important;
+    width:100%!important;
+    min-width:0!important;
+  }
+  body.mf-v273-finance .mf-finance-filter-grid .field{
+    width:100%!important;
+    min-width:0!important;
+    grid-column:auto!important;
+  }
+  body.mf-v273-finance .mf-finance-filter label{
+    margin-bottom:6px!important;
+    font-size:12px!important;
+  }
+  body.mf-v273-finance .mf-finance-filter input,
+  body.mf-v273-finance .mf-finance-filter select,
+  body.mf-v273-finance .mf-finance-filter button{
+    display:block!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    height:46px!important;
+    box-sizing:border-box!important;
+    border-radius:12px!important;
+  }
+  body.mf-v273-finance .mf-finance-filter button{
+    justify-content:center!important;
+    text-align:center!important;
+  }
+
+  body.mf-v273-finance .mf-finance-kpis{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:9px!important;
+    width:100%!important;
+    min-width:0!important;
+  }
+  body.mf-v273-finance .mf-finance-kpi{
+    min-width:0!important;
+    min-height:112px!important;
+    padding:13px!important;
+    border-radius:16px!important;
+    box-sizing:border-box!important;
+  }
+  body.mf-v273-finance .mf-finance-kpi .label{
+    line-height:1.25!important;
+    overflow-wrap:anywhere!important;
+  }
+  body.mf-v273-finance .mf-finance-kpi strong{
+    margin:9px 0 6px!important;
+    font-size:20px!important;
+    line-height:1.05!important;
+    overflow-wrap:anywhere!important;
+  }
+  body.mf-v273-finance .mf-finance-kpi small{
+    font-size:10.5px!important;
+    line-height:1.35!important;
+  }
+
+  body.mf-v273-finance .mf-finance-grid{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:12px!important;
+    width:100%!important;
+    min-width:0!important;
+  }
+  body.mf-v273-finance .mf-finance-card,
+  body.mf-v273-finance .mf-professional-summary-card{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+    padding:14px!important;
+    border-radius:17px!important;
+    box-sizing:border-box!important;
+    overflow:hidden!important;
+  }
+  body.mf-v273-finance .mf-finance-card-head{
+    flex-direction:column!important;
+    align-items:stretch!important;
+    gap:10px!important;
+    margin-bottom:12px!important;
+  }
+  body.mf-v273-finance .mf-finance-card h2{
+    font-size:16px!important;
+  }
+  body.mf-v273-finance .mf-finance-card p{
+    font-size:11px!important;
+    overflow-wrap:anywhere!important;
+  }
+  body.mf-v273-finance .mf-finance-actions{
+    width:100%!important;
+  }
+  body.mf-v273-finance .mf-finance-action{
+    width:100%!important;
+    min-width:0!important;
+    box-sizing:border-box!important;
+  }
+  body.mf-v273-finance .mf-finance-note{
+    width:100%!important;
+    box-sizing:border-box!important;
+    font-size:11px!important;
+  }
+
+  /* Todas as tabelas viram cartões legíveis; não existe rolagem lateral. */
+  body.mf-v273-finance .mf-finance-table-wrap{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    overflow:visible!important;
+    border:0!important;
+    border-radius:0!important;
+  }
+  body.mf-v273-finance .mf-finance-table{
+    display:block!important;
+    width:100%!important;
+    min-width:0!important;
+    border:0!important;
+  }
+  body.mf-v273-finance .mf-finance-table thead{display:none!important}
+  body.mf-v273-finance .mf-finance-table tbody{
+    display:grid!important;
+    gap:10px!important;
+    width:100%!important;
+  }
+  body.mf-v273-finance .mf-finance-table tr{
+    display:block!important;
+    width:100%!important;
+    min-width:0!important;
+    overflow:hidden!important;
+    border:1px solid #e4e9f1!important;
+    border-radius:14px!important;
+    background:#fff!important;
+  }
+  body.mf-v273-finance .mf-finance-table tr.is-selected-professional{
+    border-color:#b9c7ff!important;
+    background:#eef3ff!important;
+  }
+  body.mf-v273-finance .mf-finance-table td{
+    display:flex!important;
+    align-items:flex-start!important;
+    justify-content:space-between!important;
+    gap:14px!important;
+    width:100%!important;
+    min-width:0!important;
+    padding:10px 11px!important;
+    border:0!important;
+    border-bottom:1px solid #edf1f6!important;
+    background:transparent!important;
+    text-align:right!important;
+    box-sizing:border-box!important;
+    overflow-wrap:anywhere!important;
+  }
+  body.mf-v273-finance .mf-finance-table td:last-child{border-bottom:0!important}
+  body.mf-v273-finance .mf-finance-table td::before{
+    content:attr(data-label);
+    flex:0 0 42%;
+    max-width:42%;
+    color:#64748b;
+    font-size:10px;
+    line-height:1.3;
+    font-weight:900;
+    letter-spacing:.03em;
+    text-align:left;
+    text-transform:uppercase;
+  }
+  body.mf-v273-finance .mf-finance-table td>*{
+    min-width:0!important;
+    max-width:58%!important;
+  }
+  body.mf-v273-finance .mf-finance-table .mf-finance-empty{
+    display:block!important;
+    padding:22px 14px!important;
+    text-align:center!important;
+  }
+  body.mf-v273-finance .mf-finance-table .mf-finance-empty::before{display:none!important}
+  body.mf-v273-finance .mf-finance-code,
+  body.mf-v273-finance .mf-finance-date,
+  body.mf-v273-finance .mf-finance-money{
+    white-space:normal!important;
+  }
+  body.mf-v273-finance .mf-finance-table td .mf-finance-action{
+    width:auto!important;
+    max-width:100%!important;
+  }
+}
+
+@media(max-width:370px){
+  body.mf-v273-finance .premium-content{padding-left:9px!important;padding-right:9px!important}
+  body.mf-v273-finance .mf-finance-tabs{grid-template-columns:1fr!important}
+  body.mf-v273-finance .mf-finance-kpis{grid-template-columns:1fr!important}
+}
+</style>
+{% endblock %}

@@ -1,0 +1,22 @@
+<div class="mf-admin-sidebar" data-mf-admin-sidebar>
+  <div class="mf-admin-sidebar__brand">
+    <div class="mf-admin-sidebar__brand-icon" aria-hidden="true"><i class="fa-solid fa-box-open"></i></div>
+    <div class="mf-admin-sidebar__brand-copy"><strong>{{ empresa.nome }}</strong><span>Painel de encomendas</span></div>
+    <button class="mf-admin-sidebar__close" type="button" data-mf-sidebar-close aria-label="Fechar menu"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <nav class="mf-admin-nav" aria-label="Navegação de encomendas">
+    <a class="mf-admin-nav-link" href="/admin/{{ empresa.id }}"><i class="fa-solid fa-house"></i><span>Dashboard</span></a>
+    <a class="mf-admin-nav-link mf-admin-nav-link--pwa" href="#" data-mf-push-open aria-haspopup="dialog" aria-expanded="false"><img src="/static/pwa/icons/icon-192.png?v=724" alt="" aria-hidden="true"><span>Aplicativo e alertas</span></a>
+    <a class="mf-admin-nav-link{% if request.url.path.endswith('/cadastrar') %} active{% endif %}" href="/admin/{{ empresa.id }}/encomendas-preview/cadastrar"><i class="fa-solid fa-layer-group"></i><span>Cadastrar encomendas</span></a>
+    <a class="mf-admin-nav-link{% if request.url.path.endswith('/encomendas-preview') %} active{% endif %}" href="/admin/{{ empresa.id }}/encomendas-preview"><i class="fa-solid fa-box-open"></i><span>Encomendas</span></a>
+    <a class="mf-admin-nav-link" href="/admin/{{ empresa.id }}/financeiro"><i class="fa-solid fa-coins"></i><span>Financeiro</span></a>
+    <a class="mf-admin-nav-link" href="/admin/{{ empresa.id }}/pagamentos-online"><i class="fa-regular fa-credit-card"></i><span>Pagamentos online</span></a>
+    <a class="mf-admin-nav-link" href="/admin/{{ empresa.id }}/entrega-politicas"><i class="fa-solid fa-truck-fast"></i><span>Entrega e políticas</span></a>
+    <a class="mf-admin-nav-link" href="/admin/{{ empresa.id }}/configuracoes"><i class="fa-solid fa-gear"></i><span>Configurações</span></a>
+    <a class="mf-admin-nav-link" href="/admin/{{ empresa.id }}/funcionarios"><i class="fa-solid fa-users-gear"></i><span>Funcionários</span></a>
+    <a class="mf-admin-nav-link" href="/admin/{{ empresa.id }}/integracoes"><i class="fa-solid fa-plug"></i><span>Integrações</span></a>
+    <a class="mf-admin-nav-link" href="/admin/{{ empresa.id }}/encomendas-preview/menu" target="_blank" rel="noopener"><i class="fa-solid fa-globe"></i><span>Menu público</span></a>
+    <a class="mf-admin-nav-link" href="/logout"><i class="fa-solid fa-right-from-bracket"></i><span>Sair</span></a>
+  </nav>
+</div>
+<div class="mf-admin-sidebar-overlay" data-mf-sidebar-overlay aria-hidden="true"></div>

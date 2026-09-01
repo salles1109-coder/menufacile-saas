@@ -1,0 +1,480 @@
+{% extends "base.html" %}
+{% block title %}Produtos para encomenda — {{ empresa.nome }}{% endblock %}
+{% block body_attrs %} class="mf-encomendas-v761 mf-ds-admin mf-global-mobile-admin"{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="/static/css/encomendas-v762.css?v=766">
+<link rel="stylesheet" href="/static/css/encomendas-cadastro-v813.css?v=928">
+{% endblock %}
+{% block page %}
+<div class="enc-shell mf-admin-shell enc-catalog-v803">
+  {% include "includes/admin_sidebar.html" %}
+  <main class="enc-main">
+    <header class="enc-topbar enc-catalog-topbar">
+      <div class="enc-heading">
+        <div class="enc-heading-icon"><i class="fa-solid fa-box-open"></i></div>
+        <div class="enc-heading-copy">
+          <strong>Produtos para encomenda</strong>
+          <span>Cadastre o que seus clientes podem pedir pelo menu.</span>
+        </div>
+      </div>
+      <div class="enc-top-actions">
+        <a class="enc-btn" href="/admin/{{ empresa.id }}/encomendas"><i class="fa-solid fa-arrow-left"></i> Central</a>
+        <a class="enc-btn" href="/menu/{{ empresa.slug }}" target="_blank"><i class="fa-regular fa-eye"></i> Ver menu</a>
+      </div>
+    </header>
+
+    <section class="enc-page enc-catalog-page">
+      {% if request.query_params.get('salvo') %}
+      <div class="enc-feedback success"><i class="fa-solid fa-circle-check"></i><div><strong>Produto cadastrado.</strong><span>Ele já está disponível no catálogo de Encomendas.</span></div></div>
+      {% elif request.query_params.get('atualizado') %}
+      <div class="enc-feedback success"><i class="fa-solid fa-circle-check"></i><div><strong>Produto atualizado.</strong><span>As alterações já aparecem no menu.</span></div></div>
+      {% elif request.query_params.get('excluido') %}
+      <div class="enc-feedback success"><i class="fa-solid fa-circle-check"></i><div><strong>Produto excluído.</strong><span>Ele não aparece mais no catálogo, mas encomendas antigas continuam preservadas.</span></div></div>
+      {% elif request.query_params.get('categoria_excluida') %}
+      <div class="enc-feedback success"><i class="fa-solid fa-circle-check"></i><div><strong>Categoria excluída.</strong><span>Ela não aparece mais no catálogo.</span></div></div>
+      {% elif request.query_params.get('erro') == 'nome' %}
+      <div class="enc-feedback error"><i class="fa-solid fa-circle-exclamation"></i><div><strong>Informe o nome do produto.</strong></div></div>
+      {% elif request.query_params.get('erro') == 'categoria' %}
+      <div class="enc-feedback error"><i class="fa-solid fa-circle-exclamation"></i><div><strong>Escolha uma categoria válida.</strong></div></div>
+      {% endif %}
+
+      <div class="enc-catalog-summary enc-catalog-tabs enc-catalog-tabs-v864" role="tablist" aria-label="Catálogo de encomendas">
+        <button type="button" class="enc-catalog-tab {% if not editor_aberto %}active{% endif %}" data-enc-tab="categories" role="tab" aria-selected="{{ 'true' if not editor_aberto else 'false' }}">
+          <span class="enc-catalog-tab-dot" aria-hidden="true"></span>
+          <span class="enc-catalog-tab-label">Categorias</span>
+          <strong class="enc-catalog-tab-count" id="encCategoryTotal">{{ categorias_encomenda|length }}</strong>
+        </button>
+        <button type="button" class="enc-catalog-tab {% if editor_aberto %}active{% endif %}" data-enc-tab="products" role="tab" aria-selected="{{ 'true' if editor_aberto else 'false' }}">
+          <span class="enc-catalog-tab-dot" aria-hidden="true"></span>
+          <span class="enc-catalog-tab-label">Produtos cadastrados</span>
+          <strong class="enc-catalog-tab-count" id="encProductTotal">{{ itens_encomenda|length }}</strong>
+        </button>
+      </div>
+
+      <section class="enc-catalog-panel {% if not editor_aberto %}active{% endif %}" data-enc-panel="categories" role="tabpanel">
+        <div class="enc-panel-toolbar">
+          <button type="button" class="enc-panel-action" data-enc-open-categories><i class="fa-solid fa-plus"></i> Adicionar categoria</button>
+        </div>
+        <div class="enc-category-browser">
+          {% for categoria in categorias_gestao %}
+          <article class="enc-category-browser-card" data-enc-category-card="{{ categoria.id }}" data-enc-category-count="{{ categoria.itens }}">
+            <button type="button" class="enc-category-browser-main" data-enc-category-filter="{{ categoria.id }}" data-enc-category-name="{{ categoria.nome|e }}" aria-label="Ver produtos de {{ categoria.nome }}">
+              <span class="enc-category-browser-icon"><i class="fa-solid fa-tag"></i></span>
+              <span class="enc-category-browser-copy"><strong>{{ categoria.nome }}</strong><small data-enc-category-count-text>{{ categoria.itens }} produto{% if categoria.itens != 1 %}s{% endif %}</small></span>
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+            <div class="enc-category-card-actions">
+              <button type="button" class="enc-category-action edit" data-enc-edit-category="{{ categoria.id }}"><i class="fa-solid fa-pen"></i> Editar</button>
+              <form method="post" action="/admin/{{ empresa.id }}/encomendas/categorias/{{ categoria.id }}/excluir?origem=lista" class="enc-delete-category-form" data-enc-category-id="{{ categoria.id }}" data-enc-category-name="{{ categoria.nome|e }}">
+                <button type="submit" class="enc-category-action delete{% if categoria.itens > 0 %} disabled{% endif %}" {% if categoria.itens > 0 %}disabled title="Mova ou exclua os produtos antes de excluir esta categoria"{% endif %}><i class="fa-regular fa-trash-can"></i> Excluir</button>
+              </form>
+            </div>
+          </article>
+          {% endfor %}
+        </div>
+      </section>
+
+      {% if editor_aberto %}
+      <section class="enc-editor" id="editor">
+        <div class="enc-editor-head">
+          <div>
+            <span class="enc-step-kicker">{% if item_edicao %}EDITANDO PRODUTO{% else %}NOVO PRODUTO{% endif %}</span>
+            <h2>{% if item_edicao %}{{ item_edicao.nome }}{% else %}Cadastrar produto{% endif %}</h2>
+            <p>Preencha o essencial primeiro. As opções avançadas ficam recolhidas.</p>
+          </div>
+          <a class="enc-editor-close" href="/admin/{{ empresa.id }}/encomendas/cadastrar" aria-label="Fechar cadastro"><i class="fa-solid fa-xmark"></i></a>
+        </div>
+
+        <form method="post" action="{% if item_edicao %}/admin/{{ empresa.id }}/encomendas/itens/{{ item_edicao.id }}/editar{% else %}/admin/{{ empresa.id }}/encomendas/cadastrar{% endif %}" id="encCadastroForm" class="enc-editor-grid" novalidate>
+          <div class="enc-editor-main">
+            <section class="enc-form-section">
+              <div class="enc-section-title"><span>1</span><div><strong>Produto</strong><small>Nome, categoria e foto.</small></div></div>
+              <div class="enc-form-grid">
+                <label class="enc-field-v803 full">
+                  <span>Nome do produto</span>
+                  <input id="encItemName" name="nome" class="enc-input-v803" placeholder="Ex.: Bolo Vulcão" value="{{ item_edicao.nome if item_edicao else '' }}" required>
+                </label>
+
+                <div class="enc-field-v803">
+                  <span>Categoria</span>
+                  <div class="enc-category-picker">
+                    <select name="categoria_id" id="encCategorySelect" class="enc-input-v803" required>
+                      <option value="">Escolha uma categoria</option>
+                      {% for categoria in categorias_encomenda %}
+                      <option value="{{ categoria.id }}" {% if item_edicao and item_edicao.categoria_id == categoria.id %}selected{% endif %}>{{ categoria.nome }}</option>
+                      {% endfor %}
+                    </select>
+                    <button type="button" class="enc-inline-icon" data-enc-open-categories title="Nova categoria"><i class="fa-solid fa-plus"></i></button>
+                  </div>
+                </div>
+
+                <label class="enc-field-v803 full">
+                  <span>Descrição curta <small>opcional</small></span>
+                  <textarea name="descricao" id="encItemDescription" class="enc-input-v803" rows="3" placeholder="Ex.: Massa de chocolate, recheio cremoso e cobertura de brigadeiro.">{{ item_edicao.descricao if item_edicao else '' }}</textarea>
+                </label>
+
+                <div class="enc-field-v803 full">
+                  <span>Foto do produto <small>opcional</small></span>
+                  <div class="enc-photo-uploader">
+                    <div class="enc-photo-thumb" id="encPhotoThumb">
+                      {% if item_edicao and item_edicao.foto_url %}
+                      <img id="encPhotoThumbImg" src="{{ item_edicao.foto_url }}" alt="Foto do produto">
+                      {% else %}
+                      <img id="encPhotoThumbImg" alt="Foto do produto" hidden>
+                      <div class="enc-photo-placeholder" id="encPhotoPlaceholder"><i class="fa-regular fa-image"></i></div>
+                      {% endif %}
+                    </div>
+                    <div class="enc-photo-actions">
+                      <input type="hidden" name="foto_url" id="encItemPhoto" value="{{ item_edicao.foto_url if item_edicao else '' }}">
+                      <input type="file" id="encItemPhotoFile" accept="image/*" hidden>
+                      <button type="button" class="enc-soft-btn" id="encChoosePhoto"><i class="fa-solid fa-camera"></i> Escolher foto</button>
+                      <span class="enc-photo-status" id="encPhotoStatus"></span>
+                      <details class="enc-url-details">
+                        <summary>Usar URL da imagem</summary>
+                        <input type="url" id="encItemPhotoUrl" class="enc-input-v803" placeholder="https://..." value="{{ item_edicao.foto_url if item_edicao else '' }}">
+                      </details>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="enc-form-section">
+              <div class="enc-section-title"><span>2</span><div><strong>Como você vende?</strong><small>Escolha o formato e cadastre as opções com preço.</small></div></div>
+              {% set forma_atual = item_edicao.forma_venda if item_edicao else 'preco_unico' %}
+              <input type="hidden" name="forma_venda" id="encSaleMode" value="{{ forma_atual }}">
+              <div class="enc-sale-mode" role="group" aria-label="Forma de venda">
+                <button type="button" data-sale-mode="preco_unico" class="{% if forma_atual == 'preco_unico' %}active{% endif %}"><i class="fa-solid fa-tag"></i><span>Preço único</span></button>
+                <button type="button" data-sale-mode="quantidade" class="{% if forma_atual == 'quantidade' %}active{% endif %}"><i class="fa-solid fa-cubes-stacked"></i><span>Quantidade</span></button>
+                <button type="button" data-sale-mode="peso" class="{% if forma_atual == 'peso' %}active{% endif %}"><i class="fa-solid fa-weight-scale"></i><span>Peso</span></button>
+                <button type="button" data-sale-mode="tamanho" class="{% if forma_atual == 'tamanho' %}active{% endif %}"><i class="fa-solid fa-ruler-combined"></i><span>Tamanho</span></button>
+                <button type="button" data-sale-mode="kit" class="{% if forma_atual == 'kit' %}active{% endif %}"><i class="fa-solid fa-box"></i><span>Kit / caixa</span></button>
+                <button type="button" data-sale-mode="unidade" class="{% if forma_atual == 'unidade' %}active{% endif %}"><i class="fa-solid fa-cookie-bite"></i><span>Unidade</span></button>
+                <button type="button" data-sale-mode="personalizado" class="{% if forma_atual == 'personalizado' %}active{% endif %}"><i class="fa-solid fa-wand-magic-sparkles"></i><span>Personalizado</span></button>
+              </div>
+
+              <div class="enc-single-price-box" id="encSinglePriceBox" {% if forma_atual != 'preco_unico' %}hidden{% endif %}>
+                <div>
+                  <strong>Preço do produto</strong>
+                  <small>O cliente verá apenas este valor, sem precisar escolher uma opção.</small>
+                </div>
+                <label class="enc-single-price-field">
+                  <span>Preço</span>
+                  <div class="enc-price-input enc-single-price-input"><span>R$</span><input name="preco_unico" id="encSinglePrice" class="enc-input-v803 enc-option-price" value="{% if item_edicao and item_edicao.opcoes %}{{ '%.2f'|format(item_edicao.opcoes[0].preco)|replace('.', ',') }}{% endif %}" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="0,00" aria-label="Preço único"></div>
+                </label>
+              </div>
+
+              <div class="enc-options-box" id="encOptionsBox" {% if forma_atual == 'preco_unico' %}hidden{% endif %}>
+                <div class="enc-options-head"><div><strong>Opções e preços</strong><small id="encOptionHelp">Ex.: 50 unidades — R$ 90,00</small></div></div>
+                <div class="enc-option-labels"><span>Opção</span><span>Preço</span><span></span></div>
+                <div id="encOptionList" class="enc-option-list-v803">
+                  {% if item_edicao and item_edicao.opcoes %}
+                    {% for opcao in item_edicao.opcoes %}
+                    <div class="enc-option-row-v803">
+                      <input name="opcao_nome" class="enc-input-v803 enc-option-name" value="{{ opcao.nome }}" placeholder="Ex.: 50 unidades" aria-label="Nome da opção">
+                      <div class="enc-price-input"><span>R$</span><input name="opcao_preco" class="enc-input-v803 enc-option-price" value="{{ '%.2f'|format(opcao.preco)|replace('.', ',') }}" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="0,00" aria-label="Preço"></div>
+                      <button type="button" class="enc-remove-option-v803" aria-label="Remover opção"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    {% endfor %}
+                  {% else %}
+                    <div class="enc-option-row-v803">
+                      <input name="opcao_nome" class="enc-input-v803 enc-option-name" placeholder="Ex.: 50 unidades" aria-label="Nome da opção">
+                      <div class="enc-price-input"><span>R$</span><input name="opcao_preco" class="enc-input-v803 enc-option-price" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="0,00" aria-label="Preço"></div>
+                      <button type="button" class="enc-remove-option-v803" aria-label="Remover opção"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                  {% endif %}
+                </div>
+                <button class="enc-add-option-v803" id="encAddOption" type="button"><i class="fa-solid fa-plus"></i> Adicionar opção</button>
+              </div>
+            </section>
+
+            <section class="enc-form-section">
+              <div class="enc-section-title"><span>3</span><div><strong>Prazo e recebimento</strong><small>Defina quanto tempo precisa e como o cliente recebe.</small></div></div>
+              {% set antecedencia_minutos_atual = item_edicao.antecedencia_minutos if item_edicao else 2880 %}
+              {% if antecedencia_minutos_atual > 0 and antecedencia_minutos_atual % 1440 == 0 %}
+                {% set antecedencia_valor = antecedencia_minutos_atual // 1440 %}{% set antecedencia_unidade = 'dias' %}
+              {% elif antecedencia_minutos_atual > 0 and antecedencia_minutos_atual % 60 == 0 %}
+                {% set antecedencia_valor = antecedencia_minutos_atual // 60 %}{% set antecedencia_unidade = 'horas' %}
+              {% else %}
+                {% set antecedencia_valor = antecedencia_minutos_atual %}{% set antecedencia_unidade = 'minutos' %}
+              {% endif %}
+              <div class="enc-time-settings-v813">
+                <div class="enc-field-v803">
+                  <span>Antecedência mínima</span>
+                  <div class="enc-time-input-v813">
+                    <input name="antecedencia_valor" class="enc-input-v803" type="number" min="0" step="1" value="{{ antecedencia_valor }}" inputmode="numeric" aria-label="Valor da antecedência mínima">
+                    <select name="antecedencia_unidade" class="enc-input-v803" aria-label="Unidade da antecedência mínima">
+                      <option value="minutos" {% if antecedencia_unidade == 'minutos' %}selected{% endif %}>minutos</option>
+                      <option value="horas" {% if antecedencia_unidade == 'horas' %}selected{% endif %}>horas</option>
+                      <option value="dias" {% if antecedencia_unidade == 'dias' %}selected{% endif %}>dias</option>
+                    </select>
+                  </div>
+                  <small>Digite qualquer prazo. Ex.: 45 minutos, 6 horas ou 2 dias.</small>
+                </div>
+
+                {% set hoje_on = item_edicao.disponivel_hoje if item_edicao else false %}
+                {% set retirada_min_atual = item_edicao.tempo_retirada_minutos if item_edicao else 30 %}
+                {% if retirada_min_atual > 0 and retirada_min_atual % 60 == 0 %}
+                  {% set retirada_valor = retirada_min_atual // 60 %}{% set retirada_unidade = 'horas' %}
+                {% else %}
+                  {% set retirada_valor = retirada_min_atual %}{% set retirada_unidade = 'minutos' %}
+                {% endif %}
+                <div class="enc-today-box-v813{% if hoje_on %} is-on{% endif %}" id="encTodayBoxV813">
+                  <input type="hidden" name="disponivel_hoje" id="encAvailableToday" value="{{ 1 if hoje_on else 0 }}">
+                  <label class="enc-native-toggle enc-today-toggle-v813">
+                    <div><strong>Disponível hoje</strong><small>Mostra um selo no card e permite retirada no mesmo dia.</small></div>
+                    <input type="checkbox" data-enc-hidden="encAvailableToday" {% if hoje_on %}checked{% endif %}><span></span>
+                  </label>
+                  <div class="enc-today-time-v813" id="encTodayTimeV813" {% if not hoje_on %}hidden{% endif %}>
+                    <span>Tempo estimado para retirada hoje</span>
+                    <div class="enc-time-input-v813">
+                      <input name="tempo_retirada_valor" class="enc-input-v803" type="number" min="0" step="1" value="{{ retirada_valor }}" inputmode="numeric" aria-label="Tempo estimado para retirada">
+                      <select name="tempo_retirada_unidade" class="enc-input-v803" aria-label="Unidade do tempo estimado">
+                        <option value="minutos" {% if retirada_unidade == 'minutos' %}selected{% endif %}>minutos</option>
+                        <option value="horas" {% if retirada_unidade == 'horas' %}selected{% endif %}>horas</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {% set pickup_on = item_edicao.permite_retirada if item_edicao else true %}
+              {% set delivery_on = item_edicao.permite_entrega if item_edicao else true %}
+              <div class="enc-toggle-stack">
+                <input type="hidden" name="permite_retirada" id="encAllowPickup" value="{{ 1 if pickup_on else 0 }}">
+                <label class="enc-native-toggle"><div><strong>Retirada no estabelecimento</strong><small>O cliente escolhe data e horário para retirar.</small></div><input type="checkbox" data-enc-hidden="encAllowPickup" {% if pickup_on %}checked{% endif %}><span></span></label>
+
+                <input type="hidden" name="permite_entrega" id="encAllowDelivery" value="{{ 1 if delivery_on else 0 }}">
+                <label class="enc-native-toggle"><div><strong>Entrega</strong><small>O endereço será solicitado no pedido.</small></div><input type="checkbox" data-enc-hidden="encAllowDelivery" {% if delivery_on %}checked{% endif %}><span></span></label>
+              </div>
+            </section>
+
+            <details class="enc-advanced" {% if item_edicao and (item_edicao.sabores or item_edicao.recheios or item_edicao.aceita_personalizacao or item_edicao.destaque) %}open{% endif %}>
+              <summary><span><i class="fa-solid fa-sliders"></i><strong>Mais opções</strong><small>Sabores, recheios, personalização e destaque.</small></span><i class="fa-solid fa-chevron-down"></i></summary>
+              <div class="enc-advanced-body">
+                <div class="enc-form-grid enc-simple-lists-v938">
+                  <div class="enc-field-v803 full enc-list-editor-v938" data-enc-list-editor-v938>
+                    <span>Sabores disponíveis <small>opcional</small></span>
+                    <input type="hidden" name="sabores" value="{{ item_edicao.sabores|join(', ') if item_edicao else '' }}" data-enc-list-hidden-v938>
+                    <div class="enc-list-add-v938">
+                      <input type="text" class="enc-input-v803" data-enc-list-input-v938 placeholder="Ex.: Chocolate" autocomplete="off">
+                      <button type="button" class="enc-list-add-btn-v938" data-enc-list-add-v938><i class="fa-solid fa-plus"></i><span>Adicionar</span></button>
+                    </div>
+                    <div class="enc-list-items-v938" data-enc-list-items-v938 aria-live="polite"></div>
+                    <small class="enc-list-help-v938">Adicione os sabores um por vez. Você pode excluir qualquer um depois.</small>
+                  </div>
+
+                  <div class="enc-field-v803 full enc-list-editor-v938" data-enc-list-editor-v938>
+                    <span>Recheios disponíveis <small>opcional</small></span>
+                    <input type="hidden" name="recheios" value="{{ item_edicao.recheios|join(', ') if item_edicao else '' }}" data-enc-list-hidden-v938>
+                    <div class="enc-list-add-v938">
+                      <input type="text" class="enc-input-v803" data-enc-list-input-v938 placeholder="Ex.: Granulado" autocomplete="off">
+                      <button type="button" class="enc-list-add-btn-v938" data-enc-list-add-v938><i class="fa-solid fa-plus"></i><span>Adicionar</span></button>
+                    </div>
+                    <div class="enc-list-items-v938" data-enc-list-items-v938 aria-live="polite"></div>
+                    <small class="enc-list-help-v938">Adicione os recheios um por vez. Eles ficam separados dos sabores.</small>
+                  </div>
+                </div>
+
+                {% set personal_on = item_edicao.aceita_personalizacao if item_edicao else true %}
+                {% set destaque_on = item_edicao.destaque if item_edicao else false %}
+                <div class="enc-toggle-stack compact">
+                  <input type="hidden" name="aceita_personalizacao" id="encAllowPersonal" value="{{ 1 if personal_on else 0 }}">
+                  <label class="enc-native-toggle"><div><strong>Aceitar observação/personalização</strong><small>Ex.: nome, idade, frase curta ou detalhes do pedido.</small></div><input type="checkbox" data-enc-hidden="encAllowPersonal" {% if personal_on %}checked{% endif %}><span></span></label>
+
+                  <input type="hidden" name="destaque" id="encHighlight" value="{{ 1 if destaque_on else 0 }}">
+                  <label class="enc-native-toggle"><div><strong>Destacar na vitrine</strong><small>Este produto ganha prioridade na vitrine automática.</small></div><input type="checkbox" data-enc-hidden="encHighlight" {% if destaque_on %}checked{% endif %}><span></span></label>
+                </div>
+              </div>
+            </details>
+
+            <div class="enc-form-error" id="encFormError" hidden><i class="fa-solid fa-circle-exclamation"></i><span></span></div>
+            <div class="enc-editor-savebar">
+              <a class="enc-cancel-btn" href="/admin/{{ empresa.id }}/encomendas/cadastrar">Cancelar</a>
+              <button class="enc-save-btn" id="encSaveProduct" type="submit"><i class="fa-solid fa-check"></i> <span>{% if item_edicao %}Salvar alterações{% else %}Salvar produto{% endif %}</span></button>
+            </div>
+          </div>
+
+          <aside class="enc-editor-preview">
+            <div class="enc-preview-label"><i class="fa-regular fa-eye"></i> Prévia no menu</div>
+            <article class="enc-preview-v803">
+              <div class="enc-preview-photo-v803">
+                {% if item_edicao and item_edicao.foto_url %}
+                <img id="encPreviewImage" src="{{ item_edicao.foto_url }}" alt="Prévia">
+                {% else %}
+                <img id="encPreviewImage" alt="Prévia" hidden>
+                {% endif %}
+                <div class="enc-preview-empty" id="encPreviewEmpty" {% if item_edicao and item_edicao.foto_url %}hidden{% endif %}><i class="fa-regular fa-image"></i></div>
+              </div>
+              <div class="enc-preview-body-v803">
+                <span id="encPreviewCategory">{% if item_edicao %}{{ item_edicao.categoria }}{% else %}Categoria{% endif %}</span>
+                <h3 id="encPreviewName">{{ item_edicao.nome if item_edicao else 'Nome do produto' }}</h3>
+                <p id="encPreviewDescription">{{ item_edicao.descricao if item_edicao and item_edicao.descricao else 'Uma descrição curta ajuda o cliente a escolher.' }}</p>
+                <div class="enc-preview-price-v803"><small id="encPreviewPriceLabel">{% if forma_atual == 'preco_unico' %}Preço{% else %}A partir de{% endif %}</small><strong id="encPreviewPrice">{% if item_edicao %}{{ item_edicao.preco_inicial_texto }}{% else %}R$ 0,00{% endif %}</strong></div>
+              </div>
+            </article>
+            <div class="enc-preview-tip"><i class="fa-solid fa-circle-info"></i><span>A prévia acompanha suas alterações antes de salvar.</span></div>
+          </aside>
+        </form>
+      </section>
+      {% endif %}
+
+      <section class="enc-products-section enc-catalog-panel {% if editor_aberto %}active{% endif %}" data-enc-panel="products" role="tabpanel">
+        <div class="enc-panel-toolbar enc-products-head">
+          <a href="/admin/{{ empresa.id }}/encomendas/cadastrar?novo=1#editor" class="enc-panel-action"><i class="fa-solid fa-plus"></i> Adicionar produto</a>
+        </div>
+
+        {% if itens_encomenda %}
+        <div class="enc-admin-product-grid">
+          {% for item in itens_encomenda %}
+          <article class="enc-admin-product-card" data-enc-product-id="{{ item.id }}" data-enc-product-category="{{ item.categoria_id }}">
+            <div class="enc-admin-product-image">
+              {% if item.foto_url %}<img src="{{ item.foto_url }}" alt="{{ item.nome }}" loading="lazy">{% else %}<div class="enc-admin-no-photo"><i class="fa-regular fa-image"></i></div>{% endif %}
+            </div>
+            <div class="enc-admin-product-copy">
+              <div class="enc-admin-product-meta"><span>{{ item.categoria }}</span>{% if item.destaque %}<span class="featured"><i class="fa-solid fa-star"></i> Destaque</span>{% endif %}</div>
+              <h3>{{ item.nome }}</h3>
+              <p>{{ item.descricao or 'Sem descrição.' }}</p>
+              <div class="enc-admin-product-info">
+                <span><strong>{{ item.preco_inicial_texto }}</strong><small>{% if item.forma_venda == 'preco_unico' %}preço{% else %}a partir de{% endif %}</small></span>
+                <span>{% if item.forma_venda == 'preco_unico' %}<strong>Único</strong><small>preço</small>{% else %}<strong>{{ item.opcoes|length }}</strong><small>opção(ões)</small>{% endif %}</span>
+                <span>{% if item.disponivel_hoje %}<strong class="enc-admin-today-v813">Hoje</strong><small>disponível</small>{% else %}<strong>{{ item.antecedencia_texto }}</strong><small>antecedência</small>{% endif %}</span>
+              </div>
+            </div>
+            <div class="enc-admin-product-actions">
+              <a class="enc-product-edit" href="/admin/{{ empresa.id }}/encomendas/cadastrar?editar={{ item.id }}#editor"><i class="fa-solid fa-pen"></i> Editar</a>
+              <form method="post" action="/admin/{{ empresa.id }}/encomendas/itens/{{ item.id }}/excluir" class="enc-delete-product-form" data-enc-product-id="{{ item.id }}" data-enc-product-name="{{ item.nome|e }}" data-enc-category-id="{{ item.categoria_id }}">
+                <button type="submit" class="enc-product-delete"><i class="fa-regular fa-trash-can"></i> Excluir</button>
+              </form>
+            </div>
+          </article>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="enc-empty-catalog">
+          <div class="enc-empty-icon"><i class="fa-solid fa-box-open"></i></div>
+          <h3>Nenhum produto cadastrado</h3>
+          <p>Cadastre o primeiro produto que seus clientes poderão encomendar.</p>
+          <a href="/admin/{{ empresa.id }}/encomendas/cadastrar?novo=1#editor" class="enc-action primary"><i class="fa-solid fa-plus"></i> Cadastrar primeiro produto</a>
+        </div>
+        {% endif %}
+      </section>
+    </section>
+  </main>
+</div>
+
+<div class="enc-category-modal {% if categorias_modal_aberto %}open{% endif %}" id="encCategoryModal" aria-hidden="{{ 'false' if categorias_modal_aberto else 'true' }}">
+  <div class="enc-category-backdrop" data-enc-close-categories></div>
+  <section class="enc-category-dialog" role="dialog" aria-modal="true" aria-labelledby="encCategoryTitle"
+    data-enc-create-category-url="/admin/{{ empresa.id }}/encomendas/categorias/criar-v809"
+    data-enc-category-base-url="/admin/{{ empresa.id }}/encomendas/categorias">
+    <div class="enc-category-dialog-head">
+      <div><span class="enc-step-kicker">ORGANIZAÇÃO</span><h2 id="encCategoryTitle">Categorias</h2><p>Crie e renomeie as categorias usadas no menu de Encomendas.</p></div>
+      <button type="button" class="enc-editor-close" data-enc-close-categories aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    {% if request.query_params.get('categoria_salva') %}<div class="enc-modal-feedback success"><i class="fa-solid fa-check"></i> Categoria salva.</div>{% endif %}
+    {% if request.query_params.get('categoria_erro') == 'uso' %}<div class="enc-modal-feedback error"><i class="fa-solid fa-circle-exclamation"></i> Essa categoria possui produtos e não pode ser excluída.</div>{% endif %}
+    {% if request.query_params.get('categoria_erro') == 'ultima' %}<div class="enc-modal-feedback error"><i class="fa-solid fa-circle-exclamation"></i> Mantenha pelo menos uma categoria ativa.</div>{% endif %}
+    {% if request.query_params.get('categoria_erro') == 'nome' %}<div class="enc-modal-feedback error"><i class="fa-solid fa-circle-exclamation"></i> Informe um nome para a categoria.</div>{% endif %}
+    {% if request.query_params.get('categoria_erro') == 'duplicada' %}<div class="enc-modal-feedback error"><i class="fa-solid fa-circle-exclamation"></i> Essa categoria já existe.</div>{% endif %}
+
+    <form method="post" action="/admin/{{ empresa.id }}/encomendas/categorias/criar-v809" class="enc-new-category-form" id="encNewCategoryFormV809" autocomplete="off" data-enc-mode="create">
+      <label for="encNewCategoryName"><span>Nova categoria</span></label>
+      <div class="enc-new-category-create">
+        <input id="encNewCategoryName" name="nome_nova_categoria" class="enc-input-v803" placeholder="Ex.: Bolos e sobremesas" required autocomplete="off">
+        <button type="submit" class="enc-new-category-submit"><i class="fa-solid fa-plus"></i> Adicionar categoria</button>
+      </div>
+      <small class="enc-new-category-help"><i class="fa-solid fa-circle-info"></i> Este campo cria uma categoria nova. Para renomear uma existente, use o botão Editar.</small>
+    </form>
+
+    <div class="enc-category-list">
+      {% for categoria in categorias_gestao %}
+      <div class="enc-category-row" data-enc-category-row="{{ categoria.id }}" data-enc-category-count="{{ categoria.itens }}">
+        <form method="post" action="/admin/{{ empresa.id }}/encomendas/categorias/{{ categoria.id }}/editar" class="enc-category-edit-form" data-enc-mode="edit">
+          <div class="enc-category-count"><strong data-enc-category-modal-count>{{ categoria.itens }}</strong><span data-enc-category-modal-count-label>produto{% if categoria.itens != 1 %}s{% endif %}</span></div>
+          <input name="nome_categoria_edicao" class="enc-category-name-input" value="{{ categoria.nome }}" required aria-label="Nome da categoria">
+          <button type="submit" class="enc-category-save" title="Salvar nome"><i class="fa-solid fa-check"></i></button>
+        </form>
+        <form method="post" action="/admin/{{ empresa.id }}/encomendas/categorias/{{ categoria.id }}/excluir" class="enc-delete-category-form" data-enc-category-id="{{ categoria.id }}" data-enc-category-name="{{ categoria.nome|e }}">
+          <button type="submit" class="enc-category-delete{% if categoria.itens > 0 %} disabled{% endif %}" {% if categoria.itens > 0 %}disabled title="Mova os produtos antes de excluir"{% else %}title="Excluir categoria"{% endif %}><i class="fa-regular fa-trash-can"></i></button>
+        </form>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="enc-category-note"><i class="fa-solid fa-circle-info"></i><span>Para excluir uma categoria, primeiro mova os produtos dela para outra categoria.</span></div>
+  </section>
+</div>
+
+<div class="enc-toast" id="encToast"></div>
+
+<style id="v877-category-mobile-left-force">
+@media (max-width: 640px){
+  .enc-catalog-v803 [data-enc-panel="categories"] .enc-category-browser-main{
+    display:flex!important;
+    flex-direction:row!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    width:100%!important;
+    min-width:0!important;
+    padding:10px 12px!important;
+    gap:9px!important;
+    text-align:left!important;
+  }
+  .enc-catalog-v803 [data-enc-panel="categories"] .enc-category-browser-icon{
+    flex:0 0 34px!important;
+    width:34px!important;
+    height:34px!important;
+    margin:0!important;
+    justify-self:auto!important;
+  }
+  .enc-catalog-v803 [data-enc-panel="categories"] .enc-category-browser-copy{
+    display:flex!important;
+    flex:0 0 auto!important;
+    width:auto!important;
+    min-width:0!important;
+    flex-direction:column!important;
+    align-items:flex-start!important;
+    justify-content:center!important;
+    gap:1px!important;
+    margin:0!important;
+    text-align:left!important;
+  }
+  .enc-catalog-v803 [data-enc-panel="categories"] .enc-category-browser-copy strong,
+  .enc-catalog-v803 [data-enc-panel="categories"] .enc-category-browser-copy small{
+    display:block!important;
+    width:auto!important;
+    max-width:180px!important;
+    margin:0!important;
+    text-align:left!important;
+    white-space:nowrap!important;
+  }
+  .enc-catalog-v803 [data-enc-panel="categories"] .enc-category-browser-main > i{
+    flex:0 0 auto!important;
+    width:auto!important;
+    margin:0 0 0 1px!important;
+    justify-self:auto!important;
+    align-self:center!important;
+  }
+}
+</style>
+<style id="v938-simple-flavor-fill-editor">
+.enc-simple-lists-v938{gap:18px!important}
+.enc-list-editor-v938{display:block!important}
+.enc-list-add-v938{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;align-items:center;margin-top:8px}
+.enc-list-add-btn-v938{height:46px;padding:0 17px;border:0;border-radius:14px;background:#176b54;color:#fff;font:800 14px/1 inherit;display:inline-flex;align-items:center;justify-content:center;gap:7px;cursor:pointer;white-space:nowrap}
+.enc-list-add-btn-v938:hover{filter:brightness(.97)}
+.enc-list-items-v938{display:grid;gap:7px;margin-top:9px}
+.enc-list-row-v938{min-height:42px;padding:7px 8px 7px 13px;border:1px solid #dfe4e1;border-radius:13px;background:#fff;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.enc-list-row-v938>span{min-width:0;color:#25362f;font-size:14px;font-weight:800;overflow-wrap:anywhere}
+.enc-list-remove-v938{flex:0 0 34px;width:34px;height:34px;border:1px solid #f0d8d8;border-radius:10px;background:#fff6f6;color:#bc4040;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.enc-list-empty-v938{padding:10px 12px;border:1px dashed #d9dfdc;border-radius:12px;background:#fafcfb;color:#8b9691;font-size:12px}
+.enc-list-help-v938{display:block;margin-top:7px!important;color:#89938f!important;font-size:11.5px!important;font-weight:600!important;line-height:1.35!important}
+@media(max-width:640px){
+  .enc-list-add-v938{grid-template-columns:minmax(0,1fr) 104px;gap:7px}
+  .enc-list-add-btn-v938{height:43px;padding:0 10px;font-size:12.5px;border-radius:12px}
+  .enc-list-row-v938{min-height:40px}
+}
+</style>
+{% endblock %}
+{% block scripts %}<script src="/static/js/encomendas-cadastro-v813.js?v=938"></script>{% endblock %}

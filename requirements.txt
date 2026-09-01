@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+jinja2
+python-multipart
+aiofiles
+itsdangerous
+cryptography>=42,<47
+Pillow>=10,<13
+pywebpush>=2,<3

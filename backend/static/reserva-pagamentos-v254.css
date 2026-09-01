@@ -1,0 +1,89 @@
+/* MenuFacile v254 — pagamento mais fino, clean e em coluna única */
+.mf-reserva-payment-box{
+  display:grid;
+  gap:10px;
+  padding:12px;
+  border:1px solid #dfe7f1;
+  border-radius:18px;
+  background:#fff;
+  box-shadow:0 4px 14px rgba(15,23,42,.04);
+}
+.mf-reserva-payment-head{display:flex;align-items:flex-start;gap:10px}
+.mf-reserva-payment-head>i{
+  display:grid;place-items:center;width:30px;height:30px;min-width:30px;
+  border-radius:10px;background:#eef4ff;color:#2f67f6;font-size:13px
+}
+.mf-reserva-payment-head strong{display:block;color:#17233b;font-size:14px;font-weight:900;line-height:1.15}
+.mf-reserva-payment-head span{display:block;margin-top:2px;color:#667085;font-size:10.5px;font-weight:700;line-height:1.3}
+.mf-reserva-payment-options{display:grid;grid-template-columns:1fr;gap:8px}
+.mf-reserva-payment-option{
+  position:relative;display:grid;grid-template-columns:16px 18px minmax(0,1fr);align-items:center;column-gap:10px;
+  min-height:58px;padding:10px 12px;border:1px solid #dfe6ef;border-radius:14px;background:#fff;cursor:pointer;
+  transition:background .16s ease,border-color .16s ease,box-shadow .16s ease;
+}
+.mf-reserva-payment-option:hover{border-color:#c9d6e6;background:#fbfdff;box-shadow:0 5px 14px rgba(15,23,42,.04)}
+.mf-reserva-payment-option.is-info{cursor:default;border-style:dashed;background:#fcfdff}
+.mf-reserva-payment-option.is-info:hover{border-color:#dfe6ef;background:#fcfdff;box-shadow:none}
+.mf-reserva-payment-option.is-info i{color:#667085}
+.mf-reserva-payment-option:has(input:checked){border-color:#5b84f1;background:#f5f8ff;box-shadow:0 0 0 2px rgba(91,132,241,.08)}
+.mf-reserva-payment-option input{
+  appearance:auto!important;-webkit-appearance:radio!important;width:16px!important;height:16px!important;
+  min-width:16px!important;max-width:16px!important;min-height:16px!important;max-height:16px!important;
+  margin:0!important;padding:0!important;box-shadow:none!important;accent-color:#2f67f6!important;display:block;flex:0 0 16px;
+}
+.mf-reserva-payment-option i{width:18px;text-align:center;color:#2f67f6;font-size:15px;display:block}
+.mf-reserva-payment-option span{display:block;min-width:0}
+.mf-reserva-payment-option strong{display:block;color:#17233b;font-size:12.5px;font-weight:900;line-height:1.12}
+.mf-reserva-payment-option small{display:block;margin-top:2px;color:#667085;font-size:9.75px;font-weight:700;line-height:1.18}
+.mf-reserva-payment-note{
+  display:flex;align-items:flex-start;gap:7px;padding:8px 10px;border-radius:11px;background:#f8fafc;
+  color:#667085;font-size:10px;font-weight:760;line-height:1.35;border:1px solid #edf2f7
+}
+.mf-reserva-payment-note i{margin-top:1px;color:#2f67f6}
+.mf-reserva-payment-box[data-forma="pix_online"]~#sinalReservaBox .mf-sinal-pix-key,
+.mf-reserva-payment-box[data-forma="cartao_online"]~#sinalReservaBox .mf-sinal-pix-key{display:none!important}
+
+#modalPagamentoReserva{padding:12px 10px 90px!important;align-items:center!important;justify-content:center!important}
+#modalPagamentoReserva .mf-reserva-payment-modal{
+  width:min(480px,calc(100vw - 20px))!important;max-width:480px!important;max-height:calc(100vh - 112px)!important;
+  overflow:hidden!important;border-radius:22px!important;background:#fff!important;box-shadow:0 22px 70px rgba(15,23,42,.24)!important
+}
+#modalPagamentoReserva .modal-header{padding:16px 18px 12px!important;border-bottom:1px solid #e9eef5!important}
+#modalPagamentoReserva .modal-title{font-size:18px!important;line-height:1.05!important;color:#073b21!important;font-weight:950!important;letter-spacing:-.03em!important}
+#modalPagamentoReserva .modal-close{width:38px!important;height:38px!important;min-width:38px!important;border-radius:13px!important}
+#modalPagamentoReserva .modal-body{padding:15px 18px 18px!important;overflow:auto!important;max-height:calc(100vh - 182px)!important}
+.mf-reserva-pay-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border:1px solid #dbe6f3;border-radius:14px;background:#f8fbff}
+.mf-reserva-pay-summary span{color:#667085;font-size:10.5px;font-weight:800}
+.mf-reserva-pay-summary strong{color:#087443;font-size:22px;font-weight:950;white-space:nowrap}
+.mf-reserva-pay-status{margin:10px 0;padding:9px 11px;border-radius:11px;background:#f7fafc;color:#475467;font-size:11px;font-weight:800;line-height:1.35;text-align:center}
+.mf-reserva-pay-status.approved{background:#eaf8ef;color:#087443}
+.mf-reserva-pay-status.error{background:#fff1f0;color:#b42318}
+#mfReservaPaymentBrick{min-height:76px}
+#mfReservaPaymentBrick input[type="checkbox"],#mfReservaPaymentBrick input[type="radio"]{appearance:auto!important;-webkit-appearance:auto!important}
+.mf-reserva-pix-result{display:none;text-align:center;padding-top:2px}
+.mf-reserva-pix-result.ativo{display:grid;gap:9px}
+.mf-reserva-pix-result img{display:none;width:180px;height:180px;object-fit:contain;margin:0 auto;border:1px solid #dbe6f3;border-radius:14px;background:#fff;padding:8px}
+.mf-reserva-pix-result img[src]{display:block}
+.mf-reserva-pix-code{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+.mf-reserva-pix-code input{width:100%;min-width:0;height:40px;border:1px solid #d2ddec;border-radius:11px;padding:0 11px;background:#fff;color:#17233b;font-size:10.5px;font-weight:800}
+.mf-reserva-pix-code button,.mf-reserva-payment-close{height:40px;border:0;border-radius:11px;padding:0 14px;font-weight:900;cursor:pointer}
+.mf-reserva-pix-code button{background:#6d28d9;color:#fff}
+.mf-reserva-payment-close{width:100%;margin-top:10px;background:#f3f6fa;color:#173b2a;border:1px solid #dbe3ed}
+@media(max-width:600px){
+  .mf-reserva-payment-box{padding:10px;border-radius:16px;gap:8px}
+  .mf-reserva-payment-head>i{width:28px;height:28px;min-width:28px;border-radius:9px;font-size:12px}
+  .mf-reserva-payment-head strong{font-size:13.5px}
+  .mf-reserva-payment-head span{font-size:10px}
+  .mf-reserva-payment-option{min-height:54px;padding:9px 10px;border-radius:13px;column-gap:9px}
+  .mf-reserva-payment-option strong{font-size:12px}
+  .mf-reserva-payment-option small{font-size:9.25px}
+  .mf-reserva-payment-note{padding:7px 9px;font-size:9.6px}
+  #modalPagamentoReserva{align-items:flex-start!important;padding:8px 6px 84px!important}
+  #modalPagamentoReserva .mf-reserva-payment-modal{width:100%!important;max-height:calc(100vh - 100px)!important;margin-top:4px!important;border-radius:20px!important}
+  #modalPagamentoReserva .modal-header{padding:14px 14px 10px!important}
+  #modalPagamentoReserva .modal-title{font-size:17px!important}
+  #modalPagamentoReserva .modal-body{padding:14px!important;max-height:calc(100vh - 166px)!important}
+  .mf-reserva-pay-summary{padding:9px 10px}
+  .mf-reserva-pay-summary strong{font-size:20px}
+  .mf-reserva-pix-code{grid-template-columns:1fr}
+}

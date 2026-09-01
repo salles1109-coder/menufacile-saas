@@ -1,0 +1,564 @@
+{% set _mf_request_path = request.url.path if request is defined else '' %}
+{% set _mf_no_flash_enabled = _mf_request_path == '/login' or _mf_request_path.startswith('/admin/') or _mf_request_path.startswith('/funcionario/') or _mf_request_path.startswith('/menu/') %}
+{% set _mf_no_flash_public = _mf_request_path.startswith('/menu/') %}
+<!DOCTYPE html>
+<html lang="pt-BR"{% if _mf_no_flash_enabled %} class="mf-prepaint{% if _mf_no_flash_public %} mf-prepaint-public{% else %} mf-prepaint-admin{% endif %}"{% endif %}>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  {% set _mf_pwa_path = _mf_request_path %}
+  {% if _mf_no_flash_enabled %}
+  <style id="mf-v731-no-flash-core">
+    html.mf-prepaint,
+    html.mf-prepaint body{
+      min-height:100%;
+      background:#f4f7fb!important;
+    }
+    html.mf-prepaint-public,
+    html.mf-prepaint-public body{
+      background:#ffffff!important;
+    }
+    html.mf-prepaint body>*:not(#mf-prepaint-screen){
+      visibility:hidden!important;
+    }
+    #mf-prepaint-screen{
+      position:fixed;
+      inset:0;
+      z-index:2147483646;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+      background:#f4f7fb;
+      opacity:0;
+      visibility:hidden;
+      pointer-events:none;
+      transition:opacity .16s ease,visibility .16s ease;
+    }
+    html.mf-prepaint-public #mf-prepaint-screen{background:#ffffff}
+    html.mf-prepaint #mf-prepaint-screen{
+      opacity:1;
+      visibility:visible;
+      pointer-events:auto;
+    }
+    .mf-prepaint-card{
+      display:grid;
+      justify-items:center;
+      gap:12px;
+      color:#172033;
+      font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+      text-align:center;
+    }
+    .mf-prepaint-brand{
+      width:58px;
+      height:58px;
+      border-radius:18px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(145deg,#073f25,#0f9f55);
+      color:#fff;
+      box-shadow:0 14px 34px rgba(15,159,85,.22);
+      font-size:20px;
+      font-weight:950;
+      letter-spacing:-.7px;
+    }
+    .mf-prepaint-name{font-size:16px;font-weight:900;line-height:1.1}
+    .mf-prepaint-dots{display:flex;gap:6px;align-items:center;height:12px}
+    .mf-prepaint-dots i{
+      width:7px;
+      height:7px;
+      border-radius:999px;
+      background:#0f9f55;
+      animation:mfPrepaintPulse .9s ease-in-out infinite alternate;
+    }
+    .mf-prepaint-dots i:nth-child(2){animation-delay:.15s}
+    .mf-prepaint-dots i:nth-child(3){animation-delay:.3s}
+    @keyframes mfPrepaintPulse{from{opacity:.25;transform:translateY(2px)}to{opacity:1;transform:translateY(-2px)}}
+    @media(prefers-reduced-motion:reduce){.mf-prepaint-dots i{animation:none!important;opacity:.75}}
+  </style>
+  <noscript><style>html.mf-prepaint body>*:not(#mf-prepaint-screen){visibility:visible!important}#mf-prepaint-screen{display:none!important}</style></noscript>
+  <script id="mf-v731-no-flash-prepare">
+  (function(){
+    var root=document.documentElement;
+    var started=Date.now();
+    var lastMutation=started;
+    var revealed=false;
+    var observer=null;
+    var path=String(location.pathname||'');
+    var slower=/\/admin\/\d+\/(?:reservas|funcionarios|cardapio)(?:\/|$)/.test(path);
+    var minimum=path.indexOf('/menu/')===0?420:(slower?850:620);
+    var quietFor=180;
+
+    function reveal(){
+      if(revealed)return;
+      revealed=true;
+      if(observer)observer.disconnect();
+      requestAnimationFrame(function(){
+        requestAnimationFrame(function(){
+          root.classList.remove('mf-prepaint');
+          root.classList.add('mf-page-ready');
+          window.dispatchEvent(new CustomEvent('mf:page-ready'));
+        });
+      });
+    }
+    function check(){
+      if(revealed)return;
+      var now=Date.now();
+      if(now-started>=minimum && now-lastMutation>=quietFor){reveal();return;}
+      setTimeout(check,70);
+    }
+    function watch(){
+      if(document.body && window.MutationObserver){
+        observer=new MutationObserver(function(){lastMutation=Date.now()});
+        observer.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class','style','hidden']});
+      }
+    }
+    document.addEventListener('DOMContentLoaded',function(){watch();setTimeout(check,60)},{once:true});
+    window.addEventListener('load',function(){lastMutation=Date.now();setTimeout(check,80)},{once:true});
+    window.addEventListener('pageshow',function(event){if(event.persisted)setTimeout(reveal,80)});
+    window.addEventListener('mf:content-ready',function(){lastMutation=0;check()});
+    setTimeout(reveal,3600);
+    window.__mfRevealPage=reveal;
+  })();
+  </script>
+  {% endif %}
+  {% set _mf_public_menu = _mf_pwa_path.startswith('/menu/') %}
+  {% set _mf_pwa_enabled = not _mf_public_menu and (_mf_pwa_path == '/' or _mf_pwa_path == '/login' or _mf_pwa_path.startswith('/admin/') or _mf_pwa_path.startswith('/funcionario/')) %}
+  {% if _mf_pwa_enabled %}
+  <link rel="manifest" href="/manifest.webmanifest?v=932">
+  <meta name="theme-color" content="#0f9f55">
+  <meta name="application-name" content="MenuFacile Gestor">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="MenuFacile Gestor">
+  <link rel="apple-touch-icon" sizes="180x180" href="/static/pwa/icons/apple-touch-icon-180.png?v=737">
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/pwa/icons/favicon-32.png?v=737">
+  {% if _mf_pwa_path.startswith('/admin/') %}
+  <link rel="stylesheet" href="/static/pwa/push-ui.css?v=744">
+  <link rel="stylesheet" href="/static/pwa/push-guide-v752.css?v=752">
+  {% endif %}
+  {% endif %}
+  <title>{% block title %}{% endblock %}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="/static/css/main.css?v=731">
+  <link rel="stylesheet" href="/static/css/design-system.css?v=731">
+  <link rel="stylesheet" href="/static/css/mf-gallery.css?v=731">
+  <script src="/static/js/mf-dialogs.js?v=731"></script>
+  <style id="mf-mobile-viewport-guard">
+    html,
+    body {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      margin: 0;
+      overflow-x: hidden;
+    }
+
+    @media (max-width: 720px) {
+      html,
+      body {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        min-width: 0 !important;
+        overflow-x: hidden !important;
+      }
+    }
+  </style>
+  <meta name="csrf-token" content="{{ csrf_token(request) if request is defined else '' }}">
+  {% if empresa is defined %}<meta name="mf-business-type" content="{{ empresa.tipo or '' }}">{% endif %}
+  <script id="mf-csrf-global-protection">
+  (function(){
+    if(window.__MF_CSRF_ADMIN__) return;
+    window.__MF_CSRF_ADMIN__ = true;
+
+    function token(){
+      var meta=document.querySelector('meta[name="csrf-token"]');
+      return meta ? String(meta.getAttribute('content')||'') : '';
+    }
+    function sameOrigin(url){
+      try{return new URL(url||window.location.href,window.location.href).origin===window.location.origin}
+      catch(e){return false}
+    }
+    function unsafe(method){return ['POST','PUT','PATCH','DELETE'].indexOf(String(method||'GET').toUpperCase())>=0}
+
+    var originalFetch=window.fetch;
+    if(originalFetch){
+      window.fetch=function(input,init){
+        init=init||{};
+        var url=(typeof input==='string')?input:((input&&input.url)||'');
+        var method=String(init.method||((input&&input.method)||'GET')).toUpperCase();
+        if(unsafe(method)&&sameOrigin(url)){
+          var headers=new Headers(init.headers||((input&&input.headers)||{}));
+          if(!headers.has('X-CSRF-Token'))headers.set('X-CSRF-Token',token());
+          init.headers=headers;
+        }
+        return originalFetch(input,init);
+      };
+    }
+
+    function protectForm(form){
+      if(!form||!unsafe(form.getAttribute('method')||'GET'))return;
+      if(!sameOrigin(form.getAttribute('action')||window.location.href))return;
+      var input=form.querySelector('input[name="csrf_token"]');
+      if(!input){
+        input=document.createElement('input');
+        input.type='hidden';
+        input.name='csrf_token';
+        form.appendChild(input);
+      }
+      input.value=token();
+    }
+    function scan(root){
+      if(root&&root.matches&&root.matches('form'))protectForm(root);
+      (root||document).querySelectorAll&&((root||document).querySelectorAll('form').forEach(protectForm));
+    }
+    document.addEventListener('DOMContentLoaded',function(){scan(document)});
+    document.addEventListener('submit',function(event){protectForm(event.target)},true);
+    new MutationObserver(function(records){
+      records.forEach(function(record){record.addedNodes.forEach(function(node){if(node.nodeType===1)scan(node)})});
+    }).observe(document.documentElement,{childList:true,subtree:true});
+  })();
+  </script>
+  {% if _mf_public_menu and encomendas_apresentacao is defined %}
+    {% set _mf_story_global_v819 = encomendas_apresentacao and encomendas_apresentacao.ativo and not (negocio_encomenda|default(false)) %}
+  {% else %}
+    {% set _mf_story_global_v819 = false %}
+  {% endif %}
+  {% if _mf_story_global_v819 %}
+  <link rel="stylesheet" href="/static/css/encomendas-apresentacao-v812.css?v=820">
+  <style id="mf-story-reopen-v819-css">
+    /* v830 — Nossa história integrada ao rodapé, sem faixa branca isolada */
+    .mf-story-reopen-v819{display:flex;justify-content:flex-start;align-items:center;gap:8px;max-width:1320px;margin:-8px auto 0;padding:0 22px 24px;background:transparent;border:0}
+    .mf-story-reopen-v819 button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:34px;padding:0 12px;border:1px solid rgba(15,23,42,.12);border-radius:12px;background:rgba(255,255,255,.72);color:#4b5563;font:inherit;font-size:11px;font-weight:800;cursor:pointer;box-shadow:none}
+    .mf-public-footer-actions-v831{display:flex;align-items:center;justify-content:flex-start;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .mf-public-footer-actions-v831 .mf-story-reopen-v819{display:contents;margin:0;padding:0;max-width:none}
+    .mf-public-footer-actions-v831 .mf-policy-open-v828{min-height:34px;padding:0 12px;border-radius:12px;font-size:11px;box-shadow:none}
+    @media(max-width:720px){.mf-story-reopen-v819{margin:-6px auto 0;padding:0 14px 20px}.mf-story-reopen-v819 button{min-height:32px;padding:0 11px;font-size:10.5px}.mf-public-footer-actions-v831{gap:7px;margin-top:10px}.mf-public-footer-actions-v831 .mf-policy-open-v828{min-height:32px;padding:0 11px;font-size:10.5px}}
+    .mf-story-reopen-v819 button:hover{border-color:rgba(var(--enc-brand-rgb,18,54,181),.28);color:var(--enc-brand,#1236B5)}
+    .mf-story-reopen-v819 button i{color:var(--enc-brand,#1236B5)}
+  </style>
+  {% endif %}
+  {% block head %}{% endblock %}
+  <link rel="stylesheet" href="/static/css/admin-sidebar.css?v=814">
+  {% if request is defined and request.url.path.startswith('/admin/') %}
+  <link rel="stylesheet" href="/static/admin-mobile-global-v45.css?v=731">
+  {% endif %}
+  {% if request is defined and request.url.path.startswith('/funcionario/') %}
+  <link rel="stylesheet" href="/static/css/funcionario-mobile.css?v=1">
+  <link rel="stylesheet" href="/static/css/funcionario-mobile-final.css?v=1">
+  {% endif %}
+<style id="mf-pt-only-global">
+.public-lang-switch,.mf-lang-switch,.mf-mobile-lang-switch,.mf-employee-lang,.lang-switch,.language-switcher,[data-language-switcher],.policy-language-tabs{display:none!important}
+</style>
+</head>
+<body{% block body_attrs %}{% endblock %}>
+  {% if _mf_no_flash_enabled %}
+  <div id="mf-prepaint-screen" aria-hidden="true">
+    <div class="mf-prepaint-card">
+      <div class="mf-prepaint-brand">MF</div>
+      <div class="mf-prepaint-name">MenuFacile</div>
+      <div class="mf-prepaint-dots"><i></i><i></i><i></i></div>
+    </div>
+  </div>
+  {% endif %}
+  {% if empresa is defined and request is defined and request.url.path.startswith('/admin/') %}
+    {% set _admin_perfil = perfil_admin_sessao(request) %}
+    {% set _admin_total = _admin_perfil == 'administrador' %}
+    {% set _pode_dashboard = permissao_admin_sessao(request, 'dashboard') %}
+    {% set _pode_cardapio = permissao_admin_sessao(request, 'cardapio') %}
+    {% set _pode_produtos = permissao_admin_sessao(request, 'produtos') %}
+    {% set _pode_pedidos = permissao_admin_sessao(request, 'pedidos') %}
+    {% set _pode_reservas = permissao_admin_sessao(request, 'reservas') %}
+    {% set _pode_financeiro = permissao_admin_sessao(request, 'financeiro') %}
+    {% set _pode_fiscal = permissao_admin_sessao(request, 'fiscal') %}
+    {% set _pode_pagamentos_online = permissao_admin_sessao(request, 'pagamentos_online') %}
+    {% set _pode_entrega_politicas = permissao_admin_sessao(request, 'entrega_politicas') %}
+    {% set _pode_configuracoes = permissao_admin_sessao(request, 'configuracoes') %}
+    {% set _pode_funcionarios = permissao_admin_sessao(request, 'funcionarios') %}
+    {% set _pode_integracoes = permissao_admin_sessao(request, 'integracoes') %}
+    {% set _pode_menu_publico = permissao_admin_sessao(request, 'menu_publico') %}
+  {% endif %}
+  {% if _mf_story_global_v819 %}
+    {% include "partials/menu_apresentacao_global_v819.html" %}
+  {% endif %}
+  {% block page %}{% endblock %}
+  {% if _mf_story_global_v819 %}
+  <div class="mf-story-reopen-v819" aria-label="Nossa história" style="--enc-brand:{{ empresa.menu_cor_principal or '#1236B5' }};--enc-brand-rgb:{{ empresa.menu_cor_rgb or '18,54,181' }};">
+    <button type="button" data-enc-open-story-v813>
+      <i class="fa-regular fa-heart" aria-hidden="true"></i>
+      <span>Nossa história</span>
+    </button>
+  </div>
+  <script id="mf-footer-actions-v831">
+  document.addEventListener('DOMContentLoaded', function(){
+    var storyWrap=document.querySelector('.mf-story-reopen-v819');
+    var footerInner=document.querySelector('.mf-public-fiscal-footer .mf-public-fiscal-footer-inner');
+    if(!storyWrap || !footerInner) return;
+    var actions=document.createElement('div');
+    actions.className='mf-public-footer-actions-v831';
+    footerInner.appendChild(actions);
+    actions.appendChild(storyWrap);
+    var policyNav=document.querySelector('.mf-policy-nav-v828');
+    if(policyNav){
+      var policyButton=policyNav.querySelector('.mf-policy-open-v828');
+      if(policyButton) actions.appendChild(policyButton);
+      policyNav.remove();
+    }
+  });
+  </script>
+  {% endif %}
+  {% if request is defined and request.url.path.startswith('/admin/') and '/reservas' in request.url.path %}
+  <link rel="stylesheet" href="/static/admin-agenda-mobile-stage1.css?v=738">
+  {% endif %}
+  {% if request is defined and request.url.path.startswith('/admin/') and '/reservas' in request.url.path %}
+  <link rel="stylesheet" href="/static/admin-agenda-cards-modal-v30.css?v=731">
+  <link rel="stylesheet" href="/static/admin-agenda-mobile-visibility-v41.css?v=731">
+  <link rel="stylesheet" href="/static/admin-agenda-desktop-order-v43.css?v=731">
+  {% endif %}
+  {% if request is defined and request.url.path.startswith('/admin/') %}
+  <link rel="stylesheet" href="/static/admin-mobile-approved-v48.css?v=731">
+  <link rel="stylesheet" href="/static/admin-mobile-remaining-v61.css?v=731">
+  <link rel="stylesheet" href="/static/admin-dashboard-mobile-v162.css?v=731">
+  <link rel="stylesheet" href="/static/admin-more-options-mobile-v163.css?v=731">
+  <style id="mf-v362-mobile-finalizacao">
+  @media(max-width:768px){
+    body.mf-global-mobile-admin :is(.content,.premium-content,.delivery-content,.pp-content,main.container,.mf-funcionarios-content){
+      padding-bottom:calc(112px + env(safe-area-inset-bottom,0px))!important;
+    }
+    body.mf-global-mobile-admin :is(.fab,.floating-action,.floating-btn,.v83-auto-status-dot){
+      bottom:calc(92px + env(safe-area-inset-bottom,0px))!important;
+    }
+
+    .mf-global-more-sheet{
+      padding:10px!important;
+      align-items:flex-end!important;
+    }
+    .mf-global-more-panel{
+      display:flex!important;
+      flex-direction:column!important;
+      max-height:calc(100dvh - 20px - env(safe-area-inset-top,0px))!important;
+      overflow:hidden!important;
+      padding:12px!important;
+      border-radius:24px!important;
+    }
+    .mf-global-more-head{
+      flex:0 0 auto!important;
+      padding:4px 4px 10px!important;
+      border-bottom:1px solid #edf1f6!important;
+    }
+    .mf-global-more-head>div{min-width:0!important}
+    .mf-global-more-head strong{display:block!important;font-size:21px!important;line-height:1.1!important}
+    .mf-global-more-head small{display:block!important;margin-top:3px!important;color:#7b8799!important;font-size:11px!important;font-weight:800!important}
+    .mf-global-more-grid{
+      flex:1 1 auto!important;
+      min-height:0!important;
+      overflow-y:auto!important;
+      overscroll-behavior:contain!important;
+      padding:10px 2px 3px!important;
+      gap:8px!important;
+    }
+    .mf-global-more-grid a{
+      min-height:62px!important;
+      padding:10px 11px!important;
+      border-radius:15px!important;
+      gap:9px!important;
+      line-height:1.15!important;
+      white-space:normal!important;
+      overflow:visible!important;
+      text-overflow:clip!important;
+    }
+    .mf-global-more-grid a span,
+    .mf-global-more-grid a strong{
+      white-space:normal!important;
+      overflow:visible!important;
+      text-overflow:clip!important;
+      line-height:1.15!important;
+    }
+
+    body.mf-ds-configuracoes .v137-collapsible{
+      margin-bottom:12px!important;
+      border-radius:18px!important;
+    }
+    body.mf-ds-configuracoes .v137-collapsible>.card-title{
+      min-height:72px!important;
+      margin:0!important;
+      padding:14px 16px!important;
+      align-items:center!important;
+      flex-wrap:nowrap!important;
+    }
+    body.mf-ds-configuracoes .v137-collapsible:not(.v137-open)>.card-title p{display:none!important}
+    body.mf-ds-configuracoes .v137-collapsible>.card-title h2{
+      margin:0!important;
+      font-size:19px!important;
+      line-height:1.18!important;
+      overflow-wrap:normal!important;
+      word-break:normal!important;
+    }
+    body.mf-ds-configuracoes .v137-collapse-icon{
+      width:44px!important;
+      height:44px!important;
+      min-width:44px!important;
+      flex:0 0 44px!important;
+      margin-left:auto!important;
+    }
+
+    body.mf-ds-funcionarios .employee-card-head{
+      padding:12px!important;
+      gap:10px!important;
+    }
+    body.mf-ds-funcionarios .employee-new-btn{
+      min-height:46px!important;
+      padding:0 14px!important;
+    }
+    body.mf-ds-funcionarios .card-body{padding:12px!important}
+    body.mf-ds-funcionarios .login-note{
+      align-items:flex-start!important;
+      margin-bottom:12px!important;
+      padding:12px!important;
+    }
+    body.mf-ds-funcionarios .employee-list{gap:10px!important}
+    body.mf-ds-funcionarios .employee-card{
+      min-height:0!important;
+      gap:10px!important;
+      padding:14px!important;
+      border-radius:17px!important;
+    }
+    body.mf-ds-funcionarios .employee-main{gap:10px!important}
+    body.mf-ds-funcionarios .employee-avatar{
+      width:44px!important;
+      height:44px!important;
+      min-width:44px!important;
+    }
+    body.mf-ds-funcionarios .employee-role span{margin-top:2px!important}
+    body.mf-ds-funcionarios .permission-summary{gap:7px!important}
+    body.mf-ds-funcionarios .permission-preview{margin-top:4px!important}
+    body.mf-ds-funcionarios .employee-actions{
+      display:grid!important;
+      grid-template-columns:minmax(0,1fr) 52px!important;
+      gap:8px!important;
+      width:100%!important;
+    }
+    body.mf-ds-funcionarios .employee-actions>.btn,
+    body.mf-ds-funcionarios .employee-actions>form,
+    body.mf-ds-funcionarios .employee-actions>form button{
+      width:100%!important;
+      height:46px!important;
+      margin:0!important;
+    }
+    body.mf-ds-funcionarios .employee-actions>.owner-access{grid-column:1/-1!important}
+
+    body.mf-ds-integracoes .v160-integration-grid{
+      grid-template-columns:1fr!important;
+      gap:10px!important;
+    }
+    body.mf-ds-integracoes .v160-int-card{
+      min-height:0!important;
+      margin:0!important;
+      padding:16px!important;
+    }
+    body.mf-ds-integracoes .mf-integration-row{
+      margin-bottom:10px!important;
+      border-radius:18px!important;
+    }
+    body.mf-ds-integracoes .v162-summary{
+      min-height:72px!important;
+      padding:12px 14px!important;
+      gap:10px!important;
+    }
+    body.mf-ds-integracoes .v162-summary-main{min-width:0!important;gap:10px!important}
+    body.mf-ds-integracoes .v162-summary-text{min-width:0!important}
+    body.mf-ds-integracoes .v162-summary-text strong,
+    body.mf-ds-integracoes .v162-summary-text small{
+      display:block!important;
+      max-width:100%!important;
+      white-space:normal!important;
+      overflow:visible!important;
+      text-overflow:clip!important;
+      word-break:normal!important;
+      overflow-wrap:break-word!important;
+    }
+    body.mf-ds-integracoes .v162-summary-text strong{font-size:15px!important;line-height:1.18!important}
+    body.mf-ds-integracoes .v162-summary-text small{
+      margin-top:3px!important;
+      font-size:10.5px!important;
+      line-height:1.25!important;
+      display:-webkit-box!important;
+      -webkit-line-clamp:2!important;
+      -webkit-box-orient:vertical!important;
+      overflow:hidden!important;
+    }
+  }
+  </style>
+  <style id="mf-v722-mobile-logout-align">
+  @media(max-width:768px){
+    body.mf-ds-dashboard .mf-v53-header-user .dashboard-user-menu__dropdown a[href="/logout"],
+    .mf-global-more-grid a[href="/logout"]{
+      box-sizing:border-box!important;
+      display:grid!important;
+      grid-template-columns:minmax(0,1fr) 24px!important;
+      align-items:center!important;
+      column-gap:10px!important;
+      width:100%!important;
+      min-height:44px!important;
+      padding:0 12px!important;
+      text-align:left!important;
+    }
+    body.mf-ds-dashboard .mf-v53-header-user .dashboard-user-menu__dropdown a[href="/logout"] span,
+    .mf-global-more-grid a[href="/logout"] span{
+      grid-column:1!important;
+      grid-row:1!important;
+      min-width:0!important;
+      justify-self:start!important;
+    }
+    body.mf-ds-dashboard .mf-v53-header-user .dashboard-user-menu__dropdown a[href="/logout"] i,
+    .mf-global-more-grid a[href="/logout"] i{
+      grid-column:2!important;
+      grid-row:1!important;
+      justify-self:end!important;
+      align-self:center!important;
+      width:20px!important;
+      margin:0!important;
+      text-align:center!important;
+    }
+  }
+  </style>
+  {% endif %}
+  <link rel="stylesheet" href="/static/css/mf-public-header-unified.css?v=731">
+  <link rel="stylesheet" href="/static/css/mf-public-round2-fixes.css?v=731">
+  <script src="/static/js/admin-navigation.js?v=814"></script>
+  {% if request is defined and request.url.path.startswith('/admin/') %}
+  <script src="/static/admin-mobile-global-v45.js?v=844"></script>
+  {% endif %}
+  {% if _mf_story_global_v819 %}
+  <script src="/static/js/encomendas-apresentacao-v813.js?v=819"></script>
+  {% endif %}
+  {% block scripts %}{% endblock %}
+  {% if _mf_pwa_enabled %}
+  <script src="/static/pwa/pwa-register.js?v=932" defer></script>
+  {% if _mf_pwa_path.startswith('/admin/') %}
+  <script src="/static/pwa/push-client.js?v=932" defer></script>
+  <script src="/static/pwa/device-diagnostic-v750.js?v=750" defer></script>
+  {% endif %}
+  {% endif %}
+  <script src="/static/js/mf-gallery.js?v=731"></script>
+  <script src="/static/js/mf-reservas.js?v=731"></script>
+  <script src="/static/js/mf-produtos-whatsapp.js?v=731"></script>
+  <script src="/static/js/mf-admin-gallery.js?v=731"></script>
+  <script src="/static/js/mf-ptbr.js?v=731"></script>
+  {% if request is defined and request.url.path.startswith('/admin/') and '/reservas' in request.url.path %}
+  <script src="/static/admin-agenda-mobile-stage1.js?v=738"></script>
+  <script src="/static/admin-agenda-desktop-order-v43.js?v=731"></script>
+  {% endif %}
+  {% if request is defined and request.url.path.startswith('/admin/') and '/reservas' in request.url.path %}
+  <script src="/static/admin-agenda-cards-modal-v30.js?v=731"></script>
+  <script src="/static/admin-agenda-whatsapp-status-v40.js?v=737"></script>
+  {% endif %}
+  {% if request is defined and request.url.path.startswith('/admin/') %}
+  <script src="/static/admin-mobile-approved-v48.js?v=731"></script>
+  <script src="/static/admin-mobile-remaining-v61.js?v=731"></script>
+  {% endif %}
+  <script src="/static/js/mf-public-header-unified.js?v=731"></script>
+</body>
+</html>

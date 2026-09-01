@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block body_attrs %} class="mf-ds-admin mf-ds-employee mf-ds-employee-dashboard"{% endblock %}
+{% block title %}Painel funcionário - {{ empresa.nome }}{% endblock %}
+{% block head %}
+<style id="mf-employee-dashboard-v2">
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Arial,sans-serif;background:#f2f6fc;color:#101828}
+.mf-home{width:min(100%,720px);margin:0 auto;padding:22px 18px 34px}
+.mf-home-welcome{margin-bottom:16px}.mf-home-welcome h1{margin:0;color:#101828;font-size:29px;line-height:1.08;letter-spacing:-.7px}.mf-home-welcome p{margin:6px 0 0;color:#667085;font-size:13px;font-weight:750}
+.mf-home-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.mf-home-module{position:relative;min-height:154px;padding:16px;border:1px solid #dbe5f2;border-radius:22px;background:#fff;box-shadow:0 12px 30px rgba(15,35,90,.055);display:flex;flex-direction:column;justify-content:space-between;text-decoration:none;overflow:hidden}
+.mf-home-module:after{content:"";position:absolute;right:-28px;bottom:-34px;width:92px;height:92px;border-radius:50%;background:currentColor;opacity:.045}
+.mf-home-icon{width:44px;height:44px;border-radius:15px;display:grid;place-items:center;color:#fff;font-size:18px}
+.mf-home-module h2{margin:12px 0 4px;color:#101828;font-size:17px;line-height:1.12;letter-spacing:-.25px}.mf-home-module p{margin:0;color:#667085;font-size:11px;line-height:1.35;font-weight:750}.mf-home-count{margin-top:10px;color:#061b8f;font-size:12px;font-weight:950}
+.mf-home-module.menu{color:#ff6b20}.mf-home-module.menu .mf-home-icon{background:#ff6b20}
+.mf-home-module.produtos{color:#061b8f}.mf-home-module.produtos .mf-home-icon{background:#061b8f}
+.mf-home-module.pedidos{color:#16a34a}.mf-home-module.pedidos .mf-home-icon{background:#16a34a}
+.mf-home-module.agenda{color:#7c3aed}.mf-home-module.agenda .mf-home-icon{background:#7c3aed}
+.mf-home-empty{padding:24px;border:1px dashed #cbd5e1;border-radius:20px;background:#fff;text-align:center;color:#667085;font-size:13px;font-weight:800;line-height:1.45}
+@media(max-width:900px){
+  .mf-home{width:100%;padding:14px 10px 20px}
+  .mf-home-welcome{padding:2px 2px 0;margin-bottom:12px}
+  .mf-home-welcome h1{font-size:22px;letter-spacing:-.45px}.mf-home-welcome p{font-size:11.5px}
+  .mf-home-grid{gap:9px}
+  .mf-home-module{min-height:137px;padding:13px;border-radius:18px}
+  .mf-home-icon{width:40px;height:40px;border-radius:13px;font-size:16px}
+  .mf-home-module h2{margin-top:10px;font-size:15px}.mf-home-module p{font-size:10px;line-height:1.28}.mf-home-count{font-size:11px;margin-top:7px}
+}
+@media(max-width:360px){
+  .mf-home{padding-left:8px;padding-right:8px}.mf-home-grid{gap:7px}.mf-home-module{min-height:132px;padding:11px}.mf-home-module h2{font-size:14px}.mf-home-module p{font-size:9.5px}
+}
+</style>
+{% endblock %}
+{% block page %}
+{% set _pode_cardapio = permissao_admin_sessao(request, 'cardapio') %}
+{% set _pode_produtos = permissao_admin_sessao(request, 'produtos') %}
+{% set _pode_pedidos = permissao_admin_sessao(request, 'pedidos') %}
+{% set _pode_reservas = permissao_admin_sessao(request, 'reservas') %}
+{% set nome_func = request.session.get('admin_nome','Equipe') %}
+{% include "partials/funcionario_mobile_header.html" %}
+<main class="mf-home">
+  <header class="mf-home-welcome">
+    <h1>Olá, {{ nome_func }}</h1>
+    <p>Escolha o que você precisa acessar agora.</p>
+  </header>
+
+  {% if _pode_cardapio or _pode_produtos or _pode_pedidos or _pode_reservas %}
+  <section class="mf-home-grid">
+    {% if _pode_cardapio %}
+    <a class="mf-home-module menu" href="/funcionario/{{ empresa.id }}/cardapio">
+      <span class="mf-home-icon"><i class="fa-solid fa-utensils"></i></span>
+      <div><h2>Cardápio / Serviços</h2><p>Itens, categorias, preços e disponibilidade.</p><div class="mf-home-count">Abrir</div></div>
+    </a>
+    {% endif %}
+    {% if _pode_produtos %}
+    <a class="mf-home-module produtos" href="/funcionario/{{ empresa.id }}/produtos">
+      <span class="mf-home-icon"><i class="fa-solid fa-box"></i></span>
+      <div><h2>Produtos</h2><p>Compras recebidas pelo menu de produtos.</p><div class="mf-home-count">{{ total_produtos_hoje|default(0) }} hoje</div></div>
+    </a>
+    {% endif %}
+    {% if _pode_pedidos %}
+    <a class="mf-home-module pedidos" href="/funcionario/{{ empresa.id }}/pedidos">
+      <span class="mf-home-icon"><i class="fa-solid fa-bag-shopping"></i></span>
+      <div><h2>Pedidos</h2><p>Pedidos de entrega, retirada ou balcão.</p><div class="mf-home-count">{{ total_pedidos_hoje|default(0) }} hoje</div></div>
+    </a>
+    {% endif %}
+    {% if _pode_reservas %}
+    <a class="mf-home-module agenda" href="/funcionario/{{ empresa.id }}/reservas">
+      <span class="mf-home-icon"><i class="fa-regular fa-calendar-check"></i></span>
+      <div><h2>Agenda</h2><p>Agendamentos, horários e clientes.</p><div class="mf-home-count">{{ total_reservas_hoje|default(0) }} hoje</div></div>
+    </a>
+    {% endif %}
+  </section>
+  {% else %}
+  <div class="mf-home-empty"><i class="fa-solid fa-lock"></i><br><br>Nenhum módulo foi liberado para este acesso.</div>
+  {% endif %}
+</main>
+{% include "partials/funcionario_mobile_nav.html" %}
+{% endblock %}

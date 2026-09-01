@@ -1,0 +1,25 @@
+/* MenuFacile Agenda v41 — mantém somente o calendário compacto no celular */
+@media (max-width: 768px){
+  body.mf-ds-reservas #agendaDia #formDataAgenda,
+  body.mf-ds-reservas #agendaDia .imprimir-dia-btn,
+  body.mf-ds-reservas #agendaDia .collapse-btn{
+    display:none!important;
+  }
+
+  body.mf-ds-reservas #agendaDia > .card-head{
+    display:none!important;
+  }
+}
+
+/* v42 — no histórico, mostrar apenas os filtros de status */
+@media (max-width: 768px){
+  body.mf-ds-reservas.mf-stage1-history-open [data-mf-stage1-fixed-professionals],
+  body.mf-ds-reservas.mf-stage1-history-open #profTabsAgenda,
+  body.mf-ds-reservas.mf-stage1-history-open .agenda-profissionais-fixa{
+    display:none!important;
+  }
+
+  body.mf-ds-reservas:not(.mf-stage1-history-open) [data-mf-stage1-fixed-professionals]{
+    display:flex!important;
+  }
+}

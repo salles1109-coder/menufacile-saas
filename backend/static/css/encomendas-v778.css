@@ -1,0 +1,34 @@
+/* MenuFacile v778 — modal dedicado para sinal Pix das encomendas */
+.enc-signal-backdrop-v778{
+  position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;
+  padding:20px;background:rgba(17,24,39,.58);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)
+}
+.enc-signal-backdrop-v778.open{display:flex}
+.enc-signal-modal-v778{
+  width:min(540px,100%);max-height:calc(100vh - 32px);overflow:auto;background:#f8fbff;
+  border:1px solid rgba(148,163,184,.25);border-radius:28px;box-shadow:0 28px 80px rgba(15,23,42,.28)
+}
+.enc-signal-head-v778{display:flex;align-items:center;justify-content:space-between;padding:24px 26px 18px;border-bottom:1px solid #dce5ef}
+.enc-signal-head-v778 h2{margin:0;font-size:25px;line-height:1.15;color:#0c4b27;font-weight:800}
+.enc-signal-close-v778{width:48px;height:48px;border:0;border-radius:15px;background:#eef2f7;color:#344054;font-size:20px;cursor:pointer}
+.enc-signal-body-v778{padding:22px 26px 26px;text-align:center;color:#142033}
+.enc-signal-pix-icon-v778{margin:0 auto 14px;width:58px;height:58px;display:grid;place-items:center;color:#16a34a;font-size:38px}
+.enc-signal-body-v778 h3{margin:0 auto 8px;max-width:420px;font-size:24px;line-height:1.25;font-weight:850;color:#132238}
+.enc-signal-body-v778>p{margin:0 auto 18px;max-width:440px;color:#68758c;font-size:15px;line-height:1.5;font-weight:600}
+.enc-signal-value-v778,.enc-signal-key-v778{border:1px solid #d8e2ef;border-radius:20px;background:white;padding:14px 16px;margin-top:12px}
+.enc-signal-value-v778 span,.enc-signal-key-v778>span{display:block;color:#7b879d;font-size:13px;font-weight:750;margin-bottom:3px}
+.enc-signal-value-v778 strong{display:block;color:#07883f;font-size:31px;line-height:1.1}
+.enc-signal-key-v778 strong{display:block;font-size:22px;line-height:1.25;overflow-wrap:anywhere;color:#1e293b;margin:5px 0 13px}
+.enc-signal-key-v778 button{width:100%;min-height:46px;border:1.5px solid var(--enc-accent,#7c3aed);background:#fff;color:var(--enc-accent,#7c3aed);border-radius:13px;font-weight:850;cursor:pointer}
+.enc-signal-deadline-v778{margin:12px auto 0!important;font-size:13px!important;color:#7b879d!important}
+.enc-signal-whatsapp-v778,.enc-signal-done-v778{width:100%;min-height:52px;border-radius:15px;font-weight:850;font-size:16px;cursor:pointer}
+.enc-signal-whatsapp-v778{margin-top:17px;border:0;background:#16ad52;color:#fff}
+.enc-signal-whatsapp-v778 i{font-size:19px;margin-right:7px}
+.enc-signal-done-v778{margin-top:12px;border:1px solid #d7e0ea;background:#fff;color:#18351f}
+.enc-signal-whatsapp-v778[hidden]{display:none}
+@media(max-width:600px){
+  .enc-signal-backdrop-v778{padding:12px}.enc-signal-modal-v778{border-radius:22px}
+  .enc-signal-head-v778{padding:18px 18px 14px}.enc-signal-head-v778 h2{font-size:21px}
+  .enc-signal-close-v778{width:44px;height:44px}.enc-signal-body-v778{padding:18px}
+  .enc-signal-body-v778 h3{font-size:20px}.enc-signal-value-v778 strong{font-size:28px}.enc-signal-key-v778 strong{font-size:19px}
+}

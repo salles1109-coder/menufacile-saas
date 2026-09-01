@@ -1,0 +1,1761 @@
+{% extends "base.html" %}
+{% block body_attrs %} class="mf-ds-admin mf-ds-employee mf-ds-employee-pedidos"{% endblock %}
+{% block title %}Pedidos funcionário - {{ empresa.nome }}{% endblock %}
+{% block head %}
+<style>
+:root{
+  --azul:#061b8f;--roxo:#6f42c1;--verde:#0d5b3a;--laranja:#f97316;--vermelho:#ef4444;
+  --texto:#102033;--muted:#667085;--bg:#eef4fb;--card:#fff;--borda:#dbe6f3;
+  --shadow:0 16px 36px rgba(15,35,90,.06)
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--texto)}
+a{text-decoration:none;color:inherit}button,input,select{font-family:inherit}
+.app{min-height:100vh;display:grid;grid-template-columns:245px 1fr}
+.side{background:linear-gradient(180deg,#ffffff,#f7fbff);border-right:1px solid var(--borda);padding:22px 14px;position:sticky;top:0;height:100vh}
+.brand{display:flex;gap:12px;align-items:center;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid #edf2f7}
+.brand-icon{width:42px;height:42px;border-radius:14px;background:#eef3ff;color:var(--azul);display:grid;place-items:center;font-size:20px}
+.brand strong{display:block;color:var(--azul);font-size:18px;font-weight:1000}.brand span{font-size:12px;color:var(--muted);font-weight:850}
+.nav{display:grid;gap:7px}.nav a{min-height:42px;border-radius:13px;display:flex;align-items:center;gap:11px;padding:0 12px;font-weight:900;font-size:13px;color:#53627a}.nav a.active{background:var(--azul);color:#fff;box-shadow:0 12px 24px rgba(6,27,143,.16)}.nav i{width:18px}
+.main{padding:22px;min-width:0}
+.top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px}
+.hello h1{margin:0;color:var(--azul);font-size:30px;line-height:1.05;letter-spacing:-.04em}.hello p{margin:5px 0 0;color:var(--muted);font-size:13px;font-weight:850}
+.pill{background:#fff;border:1px solid var(--borda);border-radius:999px;padding:10px 13px;display:inline-flex;gap:8px;align-items:center;font-size:12px;font-weight:950;color:#344054}
+.card{background:#fff;border:1px solid var(--borda);border-radius:22px;padding:16px;box-shadow:var(--shadow);margin-bottom:14px}
+.grid-top{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.section-head{display:flex;align-items:center;gap:10px}.ico{width:38px;height:38px;border-radius:14px;background:#eef3ff;color:var(--azul);display:grid;place-items:center}.section-head h2{margin:0;color:var(--azul);font-size:20px}.section-head p{margin:4px 0 0;color:var(--muted);font-size:12px;font-weight:850}
+.form-line{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-top:12px}label{display:block;font-size:12px;font-weight:950;color:#344054;margin-bottom:5px}input{height:42px;border:1px solid #d0d5dd;border-radius:14px;padding:0 12px;font-weight:900;color:var(--azul)}
+.btn{border:0;min-height:38px;border-radius:12px;padding:0 12px;font-weight:950;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px}.btn.green{background:var(--verde);color:#fff}.btn.blue{background:var(--azul);color:#fff}.btn.red{background:var(--vermelho);color:#fff}.btn.orange{background:var(--laranja);color:#fff}.btn.purple{background:var(--roxo);color:#fff}.btn.soft{background:#eef3ff;color:var(--azul);border:1px solid var(--borda)}.btn.whats{background:#eaf8ef;color:#0d5b3a;border:1px solid #cfe8d8}
+.tabs{display:flex;gap:10px;overflow:auto;padding:6px 2px 16px}.tab{border:1px solid var(--borda);background:#fff;color:#667085;border-radius:16px;min-height:52px;padding:0 16px;font-weight:950;display:flex;align-items:center;gap:10px;white-space:nowrap;box-shadow:0 8px 20px rgba(15,35,90,.04)}.tab .count{min-width:24px;height:24px;border-radius:999px;background:#eef3ff;color:var(--azul);display:inline-flex;align-items:center;justify-content:center;font-size:12px}.tab.active{border-color:#b9a7ff;background:#f5f3ff;color:#6f42c1}.tab.active .count{background:#6f42c1;color:#fff}
+.kanban-wrap{overflow-x:auto;padding-bottom:12px}.kanban{display:grid;grid-template-columns:repeat(5,minmax(270px,1fr));gap:16px;min-width:1380px}.kanban.single{min-width:0;grid-template-columns:1fr}.kanban.single .coluna{display:none}.kanban.single .coluna.active-col{display:block}.kanban.single .cards-coluna{display:grid;grid-template-columns:repeat(auto-fit,minmax(285px,1fr));gap:14px}
+.coluna{background:#f8fbff;border:1px solid #dbe6f3;border-radius:24px;padding:14px;min-height:520px}.coluna-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.coluna-title{display:flex;align-items:center;gap:9px;color:#344054;font-weight:1000}.coluna-icon{width:34px;height:34px;border-radius:12px;display:flex;align-items:center;justify-content:center}.novos .coluna-icon{background:#fff8e8;color:#946200}.preparo .coluna-icon{background:#fff1f1;color:#c2410c}.andamento .coluna-icon{background:#eff6ff;color:#0b68d8}.finalizados .coluna-icon{background:#eaf8ef;color:#0d5b3a}.cancelados .coluna-icon{background:#f2f4f7;color:#667085}.coluna-count{min-width:26px;height:26px;border-radius:999px;background:white;border:1px solid #e4e7ec;color:#344054;display:flex;align-items:center;justify-content:center;font-weight:1000;font-size:12px}.cards-coluna{display:grid;gap:12px}
+.pedido-card{position:relative;background:white;border:1px solid #e4e7ec;border-radius:20px;padding:16px;box-shadow:0 12px 26px rgba(15,35,90,.06);overflow:hidden}.pedido-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:#d0d5dd}.pedido-card.status-novo::before{background:#f59f00}.pedido-card.status-cozinha::before{background:#ef4444}.pedido-card.status-entrega::before,.pedido-card.status-pronto::before{background:#0b68d8}.pedido-card.status-finalizado::before{background:#0d5b3a}.pedido-card.status-cancelado::before{background:#98a2b3}.pedido-card.tipo-entrega::before{background:#2563eb}.pedido-card.tipo-retirada::before{background:#0d5b3a}
+.pedido-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:12px}.pedido-num{font-weight:1000;color:#344054;font-size:19px}.pedido-status-select{border:0;background:#6f42c1;color:white;border-radius:14px;padding:10px 12px;font-weight:950;font-size:13px;max-width:140px}
+.cliente{display:flex;gap:8px;align-items:center;color:#344054;font-weight:1000;margin-bottom:8px;line-height:1.2;text-transform:uppercase}.cliente i,.meta i{color:#98a2b3;width:18px}.meta{display:grid;gap:8px;color:#667085;font-size:13px;font-weight:850;margin-bottom:12px}.meta-line{display:flex;gap:7px;align-items:center;line-height:1.3}
+.badge{display:inline-flex;align-items:center;gap:7px;min-height:24px;border-radius:999px;padding:5px 9px;font-weight:1000;font-size:12px;background:#eef3ff;color:var(--azul);border:1px solid #d7e0ff}.badge.green{background:#eaf8ef;color:#0d5b3a;border-color:#cfe8d8}.badge.orange{background:#fff8e8;color:#946200;border-color:#f5d78e}.badge.purple{background:#f2eaff;color:#6d28d9;border-color:#e3d4ff}.badge.red{background:#fff1f1;color:#d92d20;border-color:#ffd6d6}.badge.dark{background:#344054;color:#fff;border-color:#344054}
+.itens-preview{background:#f8fbff;border:1px solid #edf1f7;border-radius:14px;padding:10px;margin-bottom:12px}.itens-preview strong{display:block;color:var(--azul);font-size:13px;margin-bottom:6px}.item-line{display:grid;grid-template-columns:1fr auto;gap:8px;color:#344054;font-size:14px;font-weight:900;margin-top:5px}.item-line span:last-child{font-weight:1000;color:#102033}
+.total-card{display:flex;justify-content:space-between;align-items:end;border-top:1px solid #edf1f7;padding-top:12px;margin-top:10px}.total-card span{color:#98a2b3;font-size:12px;font-weight:850}.total-card strong{color:#102033;font-size:26px}.recebido{color:#98a2b3;font-size:12px;font-weight:850;margin-top:10px}
+.card-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.card-actions button,.card-actions a{min-height:34px;border-radius:11px;padding:0 10px;font-size:12px}.btn-print{background:#fff;color:#0d5b3a;border:1px solid #cfe8d8}.btn-detalhes{background:#eef3ff;color:var(--azul);border:1px solid var(--borda)}
+.vazio{padding:18px;border:1px dashed #d0d5dd;border-radius:16px;color:#667085;background:white;font-weight:850;text-align:center}
+.func-modal{display:none;position:fixed;inset:0;background:rgba(15,23,42,.52);z-index:99999;padding:18px;align-items:center;justify-content:center}.func-modal.show{display:flex}.func-modal-card{width:min(560px,100%);background:#fff;border-radius:22px;padding:20px;box-shadow:0 24px 70px rgba(0,0,0,.24);position:relative;max-height:90vh;overflow:auto}.modal-close{position:absolute;right:14px;top:14px;width:34px;height:34px;min-height:34px;border-radius:50%;padding:0;background:#eef2f6;color:#667085}.detail-box{background:#f8fbff;border:1px solid #edf2f7;border-radius:16px;padding:12px;margin:14px 0}.detail-box p{margin:7px 0;color:#667085;font-weight:850}.detail-box strong{color:#344054}
+.mobilebar{display:none}
+@media(max-width:1100px){.app{grid-template-columns:1fr}.side{display:none}.main{padding:16px 12px 78px}.grid-top{grid-template-columns:1fr}.kanban{min-width:0;grid-template-columns:1fr}.coluna{min-height:auto}.top{align-items:flex-start}.hello h1{font-size:24px}.mobilebar{display:grid;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--borda);grid-template-columns:repeat(4,1fr);z-index:50}.mobilebar a{min-height:62px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;font-size:11px;font-weight:900;color:#667085}.mobilebar a.active{color:var(--azul)}}
+
+/* v380 - sidebar fixo padronizado em todas as telas */
+.side,
+.sidebar,
+.premium-sidebar,
+aside.side,
+aside.sidebar{
+  width:230px !important;
+  min-width:230px !important;
+  max-width:230px !important;
+  flex:0 0 230px !important;
+  background:#fff !important;
+  border-right:1px solid #d9e4f4 !important;
+  padding:18px 14px !important;
+  overflow-x:hidden !important;
+}
+
+.app{
+  display:grid !important;
+  grid-template-columns:230px minmax(0,1fr) !important;
+}
+
+.brand,
+.logo-area,
+.sidebar-brand,
+.side-brand{
+  min-height:74px !important;
+  padding:0 0 16px 0 !important;
+  margin:0 0 14px 0 !important;
+  border-bottom:1px solid #edf2f7 !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:12px !important;
+}
+
+.brand .logo,
+.brand-icon,
+.store-icon,
+.sidebar-logo{
+  width:40px !important;
+  height:40px !important;
+  min-width:40px !important;
+  border-radius:14px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+
+.brand strong,
+.brand-title,
+.sidebar-title{
+  font-size:18px !important;
+  line-height:1.05 !important;
+  font-weight:1000 !important;
+  color:#061b8f !important;
+  display:block !important;
+  white-space:normal !important;
+}
+
+.brand small,
+.brand-subtitle,
+.sidebar-subtitle{
+  font-size:12px !important;
+  line-height:1.1 !important;
+  font-weight:900 !important;
+  color:#667085 !important;
+  display:block !important;
+  margin-top:3px !important;
+}
+
+.nav,
+.side-nav,
+.sidebar-nav{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:8px !important;
+}
+
+.nav a,
+.side a,
+.sidebar a,
+.premium-sidebar a,
+.side-link,
+.nav-link{
+  min-height:42px !important;
+  height:auto !important;
+  padding:10px 13px !important;
+  border-radius:13px !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:12px !important;
+  font-size:13px !important;
+  line-height:1.12 !important;
+  font-weight:950 !important;
+  color:#344054 !important;
+  text-decoration:none !important;
+  white-space:normal !important;
+  word-break:normal !important;
+  overflow-wrap:normal !important;
+}
+
+.nav a i,
+.side a i,
+.sidebar a i,
+.premium-sidebar a i,
+.side-link i,
+.nav-link i{
+  width:18px !important;
+  min-width:18px !important;
+  text-align:center !important;
+  font-size:14px !important;
+  color:#667085 !important;
+}
+
+.nav a.active,
+.side a.active,
+.sidebar a.active,
+.premium-sidebar a.active,
+.side-link.active,
+.nav-link.active{
+  background:#061b8f !important;
+  color:#fff !important;
+  box-shadow:0 12px 24px rgba(6,27,143,.18) !important;
+}
+
+.nav a.active i,
+.side a.active i,
+.sidebar a.active i,
+.premium-sidebar a.active i,
+.side-link.active i,
+.nav-link.active i{
+  color:#fff !important;
+}
+
+.nav-title,
+.sidebar-section-title,
+.side-section-title{
+  margin:18px 0 8px !important;
+  padding:0 6px !important;
+  font-size:12px !important;
+  line-height:1 !important;
+  letter-spacing:.04em !important;
+  font-weight:1000 !important;
+  color:#98a2b3 !important;
+  text-transform:uppercase !important;
+}
+
+/* evita que "Reservas / Agendamentos" aumente o menu ou mude largura */
+.nav a span,
+.side a span,
+.sidebar a span,
+.premium-sidebar a span,
+.side-link span,
+.nav-link span{
+  display:inline-block !important;
+  max-width:160px !important;
+}
+
+/* mobile: mantém comportamento responsivo sem quebrar */
+@media(max-width:900px){
+  .app{
+    display:block !important;
+  }
+  .side,
+  .sidebar,
+  .premium-sidebar,
+  aside.side,
+  aside.sidebar{
+    width:100% !important;
+    max-width:none !important;
+    min-width:0 !important;
+    border-right:0 !important;
+    border-bottom:1px solid #d9e4f4 !important;
+  }
+}
+
+.title-only h1{display:flex;align-items:center;gap:10px}.title-only h1 i{width:24px;height:24px;display:grid;place-items:center;border-radius:999px;background:#eef3ff;color:#061b8f;font-size:12px}.title-only h1 span{display:block}</style>
+
+
+<style id="mf-v19-i18n-css">
+.mf-lang-switch{display:inline-flex;align-items:center;gap:4px;background:#fff;border:1px solid #dbe6f3;border-radius:999px;padding:4px;box-shadow:0 8px 18px rgba(15,35,90,.04)}
+.mf-lang-switch button{border:0;background:transparent;min-width:38px;height:34px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:1000;color:#075333;cursor:pointer}
+.mf-lang-switch button.active{background:#075333;color:#fff}
+.mf-lang-switch button:hover{background:#eaf8ef}
+.mf-lang-switch button.active:hover{background:#075333;color:#fff}
+@media(max-width:560px){.mf-lang-switch button{min-width:34px;height:30px;font-size:11px}.mf-lang-switch{padding:3px}}
+</style>
+<!-- MENUFACILE ADMIN LAYOUT FIX - padroniza sidebar e área principal -->
+<style id="menufacile-admin-layout-fix">
+:root{
+  --mf-sidebar-w: 220px;
+  --mf-page-max: 1440px;
+  --mf-page-pad-x: 28px;
+  --mf-page-pad-y: 22px;
+}
+html,body{overflow-x:hidden;}
+.layout,.premium-layout{
+  display:grid !important;
+  grid-template-columns:var(--mf-sidebar-w) minmax(0,1fr) !important;
+  min-height:100vh !important;
+  background:#f4f8fd !important;
+}
+.sidebar,.premium-sidebar{
+  width:var(--mf-sidebar-w) !important;
+  min-width:var(--mf-sidebar-w) !important;
+  max-width:var(--mf-sidebar-w) !important;
+  height:100vh !important;
+  position:sticky !important;
+  top:0 !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  padding:20px 14px !important;
+  background:#fff !important;
+  border-right:1px solid #dbe6f3 !important;
+}
+.nav-title,.premium-nav-title{display:none !important;}
+.brand,.premium-brand{
+  margin-bottom:18px !important;
+  padding-bottom:18px !important;
+}
+.brand strong,.premium-brand strong{font-size:17px !important;line-height:1.12 !important;}
+.brand span,.premium-brand span{font-size:11px !important;line-height:1.2 !important;}
+.nav-section,.premium-nav,.nav{gap:7px !important;}
+.nav-link,.premium-nav-link,.nav a{
+  min-height:44px !important;
+  border-radius:13px !important;
+  padding:10px 12px !important;
+  font-size:13px !important;
+  line-height:1.15 !important;
+}
+.main,.premium-main{
+  min-width:0 !important;
+  width:100% !important;
+  padding:0 !important;
+  background:#f4f8fd !important;
+}
+.topbar,.premium-topbar{
+  height:64px !important;
+  min-height:64px !important;
+  padding:0 var(--mf-page-pad-x) !important;
+  border-bottom:1px solid #dbe6f3 !important;
+  background:rgba(255,255,255,.92) !important;
+}
+.content,.premium-content{
+  width:100% !important;
+  max-width:var(--mf-page-max) !important;
+  margin:0 auto !important;
+  padding:var(--mf-page-pad-y) var(--mf-page-pad-x) 56px !important;
+}
+.premium-content > .container,
+.content > .container,
+.main > .container,
+.premium-main > .container{
+  width:100% !important;
+  max-width:var(--mf-page-max) !important;
+  margin:0 auto !important;
+  padding-left:0 !important;
+  padding-right:0 !important;
+}
+.page-head,.page-title,.premium-page-title,.header{
+  margin:0 0 18px !important;
+  padding:0 !important;
+}
+.page-head h1,.page-title h1,.premium-page-title h1,.content h1,.premium-content h1{
+  margin-top:0 !important;
+  letter-spacing:-.04em;
+}
+.card,.premium-card,.panel,.box,section.card{
+  border-radius:18px !important;
+}
+.grid-2,.cards-grid{gap:14px !important;}
+@media(max-width:900px){
+  .layout,.premium-layout{grid-template-columns:1fr !important;}
+  .sidebar,.premium-sidebar{position:relative !important;width:100% !important;max-width:none !important;min-width:0 !important;height:auto !important;}
+  .content,.premium-content{padding:18px 14px 44px !important;}
+  .topbar,.premium-topbar{padding:0 14px !important;}
+}
+</style>
+
+<style id="v396-funcionario-mobile-padrao">
+/* v396 — padrão mobile funcionário alinhado. Desktop intacto. */
+@media(max-width:900px){
+
+  html, body{
+    width:100%!important;
+    max-width:100%!important;
+    overflow-x:hidden!important;
+    background:#eef4fb!important;
+  }
+
+  .app,
+  .layout{
+    display:block!important;
+    width:100%!important;
+    min-height:100vh!important;
+    background:#eef4fb!important;
+  }
+
+  .side,
+  .sidebar,
+  aside.side{
+    display:none!important;
+  }
+
+  .main{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    padding:12px 10px 84px!important;
+    overflow-x:hidden!important;
+  }
+
+  .content{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    padding:0!important;
+    margin:0!important;
+    overflow-x:hidden!important;
+  }
+
+  .top,
+  .topbar{
+    width:100%!important;
+    max-width:100%!important;
+    min-height:auto!important;
+    padding:0!important;
+    margin:0 0 12px!important;
+    display:block!important;
+    background:transparent!important;
+    border:0!important;
+    position:relative!important;
+  }
+
+  .hello,
+  .top-title{
+    min-width:0!important;
+    width:100%!important;
+    margin:0 0 8px!important;
+  }
+
+  .hello h1,
+  .top-title strong,
+  .page-title{
+    font-size:22px!important;
+    line-height:24px!important;
+    margin:0 0 4px!important;
+    letter-spacing:-.04em!important;
+    color:#061b8f!important;
+    word-break:normal!important;
+  }
+
+  .hello p,
+  .top-title span,
+  .subtitle{
+    font-size:12px!important;
+    line-height:15px!important;
+    margin:0!important;
+    color:#667085!important;
+    font-weight:850!important;
+  }
+
+  .top-actions{
+    width:100%!important;
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    gap:7px!important;
+    overflow-x:auto!important;
+    padding:2px 0 4px!important;
+    justify-content:flex-start!important;
+    align-items:center!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+
+  .top-buttons{
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    gap:7px!important;
+    flex:0 0 auto!important;
+  }
+
+  .pill,
+  .top-actions .pill,
+  .btn,
+  button{
+    min-height:36px!important;
+    height:36px!important;
+    max-height:36px!important;
+    padding:0 10px!important;
+    border-radius:12px!important;
+    font-size:11px!important;
+    line-height:12px!important;
+    font-weight:950!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:6px!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+
+  .lang-switch,
+  .mf-lang-switch{
+    flex:0 0 auto!important;
+    min-height:34px!important;
+    border-radius:999px!important;
+  }
+
+  .lang-switch a,
+  .mf-lang-switch button{
+    width:30px!important;
+    min-width:30px!important;
+    height:30px!important;
+    font-size:11px!important;
+  }
+
+  .card,
+  .panel,
+  .box,
+  section.card{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    margin:0 0 10px!important;
+    padding:12px!important;
+    border-radius:17px!important;
+    box-sizing:border-box!important;
+    overflow:hidden!important;
+    box-shadow:0 10px 26px rgba(15,35,90,.06)!important;
+  }
+
+  .card h2,
+  .card h3,
+  .section-head h2{
+    font-size:20px!important;
+    line-height:22px!important;
+    margin:0 0 6px!important;
+  }
+
+  .card p,
+  .muted,
+  .section-head p{
+    font-size:12px!important;
+    line-height:15px!important;
+  }
+
+  .section-head,
+  .card-head{
+    display:flex!important;
+    align-items:center!important;
+    gap:9px!important;
+    flex-wrap:nowrap!important;
+    margin-bottom:10px!important;
+  }
+
+  .ico,
+  .square,
+  .section-head .ico,
+  .module-icon{
+    width:34px!important;
+    height:34px!important;
+    min-width:34px!important;
+    border-radius:12px!important;
+    font-size:14px!important;
+  }
+
+  .grid,
+  .grid-top,
+  .grid-2,
+  .grid-3,
+  .stats,
+  .kpis,
+  .form-grid,
+  .form-row,
+  .filters,
+  .panels{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:10px!important;
+    width:100%!important;
+  }
+
+  input,
+  select,
+  textarea{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    min-height:40px!important;
+    border-radius:12px!important;
+    font-size:14px!important;
+    box-sizing:border-box!important;
+  }
+
+  textarea{
+    min-height:84px!important;
+  }
+
+  .form-line,
+  .actions,
+  .card-actions{
+    width:100%!important;
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:7px!important;
+    align-items:stretch!important;
+  }
+
+  .actions .btn,
+  .card-actions .btn,
+  .card-actions button,
+  .card-actions a{
+    width:100%!important;
+    min-width:0!important;
+    height:36px!important;
+    min-height:36px!important;
+    font-size:10.5px!important;
+    padding:0 7px!important;
+  }
+
+  .mobilebar{
+    display:grid!important;
+    position:fixed!important;
+    left:0!important;
+    right:0!important;
+    bottom:0!important;
+    z-index:9999!important;
+    background:#fff!important;
+    border-top:1px solid #dbe6f3!important;
+    box-shadow:0 -10px 28px rgba(15,35,90,.08)!important;
+    grid-template-columns:repeat(5,1fr)!important;
+  }
+
+  .mobilebar a{
+    min-height:62px!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:5px!important;
+    font-size:10px!important;
+    line-height:11px!important;
+    font-weight:900!important;
+    color:#667085!important;
+    text-align:center!important;
+    padding:4px 2px!important;
+  }
+
+  .mobilebar a.active{
+    color:#061b8f!important;
+  }
+
+  .mobilebar a.logout{
+    color:#be123c!important;
+  }
+
+  /* Pedidos */
+  .kanban-wrap{
+    width:100%!important;
+    overflow:visible!important;
+    padding:0!important;
+  }
+
+  .kanban,
+  .kanban.single{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    min-width:0!important;
+    width:100%!important;
+    gap:10px!important;
+  }
+
+  .coluna{
+    width:100%!important;
+    min-width:0!important;
+    min-height:0!important;
+    padding:12px!important;
+    border-radius:17px!important;
+  }
+
+  .cards-coluna{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:10px!important;
+  }
+
+  .pedido-card{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    padding:12px!important;
+    border-radius:16px!important;
+  }
+
+  .pedido-top{
+    gap:8px!important;
+  }
+
+  .pedido-num{
+    font-size:17px!important;
+  }
+
+  .pedido-status-select{
+    max-width:120px!important;
+    font-size:11px!important;
+    padding:8px 9px!important;
+    border-radius:12px!important;
+  }
+
+  .cliente{
+    font-size:12px!important;
+    line-height:14px!important;
+  }
+
+  .meta{
+    font-size:12px!important;
+    line-height:15px!important;
+  }
+
+  .item-line{
+    font-size:12px!important;
+  }
+
+  .total-card strong{
+    font-size:22px!important;
+  }
+
+  .tabs{
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    gap:7px!important;
+    overflow-x:auto!important;
+    padding:4px 2px 9px!important;
+    margin-bottom:10px!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+
+  .tab{
+    flex:0 0 auto!important;
+    min-width:98px!important;
+    height:38px!important;
+    min-height:38px!important;
+    padding:0 10px!important;
+    border-radius:13px!important;
+    font-size:11px!important;
+  }
+
+  .tab .count,
+  .count{
+    min-width:20px!important;
+    height:20px!important;
+    font-size:10px!important;
+    margin-left:5px!important;
+  }
+
+  /* Reservas */
+  .prof-tabs,
+  .agenda-profissionais-fixa{
+    width:100%!important;
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    gap:7px!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    padding:8px!important;
+    border-radius:14px!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+
+  .prof-tab{
+    flex:0 0 auto!important;
+    height:36px!important;
+    min-height:36px!important;
+    padding:0 12px!important;
+    border-radius:14px!important;
+    font-size:11px!important;
+    white-space:nowrap!important;
+  }
+
+  .reservas-grid,
+  .agenda-grid,
+  .list,
+  .items-grid,
+  .cat-list{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:9px!important;
+    width:100%!important;
+  }
+
+  .reserva-card,
+  .row,
+  .item-card,
+  .cat-row{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    padding:10px!important;
+    border-radius:15px!important;
+  }
+
+  .reserva-card h3,
+  .item-card h3{
+    font-size:15px!important;
+    line-height:17px!important;
+    margin:8px 0!important;
+  }
+
+  .reserva-prof{
+    font-size:10.5px!important;
+    line-height:12px!important;
+    gap:5px!important;
+    margin-bottom:6px!important;
+  }
+
+  .codigo,
+  .badge{
+    font-size:9.5px!important;
+    min-height:20px!important;
+    padding:4px 6px!important;
+    border-radius:999px!important;
+  }
+
+  .info-box,
+  .item-desc,
+  .itens-preview,
+  .detail-box{
+    padding:8px!important;
+    border-radius:12px!important;
+    font-size:10.5px!important;
+    line-height:13px!important;
+    overflow-wrap:anywhere!important;
+    word-break:break-word!important;
+  }
+
+  /* Caixa */
+  .table,
+  table{
+    display:block!important;
+    width:100%!important;
+    max-width:100%!important;
+    overflow-x:auto!important;
+    white-space:nowrap!important;
+    font-size:12px!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+
+  th,td{
+    padding:9px 10px!important;
+  }
+
+  .row{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:8px!important;
+  }
+
+  .row-time{
+    min-width:0!important;
+    font-size:15px!important;
+  }
+
+  /* Cardápio */
+  .item-top{
+    display:flex!important;
+    align-items:flex-start!important;
+    gap:8px!important;
+  }
+
+  .item-price{
+    font-size:20px!important;
+  }
+
+  .kpi strong{
+    font-size:22px!important;
+  }
+
+  .modal,
+  .func-modal,
+  .modal-agenda{
+    padding:8px!important;
+    align-items:flex-start!important;
+    overflow:auto!important;
+  }
+
+  .modal-card,
+  .func-modal-card,
+  .modal-agenda-card{
+    width:100%!important;
+    max-width:100%!important;
+    max-height:92vh!important;
+    margin-top:12px!important;
+    padding:14px!important;
+    border-radius:18px!important;
+  }
+
+  .fullscreen-toggle{
+    right:10px!important;
+    bottom:68px!important;
+    width:46px!important;
+    height:46px!important;
+    border-radius:15px!important;
+  }
+
+  body.mf-fullscreen .content,
+  body.mf-fullscreen .main{
+    padding:7px 7px 72px!important;
+  }
+
+  body.mf-fullscreen .card,
+  body.mf-fullscreen .reserva-card,
+  body.mf-fullscreen .pedido-card{
+    padding:8px!important;
+    border-radius:13px!important;
+  }
+
+  body.mf-fullscreen .actions .btn,
+  body.mf-fullscreen .card-actions .btn,
+  body.mf-fullscreen .card-actions button{
+    height:32px!important;
+    min-height:32px!important;
+    font-size:9.5px!important;
+    border-radius:10px!important;
+  }
+
+  body.mf-fullscreen .fullscreen-toggle{
+    right:8px!important;
+    bottom:50px!important;
+    width:42px!important;
+    height:42px!important;
+    border-radius:14px!important;
+  }
+}
+
+@media(max-width:380px){
+  .main{padding-left:7px!important;padding-right:7px!important;}
+  .hello h1,.top-title strong,.page-title{font-size:20px!important;line-height:22px!important;}
+  .card h2,.section-head h2{font-size:18px!important;line-height:20px!important;}
+  .reserva-card h3,.item-card h3{font-size:14px!important;line-height:16px!important;}
+  .info-box,.item-desc,.itens-preview{font-size:9.6px!important;line-height:12px!important;}
+  .actions .btn,.card-actions .btn,.card-actions button{font-size:9.5px!important;}
+}
+</style>
+
+<style id="mf-pedidos-data-align-fix">
+@media(max-width:900px){
+  .pedidos-date-form{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) 108px!important;
+    gap:7px!important;
+    align-items:end!important;
+  }
+  .pedidos-date-form>div{min-width:0!important;}
+  .pedidos-date-form input[type="date"]{
+    width:100%!important;
+    height:36px!important;
+    min-height:36px!important;
+  }
+  .pedidos-date-form .btn{
+    width:108px!important;
+    min-width:108px!important;
+    max-width:108px!important;
+    height:36px!important;
+    min-height:36px!important;
+    padding:0 8px!important;
+    white-space:nowrap!important;
+    font-size:10.5px!important;
+  }
+}
+@media(max-width:365px){
+  .pedidos-date-form{grid-template-columns:minmax(0,1fr) 96px!important;}
+  .pedidos-date-form .btn{width:96px!important;min-width:96px!important;max-width:96px!important;font-size:10px!important;}
+}
+</style>
+{% endblock %}
+{% block page %}
+{% set _pode_cardapio = permissao_admin_sessao(request, 'cardapio') %}
+{% set _pode_produtos = permissao_admin_sessao(request, 'produtos') %}
+{% set _pode_pedidos = permissao_admin_sessao(request, 'pedidos') %}
+{% set _pode_reservas = permissao_admin_sessao(request, 'reservas') %}
+{% include "partials/funcionario_mobile_header.html" %}
+<style id="mf-employee-pedidos-v3">@media(max-width:900px){.top .pill,.v398-mobile-actions,.topbar .top-actions,.mf-lang-switch{display:none!important}.top{padding:14px 0 8px!important;margin:0!important}.hello h1{font-size:24px!important;line-height:1.08!important;margin:0 0 4px!important}.hello p{font-size:12px!important;line-height:1.35!important;margin:0!important;color:#667085!important}}</style>
+<style id="mf-employee-pedidos-mobile-fix">
+@media(max-width:900px){
+  .top .pill, .mf-lang-switch, .top-actions{display:none!important}
+  .top{margin:0 0 10px!important;padding:2px 2px 0!important;align-items:flex-start!important}
+  .hello p{margin-top:4px!important;max-width:100%!important}
+}
+</style>
+<div class="app">
+<aside class="side">
+  <div class="brand"><div class="brand-icon"><i class="fa-solid fa-store"></i></div><div><strong>{{ empresa.nome }}</strong><span>{{ request.session.get("admin_nome", "Equipe") }}</span></div></div>
+  <nav class="nav">
+    <a href="/funcionario/{{ empresa.id }}"><i class="fa-solid fa-house"></i>Painel</a>
+    {% if _pode_produtos %}<a href="/funcionario/{{ empresa.id }}/produtos"><i class="fa-solid fa-box"></i>Produtos</a>{% endif %}
+    {% if _pode_pedidos %}<a class="active" href="/funcionario/{{ empresa.id }}/pedidos"><i class="fa-solid fa-bag-shopping"></i>Pedidos</a>{% endif %}
+    {% if _pode_reservas %}<a href="/funcionario/{{ empresa.id }}/reservas"><i class="fa-regular fa-calendar"></i>Reservas</a>{% endif %}
+    {% if _pode_cardapio %}<a href="/funcionario/{{ empresa.id }}/cardapio"><i class="fa-solid fa-utensils"></i>Menu</a>{% endif %}
+    <a href="/logout"><i class="fa-solid fa-right-from-bracket"></i>Sair</a>
+  </nav>
+</aside>
+
+<main class="main">
+<header class="top"><div class="hello title-only"><h1><i class="fa-solid fa-bag-shopping" aria-hidden="true"></i><span>Pedidos</span></h1></div></header>
+
+<section class="grid-top">
+  <div class="card">
+    <div class="section-head"><div class="ico"><i class="fa-regular fa-calendar"></i></div><div><h2>Data de trabalho</h2><p>Escolha a data para seguir os pedidos.</p></div></div>
+    <form class="form-line pedidos-date-form" method="get"><div><label>Data</label><input type="date" name="data" value="{{ data_selecionada }}"></div><button class="btn green">Ver pedidos</button></form>
+  </div>
+  
+  <div class="card">
+    <div class="section-head"><div class="ico"><i class="fa-solid fa-bell"></i></div><div><h2>Chamadas</h2><p>Clientes chamando o atendente.</p></div><span class="badge">{{ chamadas_atendimento|length if chamadas_atendimento is defined else 0 }}</span></div>
+  </div>
+</section>
+
+<section class="card">
+  <h2 style="margin:0 0 8px;color:#102033">Pedidos</h2>
+  <div class="tabs">
+    <button class="tab active" onclick="filtrarColuna('todas',this)">Todos <span class="count" data-count="todas">0</span></button>
+    <button class="tab" onclick="filtrarColuna('novo',this)">Novos <span class="count" data-count="novo">0</span></button>
+    <button class="tab" onclick="filtrarColuna('cozinha',this)">Em preparo <span class="count" data-count="cozinha">0</span></button>
+    <button class="tab" onclick="filtrarColuna('entrega',this)">Entrega / Retirada <span class="count" data-count="entrega">0</span></button>
+    <button class="tab" onclick="filtrarColuna('finalizado',this)">Concluídos <span class="count" data-count="finalizado">0</span></button>
+    <button class="tab" onclick="filtrarColuna('cancelado',this)">Cancelados <span class="count" data-count="cancelado">0</span></button>
+  </div>
+
+  <div class="kanban-wrap">
+    <div class="kanban" id="kanbanPedidos">
+      <div class="coluna novos" data-col="novo">
+        <div class="coluna-head"><div class="coluna-title"><span class="coluna-icon"><i class="fa-regular fa-clock"></i></span>Novos</div><span class="coluna-count" data-col-count="novo">0</span></div>
+        <div class="cards-coluna" data-list="novo"></div>
+      </div>
+      <div class="coluna preparo" data-col="cozinha">
+        <div class="coluna-head"><div class="coluna-title"><span class="coluna-icon"><i class="fa-solid fa-kitchen-set"></i></span>Em preparo</div><span class="coluna-count" data-col-count="cozinha">0</span></div>
+        <div class="cards-coluna" data-list="cozinha"></div>
+      </div>
+      <div class="coluna andamento" data-col="entrega">
+        <div class="coluna-head"><div class="coluna-title"><span class="coluna-icon"><i class="fa-solid fa-truck"></i></span>Entrega / Retirada</div><span class="coluna-count" data-col-count="entrega">0</span></div>
+        <div class="cards-coluna" data-list="entrega"></div>
+      </div>
+      <div class="coluna finalizados" data-col="finalizado">
+        <div class="coluna-head"><div class="coluna-title"><span class="coluna-icon"><i class="fa-solid fa-circle-check"></i></span>Concluídos</div><span class="coluna-count" data-col-count="finalizado">0</span></div>
+        <div class="cards-coluna" data-list="finalizado"></div>
+      </div>
+      <div class="coluna cancelados" data-col="cancelado">
+        <div class="coluna-head"><div class="coluna-title"><span class="coluna-icon"><i class="fa-solid fa-ban"></i></span>Cancelados</div><span class="coluna-count" data-col-count="cancelado">0</span></div>
+        <div class="cards-coluna" data-list="cancelado"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="pedidosFonte" style="display:none">
+    {% for p in pedidos %}
+    <div class="pedido-fonte"
+      data-id="{{ p.id }}"
+      data-numero-dia="{{ '%03d'|format(p.numero_dia or p.id) }}"
+      data-status="{{ p.status|lower }}"
+      data-cliente="{{ p.nome_cliente or 'Cliente' }}"
+      data-telefone="{{ p.telefone_cliente or '' }}"
+      data-pagamento="{{ p.pagamento_funcionario if p.pagamento_funcionario is defined else (p.forma_pagamento or '') }}"
+      data-total="{{ '%.2f'|format(p.total or 0) }}"
+      data-tipo="{{ p.tipo_entrega or p.tipo or p.tipo_pedido or '' }}"
+      data-endereco="{{ p.endereco_entrega or '' }}"
+      data-recebido="{{ p.criado_em.strftime('%H:%M') if p.criado_em is defined and p.criado_em else '' }}"
+      data-observacao="{{ p.observacao or '' }}">
+      <div class="itens-html">
+        {% set itens_pedido = p.itens_funcionario if p.itens_funcionario is defined else (p.itens if p.itens is defined else []) %}
+        {% if itens_pedido %}
+          {% for pi in itens_pedido %}
+            <div class="item-line">
+              <span>{{ pi.quantidade if pi.quantidade is defined else (pi["quantidade"] if pi["quantidade"] is defined else 1) }}x
+              {% if pi.nome_item is defined %}{{ pi.nome_item }}
+              {% elif pi["nome_item"] is defined %}{{ pi["nome_item"] }}
+              {% elif pi.item is defined and pi.item %}{{ pi.item.nome }}
+              {% elif pi.nome is defined %}{{ pi.nome }}
+              {% else %}Item{% endif %}
+              </span>
+              <span>R$ {{ '%.2f'|format(pi.subtotal if pi.subtotal is defined else (pi["subtotal"] if pi["subtotal"] is defined else 0)) }}</span>
+            </div>
+          {% endfor %}
+        {% elif p.itens_pedido is defined and p.itens_pedido %}
+          {% for pi in p.itens_pedido %}
+            <div class="item-line"><span>{{ pi.quantidade or 1 }}x {{ pi.nome_item if pi.nome_item is defined else 'Item' }}</span><span></span></div>
+          {% endfor %}
+        {% else %}
+          <div class="item-line item-empty"><span>Itens não carregados</span><span></span></div>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+</main>
+</div>
+
+{% include "partials/funcionario_mobile_nav.html" %}
+
+<div id="modalPedido" class="func-modal">
+  <div class="func-modal-card">
+    <button class="modal-close" onclick="fecharModal()">×</button>
+    <span class="badge" id="modalStatus"></span>
+    <h2 id="modalTitulo"></h2>
+    <div class="detail-box" id="modalDetalhes"></div>
+    <div class="actions card-actions" id="modalActions"></div>
+  </div>
+</div>
+
+<script>
+let pedidoAtual = null;
+
+function normalizaStatus(st){
+  st = String(st || '').toLowerCase();
+  if(['novo','novos','pendente'].includes(st)) return 'novo';
+  if(['cozinha','preparando','preparo','em preparo'].includes(st)) return 'cozinha';
+  if(['pronto','entrega','retirada','consegna','consegna/ritiro'].includes(st)) return 'entrega';
+  if(['finalizado','concluido','concluído','completado','completo'].includes(st)) return 'finalizado';
+  if(['cancelado','anulado','annullato'].includes(st)) return 'cancelado';
+  return 'novo';
+}
+
+function proximaAcao(status, tipo){
+  const st = normalizaStatus(status);
+  const tipoTxt = String(tipo || '').toLowerCase();
+  const entrega = tipoTxt.includes('entrega') || tipoTxt.includes('consegna');
+  if(st === 'novo') return {label:'Iniciar preparo', status:'cozinha', cls:'blue'};
+  if(st === 'cozinha') return {label:'Marcar como pronto', status:'entrega', cls:'orange'};
+  if(st === 'entrega') return {label:'Concluir', status:'finalizado', cls:'green'};
+  return null;
+}
+
+function tipoBadge(tipo, endereco){
+  const t = String(tipo || '').toLowerCase();
+  if(t.includes('entrega') || t.includes('consegna')) return `<span class="badge"><i class="fa-solid fa-truck"></i> Entrega</span>`;
+  if(t.includes('mesa')) return `<span class="badge"><i class="fa-solid fa-chair"></i> Mesa</span>`;
+  if(t.includes('tablet')) return `<span class="badge purple"><i class="fa-solid fa-tablet-screen-button"></i> Tablet</span>`;
+  return `<span class="badge green"><i class="fa-solid fa-bag-shopping"></i> Retirada</span>`;
+}
+
+function statusLabel(st){
+  const s = normalizaStatus(st);
+  if(s === 'novo') return 'Novo';
+  if(s === 'cozinha') return 'Em preparo';
+  if(s === 'entrega') return 'Pronto';
+  if(s === 'finalizado') return 'Concluído';
+  if(s === 'cancelado') return 'Cancelado';
+  return st || 'Novo';
+}
+
+function renderCard(src){
+  const id = src.dataset.id;
+  const st = normalizaStatus(src.dataset.status);
+  const tipo = src.dataset.tipo || '';
+  const next = proximaAcao(st, tipo);
+  const itens = src.querySelector('.itens-html') ? src.querySelector('.itens-html').innerHTML : '<div class="item-line"><span>Itens não carregados</span><span></span></div>';
+  const entrega = String(tipo).toLowerCase().includes('entrega');
+  const tipoClass = entrega ? 'tipo-entrega' : 'tipo-retirada';
+
+  const card = document.createElement('article');
+  card.className = `pedido-card status-${st} ${tipoClass}`;
+  card.dataset.status = st;
+  card.innerHTML = `
+    <div class="pedido-top">
+      <div class="pedido-num">#${src.dataset.numeroDia || id}</div>
+      <select class="pedido-status-select" onclick="event.stopPropagation()" onchange="statusPedido('${id}', this.value)">
+        <option value="novo" ${st==='novo'?'selected':''}>Novo</option>
+        <option value="cozinha" ${st==='cozinha'?'selected':''}>Em preparo</option>
+        <option value="entrega" ${st==='entrega'?'selected':''}>Pronto</option>
+        <option value="finalizado" ${st==='finalizado'?'selected':''}>Concluído</option>
+        <option value="cancelado" ${st==='cancelado'?'selected':''}>Cancelado</option>
+      </select>
+    </div>
+    <div class="cliente"><i class="fa-regular fa-user"></i><span>${src.dataset.cliente || 'Cliente'}</span></div>
+    <div class="meta">
+      <div class="meta-line">${tipoBadge(tipo, src.dataset.endereco)}</div>
+      <div class="meta-line"><i class="fa-regular fa-credit-card"></i> ${mfTExtra ? mfTExtra("payment") : "Pagamento"}: ${window.mfTrPagamento ? mfTrPagamento(src.dataset.pagamento || "-") : (src.dataset.pagamento || "-")}</div>
+      ${src.dataset.endereco ? `<div class="meta-line"><i class="fa-solid fa-location-dot"></i> ${src.dataset.endereco}</div>` : ''}
+    </div>
+    <div class="itens-preview"><strong>Itens</strong>${itens}</div>
+    <div class="total-card"><span>Total</span><strong>R$ ${src.dataset.total || '0.00'}</strong></div>
+    <div class="recebido">Recebido ${src.dataset.recebido ? 'às ' + src.dataset.recebido : ''}</div>
+    <div class="card-actions">
+      <button class="btn-print" onclick="event.stopPropagation(); window.open('/admin/{{ empresa.id }}/pedidos/${id}/imprimir','_blank')"><i class="fa-solid fa-print"></i></button>
+      <button class="btn-detalhes" onclick="event.stopPropagation(); abrirModal('${id}')"><i class="fa-solid fa-receipt"></i> Cliente</button>
+      <button class="btn-detalhes" onclick="event.stopPropagation(); abrirModal('${id}')">Detalhes</button>
+      <button class="btn whats" onclick="event.stopPropagation(); enviarWhatsAppPedidoFonte('${id}')"><i class="fa-brands fa-whatsapp"></i> Avisar</button>
+      ${next ? `<button class="btn ${next.cls}" onclick="event.stopPropagation(); statusPedido('${id}','${next.status}')">${next.label}</button>` : ''}
+      ${st !== 'finalizado' && st !== 'cancelado' ? `<button class="btn red" onclick="event.stopPropagation(); statusPedido('${id}','cancelado')">Cancelar</button>` : ''}
+    </div>
+  `;
+  card.onclick = () => abrirModal(id);
+  return card;
+}
+
+function montar(){
+  const counts = {todas:0, novo:0, cozinha:0, entrega:0, finalizado:0, cancelado:0};
+  document.querySelectorAll('[data-list]').forEach(l => l.innerHTML = '');
+
+  document.querySelectorAll('.pedido-fonte').forEach(src => {
+    const st = normalizaStatus(src.dataset.status);
+    counts.todas++;
+    counts[st] = (counts[st] || 0) + 1;
+    const list = document.querySelector(`[data-list="${st}"]`) || document.querySelector('[data-list="novo"]');
+    list.appendChild(renderCard(src));
+  });
+
+  Object.keys(counts).forEach(k => {
+    document.querySelectorAll(`[data-count="${k}"], [data-col-count="${k}"]`).forEach(el => el.textContent = counts[k] || 0);
+  });
+
+  document.querySelectorAll('[data-list]').forEach(l => {
+    if(!l.children.length){
+      const v = document.createElement('div');
+      v.className = 'vazio';
+      v.textContent = 'Nenhum pedido nesta fase.';
+      l.appendChild(v);
+    }
+  });
+}
+
+function filtrarColuna(status, btn){
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  const kanban = document.getElementById('kanbanPedidos');
+  document.querySelectorAll('.coluna').forEach(c => c.classList.remove('active-col'));
+  if(status === 'todas'){
+    kanban.classList.remove('single');
+  }else{
+    kanban.classList.add('single');
+    const col = document.querySelector(`.coluna[data-col="${status}"]`);
+    if(col) col.classList.add('active-col');
+  }
+}
+
+function statusPedido(id,status){
+ fetch(`/pedidos/${id}/status`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status})})
+ .then(r=>r.json()).then(j=>{ if(j.error) mfAlert(j.error); else location.reload(); })
+ .catch(()=>mfAlert('Erro ao atualizar pedido.'));
+}
+
+function limparTelefoneCliente(telefone){
+  telefone = String(telefone || "").trim();
+  if(!telefone) return "";
+  telefone = telefone.replace(/[^\d+]/g, "");
+  if(telefone.startsWith("+")) return telefone.replace(/[^\d]/g, "");
+  telefone = telefone.replace(/\D/g, "");
+  if(telefone && !telefone.startsWith("55") && telefone.length <= 11){
+    telefone = "55" + telefone.replace(/^0+/, "");
+  }
+  return telefone;
+}
+
+function mensagemPedidoWhats(src){
+  const nome = src?.dataset?.cliente || "cliente";
+  const codigo = "#" + (src?.dataset?.id || "");
+  const status = normalizaStatus(src?.dataset?.status || "");
+  const tipo = String(src?.dataset?.tipo || "").toLowerCase();
+  const total = src?.dataset?.total || "";
+  const empresa = "{{ empresa.nome }}";
+  const lang = "pt";
+  const isEntrega = tipo.includes("entrega") || tipo.includes("consegna") || tipo.includes("delivery");
+
+  const M = {
+    pt: {
+      novo: `Olá ${nome}, recebemos seu pedido ${codigo} em ${empresa}. Total: R$ ${total}. Em breve iniciaremos o preparo.`,
+      cozinha: `Olá ${nome}, seu pedido ${codigo} em ${empresa} está sendo preparado. Obrigado!`,
+      entrega: isEntrega
+        ? `Olá ${nome}, seu pedido ${codigo} em ${empresa} está pronto e sairá para entrega em breve.`
+        : `Olá ${nome}, seu pedido ${codigo} em ${empresa} está pronto para retirada.`,
+      finalizado: `Olá ${nome}, seu pedido ${codigo} em ${empresa} foi concluído. Obrigado pela preferência!`,
+      cancelado: `Olá ${nome}, seu pedido ${codigo} em ${empresa} foi cancelado. Para dúvidas, fale conosco.`,
+      fallback: `Olá ${nome}, temos uma atualização sobre seu pedido ${codigo} em ${empresa}.`
+    },
+    it: {
+      novo: `Ciao ${nome}, abbiamo ricevuto il tuo ordine ${codigo} da ${empresa}. Totale: € ${total}. A breve inizieremo la preparazione.`,
+      cozinha: `Ciao ${nome}, il tuo ordine ${codigo} da ${empresa} è in preparazione. Grazie!`,
+      entrega: isEntrega
+        ? `Ciao ${nome}, il tuo ordine ${codigo} da ${empresa} è pronto e sarà consegnato a breve.`
+        : `Ciao ${nome}, il tuo ordine ${codigo} da ${empresa} è pronto per il ritiro.`,
+      finalizado: `Ciao ${nome}, il tuo ordine ${codigo} da ${empresa} è stato completato. Grazie per la preferenza!`,
+      cancelado: `Ciao ${nome}, il tuo ordine ${codigo} da ${empresa} è stato annullato. Per dubbi, contattaci.`,
+      fallback: `Ciao ${nome}, abbiamo un aggiornamento sul tuo ordine ${codigo} da ${empresa}.`
+    },
+    en: {
+      novo: `Hi ${nome}, we received your order ${codigo} at ${empresa}. Total: R$ ${total}. We will start preparing it shortly.`,
+      cozinha: `Hi ${nome}, your order ${codigo} at ${empresa} is now being prepared. Thank you!`,
+      entrega: isEntrega
+        ? `Hi ${nome}, your order ${codigo} at ${empresa} is ready and will be delivered soon.`
+        : `Hi ${nome}, your order ${codigo} at ${empresa} is ready for pickup.`,
+      finalizado: `Hi ${nome}, your order ${codigo} at ${empresa} has been completed. Thank you!`,
+      cancelado: `Hi ${nome}, your order ${codigo} at ${empresa} has been canceled. Please contact us if you have questions.`,
+      fallback: `Hi ${nome}, we have an update about your order ${codigo} at ${empresa}.`
+    }
+  };
+
+  const dict = M.pt;
+  return dict[status] || dict.fallback;
+}
+
+function abrirWhats(tel, texto){
+  const n = limparTelefoneCliente(tel);
+  if(!n){ mfAlert("Este pedido não possui telefone do cliente."); return; }
+  const msg = texto || "";
+  window.open(`https://wa.me/${n}?text=${encodeURIComponent(msg)}`, "_blank");
+}
+
+function enviarWhatsAppPedidoFonte(id){
+  const src = Array.from(document.querySelectorAll(".pedido-fonte")).find(x => x.dataset.id === String(id));
+  if(!src){ mfAlert("Pedido não encontrado."); return; }
+  const telefone = src.dataset.telefone || "";
+  const texto = mensagemPedidoWhats(src);
+  abrirWhats(telefone, texto);
+}
+
+function abrirModal(id){
+  const src = Array.from(document.querySelectorAll('.pedido-fonte')).find(x => x.dataset.id === String(id));
+  if(!src) return;
+  pedidoAtual = id;
+  document.getElementById('modalStatus').textContent = statusLabel(src.dataset.status);
+  document.getElementById('modalTitulo').textContent = '#' + id + ' — ' + (src.dataset.cliente || 'Cliente');
+  const itens = src.querySelector('.itens-html') ? src.querySelector('.itens-html').innerHTML : '';
+  document.getElementById('modalDetalhes').innerHTML = `
+    <p><strong>${mfTExtra('client')}:</strong> ${src.dataset.cliente || '-'}</p>
+    <p><strong>${mfTExtra('phone')}:</strong> ${src.dataset.telefone || '-'}</p>
+    <p><strong>${mfTExtra('type')}:</strong> ${mfPedidoTrValue(src.dataset.tipo || mfTExtra("localPickup"))}</p>
+    <p><strong>${mfTExtra('payment')}:</strong> ${window.mfTrPagamento ? mfTrPagamento(src.dataset.pagamento || "-") : mfPedidoTrValue(src.dataset.pagamento || "-")}</p>
+    <p><strong>${mfTExtra('address')}:</strong> ${src.dataset.endereco || '-'}</p>
+    <p><strong>${mfTExtra('note')}:</strong> ${src.dataset.observacao || '-'}</p>
+    <div class="itens-preview"><strong>Itens</strong>${itens}</div>
+    <div class="total-card"><span>Total</span><strong>R$ ${src.dataset.total || '0.00'}</strong></div>
+  `;
+  const next = proximaAcao(src.dataset.status, src.dataset.tipo);
+  document.getElementById('modalActions').innerHTML = `
+    <button class="btn whats" onclick="enviarWhatsAppPedidoFonte('${id}')"><i class="fa-brands fa-whatsapp"></i> Avisar</button>
+    ${next ? `<button class="btn ${next.cls}" onclick="statusPedido('${id}','${next.status}')">${next.label}</button>` : ''}
+    <button class="btn blue" onclick="statusPedido('${id}','novo')">Novo</button>
+    <button class="btn orange" onclick="statusPedido('${id}','cozinha')">Cozinha</button>
+    <button class="btn green" onclick="statusPedido('${id}','finalizado')">Finalizar</button>
+    <button class="btn red" onclick="statusPedido('${id}','cancelado')">Cancelar</button>
+  `;
+  document.getElementById('modalPedido').classList.add('show');
+}
+function fecharModal(){ document.getElementById('modalPedido').classList.remove('show'); }
+document.addEventListener('DOMContentLoaded', montar);
+</script>
+
+
+<script id="mf-v19-i18n-js">
+(function(){
+  const TR = {
+    pt: {
+      home:"Início", panel:"Painel", backPanel:"Painel", employee:"Atendente", logout:"Sair",
+      orders:"Pedidos", reservations:"Reservas", menu:"Menu / Serviços", cash:"Caixa",
+      ordersTitle:"Pedidos", ordersSubtitle:"Fluxo operacional igual ao admin, adaptado para funcionário.",
+      reservationsTitle:"Reservas / Agendamentos", reservationsSubtitle:"Horários, agenda, confirmações e clientes.",
+      menuTitle:"Menu / Serviços", menuSubtitle:"Produtos, categorias e serviços.", cashTitle:"Caixa",
+      operationalDate:"Data operativa", workDate:"Data de trabalho", chooseOrdersDate:"Escolha a data para seguir os pedidos.",
+      chooseReservationsDate:"Escolha o dia para ver horários e reservas.", seeOrders:"Ver pedidos", seeDate:"Ver data",
+      times:"Tempos", timesDesc:"Preparo, entrega e retirada.", calls:"Chamadas", callsDesc:"Clientes chamando o atendente.",
+      configureSchedule:"Configurar agenda", configureScheduleDesc:"Criar profissional e gerar horários, igual ao admin.",
+      professional:"Profissional", newProfessional:"Novo profissional", noProfessional:"Sem profissional / restaurante",
+      name:"Nome", start:"Início", end:"Fim", interval:"Intervalo", seats:"Vagas",
+      generateTimes:"Gerar horários", selectAll:"Selecionar todos", saveSelected:"Salvar selecionados",
+      dayHours:"Horários do dia", available:"Disponível", free:"Livre", block:"Bloquear", unblock:"Ativar",
+      dayReservations:"Reservas / Agendamentos do dia", all:"Todos", pending:"Pendentes", confirmed:"Confirmadas", canceled:"Canceladas", refused:"Recusadas",
+      confirm:"Confirmar", pendingOne:"Pendente", cancel:"Cancelar", reject:"Recusar", notify:"Avisar",
+      new:"Novos", kitchen:"Cozinha", delivery:"Entrega / Retirada", completed:"Concluídos", canceledOrders:"Cancelados",
+      customer:"Cliente", phone:"Telefone", type:"Tipo", payment:"Pagamento", address:"Endereço", note:"Observação",
+      details:"Detalhes", print:"Imprimir", sendKitchen:"Enviar para cozinha", ready:"Pronto", finish:"Concluir",
+      receivedAt:"Recebido às", articles:"Itens", itemsNotLoaded:"Itens não carregados", total:"Total",
+      categories:"Categorias", newCategory:"Nova categoria", newCategoryDesc:"Organize produtos e serviços por categorias.",
+      newItem:"Novo item / serviço", newItemDesc:"Cadastre produtos do cardápio ou serviços.",
+      filters:"Filtros", itemsServices:"Itens / Serviços", active:"Ativo", actives:"Ativos", company:"Empresa",
+      category:"Categoria", price:"Preço", code:"Código", duration:"Duração", stock:"Estoque", iva:"IVA", photoUrl:"Foto URL",
+      description:"Descrição", createCategory:"Criar categoria", createItem:"Criar item", edit:"Editar", delete:"Excluir",
+      save:"Salvar", close:"Fechar", clear:"Limpar", search:"Buscar", allFem:"Todas", noImage:"Sem imagem",
+      product:"Produto", service:"Serviço", withoutCategory:"Sem categoria", touchCard:"Toque no card para editar detalhes do item.",
+      editItem:"Editar item / serviço"
+    },
+    it: {
+      home:"Home", panel:"Pannello", backPanel:"Pannello", employee:"Addetto", logout:"Esci",
+      orders:"Ordini", reservations:"Prenotazioni", menu:"Menu / Servizi", cash:"Cassa",
+      ordersTitle:"Ordini", ordersSubtitle:"Flusso operativo come l'admin, adattato al dipendente.",
+      reservationsTitle:"Prenotazioni / Appuntamenti", reservationsSubtitle:"Orari, agenda, conferme e clienti.",
+      menuTitle:"Menu / Servizi", menuSubtitle:"Prodotti, categorie e servizi.", cashTitle:"Cassa",
+      operationalDate:"Data operativa", workDate:"Data di lavoro", chooseOrdersDate:"Scegli la data per seguire gli ordini.",
+      chooseReservationsDate:"Scegli il giorno per visualizzare orari e prenotazioni.", seeOrders:"Vedi ordini", seeDate:"Vedi data",
+      times:"Tempi", timesDesc:"Preparazione, consegna e ritiro.", calls:"Chiamate", callsDesc:"Clienti che chiamano l'addetto.",
+      configureSchedule:"Configura agenda", configureScheduleDesc:"Crea professionista e genera orari, come nell'admin.",
+      professional:"Professionista", newProfessional:"Nuovo professionista", noProfessional:"Nessun professionista / ristorante",
+      name:"Nome", start:"Inizio", end:"Fine", interval:"Intervallo", seats:"Posti",
+      generateTimes:"Genera orari", selectAll:"Seleziona tutti", saveSelected:"Salva selezionati",
+      dayHours:"Orari del giorno", available:"Disponibile", free:"Libero", block:"Blocca", unblock:"Attiva",
+      dayReservations:"Prenotazioni / Appuntamenti del giorno", all:"Tutte", pending:"In sospeso", confirmed:"Confermate", canceled:"Annullate", refused:"Rifiutate",
+      confirm:"Conferma", pendingOne:"In sospeso", cancel:"Annulla", reject:"Rifiuta", notify:"Avvisa",
+      new:"Nuovi", kitchen:"Cucina", delivery:"Consegna / Ritiro", completed:"Completati", canceledOrders:"Annullati",
+      customer:"Cliente", phone:"Telefono", type:"Tipo", payment:"Pagamento", address:"Indirizzo", note:"Note",
+      details:"Dettagli", print:"Stampa", sendKitchen:"Invia in cucina", ready:"Pronto", finish:"Concludi",
+      receivedAt:"Ricevuto alle", articles:"Articoli", itemsNotLoaded:"Articoli non caricati", total:"Totale",
+      categories:"Categorie", newCategory:"Nuova categoria", newCategoryDesc:"Organizza prodotti e servizi per categorie.",
+      newItem:"Nuovo item / servizio", newItemDesc:"Registra prodotti del menu o servizi.",
+      filters:"Filtri", itemsServices:"Item / Servizi", active:"Attivo", actives:"Attivi", company:"Azienda",
+      category:"Categoria", price:"Prezzo", code:"Codice", duration:"Durata", stock:"Scorta", iva:"IVA", photoUrl:"URL foto",
+      description:"Descrizione", createCategory:"Crea categoria", createItem:"Crea item", edit:"Modifica", delete:"Elimina",
+      save:"Salva", close:"Chiudi", clear:"Pulisci", search:"Cerca", allFem:"Tutte", noImage:"Senza immagine",
+      product:"Prodotto", service:"Servizio", withoutCategory:"Senza categoria", touchCard:"Tocca il card per modificare i dettagli dell'item.",
+      editItem:"Modifica item / servizio"
+    },
+    en: {
+      home:"Home", panel:"Panel", backPanel:"Panel", employee:"Employee", logout:"Logout",
+      orders:"Orders", reservations:"Reservations", menu:"Menu / Services", cash:"Cash",
+      ordersTitle:"Orders", ordersSubtitle:"Admin-like workflow adapted for staff.",
+      reservationsTitle:"Reservations / Appointments", reservationsSubtitle:"Times, schedule, confirmations, and customers.",
+      menuTitle:"Menu / Services", menuSubtitle:"Products, categories, and services.", cashTitle:"Cash",
+      operationalDate:"Operating date", workDate:"Work date", chooseOrdersDate:"Choose the date to follow received orders.",
+      chooseReservationsDate:"Choose the day to view times and reservations.", seeOrders:"View orders", seeDate:"View date",
+      times:"Times", timesDesc:"Preparation, delivery, and pickup.", calls:"Calls", callsDesc:"Customers calling the attendant.",
+      configureSchedule:"Configure schedule", configureScheduleDesc:"Create professional and generate times, like admin.",
+      professional:"Professional", newProfessional:"New professional", noProfessional:"No professional / restaurant",
+      name:"Name", start:"Start", end:"End", interval:"Interval", seats:"Seats",
+      generateTimes:"Generate times", selectAll:"Select all", saveSelected:"Save selected",
+      dayHours:"Day times", available:"Available", free:"Free", block:"Block", unblock:"Enable",
+      dayReservations:"Day reservations / appointments", all:"All", pending:"Pending", confirmed:"Confirmed", canceled:"Canceled", refused:"Refused",
+      confirm:"Confirm", pendingOne:"Pending", cancel:"Cancel", reject:"Reject", notify:"Notify",
+      new:"New", kitchen:"Kitchen", delivery:"Delivery / Pickup", completed:"Completed", canceledOrders:"Canceled",
+      customer:"Customer", phone:"Phone", type:"Type", payment:"Payment", address:"Address", note:"Note",
+      details:"Details", print:"Print", sendKitchen:"Send to kitchen", ready:"Ready", finish:"Finish",
+      receivedAt:"Received at", articles:"Items", itemsNotLoaded:"Items not loaded", total:"Total",
+      categories:"Categories", newCategory:"New category", newCategoryDesc:"Organize products and services by categories.",
+      newItem:"New item / service", newItemDesc:"Register menu products or services.",
+      filters:"Filters", itemsServices:"Items / Services", active:"Active", actives:"Active", company:"Company",
+      category:"Category", price:"Price", code:"Code", duration:"Duration", stock:"Stock", iva:"VAT", photoUrl:"Photo URL",
+      description:"Description", createCategory:"Create category", createItem:"Create item", edit:"Edit", delete:"Delete",
+      save:"Save", close:"Close", clear:"Clear", search:"Search", allFem:"All", noImage:"No image",
+      product:"Product", service:"Service", withoutCategory:"No category", touchCard:"Tap a card to edit item details.",
+      editItem:"Edit item / service"
+    }
+  };
+
+  const phraseKeys = {
+    "Home":"home","Início":"home","Painel":"panel","Pannello":"panel","Panel":"panel","Esci":"logout","Sair":"logout","Logout":"logout",
+    "Ordini":"orders","Pedidos":"orders","Orders":"orders","Prenotazioni":"reservations","Reservas":"reservations","Reservations":"reservations",
+    "Menu / Servizi":"menu","Menu / Serviços":"menu","Menu / Services":"menu","Cassa":"cash","Caixa":"cash","Cash":"cash",
+    "Data operativa":"operationalDate","Data de trabalho":"workDate","Data di lavoro":"workDate","Work date":"workDate",
+    "Escolha a data para seguir os pedidos.":"chooseOrdersDate","Scegli la data per seguire gli ordini.":"chooseOrdersDate",
+    "Escolha o dia para ver horários e reservas.":"chooseReservationsDate","Scegli il giorno per visualizzare orari e prenotazioni.":"chooseReservationsDate",
+    "Vedi ordini":"seeOrders","Ver pedidos":"seeOrders","View orders":"seeOrders","Vedi data":"seeDate","Ver data":"seeDate","View date":"seeDate",
+    "Tempi":"times","Tempos":"times","Times":"times","Preparo, entrega e retirada.":"timesDesc","Preparazione, consegna e ritiro.":"timesDesc",
+    "Chiamate":"calls","Chamadas":"calls","Calls":"calls","Clienti che chiamano l'addetto.":"callsDesc","Clientes chamando o atendente.":"callsDesc",
+    "Configura agenda":"configureSchedule","Configurar agenda":"configureSchedule","Configure schedule":"configureSchedule",
+    "Criar profissional e gerar horários, igual ao admin.":"configureScheduleDesc","Crea professionista e genera orari, come nell'admin.":"configureScheduleDesc",
+    "Professionista":"professional","Profissional":"professional","Professional":"professional","Nuovo professionista":"newProfessional","Novo profissional":"newProfessional",
+    "Sem profissional / restaurante":"noProfessional","Nessun professionista / ristorante":"noProfessional",
+    "Nome":"name","Name":"name","Início":"start","Inizio":"start","Start":"start","Fim":"end","Fine":"end","End":"end",
+    "Intervallo":"interval","Intervalo":"interval","Interval":"interval","Vagas":"seats","Posti":"seats","Seats":"seats",
+    "Genera orari":"generateTimes","Gerar horários":"generateTimes","Generate times":"generateTimes",
+    "Seleziona tutti":"selectAll","Selecionar todos":"selectAll","Select all":"selectAll",
+    "Salva selezionati":"saveSelected","Salvar selecionados":"saveSelected","Save selected":"saveSelected",
+    "Orari del giorno":"dayHours","Horários do dia":"dayHours","Day times":"dayHours",
+    "Disponibile":"available","Disponível":"available","Available":"available","Libero":"free","Livre":"free","Free":"free",
+    "Bloccare":"block","Bloquear":"block","Blocca":"block","Block":"block","Attiva":"unblock","Ativar":"unblock","Enable":"unblock",
+    "Prenotazioni / Appuntamenti do dia":"dayReservations","Reservas / Appuntamenti do dia":"dayReservations","Reservas / Agendamentos do dia":"dayReservations",
+    "Prenotazioni / Appuntamenti del giorno":"dayReservations","Day reservations / appointments":"dayReservations",
+    "Tutte":"all","Todos":"all","All":"all","In sospeso":"pending","Pendentes":"pending","Pending":"pending",
+    "Confermate":"confirmed","Confirmadas":"confirmed","Confirmed":"confirmed","Annullate":"canceled","Canceladas":"canceled","Canceled":"canceled",
+    "Rifiutate":"refused","Recusadas":"refused","Refused":"refused","Conferma":"confirm","Confirmar":"confirm","Confirm":"confirm",
+    "Annulla":"cancel","Cancelar":"cancel","Cancel":"cancel","Rifiuta":"reject","Recusar":"reject","Reject":"reject","Avvisa":"notify","Avisar":"notify","Notify":"notify",
+    "Nuovi":"new","Novos":"new","New":"new","Cucina":"kitchen","Cozinha":"kitchen","Kitchen":"kitchen",
+    "Consegna/Ritiro":"delivery","Consegna / Ritiro":"delivery","Entrega / Retirada":"delivery","Delivery / Pickup":"delivery",
+    "Completati":"completed","Concluídos":"completed","Completed":"completed","Annullati":"canceledOrders","Cancelados":"canceledOrders",
+    "Cliente":"customer","Customer":"customer","Telefone":"phone","Telefono":"phone","Phone":"phone",
+    "Tipo":"type","Type":"type","Pagamento":"payment","Payment":"payment","Endereço":"address","Indirizzo":"address","Address":"address",
+    "Observação":"note","Osservazione":"note","Note":"note","Dettagli":"details","Detalhes":"details","Details":"details",
+    "Stampa":"print","Imprimir":"print","Print":"print","Invia in cucina":"sendKitchen","Enviar para cozinha":"sendKitchen","Send to kitchen":"sendKitchen",
+    "Pronto":"ready","Ready":"ready","Concludi":"finish","Concluir":"finish","Finish":"finish",
+    "Ricevuto alle":"receivedAt","Recebido às":"receivedAt","Received at":"receivedAt","Articoli":"articles","Itens":"articles","Items":"articles",
+    "Itens não carregados":"itemsNotLoaded","Articoli non caricati":"itemsNotLoaded","Items not loaded":"itemsNotLoaded",
+    "Totale":"total","Total":"total",
+    "Categorie":"categories","Categorias":"categories","Categories":"categories","Nuova categoria":"newCategory","Nova categoria":"newCategory","New category":"newCategory",
+    "Organize produtos e serviços por categorias.":"newCategoryDesc","Organizza prodotti e servizi per categorie.":"newCategoryDesc",
+    "Nuovo item / servizio":"newItem","Novo item / serviço":"newItem","New item / service":"newItem",
+    "Cadastre produtos do cardápio ou serviços.":"newItemDesc","Registra prodotti del menu o servizi.":"newItemDesc",
+    "Filtri":"filters","Filtros":"filters","Filters":"filters","Item / Servizi":"itemsServices","Itens / Serviços":"itemsServices","Items / Services":"itemsServices",
+    "Attivo":"active","Ativo":"active","Active":"active","Attivi":"actives","Ativos":"actives","Azienda":"company","Empresa":"company","Company":"company",
+    "Categoria":"category","Category":"category","Prezzo":"price","Preço":"price","Price":"price","Codice":"code","Código":"code","Code":"code",
+    "Durata":"duration","Duração":"duration","Duration":"duration","Scorta":"stock","Estoque":"stock","Stock":"stock","IVA":"iva","VAT":"iva",
+    "URL foto":"photoUrl","Foto URL":"photoUrl","Photo URL":"photoUrl","Descrizione":"description","Descrição":"description","Description":"description",
+    "Crea categoria":"createCategory","Criar categoria":"createCategory","Create category":"createCategory",
+    "Crea item":"createItem","Criar item":"createItem","Create item":"createItem","Modifica":"edit","Editar":"edit","Edit":"edit",
+    "Elimina":"delete","Excluir":"delete","Delete":"delete","Salva":"save","Salvar":"save","Save":"save","Chiudi":"close","Fechar":"close","Close":"close",
+    "Pulisci":"clear","Limpar":"clear","Clear":"clear","Cerca":"search","Buscar":"search","Search":"search",
+    "Senza immagine":"noImage","Sem imagem":"noImage","No image":"noImage","Prodotto":"product","Produto":"product","Product":"product",
+    "Servizio":"service","Serviço":"service","Service":"service","Senza categoria":"withoutCategory","Sem categoria":"withoutCategory","No category":"withoutCategory",
+    "Tocca il card per modificare i dettagli dell'item.":"touchCard","Toque no card para editar detalhes do item.":"touchCard",
+    "Modifica item / servizio":"editItem","Editar item / serviço":"editItem","Edit item / service":"editItem"
+  };
+
+  function curLang(){
+    return "pt";
+  }
+  function t(key, lang){ return (TR[lang] && TR[lang][key]) || TR.pt[key] || key; }
+
+  function normalize(s){ return String(s||"").replace(/\s+/g," ").trim(); }
+  function translateTextNode(node, lang){
+    const original = normalize(node.textContent);
+    if(!original) return;
+    const countMatch = original.match(/^(.+?)\s*(\(\d+\)|\d+)$/);
+    const base = countMatch ? normalize(countMatch[1]) : original;
+    const key = phraseKeys[base] || phraseKeys[original];
+    if(!key) return;
+    node.textContent = node.textContent.replace(base, t(key,lang));
+  }
+
+  function translateTree(lang){
+    document.querySelectorAll("body *").forEach(el=>{
+      if(el.closest("script,style")) return;
+      if(el.dataset && el.dataset.i18n){
+        el.textContent = t(el.dataset.i18n, lang);
+        return;
+      }
+      Array.from(el.childNodes).forEach(n=>{
+        if(n.nodeType === 3) translateTextNode(n, lang);
+      });
+      if(["INPUT","TEXTAREA"].includes(el.tagName)){
+        const ph = normalize(el.getAttribute("placeholder"));
+        const key = phraseKeys[ph];
+        if(key) el.setAttribute("placeholder", t(key,lang));
+      }
+      if(el.tagName === "OPTION"){
+        const key = phraseKeys[normalize(el.textContent)];
+        if(key) el.textContent = t(key,lang);
+      }
+    });
+  }
+
+  function ensureSwitch(){
+    return;
+  }
+
+  function updatePageHeaders(lang){
+    const path = location.pathname;
+    const h1 = document.querySelector(".hello h1");
+    const hp = document.querySelector(".hello p");
+    if(path.includes("/pedidos")){
+      if(h1) h1.textContent = t("ordersTitle",lang);
+      if(hp) hp.textContent = t("ordersSubtitle",lang);
+    }else if(path.includes("/reservas")){
+      if(h1) h1.textContent = t("reservationsTitle",lang);
+      if(hp) hp.textContent = t("reservationsSubtitle",lang);
+    }else if(path.includes("/cardapio")){
+      if(h1) h1.textContent = t("menuTitle",lang);
+      if(hp) hp.textContent = t("menuSubtitle",lang);
+    }else if(path.includes("/caixa")){
+      if(h1) h1.textContent = t("cashTitle",lang);
+    }
+  }
+
+  function applyLang(lang){
+    lang = "pt";
+    localStorage.setItem("mf_funcionario_lang", "pt");
+    document.documentElement.lang = lang;
+    ensureSwitch();
+    document.querySelectorAll("[data-mf-lang]").forEach(b=>b.classList.toggle("active", b.dataset.mfLang === lang));
+    updatePageHeaders(lang);
+    translateTree(lang);
+  }
+
+  window.mfApplyFuncionarioLang = applyLang;
+  document.addEventListener("DOMContentLoaded", ()=>applyLang(curLang()));
+
+  // Reaplica depois que cards são renderizados via JS em pedidos.
+  const mo = new MutationObserver(()=> {
+    clearTimeout(window.__mf_i18n_timer);
+    window.__mf_i18n_timer = setTimeout(()=>translateTree(curLang()), 60);
+  });
+  document.addEventListener("DOMContentLoaded", ()=> {
+    const root = document.querySelector("main") || document.body;
+    if(root) mo.observe(root,{childList:true,subtree:true});
+  });
+})();
+</script>
+
+
+<script id="mf-v20-extra-i18n">
+(function(){
+  const EXTRA = {
+    pt:{
+      timeAlert:"Tempos devem ser configurados no admin ou liberados depois.",
+      informName:"Informe o nome.",
+      client:"Cliente", phone:"Telefone", type:"Tipo", payment:"Pagamento", address:"Endereço", note:"Observação",
+      itemsNotLoaded:"Itens não carregados", customer:"Cliente", people:"Pessoas", time:"Horário",
+      editCategory:"Editar categoria", editItem:"Editar item / serviço", close:"Fechar", save:"Salvar",
+      newItemDesc:"Cadastre produtos do cardápio ou serviços para salão/barbearia.",
+      descriptionPlaceholder:"Descrição do item", categoryNoImage:"Sem imagem", localPickup:"Retirada no local",
+      paymentDash:"Pagamento: -"
+    },
+    it:{
+      timeAlert:"I tempi devono essere configurati nell'admin o abilitati in seguito.",
+      informName:"Inserisci il nome.",
+      client:"Cliente", phone:"Telefono", type:"Tipo", payment:"Pagamento", address:"Indirizzo", note:"Note",
+      itemsNotLoaded:"Articoli non caricati", customer:"Cliente", people:"Persone", time:"Orario",
+      editCategory:"Modifica categoria", editItem:"Modifica item / servizio", close:"Chiudi", save:"Salva",
+      newItemDesc:"Registra prodotti del menu o servizi per sala/barberia.",
+      descriptionPlaceholder:"Descrizione dell'item", categoryNoImage:"Senza immagine", localPickup:"Ritiro sul posto",
+      paymentDash:"Pagamento: -"
+    },
+    en:{
+      timeAlert:"Times must be configured in admin or enabled later.",
+      informName:"Enter the name.",
+      client:"Customer", phone:"Phone", type:"Type", payment:"Payment", address:"Address", note:"Note",
+      itemsNotLoaded:"Items not loaded", customer:"Customer", people:"People", time:"Time",
+      editCategory:"Edit category", editItem:"Edit item / service", close:"Close", save:"Save",
+      newItemDesc:"Register menu products or services for restaurant/salon.",
+      descriptionPlaceholder:"Item description", categoryNoImage:"No image", localPickup:"Local pickup",
+      paymentDash:"Payment: -"
+    }
+  };
+  function lang(){ const l="pt"; return "pt"; }
+  function ex(k){ return (EXTRA[lang()]&&EXTRA[lang()][k])||EXTRA.pt[k]||k; }
+  window.mfTExtra = ex;
+
+  const oldAlert = window.alert;
+  window.alert = function(msg){
+    const s = String(msg||"");
+    const map = {
+      "Tempos devem ser configurados no admin ou liberados depois.":"timeAlert",
+      "Informe o nome.":"informName"
+    };
+    oldAlert(map[s] ? ex(map[s]) : msg);
+  };
+
+  function replaceTextDeep(){
+    const replacements = {
+      "Cliente:":"client","Telefone:":"phone","Tipo:":"type","Pagamento:":"payment","Endereço:":"address","Observação:":"note",
+      "Itens não carregados":"itemsNotLoaded","Articoli non caricati":"itemsNotLoaded",
+      "Retirada no local":"localPickup",
+      "Editar categoria":"editCategory","Editar item / serviço":"editItem",
+      "Fechar":"close","Salvar":"save","Chiudi":"close","Salva":"save",
+      "Cadastre produtos do cardápio ou serviços para salão/barbearia.":"newItemDesc",
+      "Descrição do item":"descriptionPlaceholder","Sem imagem":"categoryNoImage","Senza immagine":"categoryNoImage"
+    };
+    document.querySelectorAll("body *").forEach(el=>{
+      if(el.closest("script,style")) return;
+      Array.from(el.childNodes).forEach(n=>{
+        if(n.nodeType!==3) return;
+        let text = n.textContent;
+        Object.keys(replacements).forEach(k=>{
+          if(text.includes(k)){
+            text = text.replaceAll(k, ex(replacements[k]));
+          }
+        });
+        n.textContent = text;
+      });
+      if((el.tagName==="INPUT" || el.tagName==="TEXTAREA") && el.placeholder){
+        Object.keys(replacements).forEach(k=>{
+          if(el.placeholder.includes(k)) el.placeholder = el.placeholder.replaceAll(k, ex(replacements[k]));
+        });
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", ()=>{
+    replaceTextDeep();
+    const mo = new MutationObserver(()=> {
+      clearTimeout(window.__mf_v20_timer);
+      window.__mf_v20_timer=setTimeout(replaceTextDeep,80);
+    });
+    mo.observe(document.body,{childList:true,subtree:true,characterData:true});
+  });
+
+  const oldApply = window.mfApplyFuncionarioLang;
+  window.mfApplyFuncionarioLang = function(l){
+    if(oldApply) oldApply(l);
+    setTimeout(replaceTextDeep,120);
+  };
+})();
+</script>
+
+
+<script id="mf-v21-pedido-values-fix">
+(function(){
+  function lang(){const l="pt"; return "pt";}
+  const map = {
+    pt:{contanti:"Dinheiro", carta:"Cartão", pagamento:"Pagamento", tipo:"Tipo", ritiro:"Retirada no local", consegna:"Entrega", nonCaricati:"Itens não carregados"},
+    it:{contanti:"Contanti", carta:"Carta", pagamento:"Pagamento", tipo:"Tipo", ritiro:"Ritiro sul posto", consegna:"Consegna", nonCaricati:"Articoli non caricati"},
+    en:{contanti:"Cash", carta:"Card", pagamento:"Payment", tipo:"Type", ritiro:"Local pickup", consegna:"Delivery", nonCaricati:"Items not loaded"}
+  };
+  function trValue(v){
+    const l=lang(), s=String(v||"");
+    if(["dinheiro","contanti","cash"].includes(s.toLowerCase())) return map[l].contanti;
+    if(["cartao","cartão","carta","card","credito","crédito"].includes(s.toLowerCase())) return map[l].carta;
+    if(s.toLowerCase().includes("retirada") || s.toLowerCase().includes("ritiro")) return map[l].ritiro;
+    if(s.toLowerCase().includes("entrega") || s.toLowerCase().includes("consegna") || s.toLowerCase().includes("delivery")) return map[l].consegna;
+    return s;
+  }
+  window.mfPedidoTrValue = trValue;
+
+  function fixVisible(){
+    const l=lang();
+    document.querySelectorAll(".item-empty span:first-child").forEach(el=>el.textContent=map[l].nonCaricati);
+    document.querySelectorAll("body *").forEach(el=>{
+      if(el.closest("script,style")) return;
+      Array.from(el.childNodes).forEach(n=>{
+        if(n.nodeType!==3) return;
+        let s=n.textContent;
+        s=s.replaceAll("Itens não carregados", map[l].nonCaricati).replaceAll("Articoli non caricati", map[l].nonCaricati);
+        s=s.replaceAll("Retirada no local", map[l].ritiro).replaceAll("Ritiro sul posto", map[l].ritiro);
+        s=s.replaceAll("Tipo Entrega", map[l].tipo + " " + map[l].consegna);
+        s=s.replaceAll("Pagamento -", map[l].pagamento + " -");
+        n.textContent=s;
+      });
+    });
+  }
+  document.addEventListener("DOMContentLoaded", ()=>{
+    fixVisible();
+    const mo=new MutationObserver(()=>{clearTimeout(window.__v21fix); window.__v21fix=setTimeout(fixVisible,100);});
+    mo.observe(document.body,{childList:true,subtree:true,characterData:true});
+  });
+})();
+</script>
+
+
+<script id="mf-v24-payment-fix">
+(function(){
+  function lang(){
+    const l="pt";
+    return "pt";
+  }
+  const M={
+    pt:{contanti:"Dinheiro",carta:"Cartão",pagamento:"Pagamento"},
+    it:{contanti:"Contanti",carta:"Carta",pagamento:"Pagamento"},
+    en:{contanti:"Cash",carta:"Card",pagamento:"Payment"}
+  };
+  function trPay(v){
+    const l=lang(), s=String(v||"").trim().toLowerCase();
+    if(["contanti","dinheiro","cash","denaro"].includes(s)) return M[l].contanti;
+    if(["carta","cartao","cartão","card","credito","crédito","debito","débito"].includes(s)) return M[l].carta;
+    if(!s || s==="-") return "-";
+    return v;
+  }
+  window.mfTrPagamento = trPay;
+
+  function fixPaymentText(){
+    const l=lang();
+    document.querySelectorAll(".meta-line, .detail-box p").forEach(el=>{
+      let tx=el.textContent || "";
+      if(tx.includes("Pagamento:") || tx.includes("Payment:")){
+        const parts=tx.split(":");
+        if(parts.length>=2){
+          const val=parts.slice(1).join(":").trim();
+          const strong=el.querySelector("strong");
+          if(strong){
+            strong.textContent = M[l].pagamento + ":";
+            let textNode = Array.from(el.childNodes).find(n=>n.nodeType===3);
+            if(textNode) textNode.textContent = " " + trPay(val);
+          }else{
+            el.textContent = M[l].pagamento + ": " + trPay(val);
+          }
+        }
+      }
+    });
+  }
+  document.addEventListener("DOMContentLoaded",()=>{
+    fixPaymentText();
+    const mo=new MutationObserver(()=>{clearTimeout(window.__v24pay);window.__v24pay=setTimeout(fixPaymentText,80);});
+    mo.observe(document.body,{childList:true,subtree:true,characterData:true});
+  });
+})();
+</script>
+
+
+<script id="mf-numero-diario-visual-js">
+(function(){
+  function aplicarNumeroDiario(){
+    document.querySelectorAll("[data-numero-dia]").forEach(el=>{
+      const n = el.dataset.numeroDia;
+      if(!n) return;
+      el.querySelectorAll(".pedido-num,.codigo,.order-number").forEach(x=>{
+        if((x.textContent || "").includes("#")) x.textContent = "#" + n;
+      });
+    });
+  }
+  document.addEventListener("DOMContentLoaded", function(){
+    aplicarNumeroDiario();
+    setTimeout(aplicarNumeroDiario, 300);
+    setTimeout(aplicarNumeroDiario, 900);
+  });
+})();
+</script>
+
+
+<script id="v396-funcionario-clean-service-text">
+(function(){
+  if(window.__V396_CLEAN_SERVICE__) return;
+  window.__V396_CLEAN_SERVICE__ = true;
+
+  function limpar(){
+    document.querySelectorAll(".info-box, .item-desc, .itens-preview").forEach(function(el){
+      if(el.dataset.v396Cleaned === "1") return;
+      el.innerHTML = el.innerHTML
+        .replace(/\\n/g, " ")
+        .replace(/\s*FINANCEIRO_SERVICO\s+valor\s*=\s*[\d.,]+/gi, "")
+        .replace(/\s*financeiro_servico\s+valor\s*=\s*[\d.,]+/gi, "")
+        .replace(/\s*pagamento\s*=\s*/gi, " <strong>Pagamento:</strong> ")
+        .replace(/\s{2,}/g, " ");
+      el.dataset.v396Cleaned = "1";
+    });
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", limpar);
+  }else{
+    limpar();
+  }
+  setInterval(limpar, 1500);
+})();
+</script>
+{% endblock %}

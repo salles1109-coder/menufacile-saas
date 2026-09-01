@@ -1,0 +1,260 @@
+/* MenuFacile v813 — acabamento visual do menu de Encomendas */
+
+/* Faixa configurável atrás das categorias */
+.mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813{
+  position:relative;
+  margin:0 -18px 22px;
+  padding:13px max(18px,calc((100vw - 1180px)/2 + 18px));
+  background:var(--enc-category-band,var(--enc-brand));
+  border-radius:0;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+.mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813::-webkit-scrollbar{display:none}
+.mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813 .enc-category-chip{
+  border-color:rgba(255,255,255,.48);
+  background:rgba(255,255,255,.15);
+  color:#3f352f;
+  backdrop-filter:blur(6px);
+}
+.mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813 .enc-category-chip.active{
+  border-color:rgba(255,255,255,.9);
+  background:rgba(55,39,30,.62);
+  color:#fff;
+  box-shadow:0 7px 18px rgba(0,0,0,.12);
+}
+
+/* Selo de produto disponível no mesmo dia */
+.mf-encomendas-v761 .enc-product-photo{position:relative}
+.mf-encomendas-v761 .enc-available-today-v813{
+  position:absolute;
+  right:12px;
+  bottom:12px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:7px 9px;
+  border-radius:999px;
+  background:rgba(255,255,255,.94);
+  color:#27745d;
+  box-shadow:0 6px 16px rgba(0,0,0,.10);
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.01em;
+}
+
+/* Navegação institucional do rodapé */
+.mf-encomendas-v761 .enc-info-nav-v813{
+  width:min(1160px,calc(100% - 36px));
+  margin:34px auto 18px;
+  display:grid;
+  grid-auto-flow:column;
+  grid-auto-columns:1fr;
+  gap:0;
+  overflow:hidden;
+  border:1px solid rgba(64,51,42,.10);
+  border-radius:16px;
+  background:rgba(255,255,255,.62);
+  box-shadow:0 8px 24px rgba(50,38,30,.04);
+  backdrop-filter:blur(8px);
+}
+.mf-encomendas-v761 .enc-info-nav-v813 button{
+  min-height:48px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  border:0;
+  border-right:1px solid rgba(64,51,42,.09);
+  border-radius:0;
+  background:transparent;
+  color:#594f48;
+  font:inherit;
+  font-size:11px;
+  font-weight:850;
+  cursor:pointer;
+  transition:background .16s ease,color .16s ease;
+}
+.mf-encomendas-v761 .enc-info-nav-v813 button:last-child{border-right:0}
+.mf-encomendas-v761 .enc-info-nav-v813 button:hover{background:rgba(255,255,255,.82);color:var(--enc-brand)}
+.mf-encomendas-v761 .enc-info-nav-v813 button i{font-size:12px;color:var(--enc-brand)}
+
+/* O texto configurado abaixo do nome pode ser maior que o fallback antigo. */
+.mf-encomendas-v761 .enc-public-brand>div:last-child span{
+  display:block;
+  max-width:480px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+/* Checkout: sem subtítulos redundantes, preserva o respiro visual. */
+.mf-encomendas-v761 .enc-checkout-head>div{display:flex;align-items:center;min-height:36px}
+.mf-encomendas-v761 .enc-checkout-head h2{margin:0}
+
+@media(max-width:680px){
+  .mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813{
+    margin:0 -12px 16px;
+    padding:11px 12px;
+  }
+  .mf-encomendas-v761 .enc-available-today-v813{right:9px;bottom:9px;padding:6px 8px;font-size:8px}
+  .mf-encomendas-v761 .enc-info-nav-v813{
+    width:calc(100% - 24px);
+    margin:24px auto 14px;
+    grid-template-columns:1fr;
+    border-radius:14px;
+  }
+  .mf-encomendas-v761 .enc-info-nav-v813 button{
+    min-height:46px;
+    border-right:0;
+    border-bottom:1px solid rgba(64,51,42,.08);
+  }
+  .mf-encomendas-v761 .enc-info-nav-v813 button:last-child{border-bottom:0}
+  .mf-encomendas-v761 .enc-public-brand>div:last-child span{max-width:58vw;font-size:8.5px;line-height:1.2;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+}
+
+/* =========================================================
+   MenuFacile v814 — refinamentos finais do menu de Encomendas
+   ========================================================= */
+
+/* Faixa das categorias realmente de parede a parede. O conteúdo dos chips
+   continua alinhado à largura útil do catálogo. */
+.mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813{
+  box-sizing:border-box!important;
+  position:relative!important;
+  left:50%!important;
+  width:100vw!important;
+  max-width:none!important;
+  margin:0 0 22px!important;
+  margin-left:-50vw!important;
+  padding:14px max(18px,calc((100vw - 1180px)/2 + 18px))!important;
+  border-radius:0!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+}
+
+/* Horário de funcionamento — popover mais limpo e premium. */
+.mf-encomendas-v761 .enc-hours-popover-v772{
+  width:318px!important;
+  padding:12px!important;
+  border:1px solid rgba(65,49,39,.10)!important;
+  border-radius:20px!important;
+  background:rgba(255,255,255,.98)!important;
+  box-shadow:0 24px 70px rgba(37,27,21,.18)!important;
+  backdrop-filter:blur(14px)!important;
+}
+.mf-encomendas-v761 .enc-hours-popover-v772>strong{
+  display:flex!important;
+  align-items:center!important;
+  gap:9px!important;
+  margin:0 0 8px!important;
+  padding:7px 8px 12px!important;
+  color:#342e2a!important;
+  font-family:inherit!important;
+  font-size:13px!important;
+  line-height:1.2!important;
+  font-weight:900!important;
+  border-bottom:1px solid rgba(65,49,39,.08)!important;
+}
+.mf-encomendas-v761 .enc-hours-popover-v772>strong i{
+  width:30px;height:30px;display:grid;place-items:center;
+  border-radius:10px;background:rgba(var(--enc-brand-rgb,18,54,181),.09);
+  color:var(--enc-brand,#1236B5);font-size:12px;
+}
+.mf-encomendas-v761 .enc-hours-popover-v772>div{
+  min-height:35px!important;
+  padding:8px 9px!important;
+  border-top:0!important;
+  border-radius:10px!important;
+  color:#71675f!important;
+  font-size:9px!important;
+}
+.mf-encomendas-v761 .enc-hours-popover-v772>div:nth-of-type(odd){background:#faf8f6!important}
+.mf-encomendas-v761 .enc-hours-popover-v772>div span{font-weight:750!important}
+.mf-encomendas-v761 .enc-hours-popover-v772>div b{
+  color:#3c342f!important;
+  font-size:9px!important;
+  font-weight:900!important;
+}
+.mf-encomendas-v761 .enc-hours-popover-v772>div b:last-child{white-space:nowrap}
+
+/* Rodapé institucional com quatro acessos quando Políticas estiver disponível. */
+.mf-encomendas-v761 .enc-info-nav-v813{
+  grid-auto-flow:column!important;
+  grid-auto-columns:minmax(0,1fr)!important;
+}
+
+/* Políticas da loja reaproveitam o modal institucional já existente. */
+.mf-encomendas-v761 .enc-policy-modal-v814{width:min(620px,calc(100vw - 28px))!important}
+.mf-encomendas-v761 .enc-policy-list-v814{display:grid;gap:9px;padding-top:2px}
+.mf-encomendas-v761 .enc-policy-item-v814{
+  overflow:hidden;
+  border:1px solid rgba(67,52,43,.10);
+  border-radius:15px;
+  background:#fff;
+}
+.mf-encomendas-v761 .enc-policy-item-v814 summary{
+  min-height:48px;
+  padding:0 14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  list-style:none;
+  cursor:pointer;
+  color:#433a34;
+  font-size:10.5px;
+  font-weight:900;
+}
+.mf-encomendas-v761 .enc-policy-item-v814 summary::-webkit-details-marker{display:none}
+.mf-encomendas-v761 .enc-policy-item-v814 summary>span{display:flex;align-items:center;gap:10px;min-width:0}
+.mf-encomendas-v761 .enc-policy-item-v814 summary>span>i{
+  width:31px;height:31px;display:grid;place-items:center;flex:0 0 31px;
+  border-radius:10px;background:rgba(var(--enc-brand-rgb,18,54,181),.08);
+  color:var(--enc-brand,#1236B5);font-size:11px;
+}
+.mf-encomendas-v761 .enc-policy-item-v814 summary>.fa-chevron-down{
+  color:#9b9189;font-size:9px;transition:transform .18s ease;
+}
+.mf-encomendas-v761 .enc-policy-item-v814[open] summary>.fa-chevron-down{transform:rotate(180deg)}
+.mf-encomendas-v761 .enc-policy-item-v814>div{
+  padding:0 14px 14px 55px;
+  border-top:1px solid rgba(67,52,43,.07);
+  background:#fcfbfa;
+}
+.mf-encomendas-v761 .enc-policy-item-v814 p{
+  margin:12px 0 0;
+  white-space:pre-line;
+  color:#6f655e;
+  font-size:9.5px;
+  line-height:1.65;
+  font-weight:650;
+}
+
+@media(max-width:680px){
+  .mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813{
+    width:100vw!important;
+    margin-left:-50vw!important;
+    margin-bottom:16px!important;
+    padding:11px 12px!important;
+  }
+  .mf-encomendas-v761 .enc-hours-popover-v772{
+    position:fixed!important;
+    top:74px!important;
+    right:10px!important;
+    width:min(318px,calc(100vw - 20px))!important;
+    max-height:calc(100vh - 92px)!important;
+    overflow:auto!important;
+  }
+  .mf-encomendas-v761 .enc-info-nav-v813{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    grid-auto-flow:row!important;
+  }
+  .mf-encomendas-v761 .enc-info-nav-v813 button{
+    border-right:1px solid rgba(64,51,42,.08)!important;
+    border-bottom:1px solid rgba(64,51,42,.08)!important;
+  }
+  .mf-encomendas-v761 .enc-info-nav-v813 button:nth-child(2n){border-right:0!important}
+  .mf-encomendas-v761 .enc-info-nav-v813 button:nth-last-child(-n+2){border-bottom:0!important}
+  .mf-encomendas-v761 .enc-policy-item-v814>div{padding-left:14px}
+}

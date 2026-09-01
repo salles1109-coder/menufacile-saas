@@ -1,0 +1,2812 @@
+{% extends "base.html" %}
+{% block title %}Encomendas — {{ empresa.nome }}{% endblock %}
+{% block body_attrs %} class="mf-encomendas-v761 enc-public"{% endblock %}
+{% block head %}
+<style id="mf-v931-payment-success-standard">
+.enc-payment-result-v786.is-approved{padding:15px!important;border-radius:18px!important;gap:9px!important;box-shadow:0 8px 22px rgba(22,101,52,.06)!important}
+.enc-payment-done-v931{width:100%;min-height:46px;border:0;border-radius:13px;background:#087d43;color:#fff;font-size:14px;font-weight:900;cursor:pointer;margin-top:3px}
+@media(max-width:640px){.enc-payment-result-v786.is-approved{padding:14px!important}.enc-payment-done-v931{min-height:44px}}
+</style>
+<link rel="stylesheet" href="/static/css/encomendas-v762.css?v=762">
+<link rel="stylesheet" href="/static/css/encomendas-v769.css?v=769">
+<link rel="stylesheet" href="/static/css/encomendas-v770.css?v=770">
+<link rel="stylesheet" href="/static/css/encomendas-v771.css?v=771">
+<link rel="stylesheet" href="/static/css/encomendas-v772.css?v=772">
+<link rel="stylesheet" href="/static/css/encomendas-v773.css?v=773">
+<link rel="stylesheet" href="/static/css/encomendas-v776.css?v=776">
+<link rel="stylesheet" href="/static/css/encomendas-v778.css?v=778">
+<link rel="stylesheet" href="/static/css/encomendas-v779.css?v=779">
+<link rel="stylesheet" href="/static/css/encomendas-v781.css?v=781">
+<link rel="stylesheet" href="/static/css/encomendas-apresentacao-v812.css?v=812">
+<link rel="stylesheet" href="/static/css/encomendas-v814.css?v=814">
+<style>
+/* v764 — somente vitrine do menu público de Encomendas. */
+.mf-encomendas-v761 .enc-showcase-v764{
+  display:grid;
+  grid-template-columns:1.7fr 1fr 1fr;
+  grid-template-rows:172px 172px;
+  gap:12px;
+  margin:4px 0 20px;
+}
+.mf-encomendas-v761 .enc-showcase-card-v764{
+  position:relative;
+  min-width:0;
+  overflow:hidden;
+  border-radius:18px;
+  background:#ddd center/cover no-repeat;
+  border:1px solid rgba(58,45,36,.08);
+  box-shadow:0 7px 22px rgba(54,40,29,.07);
+  cursor:pointer;
+  isolation:isolate;
+}
+.mf-encomendas-v761 .enc-showcase-card-v764::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  background:linear-gradient(180deg,rgba(16,12,9,.02) 28%,rgba(16,12,9,.76) 100%);
+}
+.mf-encomendas-v761 .enc-showcase-card-v764.main{
+  grid-row:1 / span 2;
+  border-radius:22px;
+}
+.mf-encomendas-v761 .enc-showcase-copy-v764{
+  position:absolute;
+  left:15px;
+  right:15px;
+  bottom:14px;
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:12px;
+  color:#fff;
+}
+.mf-encomendas-v761 .enc-showcase-copy-v764 h3{
+  margin:0;
+  font-family:Georgia,'Times New Roman',serif;
+  font-size:18px;
+  line-height:1.05;
+  font-weight:600;
+  text-shadow:0 1px 12px rgba(0,0,0,.22);
+}
+.mf-encomendas-v761 .enc-showcase-card-v764.main .enc-showcase-copy-v764 h3{font-size:25px}
+.mf-encomendas-v761 .enc-showcase-copy-v764 p{
+  margin:5px 0 0;
+  max-width:410px;
+  font-size:9.5px;
+  line-height:1.35;
+  font-weight:700;
+  color:rgba(255,255,255,.9);
+}
+.mf-encomendas-v761 .enc-showcase-price-v764{
+  flex:none;
+  padding:7px 10px;
+  border-radius:999px;
+  background:rgba(255,255,255,.93);
+  color:#342d28;
+  font-size:9px;
+  font-weight:900;
+  white-space:nowrap;
+  box-shadow:0 5px 16px rgba(0,0,0,.12);
+}
+.mf-encomendas-v761 .enc-showcase-badge-v764{
+  position:absolute;
+  top:13px;
+  left:13px;
+  padding:6px 9px;
+  border-radius:999px;
+  background:rgba(255,255,255,.94);
+  color:#5d4738;
+  font-size:7.5px;
+  font-weight:900;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+}
+.mf-encomendas-v761 .enc-catalog-divider-v764{
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  gap:16px;
+  margin:6px 0 14px;
+}
+.mf-encomendas-v761 .enc-catalog-divider-v764 h2{
+  margin:0;
+  font-family:Georgia,'Times New Roman',serif;
+  font-size:24px;
+  font-weight:500;
+}
+.mf-encomendas-v761 .enc-catalog-divider-v764 p{
+  margin:4px 0 0;
+  color:#8b8179;
+  font-size:10px;
+}
+
+.mf-encomendas-v761 .enc-showcase-v765 .enc-showcase-card-v764{
+  transition:opacity .22s ease,transform .22s ease,box-shadow .22s ease;
+}
+.mf-encomendas-v761 .enc-showcase-v765 .enc-showcase-card-v764.is-switching{
+  opacity:.38;
+  transform:translateY(2px);
+}
+.mf-encomendas-v761 .enc-showcase-v765 .enc-showcase-card-v764:focus-visible{
+  outline:3px solid rgba(96,61,40,.28);
+  outline-offset:2px;
+}
+/* v767 — evita destaque grande vazio quando uma URL de foto falhar. */
+.mf-encomendas-v761 .enc-showcase-v765.enc-showcase-loading-v767{visibility:hidden}
+.mf-encomendas-v761 .enc-product-photo.enc-photo-fallback-v767{
+  position:relative;
+  background-image:linear-gradient(135deg,#d9c9b8,#a88367)!important;
+}
+.mf-encomendas-v761 .enc-product-photo.enc-photo-fallback-v767::after{
+  content:"MenuFacile · Encomendas";
+  position:absolute;
+  inset:auto 14px 14px 14px;
+  color:rgba(255,255,255,.94);
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  text-shadow:0 1px 8px rgba(0,0,0,.18);
+}
+@media(max-width:900px){
+  .mf-encomendas-v761 .enc-showcase-v764{
+    grid-template-columns:1fr 1fr;
+    grid-template-rows:245px 150px 150px;
+  }
+  .mf-encomendas-v761 .enc-showcase-card-v764.main{grid-column:1 / -1;grid-row:auto}
+}
+@media(max-width:560px){
+  .mf-encomendas-v761 .enc-showcase-v764{grid-template-rows:210px 132px 132px;gap:8px;margin-bottom:15px}
+  .mf-encomendas-v761 .enc-showcase-card-v764{border-radius:14px}
+  .mf-encomendas-v761 .enc-showcase-card-v764.main{border-radius:17px}
+  .mf-encomendas-v761 .enc-showcase-copy-v764{left:11px;right:11px;bottom:10px;display:block}
+  .mf-encomendas-v761 .enc-showcase-copy-v764 h3{font-size:14px}
+  .mf-encomendas-v761 .enc-showcase-card-v764.main .enc-showcase-copy-v764 h3{font-size:20px}
+  .mf-encomendas-v761 .enc-showcase-copy-v764 p{display:none}
+  .mf-encomendas-v761 .enc-showcase-price-v764{display:inline-block;margin-top:7px;padding:5px 8px;font-size:7.5px}
+  .mf-encomendas-v761 .enc-showcase-badge-v764{top:9px;left:9px;font-size:6.5px;padding:5px 7px}
+  .mf-encomendas-v761 .enc-catalog-divider-v764 h2{font-size:20px}
+  .mf-encomendas-v761 .enc-catalog-divider-v764 p{font-size:9px}
+}
+
+/* v775 — vitrine usa <img> real em vez de background-image para evitar destaque cinza. */
+.mf-encomendas-v761 .enc-showcase-card-v764{
+  background:#eee9e4;
+}
+.mf-encomendas-v761 .enc-showcase-card-v764::before{
+  z-index:1;
+  pointer-events:none;
+}
+.mf-encomendas-v761 .enc-showcase-img-v775{
+  position:absolute;
+  inset:0;
+  z-index:0;
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  object-position:center;
+  opacity:1;
+  transform:scale(1.001);
+  transition:opacity .20s ease,transform .35s ease;
+}
+.mf-encomendas-v761 .enc-showcase-card-v764.is-switching .enc-showcase-img-v775{
+  opacity:.55;
+  transform:scale(1.012);
+}
+.mf-encomendas-v761 .enc-showcase-copy-v764,
+.mf-encomendas-v761 .enc-showcase-badge-v764,
+.mf-encomendas-v761 .enc-showcase-price-v764{
+  z-index:2;
+}
+
+
+.enc-payment-debug-v784{margin:10px 0;padding:12px 14px;border:1px dashed rgba(180,83,9,.28);border-radius:14px;background:#fffaf3;color:#6b3f1f}.enc-payment-debug-v784 strong{display:block;font-size:13px;margin-bottom:5px}.enc-payment-debug-v784 p{margin:0;font-size:12px;line-height:1.45;overflow-wrap:anywhere}.enc-payment-debug-v784 small{display:block;margin-top:6px;font-size:10px;opacity:.72}@media(max-width:640px){.enc-payment-debug-v784{padding:10px 11px;border-radius:12px}.enc-payment-debug-v784 strong{font-size:12px}.enc-payment-debug-v784 p{font-size:11px}}
+
+/* v786 — retorno de pagamento e troca de método mais claros. */
+.enc-payment-result-v786{margin:10px 0;padding:13px 14px;border:1px solid rgba(15,23,42,.10);border-radius:15px;background:#fff;display:grid;gap:5px}
+.enc-payment-result-v786 strong{font-size:14px;line-height:1.2}.enc-payment-result-v786 p{margin:0;font-size:12px;line-height:1.45;color:#667085}
+.enc-payment-result-v786.is-approved{background:#f0fdf4;border-color:#bbf7d0;color:#166534}.enc-payment-result-v786.is-approved p{color:#3f6f4d}
+.enc-payment-result-v786.is-pending{background:#fffaf0;border-color:#fde3a7;color:#8a4b08}.enc-payment-result-v786.is-pending p{color:#8a6a45}
+.enc-payment-result-v786.is-rejected{background:#fff5f5;border-color:#fecaca;color:#b42318}.enc-payment-result-v786.is-rejected p{color:#8f4a45}
+.enc-payment-switch-v786{margin-top:7px;min-height:38px;padding:8px 13px;border:1px solid rgba(var(--enc-brand-rgb),.20);border-radius:11px;background:rgba(var(--enc-brand-rgb),.06);color:var(--enc-brand);font:inherit;font-size:12px;font-weight:800;cursor:pointer}
+.enc-payment-switch-v786:hover{background:rgba(var(--enc-brand-rgb),.10)}
+.enc-payment-switch-note-v786{margin:8px 0 0;padding:8px 10px;border-radius:10px;background:rgba(var(--enc-brand-rgb),.055);font-size:11px;color:#667085}
+.enc-manual-pix-inline-v786{display:grid;gap:8px}.enc-manual-pix-key-v786{padding:10px 12px;border:1px solid #e7e1dc;border-radius:11px;background:#fff;font-weight:800;overflow-wrap:anywhere}
+@media(max-width:640px){.enc-payment-result-v786{padding:11px 12px;border-radius:13px}.enc-payment-result-v786 strong{font-size:13px}.enc-payment-result-v786 p{font-size:11px}.enc-payment-switch-v786{width:100%;min-height:36px}}
+
+/* v811 — produtos com preço único não exibem uma escolha artificial. */
+.enc-modal-fixed-price-v811{display:flex;align-items:end;justify-content:space-between;gap:16px;margin:10px 0 2px;padding:12px 14px;border:1px solid rgba(58,45,36,.10);border-radius:14px;background:#faf9f7}
+.enc-modal-fixed-price-v811[hidden]{display:none!important}
+.mf-encomendas-v761 .enc-confirm-order[hidden]{display:none!important}
+.enc-modal-fixed-price-v811 span{font-size:11px;font-weight:800;color:#8b8179;text-transform:uppercase;letter-spacing:.05em}
+.enc-modal-fixed-price-v811 strong{font-size:20px;line-height:1;color:#302a26}
+@media(max-width:640px){.enc-modal-fixed-price-v811{padding:11px 12px;border-radius:12px}.enc-modal-fixed-price-v811 strong{font-size:18px}}
+
+/* MF_V824_ENCOMENDAS_SOCIAL_SQUARE_BUTTONS */
+/* v827_ascii social buttons aligned to cart button */
+.mf-encomendas-v761 .enc-header-actions-v772{gap:7px!important}
+.mf-encomendas-v761 .enc-social-icon-v773,
+.mf-encomendas-v761 .enc-hours-v772 .enc-social-icon-v773{
+  width:39px!important;
+  height:39px!important;
+  min-width:39px!important;
+  min-height:39px!important;
+  padding:0!important;
+  border-radius:13px!important;
+  border:1px solid #dbe4ef!important;
+  background:#fff!important;
+  box-shadow:0 1px 1px rgba(15,23,42,.03)!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease,background .18s ease!important;
+}
+.mf-encomendas-v761 .enc-social-icon-v773 i{font-size:16px!important;line-height:1}
+.mf-encomendas-v761 .enc-social-whatsapp-v773{color:#11a861!important;background:rgba(37,211,102,.05)!important;border-color:rgba(37,211,102,.26)!important}
+.mf-encomendas-v761 .enc-social-instagram-v773{color:#e1306c!important;background:rgba(225,48,108,.05)!important;border-color:rgba(225,48,108,.24)!important}
+.mf-encomendas-v761 .enc-social-facebook-v773{color:#1877f2!important;background:rgba(24,119,242,.05)!important;border-color:rgba(24,119,242,.24)!important}
+.mf-encomendas-v761 .enc-social-hours-v773{color:#7a5c45!important;background:rgba(122,92,69,.05)!important;border-color:rgba(122,92,69,.22)!important}
+.mf-encomendas-v761 .enc-social-icon-v773:hover,
+.mf-encomendas-v761 .enc-social-icon-v773:focus-visible{
+  transform:translateY(-1px)!important;
+  box-shadow:0 8px 18px rgba(15,23,42,.08)!important;
+  outline:none;
+}
+.mf-encomendas-v761 .enc-hours-v772[open] .enc-social-hours-v773{background:rgba(122,92,69,.09)!important;border-color:rgba(122,92,69,.30)!important}
+@media(max-width:760px){
+  .mf-encomendas-v761 .enc-header-actions-v772{gap:7px!important}
+  .mf-encomendas-v761 .enc-social-icon-v773,
+  .mf-encomendas-v761 .enc-hours-v772 .enc-social-icon-v773{width:39px!important;height:39px!important;min-width:39px!important;min-height:39px!important;border-radius:13px!important}
+  .mf-encomendas-v761 .enc-social-icon-v773 i{font-size:16px!important}
+}
+@media(max-width:430px){
+  .mf-encomendas-v761 .enc-header-actions-v772{gap:6px!important}
+  .mf-encomendas-v761 .enc-social-icon-v773,
+  .mf-encomendas-v761 .enc-hours-v772 .enc-social-icon-v773{width:37px!important;height:37px!important;min-width:37px!important;min-height:37px!important;border-radius:12px!important}
+  .mf-encomendas-v761 .enc-social-icon-v773 i{font-size:15px!important}
+}
+
+</style>
+
+<style id="mf-v855-cart-mobile-sheet">
+/* v855 — carrinho mobile como sheet compacto, sem painel desktop gigante. */
+@media (max-width:640px){
+  .mf-encomendas-v761 .enc-drawer-backdrop{
+    display:flex!important;
+    align-items:flex-end!important;
+    justify-content:center!important;
+    padding:10px!important;
+    box-sizing:border-box!important;
+    background:rgba(29,25,22,.46)!important;
+    backdrop-filter:blur(4px)!important;
+    -webkit-backdrop-filter:blur(4px)!important;
+  }
+
+  .mf-encomendas-v761 .enc-cart-drawer{
+    position:relative!important;
+    left:auto!important;
+    right:auto!important;
+    top:auto!important;
+    bottom:auto!important;
+    width:min(100%,430px)!important;
+    height:auto!important;
+    max-height:82dvh!important;
+    margin:0 auto!important;
+    border:1px solid rgba(78,63,52,.10)!important;
+    border-radius:22px!important;
+    overflow:hidden!important;
+    background:#fff!important;
+    box-shadow:0 24px 70px rgba(24,18,14,.24)!important;
+    transform:translateY(calc(100% + 28px))!important;
+    transition:transform .24s ease!important;
+  }
+  .mf-encomendas-v761 .enc-drawer-backdrop.open .enc-cart-drawer{
+    transform:translateY(0)!important;
+  }
+
+  .mf-encomendas-v761 .enc-cart-head{
+    min-height:58px!important;
+    padding:13px 14px 12px!important;
+    border-bottom:1px solid #eee8e3!important;
+    background:#fff!important;
+  }
+  .mf-encomendas-v761 .enc-cart-head strong{
+    font-size:18px!important;
+    line-height:1.1!important;
+  }
+  .mf-encomendas-v761 .enc-cart-head .enc-modal-close{
+    position:static!important;
+    flex:0 0 32px!important;
+    width:32px!important;
+    height:32px!important;
+    min-width:32px!important;
+    min-height:32px!important;
+    margin:0!important;
+    border-radius:11px!important;
+    box-shadow:none!important;
+  }
+
+  .mf-encomendas-v761 .enc-cart-body{
+    flex:0 1 auto!important;
+    max-height:55dvh!important;
+    overflow-y:auto!important;
+    padding:12px 14px!important;
+    overscroll-behavior:contain!important;
+  }
+  .mf-encomendas-v761 .enc-cart-empty-v772{
+    padding:15px 14px!important;
+    border-radius:14px!important;
+    text-align:center!important;
+    background:#fcfaf8!important;
+  }
+  .mf-encomendas-v761 .enc-cart-empty-v772 strong{
+    font-size:11px!important;
+    line-height:1.25!important;
+  }
+  .mf-encomendas-v761 .enc-cart-empty-v772 span{
+    margin-top:4px!important;
+    font-size:8.7px!important;
+    line-height:1.4!important;
+  }
+
+  .mf-encomendas-v761 .enc-cart-line-v772{
+    padding:10px!important;
+    border-radius:13px!important;
+  }
+  .mf-encomendas-v761 .enc-cart-line-copy-v772 strong{font-size:10px!important}
+  .mf-encomendas-v761 .enc-cart-line-copy-v772 span{font-size:8.2px!important}
+  .mf-encomendas-v761 .enc-cart-summary{
+    margin-top:10px!important;
+    padding:10px!important;
+    border-radius:13px!important;
+  }
+
+  .mf-encomendas-v761 .enc-cart-checkout.enc-cart-checkout-v772{
+    flex:none!important;
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:7px!important;
+    padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px))!important;
+    border-top:1px solid #eee8e3!important;
+    background:#fff!important;
+  }
+  .mf-encomendas-v761 .enc-keep-shopping-v772,
+  .mf-encomendas-v761 .enc-checkout-button{
+    width:100%!important;
+    min-height:38px!important;
+    height:38px!important;
+    border-radius:11px!important;
+    font-size:9px!important;
+    line-height:1!important;
+  }
+  .mf-encomendas-v761 .enc-keep-shopping-v772 i{
+    font-size:9px!important;
+    margin-right:4px!important;
+  }
+}
+
+@media (max-width:390px){
+  .mf-encomendas-v761 .enc-drawer-backdrop{padding:8px!important}
+  .mf-encomendas-v761 .enc-cart-drawer{
+    width:100%!important;
+    max-height:84dvh!important;
+    border-radius:20px!important;
+  }
+  .mf-encomendas-v761 .enc-cart-head{padding:12px!important}
+  .mf-encomendas-v761 .enc-cart-head strong{font-size:17px!important}
+  .mf-encomendas-v761 .enc-cart-body{padding:10px 12px!important;max-height:56dvh!important}
+  .mf-encomendas-v761 .enc-cart-checkout.enc-cart-checkout-v772{
+    padding-left:12px!important;
+    padding-right:12px!important;
+  }
+}
+</style>
+
+<style id="mf-v856-cart-mobile-centered">
+/* v856 — carrinho mobile centralizado na viewport, preservando o visual compacto da v855. */
+@media (max-width:640px){
+  .mf-encomendas-v761 .enc-drawer-backdrop{
+    align-items:center!important;
+    justify-content:center!important;
+    padding:12px!important;
+  }
+  .mf-encomendas-v761 .enc-cart-drawer{
+    width:min(calc(100vw - 24px),430px)!important;
+    max-height:min(82dvh,680px)!important;
+    margin:0!important;
+    transform:translateY(14px) scale(.985)!important;
+    transform-origin:center!important;
+    opacity:0!important;
+    transition:transform .22s ease,opacity .18s ease!important;
+  }
+  .mf-encomendas-v761 .enc-drawer-backdrop.open .enc-cart-drawer{
+    transform:translateY(0) scale(1)!important;
+    opacity:1!important;
+  }
+}
+@media (max-width:390px){
+  .mf-encomendas-v761 .enc-drawer-backdrop{padding:10px!important}
+  .mf-encomendas-v761 .enc-cart-drawer{
+    width:min(calc(100vw - 20px),390px)!important;
+    max-height:84dvh!important;
+  }
+}
+</style>
+
+
+<style id="mf-v857-mobile-info-cart-polish">
+/* v857 — mobile: cesta com badge sobreposto + institucionais centralizados + atalhos soltos. */
+@media (max-width:640px){
+  /* Cesta: botão limpo e contador pequeno sobreposto no canto superior direito. */
+  .mf-encomendas-v761 .enc-cart-btn{
+    position:relative!important;
+    width:31px!important;
+    min-width:31px!important;
+    height:31px!important;
+    min-height:31px!important;
+    padding:0!important;
+    overflow:visible!important;
+    border-radius:10px!important;
+    display:grid!important;
+    place-items:center!important;
+  }
+  .mf-encomendas-v761 .enc-cart-btn i{
+    margin:0!important;
+    font-size:15px!important;
+    line-height:1!important;
+  }
+  .mf-encomendas-v761 .enc-cart-count{
+    position:absolute!important;
+    top:-6px!important;
+    right:-6px!important;
+    left:auto!important;
+    min-width:15px!important;
+    width:auto!important;
+    height:15px!important;
+    padding:0 4px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    border:2px solid #fff!important;
+    border-radius:999px!important;
+    font-size:7.5px!important;
+    font-weight:950!important;
+    line-height:1!important;
+    z-index:4!important;
+    box-sizing:content-box!important;
+    box-shadow:0 2px 6px rgba(30,20,15,.14)!important;
+  }
+
+  /* Rodapé institucional: remove a caixa externa e deixa apenas os botões independentes. */
+  .mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813{
+    width:calc(100% - 24px)!important;
+    margin:18px auto 0!important;
+    padding:0!important;
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    grid-auto-flow:row!important;
+    grid-auto-columns:auto!important;
+    gap:8px!important;
+    overflow:visible!important;
+    border:0!important;
+    border-radius:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+  }
+  .mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813 button{
+    min-height:42px!important;
+    padding:0 10px!important;
+    border:1px solid rgba(75,57,44,.12)!important;
+    border-radius:12px!important;
+    background:rgba(255,255,255,.72)!important;
+    box-shadow:0 2px 9px rgba(57,40,29,.035)!important;
+    font-size:10.5px!important;
+  }
+  .mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813 button+button{
+    border-left:1px solid rgba(75,57,44,.12)!important;
+  }
+  .mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813 button i{
+    font-size:12px!important;
+  }
+
+  /* Contato, Localização e Políticas seguem o mesmo padrão de modal centralizado. */
+  #encContactBackdropV776.enc-info-backdrop-v776,
+  #encLocationBackdropV776.enc-info-backdrop-v776,
+  #encPoliciesBackdropV814.enc-info-backdrop-v776{
+    align-items:center!important;
+    justify-content:center!important;
+    padding:16px!important;
+  }
+  #encContactBackdropV776 .enc-info-modal-v776,
+  #encLocationBackdropV776 .enc-info-modal-v776,
+  #encPoliciesBackdropV814 .enc-info-modal-v776{
+    width:min(90vw,390px)!important;
+    max-height:76dvh!important;
+    margin:0!important;
+    border-radius:18px!important;
+    overflow:auto!important;
+    box-shadow:0 24px 70px rgba(34,25,20,.22)!important;
+  }
+  #encPoliciesBackdropV814 .enc-policy-modal-v814{
+    width:min(90vw,400px)!important;
+  }
+  #encContactBackdropV776 .enc-info-modal-v776>header,
+  #encLocationBackdropV776 .enc-info-modal-v776>header,
+  #encPoliciesBackdropV814 .enc-info-modal-v776>header{
+    min-height:62px!important;
+    padding:13px 14px!important;
+    display:flex!important;
+    align-items:flex-start!important;
+    justify-content:space-between!important;
+    gap:10px!important;
+  }
+  #encContactBackdropV776 .enc-info-modal-v776>header>div,
+  #encLocationBackdropV776 .enc-info-modal-v776>header>div,
+  #encPoliciesBackdropV814 .enc-info-modal-v776>header>div{
+    min-width:0!important;
+    flex:1 1 auto!important;
+    order:1!important;
+  }
+  #encContactBackdropV776 .enc-info-modal-v776>header button,
+  #encLocationBackdropV776 .enc-info-modal-v776>header button,
+  #encPoliciesBackdropV814 .enc-info-modal-v776>header button{
+    order:2!important;
+    margin:0 0 0 auto!important;
+    width:31px!important;
+    height:31px!important;
+    flex:0 0 31px!important;
+    border-radius:10px!important;
+  }
+  #encContactBackdropV776 .enc-info-modal-v776>header h2,
+  #encLocationBackdropV776 .enc-info-modal-v776>header h2,
+  #encPoliciesBackdropV814 .enc-info-modal-v776>header h2{
+    font-size:20px!important;
+  }
+  #encContactBackdropV776 .enc-info-list-v776{
+    gap:7px!important;
+    padding:11px!important;
+  }
+  #encContactBackdropV776 .enc-info-list-v776>a{
+    min-height:52px!important;
+    grid-template-columns:34px minmax(0,1fr) 14px!important;
+    gap:9px!important;
+    padding:8px 10px!important;
+    border-radius:13px!important;
+  }
+  #encContactBackdropV776 .enc-info-list-v776>a>i:first-child{
+    width:34px!important;
+    height:34px!important;
+    border-radius:10px!important;
+    font-size:13px!important;
+  }
+  #encLocationBackdropV776 .enc-location-card-v776{
+    grid-template-columns:38px minmax(0,1fr)!important;
+    gap:10px!important;
+    margin:12px 12px 8px!important;
+    padding:12px!important;
+    border-radius:14px!important;
+  }
+  #encLocationBackdropV776 .enc-location-icon-v776{
+    width:38px!important;
+    height:38px!important;
+    border-radius:11px!important;
+    font-size:14px!important;
+  }
+  #encLocationBackdropV776 .enc-maps-btn-v776{
+    margin:0 12px 13px!important;
+    min-height:40px!important;
+    border-radius:12px!important;
+    font-size:10.5px!important;
+  }
+  #encPoliciesBackdropV814 .enc-policy-list-v814{
+    gap:7px!important;
+    padding:10px!important;
+  }
+  #encPoliciesBackdropV814 .enc-policy-item-v814{
+    border-radius:13px!important;
+  }
+  #encPoliciesBackdropV814 .enc-policy-item-v814 summary{
+    min-height:43px!important;
+    padding:0 11px!important;
+    font-size:10px!important;
+  }
+  #encPoliciesBackdropV814 .enc-policy-item-v814 summary>span>i{
+    width:28px!important;
+    height:28px!important;
+    flex-basis:28px!important;
+    border-radius:9px!important;
+    font-size:10px!important;
+  }
+  #encPoliciesBackdropV814 .enc-policy-item-v814>div{
+    padding:0 11px 11px 49px!important;
+  }
+}
+
+@media (max-width:390px){
+  #encContactBackdropV776 .enc-info-modal-v776,
+  #encLocationBackdropV776 .enc-info-modal-v776,
+  #encPoliciesBackdropV814 .enc-info-modal-v776{
+    width:min(92vw,360px)!important;
+    max-height:74dvh!important;
+  }
+}
+</style>
+<link rel="stylesheet" href="/static/css/encomendas-picker-v869.css?v=869">
+
+
+<style id="mf-v879-info-nav-brand">
+/* v879 — atalhos institucionais acompanham a cor principal configurada no admin. */
+.mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813{
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  backdrop-filter:none!important;
+  overflow:visible!important;
+}
+.mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813 button{
+  border:0!important;
+  background:transparent!important;
+  color:var(--enc-brand,#8b5e45)!important;
+  box-shadow:none!important;
+  border-radius:12px!important;
+  transition:background .16s ease,color .16s ease,transform .16s ease!important;
+}
+.mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813 button+button{
+  border-left:0!important;
+}
+.mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813 button i{
+  color:var(--enc-brand,#8b5e45)!important;
+}
+.mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813 button:hover,
+.mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813 button:focus-visible{
+  background:rgba(var(--enc-brand-rgb,139,94,69),.09)!important;
+  color:var(--enc-brand,#8b5e45)!important;
+}
+.mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813 button:active{
+  background:rgba(var(--enc-brand-rgb,139,94,69),.14)!important;
+  transform:scale(.985)!important;
+}
+@media(max-width:640px){
+  .mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813{
+    gap:6px!important;
+  }
+  .mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813 button{
+    min-height:40px!important;
+    padding:0 8px!important;
+  }
+}
+</style>
+
+<style id="mf-v889-desktop-atalhos-categorias-harmonizados">
+/* V889 — desktop segue o mesmo padrão leve do mobile, sem CSS exposto. */
+@media (min-width:641px){
+  .mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813.enc-info-nav-v883{
+    display:flex!important;
+    flex-direction:row!important;
+    flex-wrap:nowrap!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:0!important;
+    width:100%!important;
+    margin:6px auto 2px!important;
+    padding:0 0 3px!important;
+    background:transparent!important;
+    border:0!important;
+    box-shadow:none!important;
+  }
+  .mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813.enc-info-nav-v883 > button{
+    flex:0 0 auto!important;
+    width:auto!important;
+    min-width:0!important;
+    min-height:30px!important;
+    margin:0!important;
+    padding:2px 16px!important;
+    display:inline-flex!important;
+    flex-direction:row!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:5px!important;
+    border:0!important;
+    border-radius:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+    color:var(--enc-brand,#8b5e45)!important;
+    font-size:11px!important;
+    font-weight:800!important;
+    line-height:1!important;
+    white-space:nowrap!important;
+  }
+  .mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813.enc-info-nav-v883 > button + button{
+    border-left:1px solid rgba(var(--enc-brand-rgb,139,94,69),.28)!important;
+  }
+  .mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813.enc-info-nav-v883 > button i{
+    font-size:11px!important;
+    color:var(--enc-brand,#8b5e45)!important;
+  }
+  .mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813.enc-info-nav-v883 > button:hover{
+    background:rgba(var(--enc-brand-rgb,139,94,69),.07)!important;
+  }
+
+  .mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813{
+    display:flex!important;
+    flex-direction:row!important;
+    flex-wrap:nowrap!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:0!important;
+    min-height:38px!important;
+    padding:5px 14px!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    background:var(--enc-category-band,var(--enc-brand))!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+    scrollbar-width:none!important;
+  }
+  .mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813::-webkit-scrollbar{display:none!important}
+  .mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813 > .enc-category-chip,
+  .mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813 > .enc-category-chip.active{
+    flex:0 0 auto!important;
+    width:auto!important;
+    min-width:max-content!important;
+    height:28px!important;
+    min-height:28px!important;
+    margin:0!important;
+    padding:0 16px!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    border:0!important;
+    border-radius:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+    color:#4f423a!important;
+    font-size:11px!important;
+    font-weight:800!important;
+    line-height:1!important;
+    white-space:nowrap!important;
+  }
+  .mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813 > .enc-category-chip + .enc-category-chip{
+    border-left:1px solid rgba(79,66,58,.28)!important;
+  }
+  .mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813 > .enc-category-chip.active{
+    color:var(--enc-brand,#8b5e45)!important;
+    font-weight:950!important;
+    text-decoration:underline!important;
+    text-decoration-thickness:2px!important;
+    text-underline-offset:4px!important;
+  }
+}
+</style>
+
+{% endblock %}
+{% block page %}
+<div class="enc-public-wrap" style="--enc-brand:{{ empresa.menu_cor_principal or '#1236B5' }};--enc-brand-rgb:{{ empresa.menu_cor_rgb or '18,54,181' }};--enc-brand-on:{{ empresa.menu_cor_texto or '#FFFFFF' }};--enc-page-bg:{{ empresa.menu_cor_fundo or '#F5F7FB' }};--enc-category-band:{{ encomendas_apresentacao.faixa_categorias_cor or empresa.menu_cor_principal or '#1236B5' }};">
+  {% if encomendas_apresentacao and encomendas_apresentacao.ativo %}
+    {% set enc_intro_fotos = [] %}
+    {% if encomendas_apresentacao.foto1_url %}{% set _ = enc_intro_fotos.append(encomendas_apresentacao.foto1_url) %}{% endif %}
+    {% if encomendas_apresentacao.foto2_url %}{% set _ = enc_intro_fotos.append(encomendas_apresentacao.foto2_url) %}{% endif %}
+    {% if encomendas_apresentacao.foto3_url %}{% set _ = enc_intro_fotos.append(encomendas_apresentacao.foto3_url) %}{% endif %}
+    {% set enc_intro_qtd = enc_intro_fotos|length %}
+    <section class="enc-intro-v812" id="encIntroV812" role="dialog" aria-modal="true" aria-labelledby="encIntroTitleV812">
+      <div class="enc-intro-panel-v812 photos-{{ enc_intro_qtd }}-v812">
+        <div class="enc-intro-copy-v812">
+          <div class="enc-intro-brand-v812">
+            <span class="enc-intro-brand-mark-v812">{% if empresa.logo_url %}<img src="{{ empresa.logo_url }}" alt="">{% else %}{{ (empresa.nome or 'M')[:1]|upper }}{% endif %}</span>
+            <span>{{ empresa.nome }}</span>
+          </div>
+          <span class="enc-intro-eyebrow-v812">Nossa essência</span>
+          <h1 class="enc-intro-title-v812" id="encIntroTitleV812">{{ encomendas_apresentacao.titulo or 'Conheça nossa história' }}</h1>
+          {% if encomendas_apresentacao.texto %}<p class="enc-intro-text-v812">{{ encomendas_apresentacao.texto }}</p>{% endif %}
+          <button class="enc-intro-action-v812" id="encIntroOpenCatalogV812" type="button">
+            <span>{{ encomendas_apresentacao.botao_texto or 'Acessar nosso cardápio' }}</span>
+            <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+          </button>
+          <span class="enc-intro-note-v812"><i class="fa-regular fa-heart" aria-hidden="true"></i> Feito com carinho para momentos especiais</span>
+        </div>
+        {% if enc_intro_qtd %}
+        <div class="enc-intro-media-v812" aria-label="Fotos da nossa história">
+          <div class="enc-intro-gallery-v812 photos-{{ enc_intro_qtd }}-v812">
+            {% for foto in enc_intro_fotos %}
+            <figure class="enc-intro-photo-v812"><img src="{{ foto }}" alt="Foto da história de {{ empresa.nome }}" loading="eager" decoding="async"></figure>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </section>
+  {% endif %}
+  {% set enc_whatsapp = (empresa.telefone_whatsapp or '')|replace('+','')|replace(' ','')|replace('(','')|replace(')','')|replace('-','')|replace('.','') %}
+  {% set enc_instagram = empresa.instagram or '' %}
+  {% set enc_facebook = empresa.facebook or '' %}
+  <header class="enc-public-header enc-public-header-v772">
+    <div class="enc-public-brand">
+      <div class="enc-public-logo">{% if empresa.logo_url %}<img src="{{ empresa.logo_url }}" alt="Logo {{ empresa.nome }}">{% else %}{{ (empresa.nome or 'M')[:1]|upper }}{% endif %}</div>
+      <div>
+        <strong>{{ empresa.nome }}</strong>
+        <span>{{ empresa.descricao or 'Encomendas artesanais' }}</span>
+      </div>
+    </div>
+    <div class="enc-header-actions-v772">
+      {% if enc_whatsapp %}<a class="enc-header-link-v772 enc-social-icon-v773 enc-social-whatsapp-v773" href="https://wa.me/{{ enc_whatsapp }}" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i><span>WhatsApp</span></a>{% endif %}
+      {% if enc_instagram %}<a class="enc-header-link-v772 enc-social-icon-v773 enc-social-instagram-v773" href="{% if '://' in enc_instagram %}{{ enc_instagram }}{% else %}https://instagram.com/{{ enc_instagram|replace('@','') }}{% endif %}" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram"></i><span>Instagram</span></a>{% endif %}
+      {% if enc_facebook %}<a class="enc-header-link-v772 enc-social-icon-v773 enc-social-facebook-v773" href="{% if '://' in enc_facebook %}{{ enc_facebook }}{% else %}https://facebook.com/{{ enc_facebook|replace('@','') }}{% endif %}" target="_blank" rel="noopener" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i><span>Facebook</span></a>{% endif %}
+      <details class="enc-hours-v772">
+        <summary class="enc-header-link-v772 enc-social-icon-v773 enc-social-hours-v773" aria-label="Horários"><i class="fa-regular fa-clock"></i><span>Horários</span></summary>
+        <div class="enc-hours-popover-v772">
+          <strong><i class="fa-regular fa-clock"></i> Horário de Funcionamento</strong>
+          {% set enc_horarios = horarios_funcionamento|default([]) %}
+          {% if enc_horarios %}
+            {% for linha in enc_horarios %}<div><span>{{ linha.dia_nome or linha.dia }}</span><b>{{ linha.display if linha.aberto else 'Fechado' }}</b></div>{% endfor %}
+          {% else %}<p>Consulte o estabelecimento para confirmar os horários.</p>{% endif %}
+        </div>
+      </details>
+      <button class="enc-cart-btn" id="encCartButton" type="button">
+        <i class="fa-solid fa-basket-shopping"></i>
+        <span>Sua encomenda</span>
+        <span class="enc-cart-count" id="encCartCount">0</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="enc-public-content enc-public-content-v762">
+
+    {% if encomenda_itens %}
+    <section class="enc-showcase-v764 enc-showcase-v765" id="encShowcaseV765" aria-label="Vitrine automática de encomendas" aria-live="off">
+      {% for pos in range(5) %}
+      <article class="enc-showcase-card-v764{% if pos == 0 %} main{% endif %}" data-enc-showcase-slot="{{ pos }}">
+        <img class="enc-showcase-img-v775" data-enc-showcase-image alt="" decoding="async">
+        <span class="enc-showcase-badge-v764" data-enc-showcase-badge></span>
+        <div class="enc-showcase-copy-v764"><div><h3 data-enc-showcase-name></h3>{% if pos == 0 %}<p data-enc-showcase-desc></p>{% endif %}</div><span class="enc-showcase-price-v764" data-enc-showcase-price></span></div>
+      </article>
+      {% endfor %}
+    </section>
+
+    <nav class="enc-category-nav enc-category-nav-v762{% if encomendas_apresentacao.faixa_categorias_ativa %} enc-category-band-v813{% endif %}" aria-label="Categorias">
+      <button class="enc-category-chip active" type="button" data-enc-category="todos">Todos</button>
+      {% for categoria in categorias %}<button class="enc-category-chip" type="button" data-enc-category="{{ categoria.nome|lower }}">{{ categoria.nome }}</button>{% endfor %}
+    </nav>
+
+    <div class="enc-product-grid">
+      {% for item in encomenda_itens %}
+      <article class="enc-product-card"
+        data-enc-product-card
+        role="button"
+        tabindex="0"
+        aria-label="Abrir {{ item.nome|e }}"
+        data-enc-category-name="{{ item.categoria|lower }}"
+        data-enc-item-id="{{ item.id }}"
+        data-enc-item-name="{{ item.nome|e }}"
+        data-enc-item-description="{{ item.descricao|e }}"
+        data-enc-item-photo="{{ item.foto_url|e }}"
+        data-enc-item-options='{{ item.opcoes|tojson }}'
+        data-enc-sale-mode="{{ item.forma_venda|e }}"
+        data-enc-item-recheios='{{ item.recheios|tojson }}'
+        data-enc-item-sabores='{{ item.sabores|tojson }}'
+        data-enc-item-advance="{{ item.antecedencia_horas }}"
+        data-enc-item-advance-minutes="{{ item.antecedencia_minutos }}"
+        data-enc-item-available-today="{{ 1 if item.disponivel_hoje else 0 }}"
+        data-enc-item-today-wait="{{ item.tempo_retirada_minutos }}"
+        data-enc-item-retirada="{{ 1 if item.permite_retirada else 0 }}"
+        data-enc-item-entrega="{{ 1 if item.permite_entrega else 0 }}"
+        data-enc-personalization="{{ 1 if item.aceita_personalizacao else 0 }}">
+        <div class="enc-product-photo" style="background-image:url('{{ item.foto_url }}')"><span class="enc-product-tag">{{ 'Destaque' if item.destaque else item.categoria }}</span>{% if item.disponivel_hoje %}<span class="enc-available-today-v813"><i class="fa-regular fa-clock"></i> Disponível hoje</span>{% endif %}</div>
+        <div class="enc-product-body"><h3>{{ item.nome }}</h3><p>{{ item.descricao }}</p><div class="enc-product-footer"><div class="enc-product-price"><small>{% if item.forma_venda == 'preco_unico' %}Preço{% else %}A partir de{% endif %}</small><strong>{{ item.preco_inicial_texto }}</strong></div><button class="enc-order-now" type="button" data-enc-open-product>Encomendar</button></div></div>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <section class="enc-card" style="margin-top:18px"><div class="enc-card-body"><strong>O catálogo de encomendas está sendo preparado.</strong><p>Volte em breve para conferir os itens disponíveis.</p></div></section>
+    {% endif %}
+  </main>
+
+  {% set enc_location_parts = [] %}
+  {% if empresa.endereco %}{% set _ = enc_location_parts.append(empresa.endereco) %}{% endif %}
+  {% if empresa.numero_fiscal %}{% set _ = enc_location_parts.append(empresa.numero_fiscal) %}{% endif %}
+  {% if empresa.complemento_fiscal %}{% set _ = enc_location_parts.append(empresa.complemento_fiscal) %}{% endif %}
+  {% if empresa.bairro_fiscal %}{% set _ = enc_location_parts.append(empresa.bairro_fiscal) %}{% endif %}
+  {% if empresa.cidade %}{% set _ = enc_location_parts.append(empresa.cidade) %}{% endif %}
+  {% if empresa.uf_fiscal %}{% set _ = enc_location_parts.append(empresa.uf_fiscal) %}{% endif %}
+  {% if empresa.cep_fiscal %}{% set _ = enc_location_parts.append('CEP ' ~ empresa.cep_fiscal) %}{% endif %}
+  {% if empresa.pais %}{% set _ = enc_location_parts.append(empresa.pais) %}{% endif %}
+  {% set enc_location_text = enc_location_parts|join(', ') %}
+
+  {% set enc_policy_lang = empresa.idioma if empresa.idioma in ['pt','it','en'] else 'pt' %}
+  {% set enc_policy_ns = namespace(any=false) %}
+  {% for enc_policy_key in ['entrega','trocas','termos','privacidade'] %}
+    {% set enc_policy_block = politicas_loja[enc_policy_key] %}
+    {% set enc_policy_text = enc_policy_block[enc_policy_lang] or enc_policy_block.pt %}
+    {% if enc_policy_block.ativa and enc_policy_text %}{% set enc_policy_ns.any = true %}{% endif %}
+  {% endfor %}
+
+  <nav class="enc-info-nav-v776 enc-info-nav-v813 enc-info-nav-v883" aria-label="Informações do estabelecimento">
+    <button type="button" data-enc-open-my-orders-v913><i class="fa-regular fa-rectangle-list"></i><span>Minhas encomendas</span></button>
+    {% if encomendas_apresentacao and encomendas_apresentacao.ativo %}<button type="button" data-enc-open-story-v813><i class="fa-regular fa-heart"></i><span>Nossa história</span></button>{% endif %}
+    <button type="button" data-enc-open-contact><i class="fa-regular fa-message"></i><span>Contato</span></button>
+    <button type="button" data-enc-open-location><i class="fa-solid fa-location-dot"></i><span>Localização</span></button>
+    {% if enc_policy_ns.any %}<button type="button" data-enc-open-policies-v814><i class="fa-regular fa-file-lines"></i><span>Políticas</span></button>{% endif %}
+  </nav>
+
+  {% set enc_tax_raw = (empresa.cnpj or '')|string|replace('.', '')|replace('/', '')|replace('-', '')|replace(' ', '') %}
+  {% if enc_tax_raw|length == 14 %}
+    {% set enc_tax_formatted = enc_tax_raw[0:2] ~ '.' ~ enc_tax_raw[2:5] ~ '.' ~ enc_tax_raw[5:8] ~ '/' ~ enc_tax_raw[8:12] ~ '-' ~ enc_tax_raw[12:14] %}
+    {% set enc_tax_label = 'CNPJ' %}
+  {% elif enc_tax_raw|length == 11 %}
+    {% set enc_tax_formatted = enc_tax_raw[0:3] ~ '.' ~ enc_tax_raw[3:6] ~ '.' ~ enc_tax_raw[6:9] ~ '-' ~ enc_tax_raw[9:11] %}
+    {% set enc_tax_label = 'CPF' %}
+  {% else %}
+    {% set enc_tax_formatted = empresa.cnpj or '' %}
+    {% set enc_tax_label = 'CPF/CNPJ' %}
+  {% endif %}
+  <footer class="enc-public-footer-v776">
+    <div class="enc-public-footer-inner-v776">
+      <p>© {{ (agora_operacional_iso or '2026')[:4] }} {{ empresa.nome }}. Todos os direitos reservados.</p>
+      {% if empresa.razao_social or empresa.cnpj %}
+      <strong>
+        {{ empresa.razao_social or empresa.nome }}{% if empresa.cnpj %} · {{ enc_tax_label }}: {{ enc_tax_formatted }}{% endif %}
+      </strong>
+      {% endif %}
+      <span>Menu online com MenuFacile</span>
+    </div>
+  </footer>
+</div>
+
+<div class="enc-info-backdrop-v776" id="encContactBackdropV776" aria-hidden="true">
+  <section class="enc-info-modal-v776" role="dialog" aria-modal="true" aria-labelledby="encContactTitleV776">
+    <header><div><span>FALE COM A EMPRESA</span><h2 id="encContactTitleV776">Contato</h2></div><button type="button" data-enc-close-contact aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button></header>
+    <div class="enc-info-list-v776">
+      {% if empresa.telefone_whatsapp %}<a href="https://wa.me/{{ enc_whatsapp }}" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i><span><strong>WhatsApp</strong><small>{{ empresa.telefone_whatsapp }}</small></span><i class="fa-solid fa-chevron-right"></i></a>{% endif %}
+      {% if empresa.telefone_fixo %}<a href="tel:{{ empresa.telefone_fixo }}"><i class="fa-solid fa-phone"></i><span><strong>Telefone</strong><small>{{ empresa.telefone_fixo }}</small></span><i class="fa-solid fa-chevron-right"></i></a>{% endif %}
+      {% if empresa.telefone_secundario %}<a href="tel:{{ empresa.telefone_secundario }}"><i class="fa-solid fa-phone-volume"></i><span><strong>Telefone alternativo</strong><small>{{ empresa.telefone_secundario }}</small></span><i class="fa-solid fa-chevron-right"></i></a>{% endif %}
+      {% if empresa.email %}<a href="mailto:{{ empresa.email }}"><i class="fa-regular fa-envelope"></i><span><strong>E-mail</strong><small>{{ empresa.email }}</small></span><i class="fa-solid fa-chevron-right"></i></a>{% endif %}
+      {% if enc_instagram %}<a href="{% if '://' in enc_instagram %}{{ enc_instagram }}{% else %}https://instagram.com/{{ enc_instagram|replace('@','') }}{% endif %}" target="_blank" rel="noopener"><i class="fa-brands fa-instagram"></i><span><strong>Instagram</strong><small>{{ enc_instagram }}</small></span><i class="fa-solid fa-chevron-right"></i></a>{% endif %}
+      {% if enc_facebook %}<a href="{% if '://' in enc_facebook %}{{ enc_facebook }}{% else %}https://facebook.com/{{ enc_facebook|replace('@','') }}{% endif %}" target="_blank" rel="noopener"><i class="fa-brands fa-facebook-f"></i><span><strong>Facebook</strong><small>{{ enc_facebook }}</small></span><i class="fa-solid fa-chevron-right"></i></a>{% endif %}
+      {% if not empresa.telefone_whatsapp and not empresa.telefone_fixo and not empresa.telefone_secundario and not empresa.email and not enc_instagram and not enc_facebook %}<p class="enc-info-empty-v776">Contato ainda não informado pelo estabelecimento.</p>{% endif %}
+    </div>
+  </section>
+</div>
+
+<div class="enc-info-backdrop-v776" id="encLocationBackdropV776" aria-hidden="true">
+  <section class="enc-info-modal-v776" role="dialog" aria-modal="true" aria-labelledby="encLocationTitleV776">
+    <header><div><span>ONDE ESTAMOS</span><h2 id="encLocationTitleV776">Localização</h2></div><button type="button" data-enc-close-location aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button></header>
+    {% if enc_location_text %}
+    <div class="enc-location-card-v776">
+      <div class="enc-location-icon-v776"><i class="fa-solid fa-location-dot"></i></div>
+      <div><strong>{{ empresa.endereco or empresa.nome }}</strong><p>{{ enc_location_text }}</p></div>
+    </div>
+    <a class="enc-maps-btn-v776" href="https://www.google.com/maps/search/?api=1&query={{ enc_location_text|urlencode }}" target="_blank" rel="noopener"><i class="fa-solid fa-diamond-turn-right"></i> Como chegar</a>
+    {% else %}<p class="enc-info-empty-v776">Localização ainda não informada pelo estabelecimento.</p>{% endif %}
+  </section>
+</div>
+
+{% if enc_policy_ns.any %}
+<div class="enc-info-backdrop-v776" id="encPoliciesBackdropV814" aria-hidden="true">
+  <section class="enc-info-modal-v776 enc-policy-modal-v814" role="dialog" aria-modal="true" aria-labelledby="encPoliciesTitleV814">
+    <header>
+      <div><span>INFORMAÇÕES IMPORTANTES</span><h2 id="encPoliciesTitleV814">Políticas da loja</h2></div>
+      <button type="button" data-enc-close-policies-v814 aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+    </header>
+    <div class="enc-policy-list-v814">
+      {% for enc_policy_key, enc_policy_title, enc_policy_icon in [
+        ('entrega','Entrega','fa-truck-fast'),
+        ('trocas','Trocas, cancelamentos e devoluções','fa-arrow-rotate-left'),
+        ('termos','Termos','fa-file-signature'),
+        ('privacidade','Privacidade','fa-shield-halved')
+      ] %}
+        {% set enc_policy_block = politicas_loja[enc_policy_key] %}
+        {% set enc_policy_text = enc_policy_block[enc_policy_lang] or enc_policy_block.pt %}
+        {% if enc_policy_block.ativa and enc_policy_text %}
+        <details class="enc-policy-item-v814">
+          <summary><span><i class="fa-solid {{ enc_policy_icon }}"></i>{{ enc_policy_title }}</span><i class="fa-solid fa-chevron-down"></i></summary>
+          <div><p>{{ enc_policy_text }}</p></div>
+        </details>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endif %}
+
+
+<style id="mf-v913-minhas-encomendas-css">
+{% raw %}
+#encMyOrdersBackdropV913 .enc-myorders-modal-v913{width:min(480px,calc(100vw - 28px));max-height:min(78vh,680px);overflow:hidden;border-radius:20px;background:#fff;box-shadow:0 22px 58px rgba(35,30,26,.18)}
+#encMyOrdersBackdropV913 .enc-myorders-body-v913{padding:15px 17px 18px;overflow:auto;max-height:calc(78vh - 76px)}
+.enc-myorders-search-v913{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end}.enc-myorders-search-v913 label{grid-column:1/-1;display:grid;gap:5px;color:#574f49;font-size:11px;font-weight:800}.enc-myorders-search-v913 input{height:39px;border:1px solid #ddd6d0;border-radius:11px;padding:0 12px;font:inherit;font-size:13px;outline:none;background:#fff}.enc-myorders-search-v913 input:focus{border-color:var(--enc-brand,#8b5e45);box-shadow:0 0 0 3px rgba(var(--enc-brand-rgb,139,94,69),.08)}.enc-myorders-search-v913 button{height:39px;padding:0 15px;border:0;border-radius:11px;background:var(--enc-brand,#8b5e45);color:#fff;font-size:12px;font-weight:900;cursor:pointer}.enc-myorders-hint-v913{margin:7px 0 0;color:#8b8179;font-size:10.5px;line-height:1.35}.enc-myorders-message-v913{margin-top:10px;font-size:11px;font-weight:800;color:#6d625b}.enc-myorders-message-v913.error{color:#a34840}.enc-myorders-message-v913.success{color:#277052}.enc-myorders-list-v913{display:grid;gap:9px;margin-top:12px}.enc-myorder-card-v913{border:1px solid #e5dfda;border-radius:14px;padding:11px;background:#fff;display:grid;gap:8px}.enc-myorder-head-v913{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.enc-myorder-head-v913 strong{font-size:13px;color:#302a26}.enc-myorder-status-v913{font-size:9.5px;font-weight:900;padding:5px 7px;border-radius:999px;background:#f3f0ed;color:#695e56;white-space:nowrap}.enc-myorder-status-v913.cancelada{background:#fff0ee;color:#a34840}.enc-myorder-status-v913.confirmada{background:#edf8f1;color:#337153}.enc-myorder-status-v913.producao,.enc-myorder-status-v913.pronta{background:#f3effb;color:#654f88}.enc-myorder-meta-v913{display:flex;flex-wrap:wrap;gap:5px 11px;color:#756a62;font-size:10.5px;font-weight:700}.enc-myorder-finance-v913{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.enc-myorder-finance-v913>div{border:1px solid #eee9e5;border-radius:9px;padding:7px;background:#fcfbfa}.enc-myorder-finance-v913 span{display:block;color:#958b83;font-size:8.5px;font-weight:900;text-transform:uppercase}.enc-myorder-finance-v913 b{display:block;margin-top:2px;color:#3b342f;font-size:11.5px}.enc-myorder-signal-v913{padding:7px 9px;border-radius:9px;background:#f4faf6;color:#3d6950;font-size:10.5px;font-weight:800}.enc-myorder-actions-v913{display:flex;justify-content:flex-end}.enc-myorder-cancel-v913{min-height:34px;border:1px solid #e5bbb5;border-radius:10px;background:#fff;color:#a34840;padding:0 11px;font-size:10.5px;font-weight:900;cursor:pointer}.enc-myorder-blocked-v913{font-size:10px;color:#8a817b;font-weight:700;line-height:1.35}.enc-cancel-backdrop-v914{position:fixed;inset:0;z-index:12050;background:rgba(28,25,23,.48);display:flex;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(2px)}.enc-cancel-backdrop-v914[hidden]{display:none!important}.enc-cancel-card-v914{width:min(390px,calc(100vw - 30px));border-radius:20px;background:#fff;box-shadow:0 24px 64px rgba(28,25,23,.24);overflow:hidden}.enc-cancel-head-v914{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 17px 12px;border-bottom:1px solid #eee8e4}.enc-cancel-head-v914 strong{font-size:17px;color:#3a2f2b}.enc-cancel-close-v914{width:36px;height:36px;border:0;border-radius:12px;background:#f6f3f1;color:#655b55;font-size:17px;cursor:pointer}.enc-cancel-body-v914{padding:16px 17px 17px;display:grid;gap:11px}.enc-cancel-icon-v914{width:42px;height:42px;border-radius:14px;background:#fff0ed;color:#b64940;display:flex;align-items:center;justify-content:center;font-size:18px;margin:0 auto}.enc-cancel-question-v914{text-align:center;margin:0;color:#332b27;font-size:14px;font-weight:900}.enc-cancel-text-v914{text-align:center;margin:0;color:#746761;font-size:11.5px;font-weight:700;line-height:1.45}.enc-cancel-signal-v914{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;border:1px solid #f0d1cc;border-radius:12px;background:#fff8f7;padding:10px 11px}.enc-cancel-signal-v914[hidden]{display:none!important}.enc-cancel-signal-v914 span{font-size:10.5px;font-weight:800;color:#775c57}.enc-cancel-signal-v914 strong{font-size:15px;color:#a54139}.enc-cancel-warning-v914{display:flex;align-items:flex-start;gap:8px;border-radius:10px;background:#fff3e8;padding:9px 10px;color:#8a4b17;font-size:10.5px;font-weight:800;line-height:1.35}.enc-cancel-warning-v914[hidden]{display:none!important}.enc-cancel-actions-v914{display:grid;grid-template-columns:1fr 1.15fr;gap:8px;margin-top:2px}.enc-cancel-actions-v914 button{height:39px;border-radius:11px;font-size:11px;font-weight:900;cursor:pointer}.enc-myorders-back-v913{border:1px solid #ddd6d0;background:#fff;color:#635a54}.enc-myorders-do-cancel-v913{border:0;background:#a34840;color:#fff}.enc-myorders-do-cancel-v913:disabled{opacity:.65;cursor:wait}
+@media(max-width:640px){#encMyOrdersBackdropV913 .enc-myorders-modal-v913{width:calc(100vw - 18px);border-radius:17px}#encMyOrdersBackdropV913 .enc-myorders-body-v913{padding:13px}.enc-myorders-search-v913{grid-template-columns:1fr}.enc-myorders-search-v913 button{width:100%}.enc-myorder-finance-v913{grid-template-columns:repeat(3,minmax(0,1fr))}.enc-myorder-finance-v913 b{font-size:10.5px}.enc-cancel-backdrop-v914{padding:12px}.enc-cancel-card-v914{width:100%;max-width:380px;border-radius:18px}.enc-cancel-head-v914{padding:14px 15px 10px}.enc-cancel-body-v914{padding:14px 15px 15px}.enc-cancel-actions-v914 button{height:38px}}
+{% endraw %}
+</style>
+<div class="enc-info-backdrop-v776" id="encMyOrdersBackdropV913" aria-hidden="true">
+  <section class="enc-info-modal-v776 enc-myorders-modal-v913" role="dialog" aria-modal="true" aria-labelledby="encMyOrdersTitleV913">
+    <header><div><span>ACOMPANHE SEUS PEDIDOS</span><h2 id="encMyOrdersTitleV913">Minhas encomendas</h2></div><button type="button" id="encMyOrdersCloseV913" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button></header>
+    <div class="enc-myorders-body-v913">
+      <div class="enc-myorders-search-v913">
+        <label for="encMyOrdersPhoneV913">Telefone usado na encomenda</label>
+        <input id="encMyOrdersPhoneV913" type="tel" inputmode="tel" autocomplete="tel" placeholder="(11) 99999-9999">
+        <button type="button" id="encMyOrdersSearchV913"><i class="fa-solid fa-magnifying-glass"></i> Buscar</button>
+      </div>
+      <p class="enc-myorders-hint-v913">Informe o mesmo telefone usado ao fazer a encomenda. Não é necessário lembrar o número do pedido.</p>
+      <div class="enc-myorders-message-v913" id="encMyOrdersMessageV913" aria-live="polite"></div>
+      <div class="enc-myorders-list-v913" id="encMyOrdersListV913"></div>
+    </div>
+  </section>
+</div>
+
+<div class="enc-cancel-backdrop-v914" id="encMyOrdersConfirmV913" hidden aria-hidden="true">
+  <section class="enc-cancel-card-v914" role="dialog" aria-modal="true" aria-labelledby="encMyOrdersConfirmTitleV913">
+    <div class="enc-cancel-head-v914">
+      <strong>Confirmar cancelamento</strong>
+      <button type="button" class="enc-cancel-close-v914" id="encMyOrdersCancelCloseV914" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="enc-cancel-body-v914">
+      <div class="enc-cancel-icon-v914"><i class="fa-solid fa-calendar-xmark"></i></div>
+      <p class="enc-cancel-question-v914" id="encMyOrdersConfirmTitleV913">Cancelar encomenda?</p>
+      <p class="enc-cancel-text-v914" id="encMyOrdersConfirmTextV913"></p>
+      <div class="enc-cancel-signal-v914" id="encMyOrdersSignalV914" hidden><span>Sinal já pago</span><strong id="encMyOrdersSignalValueV914">R$ 0,00</strong></div>
+      <div class="enc-cancel-warning-v914" id="encMyOrdersNoRefundV914" hidden><i class="fa-solid fa-circle-exclamation"></i><span>O sinal pago não será reembolsado após o cancelamento.</span></div>
+      <div class="enc-cancel-actions-v914"><button class="enc-myorders-back-v913" type="button" id="encMyOrdersCancelBackV913">Voltar</button><button class="enc-myorders-do-cancel-v913" type="button" id="encMyOrdersCancelConfirmV913">Cancelar encomenda</button></div>
+    </div>
+  </section>
+</div>
+
+<div class="enc-modal-backdrop" id="encProductModalBackdrop" aria-hidden="true">
+  <section class="enc-product-modal" role="dialog" aria-modal="true" aria-label="Personalizar encomenda">
+    <div class="enc-modal-photo" id="encModalPhoto"></div>
+    <div class="enc-modal-content">
+      <button class="enc-modal-close" id="encModalClose" type="button" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+      <h2 id="encModalName">Encomenda</h2><p id="encModalDescription"></p>
+      <div class="enc-modal-fixed-price-v811" id="encModalFixedPrice" hidden><span>Preço</span><strong id="encModalFixedPriceValue">R$ 0,00</strong></div>
+      <div class="enc-choice-group" id="encModalOptionGroup"><div class="enc-choice-head"><strong>Escolha uma opção</strong><span>Obrigatório</span></div><div class="enc-radio-list" id="encModalOptions"></div></div>
+      <div class="enc-choice-group" id="encModalFlavorGroup" hidden><div class="enc-choice-head"><strong>Sabores</strong><span>Opcional</span></div><div class="enc-radio-list" id="encModalFlavors"></div></div>
+      <div class="enc-choice-group" id="encModalFillingGroup" hidden><div class="enc-choice-head"><strong>Recheios</strong><span>Opcional</span></div><div class="enc-radio-list" id="encModalFillings"></div></div>
+      <div class="enc-choice-group"><div class="enc-choice-head"><strong>Quando você precisa?</strong><span id="encModalAdvance">Confira a antecedência</span></div><div class="enc-date-grid"><div class="mf-picker-field"><input class="mf-picker-native" id="encModalDate" type="date"><button class="mf-picker-button" id="encModalDateButton" type="button" aria-haspopup="dialog" aria-expanded="false"><span class="mf-picker-value">Escolher data</span><i class="fa-regular fa-calendar"></i></button><div class="mf-picker-popover" id="encModalCalendar"></div></div><div class="mf-picker-field"><select class="mf-picker-native" id="encModalTime"><option value="">Escolha um horário</option></select><button class="mf-picker-button" id="encModalTimeButton" type="button" aria-haspopup="listbox" aria-expanded="false"><span class="mf-picker-value">Escolher horário</span><i class="fa-solid fa-chevron-down"></i></button><div class="mf-picker-popover mf-time-popover" id="encModalTimeList"></div></div></div></div>
+      <div class="enc-choice-group" id="encModalPersonalGroup"><div class="enc-choice-head"><strong>Personalização</strong><span>Opcional</span></div><input class="enc-public-control" id="encModalPersonal" placeholder="Ex.: nome, idade ou frase curta"></div>
+      <div class="enc-modal-total"><div><small>Total</small><strong id="encModalTotal">€ 0,00</strong></div><button class="enc-add-cart" id="encAddCart" type="button"><i class="fa-solid fa-plus"></i> Adicionar à encomenda</button></div>
+    </div>
+  </section>
+</div>
+
+<div class="enc-drawer-backdrop" id="encCartDrawerBackdrop">
+  <aside class="enc-cart-drawer" aria-label="Sua encomenda">
+    <div class="enc-cart-head"><strong>Sua encomenda</strong><button class="enc-modal-close" id="encCartClose" type="button" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="enc-cart-body">
+      <div class="enc-cart-empty-v772" id="encCartEmpty"><strong>Sua encomenda está vazia</strong><span>Escolha um produto no catálogo para começar.</span></div>
+      <div class="enc-cart-items-v772" id="encCartItems"></div>
+      <div class="enc-cart-summary">
+        <div><span>Itens</span><strong id="encCartItemsCount">0</strong></div>
+        <div><span>Data e horário</span><strong id="encCartSchedule">—</strong></div>
+        <div class="total"><span>Total</span><strong id="encCartTotal">R$ 0,00</strong></div>
+      </div>
+    </div>
+    <div class="enc-cart-checkout enc-cart-checkout-v772"><button class="enc-keep-shopping-v772" id="encKeepShopping" type="button"><i class="fa-solid fa-plus"></i> Adicionar mais itens</button><button class="enc-checkout-button" id="encCheckout" type="button">Continuar para confirmar</button></div>
+  </aside>
+</div>
+<div class="enc-checkout-backdrop" id="encCheckoutBackdrop" aria-hidden="true">
+  <section class="enc-checkout-modal" role="dialog" aria-modal="true" aria-labelledby="encCheckoutTitle">
+    <header class="enc-checkout-head">
+      <div>
+        <h2 id="encCheckoutTitle">Confirme sua encomenda</h2>
+      </div>
+      <button class="enc-modal-close" id="encCheckoutClose" type="button" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+    </header>
+
+    <div class="enc-checkout-scroll">
+      <div class="enc-checkout-summary enc-checkout-summary-v772" id="encCheckoutSummary">
+        <div class="enc-checkout-cart-lines-v772" id="encCheckoutItems"></div>
+        <div><small>Data e horário</small><strong id="encCheckoutSchedule">—</strong></div>
+        <div class="enc-checkout-summary-total"><small>Total</small><strong id="encCheckoutTotal">R$ 0,00</strong></div>
+      </div>
+
+      <section class="enc-checkout-section">
+        <div class="enc-checkout-section-title"><span>1</span><div><strong>Seus dados</strong><small>Para o estabelecimento identificar sua encomenda.</small></div></div>
+        <div class="enc-checkout-grid two">
+          <label class="enc-checkout-field"><span>Nome completo</span><input id="encCustomerName" autocomplete="name" placeholder="Seu nome"></label>
+          <label class="enc-checkout-field"><span>WhatsApp</span><input id="encCustomerPhone" autocomplete="tel" inputmode="tel" placeholder="(11) 99999-9999"></label>
+        </div>
+        <label class="enc-checkout-field"><span>E-mail <em>opcional</em></span><input id="encCustomerEmail" autocomplete="email" type="email" placeholder="voce@email.com"></label>
+      </section>
+
+      <section class="enc-checkout-section">
+        <div class="enc-checkout-section-title"><span>2</span><div><strong>Como você vai receber?</strong></div></div>
+        <div class="enc-receive-options" id="encReceiveOptions"></div>
+        <div class="enc-delivery-address" id="encAddressField" hidden>
+          <div class="enc-address-heading">
+            <div><strong>Endereço para entrega</strong><small>Digite o CEP e completamos o endereço automaticamente.</small></div>
+            <span class="enc-cep-status" id="encCepStatus"></span>
+          </div>
+          <div class="enc-address-grid">
+            <label class="enc-checkout-field enc-cep-field"><span>CEP</span><input id="encCustomerCep" inputmode="numeric" autocomplete="postal-code" maxlength="9" placeholder="00000-000"></label>
+            <label class="enc-checkout-field enc-street-field"><span>Rua / avenida</span><input id="encCustomerStreet" autocomplete="address-line1" placeholder="Nome da rua"></label>
+            <label class="enc-checkout-field enc-number-field"><span>Número</span><input id="encCustomerNumber" inputmode="numeric" autocomplete="address-line2" placeholder="123"></label>
+            <label class="enc-checkout-field enc-complement-field"><span>Complemento <em>opcional</em></span><input id="encCustomerComplement" placeholder="Apto, bloco, referência"></label>
+            <label class="enc-checkout-field enc-neighborhood-field"><span>Bairro</span><input id="encCustomerNeighborhood" placeholder="Bairro"></label>
+            <label class="enc-checkout-field enc-city-field"><span>Cidade</span><input id="encCustomerCity" autocomplete="address-level2" placeholder="Cidade"></label>
+            <label class="enc-checkout-field enc-state-field"><span>UF</span><input id="encCustomerState" autocomplete="address-level1" maxlength="2" placeholder="SP"></label>
+          </div>
+        </div>
+      </section>
+
+      <section class="enc-checkout-section">
+        <div class="enc-checkout-section-title"><span>3</span><div><strong>Pagamento</strong></div></div>
+        <div class="enc-signal-payment-label" id="encSignalPaymentLabel" hidden>Como deseja pagar o sinal agora?</div>
+        <div class="enc-signal-payment-options" id="encSignalPaymentOptions" hidden></div>
+        <div class="enc-signal-box" id="encSignalBox" hidden>
+          <div class="enc-signal-title"><span><i class="fa-solid fa-shield-heart"></i> Sinal para confirmar</span><b id="encSignalMethod">Pix</b></div>
+          <div><span>Pagar agora</span><strong id="encSignalNow">R$ 0,00</strong></div>
+          <div><span>Saldo restante</span><strong id="encSignalBalance">R$ 0,00</strong></div>
+          <p id="encSignalPolicy"></p>
+        </div>
+        <div class="enc-payment-balance-label" id="encPaymentBalanceLabel" hidden>Como prefere pagar o saldo restante?</div>
+        <div class="enc-payment-options" id="encPaymentOptions"></div>
+        <div class="enc-payment-stage" id="encPaymentStage" hidden></div>
+      </section>
+
+      <section class="enc-checkout-section">
+        <div class="enc-checkout-section-title"><span>4</span><div><strong>Observações</strong><small>Algo que o estabelecimento precisa saber?</small></div></div>
+        <label class="enc-checkout-field"><textarea id="encCustomerObservation" rows="3" placeholder="Ex.: vou retirar em nome de outra pessoa"></textarea></label>
+        {% if politicas_loja.termos.ativa %}
+        <label class="enc-terms-check"><input id="encTermsAccepted" type="checkbox"><span>Li e conferi os dados da encomenda, data, valores e forma de pagamento.</span></label>
+        {% else %}<input id="encTermsAccepted" type="checkbox" checked hidden>{% endif %}
+      </section>
+
+      <div class="enc-checkout-error" id="encCheckoutError" hidden></div>
+      <div class="enc-order-success" id="encOrderSuccess" hidden></div>
+    </div>
+
+    <footer class="enc-checkout-footer">
+      <div><small>Total da encomenda</small><strong id="encCheckoutFooterTotal">R$ 0,00</strong></div>
+      <button class="enc-confirm-order" id="encConfirmOrder" type="button">Confirmar encomenda</button>
+    </footer>
+  </section>
+</div>
+
+
+<div class="enc-signal-backdrop-v778" id="encSignalBackdropV778" aria-hidden="true">
+  <section class="enc-signal-modal-v778" role="dialog" aria-modal="true" aria-labelledby="encSignalTitleV778">
+    <header class="enc-signal-head-v778">
+      <h2 id="encSignalTitleV778">Aguardando sinal</h2>
+      <button class="enc-signal-close-v778" id="encSignalCloseV778" type="button" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+    </header>
+    <div class="enc-signal-body-v778">
+      <div class="enc-signal-pix-icon-v778"><i class="fa-brands fa-pix"></i></div>
+      <h3>Envie o sinal para confirmar a encomenda</h3>
+      <p id="encSignalIntroV778">Sua encomenda ficará aguardando confirmação. Faça o Pix e envie o comprovante ao estabelecimento.</p>
+      <div class="enc-signal-value-v778"><span>Valor do sinal</span><strong id="encSignalValueV778">R$ 0,00</strong></div>
+      <div class="enc-signal-key-v778">
+        <strong id="encSignalKeyV778" hidden></strong>
+        <button type="button" id="encSignalCopyV778"><i class="fa-regular fa-copy"></i> Copiar chave Pix</button>
+      </div>
+      <p class="enc-signal-deadline-v778" id="encSignalDeadlineV778"></p>
+      <button type="button" class="enc-signal-whatsapp-v778" id="encSignalWhatsV778"><i class="fa-brands fa-whatsapp"></i> Enviar comprovante no WhatsApp</button>
+      <button type="button" class="enc-signal-done-v778" id="encSignalDoneV778">Fechar</button>
+    </div>
+  </section>
+</div>
+
+<script>
+window.MF_ENCOMENDAS_CONFIG = {
+  empresaId: {{ empresa.id|tojson }},
+  slug: {{ empresa.slug|tojson }},
+  whatsapp: {{ (empresa.telefone_whatsapp or empresa.telefone_fixo or "")|tojson }},
+  serverNow: {{ agora_operacional_iso|tojson }},
+  horarios: {{ horarios_funcionamento|tojson }},
+  restricaoHorarios: {{ restricao_horarios_ativa|tojson }},
+  menu: {{ menu_config|tojson }},
+  entrega: {{ entrega_config|tojson }},
+  pagamentos: {
+    onlineAtivo: {{ (empresa.pagamentos_online_ativo or false)|tojson }},
+    pixOnline: {{ (empresa.aceita_pix_online or false)|tojson }},
+    cartaoOnline: {{ (empresa.aceita_cartao_online or false)|tojson }},
+    dinheiro: {{ (empresa.aceita_dinheiro or false)|tojson }},
+    cartaoPresencial: {{ (empresa.aceita_cartao_entrega or false)|tojson }},
+    retiradaModo: {{ (empresa.pagamento_retirada_modo or '')|tojson }},
+    entregaModo: {{ (empresa.pagamento_entrega_modo or '')|tojson }},
+    publicKey: {{ (empresa.mercadopago_public_key or '')|tojson }},
+    sinalAtivo: {{ (empresa.sinal_reserva_ativo or false)|tojson }},
+    sinalTipo: {{ (empresa.sinal_tipo or 'percentual')|tojson }},
+    sinalValor: {{ (empresa.sinal_valor or 0)|tojson }},
+    pixManualChave: {{ (empresa.sinal_pix_chave or '')|tojson }},
+    pixManualTitular: {{ (empresa.sinal_pix_titular or '')|tojson }},
+    sinalPrazo: {{ (empresa.sinal_prazo_minutos or 30)|tojson }},
+    sinalPolitica: {{ (empresa.sinal_politica or '')|tojson }}
+  },
+  politicas: {{ politicas_loja|tojson }}
+};
+</script>
+<script id="mf-v913-minhas-encomendas-js">
+/* V969 — mantém centralização V968 e corrige fechamento do X removendo a exibição forçada. */
+(()=>{
+  const cfg=window.MF_ENCOMENDAS_CONFIG||{};
+  const backdrop=document.getElementById('encMyOrdersBackdropV913');
+  const modal=backdrop?.querySelector('.enc-myorders-modal-v913')||null;
+  const header=modal?.querySelector('header')||null;
+  const headerInfo=header?.querySelector('div')||null;
+  const closeBtn=document.getElementById('encMyOrdersCloseV913');
+  const bodyBox=modal?.querySelector('.enc-myorders-body-v913')||null;
+  const phone=document.getElementById('encMyOrdersPhoneV913');
+  const searchBtn=document.getElementById('encMyOrdersSearchV913');
+  const list=document.getElementById('encMyOrdersListV913');
+  const msg=document.getElementById('encMyOrdersMessageV913');
+  const confirmBox=document.getElementById('encMyOrdersConfirmV913');
+  const confirmTitle=document.getElementById('encMyOrdersConfirmTitleV913');
+  const confirmText=document.getElementById('encMyOrdersConfirmTextV913');
+  const signalBox=document.getElementById('encMyOrdersSignalV914');
+  const signalValue=document.getElementById('encMyOrdersSignalValueV914');
+  const noRefund=document.getElementById('encMyOrdersNoRefundV914');
+  let currentPhone='';
+  let selected=null;
+  const money=v=>'R$ '+Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const esc=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+  const setMsg=(text,type='')=>{if(!msg)return;msg.textContent=text||'';msg.className='enc-myorders-message-v913'+(type?' '+type:'')};
+
+  function applyMyOrdersLayoutFix(){
+    if(!backdrop||!modal||!header||!closeBtn) return;
+    const mobile = window.matchMedia('(max-width: 640px)').matches;
+
+    backdrop.style.setProperty('display','flex','important');
+    backdrop.style.setProperty('align-items','center','important');
+    backdrop.style.setProperty('justify-content','center','important');
+    backdrop.style.setProperty('padding', mobile ? '10px' : '16px', 'important');
+
+    modal.style.setProperty('margin','0','important');
+    modal.style.setProperty('align-self','center','important');
+    modal.style.setProperty('justify-self','center','important');
+    modal.style.setProperty('width', mobile ? 'calc(100vw - 20px)' : 'min(480px,calc(100vw - 28px))', 'important');
+    modal.style.setProperty('max-height', mobile ? '82dvh' : 'min(78dvh,680px)', 'important');
+    modal.style.setProperty('border-radius', mobile ? '18px' : '20px', 'important');
+    modal.style.setProperty('overflow','hidden','important');
+
+    header.style.setProperty('display','flex','important');
+    header.style.setProperty('flex-direction','row','important');
+    header.style.setProperty('align-items','flex-start','important');
+    header.style.setProperty('justify-content','space-between','important');
+    header.style.setProperty('gap','12px','important');
+    header.style.setProperty('padding', mobile ? '13px 14px 11px' : '15px 16px 13px', 'important');
+    header.style.setProperty('min-height', mobile ? '64px' : '68px', 'important');
+
+    if(headerInfo){
+      headerInfo.style.setProperty('flex','1 1 auto','important');
+      headerInfo.style.setProperty('min-width','0','important');
+      headerInfo.style.setProperty('order','1','important');
+    }
+
+    closeBtn.style.setProperty('position','static','important');
+    closeBtn.style.setProperty('inset','auto','important');
+    closeBtn.style.setProperty('margin','0 0 0 auto','important');
+    closeBtn.style.setProperty('display','grid','important');
+    closeBtn.style.setProperty('place-items','center','important');
+    closeBtn.style.setProperty('align-self','flex-start','important');
+    closeBtn.style.setProperty('flex', mobile ? '0 0 34px' : '0 0 36px', 'important');
+    closeBtn.style.setProperty('width', mobile ? '34px' : '36px', 'important');
+    closeBtn.style.setProperty('height', mobile ? '34px' : '36px', 'important');
+    closeBtn.style.setProperty('min-width', mobile ? '34px' : '36px', 'important');
+    closeBtn.style.setProperty('min-height', mobile ? '34px' : '36px', 'important');
+    closeBtn.style.setProperty('order','2','important');
+
+    if(bodyBox){
+      bodyBox.style.setProperty('max-height', mobile ? 'calc(82dvh - 68px)' : 'calc(78dvh - 76px)', 'important');
+    }
+  }
+
+  const open=()=>{if(!backdrop)return;backdrop.classList.add('open');backdrop.setAttribute('aria-hidden','false');applyMyOrdersLayoutFix();requestAnimationFrame(applyMyOrdersLayoutFix);setTimeout(applyMyOrdersLayoutFix,40);document.body.style.overflow='hidden';setTimeout(()=>phone?.focus(),80)};
+  const closeConfirm=()=>{if(confirmBox){confirmBox.hidden=true;confirmBox.setAttribute('aria-hidden','true')}selected=null};
+  const close=()=>{if(!backdrop)return;backdrop.classList.remove('open');backdrop.setAttribute('aria-hidden','true');backdrop.style.setProperty('display','none','important');closeConfirm();if(!document.querySelector('.enc-modal-backdrop.open,.enc-drawer-backdrop.open,.enc-checkout-backdrop.open,.enc-signal-backdrop-v778.open,.enc-info-backdrop-v776.open'))document.body.style.overflow=''};
+  document.querySelectorAll('[data-enc-open-my-orders-v913]').forEach(b=>b.addEventListener('click',open));
+  document.getElementById('encMyOrdersCloseV913')?.addEventListener('click',close);
+  backdrop?.addEventListener('click',e=>{if(e.target===backdrop)close()});
+  document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(confirmBox&&!confirmBox.hidden){closeConfirm();return}if(backdrop?.classList.contains('open'))close()});
+  window.addEventListener('resize',()=>{if(backdrop?.classList.contains('open'))applyMyOrdersLayoutFix()});
+
+  function render(rows){
+    if(!list)return;
+    if(!rows.length){list.innerHTML='';setMsg('Nenhuma encomenda encontrada para este telefone.');return}
+    setMsg(rows.length===1?'1 encomenda encontrada.':`${rows.length} encomendas encontradas.`,'success');
+    list.innerHTML=rows.map(o=>{
+      const signal=o.sinal_pago?`<div class="enc-myorder-signal-v913"><i class="fa-solid fa-circle-check"></i> Sinal recebido: ${money(o.sinal_pago_valor)}${Number(o.saldo||0)>0?` · Saldo: ${money(o.saldo)}`:''}</div>`:'';
+      const action=o.pode_cancelar?`<div class="enc-myorder-actions-v913"><button type="button" class="enc-myorder-cancel-v913" data-enc-myorder-cancel="${Number(o.id)}">Cancelar encomenda</button></div>`:(o.cancelamento_bloqueado_motivo?`<div class="enc-myorder-blocked-v913">${esc(o.cancelamento_bloqueado_motivo)}</div>`:'');
+      return `<article class="enc-myorder-card-v913" data-id="${Number(o.id)}"><div class="enc-myorder-head-v913"><strong>#${esc(o.numero)}</strong><span class="enc-myorder-status-v913 ${esc(o.status_classe)}">${esc(o.status)}</span></div><div class="enc-myorder-meta-v913"><span><i class="fa-regular fa-calendar"></i> ${esc(o.data)}</span><span><i class="fa-regular fa-clock"></i> ${esc(o.horario)}</span><span><i class="fa-solid fa-${o.tipo==='Entrega'?'truck':'store'}"></i> ${esc(o.tipo)}</span></div><div class="enc-myorder-finance-v913"><div><span>Total</span><b>${money(o.total)}</b></div><div><span>Sinal</span><b>${o.sinal_pago?money(o.sinal_pago_valor):'—'}</b></div><div><span>Restante</span><b>${money(o.saldo)}</b></div></div>${signal}${action}</article>`;
+    }).join('');
+    list.querySelectorAll('[data-enc-myorder-cancel]').forEach(btn=>btn.addEventListener('click',()=>{
+      const id=Number(btn.dataset.encMyorderCancel||0);
+      const o=rows.find(x=>Number(x.id)===id); if(!o)return;
+      selected=o;
+      confirmTitle.textContent=`Cancelar encomenda #${o.numero}?`;
+      confirmText.textContent=o.sinal_pago
+        ? 'Ao confirmar, a encomenda será encerrada e o estabelecimento será avisado.'
+        : 'Ao confirmar, a encomenda será cancelada e o estabelecimento será avisado.';
+      if(signalBox)signalBox.hidden=!o.sinal_pago;
+      if(signalValue)signalValue.textContent=money(o.sinal_pago_valor||0);
+      if(noRefund)noRefund.hidden=!o.sinal_pago;
+      confirmBox.hidden=false;
+      confirmBox.setAttribute('aria-hidden','false');
+    }));
+  }
+
+  async function search(){
+    const value=(phone?.value||'').trim();
+    if(value.replace(/\D/g,'').length<8){setMsg('Informe o telefone usado na encomenda.','error');phone?.focus();return}
+    currentPhone=value;closeConfirm();setMsg('Buscando...');list.innerHTML='';searchBtn.disabled=true;
+    try{
+      const r=await fetch(`/menu/${encodeURIComponent(cfg.slug||'')}/minhas-encomendas/buscar`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({telefone:value})});
+      const data=await r.json().catch(()=>({}));
+      if(!r.ok||data.error)throw new Error(data.error||'Não foi possível buscar suas encomendas.');
+      render(Array.isArray(data.encomendas)?data.encomendas:[]);
+      window.__mfMyOrdersV913=Array.isArray(data.encomendas)?data.encomendas:[];
+    }catch(e){setMsg(e.message||'Não foi possível buscar suas encomendas.','error')}
+    finally{searchBtn.disabled=false}
+  }
+  searchBtn?.addEventListener('click',search);
+  phone?.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();search()}});
+  document.getElementById('encMyOrdersCancelBackV913')?.addEventListener('click',closeConfirm);
+  document.getElementById('encMyOrdersCancelCloseV914')?.addEventListener('click',closeConfirm);
+  confirmBox?.addEventListener('click',e=>{if(e.target===confirmBox)closeConfirm()});
+  document.getElementById('encMyOrdersCancelConfirmV913')?.addEventListener('click',async e=>{
+    if(!selected)return;
+    const btn=e.currentTarget;btn.disabled=true;btn.textContent='Cancelando...';
+    try{
+      const r=await fetch(`/menu/${encodeURIComponent(cfg.slug||'')}/minhas-encomendas/${Number(selected.id)}/cancelar`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({telefone:currentPhone,token:selected.public_token})});
+      const data=await r.json().catch(()=>({}));
+      if(!r.ok||data.error)throw new Error(data.error||'Não foi possível cancelar a encomenda.');
+      closeConfirm();setMsg(data.message||'Encomenda cancelada.','success');
+      await search();
+    }catch(err){setMsg(err.message||'Não foi possível cancelar a encomenda.','error')}
+    finally{btn.disabled=false;btn.textContent='Cancelar encomenda'}
+  });
+})();
+</script>
+{% if empresa.pagamentos_online_ativo and empresa.mercadopago_public_key %}<script src="https://www.mercadopago.com/v2/security.js" view="checkout"></script><script src="https://sdk.mercadopago.com/js/v2"></script>{% endif %}
+<div class="enc-toast" id="encToast"></div>
+<style id="mf-v861-preco-unico-sem-bloco">
+/* v861 — preço único: o valor aparece somente no Total do rodapé do modal. */
+.mf-encomendas-v761 #encModalFixedPrice.enc-modal-fixed-price-v811{
+  display:none!important;
+}
+</style>
+
+{% endblock %}
+<style id="mf-v967-acabamento-menu-encomendas">
+/* V967.1 — "Encomendar" sempre com texto branco, em qualquer cor de marca. */
+.mf-encomendas-v761 .enc-order-now{
+  color:#fff!important;
+}
+
+/* V967.2 — "Minhas encomendas" sempre centralizado, inclusive no mobile.
+   O CSS antigo transforma modais informativos em bottom-sheet abaixo de 430px;
+   este modal específico não deve seguir essa regra. */
+#encMyOrdersBackdropV913.enc-info-backdrop-v776{
+  align-items:center!important;
+  justify-content:center!important;
+  padding:16px!important;
+}
+
+#encMyOrdersBackdropV913 .enc-myorders-modal-v913{
+  width:min(480px,calc(100vw - 28px))!important;
+  max-height:min(78dvh,680px)!important;
+  margin:0!important;
+  border-radius:20px!important;
+  overflow:hidden!important;
+  box-shadow:0 22px 58px rgba(35,30,26,.18)!important;
+}
+
+#encMyOrdersBackdropV913 .enc-myorders-modal-v913>header{
+  width:100%!important;
+  min-height:68px!important;
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:flex-start!important;
+  justify-content:space-between!important;
+  gap:12px!important;
+  padding:15px 16px 13px!important;
+  box-sizing:border-box!important;
+}
+
+#encMyOrdersBackdropV913 .enc-myorders-modal-v913>header>div{
+  flex:1 1 auto!important;
+  min-width:0!important;
+}
+
+#encMyOrdersCloseV913{
+  position:static!important;
+  inset:auto!important;
+  margin:0 0 0 auto!important;
+  width:36px!important;
+  height:36px!important;
+  min-width:36px!important;
+  min-height:36px!important;
+  flex:0 0 36px!important;
+  display:grid!important;
+  place-items:center!important;
+  align-self:flex-start!important;
+}
+
+@media(max-width:430px){
+  #encMyOrdersBackdropV913.enc-info-backdrop-v776{
+    align-items:center!important;
+    justify-content:center!important;
+    padding:10px!important;
+  }
+
+  #encMyOrdersBackdropV913 .enc-myorders-modal-v913{
+    width:calc(100vw - 20px)!important;
+    max-height:82dvh!important;
+    border-radius:18px!important;
+  }
+
+  #encMyOrdersBackdropV913 .enc-myorders-body-v913{
+    max-height:calc(82dvh - 68px)!important;
+  }
+
+  #encMyOrdersBackdropV913 .enc-myorders-modal-v913>header{
+    min-height:64px!important;
+    padding:13px 14px 11px!important;
+  }
+
+  #encMyOrdersCloseV913{
+    width:34px!important;
+    height:34px!important;
+    min-width:34px!important;
+    min-height:34px!important;
+    flex-basis:34px!important;
+  }
+}
+
+/* Se a empresa tiver menos fotos únicas que os 5 espaços da vitrine,
+   nunca repetimos uma imagem só para preencher. */
+.mf-encomendas-v761 .enc-showcase-card-v764[hidden]{
+  display:none!important;
+}
+.mf-encomendas-v761 .enc-showcase-v764[data-enc-visible-count="4"] 
+.enc-showcase-card-v764[data-enc-showcase-slot="3"]{
+  grid-column:2 / span 2;
+}
+</style>
+
+{% block scripts %}<script src="/static/js/encomendas-v926.js?v=938"></script><script src="/static/js/encomendas-picker-v964.js?v=964"></script><script src="/static/js/encomendas-showcase-v967.js?v=967"></script><script src="/static/js/encomendas-v776.js?v=776"></script><script src="/static/js/encomendas-apresentacao-v813.js?v=813"></script>
+<style id="mf-v843-menu-encomendas-mobile-tidy">
+/* v843 — menu público de encomendas: mobile mais elegante e alinhado */
+.mf-encomendas-v761 .enc-product-grid{justify-content:center}
+
+@media (max-width: 640px){
+  .mf-encomendas-v761 .enc-public-content-v762{
+    padding-left:14px!important;
+    padding-right:14px!important;
+  }
+
+  /* Header visualmente alinhado com ações do topo */
+  .mf-encomendas-v761 .enc-public-header-v772{
+    padding:10px 14px!important;
+    gap:10px!important;
+  }
+  .mf-encomendas-v761 .enc-public-header-v772 .enc-public-brand{
+    max-width:46%!important;
+  }
+  .mf-encomendas-v761 .enc-header-actions-v772{
+    flex:1!important;
+    justify-content:flex-end!important;
+    align-items:center!important;
+    flex-wrap:nowrap!important;
+  }
+
+  /* Categorias com visual parecido ao desktop, centralizadas */
+  .mf-encomendas-v761 .enc-category-nav,
+  .mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813{
+    position:static!important;
+    left:auto!important;
+    width:auto!important;
+    max-width:100%!important;
+    margin:14px auto 18px!important;
+    margin-left:auto!important;
+    padding:0!important;
+    background:transparent!important;
+    border-radius:0!important;
+    justify-content:center!important;
+    align-items:center!important;
+    gap:8px!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    scrollbar-width:none!important;
+  }
+  .mf-encomendas-v761 .enc-category-nav::-webkit-scrollbar,
+  .mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813::-webkit-scrollbar{display:none!important}
+  .mf-encomendas-v761 .enc-category-chip,
+  .mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813 .enc-category-chip{
+    min-width:max-content!important;
+    padding:10px 16px!important;
+    border-radius:12px!important;
+    background:#fff!important;
+    color:#5a4c43!important;
+    border:1px solid rgba(72,54,40,.12)!important;
+    box-shadow:0 4px 14px rgba(22,18,15,.05)!important;
+  }
+  .mf-encomendas-v761 .enc-category-chip.active,
+  .mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813 .enc-category-chip.active{
+    background:var(--enc-brand,#1236B5)!important;
+    color:var(--enc-brand-on,#fff)!important;
+    border-color:var(--enc-brand,#1236B5)!important;
+  }
+
+  /* Grade de produtos centralizada e mais equilibrada */
+  .mf-encomendas-v761 .enc-product-grid{
+    grid-template-columns:repeat(2,minmax(0,148px))!important;
+    justify-content:center!important;
+    gap:10px!important;
+  }
+  .mf-encomendas-v761 .enc-product-card{
+    border-radius:18px!important;
+    overflow:hidden!important;
+  }
+  .mf-encomendas-v761 .enc-product-photo{height:122px!important}
+  .mf-encomendas-v761 .enc-product-body{padding:10px!important}
+  .mf-encomendas-v761 .enc-product-body h3{
+    font-size:14px!important;
+    line-height:1.15!important;
+    min-height:32px!important;
+  }
+  .mf-encomendas-v761 .enc-product-body p{
+    height:24px!important;
+    margin:4px 0 8px!important;
+    font-size:8px!important;
+  }
+  .mf-encomendas-v761 .enc-product-footer{
+    align-items:flex-end!important;
+    gap:8px!important;
+  }
+  .mf-encomendas-v761 .enc-product-price small{font-size:7px!important}
+  .mf-encomendas-v761 .enc-product-price strong{font-size:11px!important}
+  .mf-encomendas-v761 .enc-order-now{
+    height:31px!important;
+    padding:0 12px!important;
+    font-size:8.2px!important;
+  }
+
+  /* Modal do produto mais compacto e com o X à direita */
+  .mf-encomendas-v761 .enc-product-modal{
+    width:min(94vw,380px)!important;
+    max-height:min(88dvh,720px)!important;
+    display:block!important;
+    top:auto!important;
+    bottom:10px!important;
+    left:50%!important;
+    right:auto!important;
+    transform:translate(-50%,110%)!important;
+    border-radius:24px!important;
+    overflow:hidden!important;
+    box-shadow:0 24px 70px rgba(20,15,12,.22)!important;
+  }
+  .mf-encomendas-v761 .enc-modal-backdrop.open .enc-product-modal{
+    transform:translate(-50%,0)!important;
+  }
+  .mf-encomendas-v761 .enc-modal-photo{
+    height:132px!important;
+    min-height:132px!important;
+  }
+  .mf-encomendas-v761 .enc-modal-content{
+    padding:16px 14px 0!important;
+    max-height:calc(min(88dvh,720px) - 132px)!important;
+  }
+  .mf-encomendas-v761 .enc-modal-close{
+    right:12px!important;
+    left:auto!important;
+    top:12px!important;
+    width:30px!important;
+    height:30px!important;
+  }
+  .mf-encomendas-v761 .enc-modal-content h2{
+    margin:0 34px 4px 0!important;
+    font-size:19px!important;
+  }
+  .mf-encomendas-v761 .enc-modal-content > p{
+    margin:0 0 10px!important;
+    font-size:8.8px!important;
+    line-height:1.4!important;
+  }
+  .mf-encomendas-v761 .enc-choice-group{
+    padding:9px 0!important;
+  }
+  .mf-encomendas-v761 .enc-choice-head{margin-bottom:6px!important}
+  .mf-encomendas-v761 .enc-choice-head strong{font-size:9.2px!important}
+  .mf-encomendas-v761 .enc-choice-head span{font-size:7.3px!important}
+  .mf-encomendas-v761 .enc-radio{
+    min-height:38px!important;
+    padding:7px 10px!important;
+    border-radius:10px!important;
+    font-size:9px!important;
+  }
+  .mf-encomendas-v761 .enc-public-control{
+    height:38px!important;
+    border-radius:10px!important;
+    font-size:9px!important;
+  }
+  .mf-encomendas-v761 .enc-modal-total{
+    bottom:0!important;
+    margin:10px -14px 0!important;
+    padding:10px 14px calc(11px + env(safe-area-inset-bottom,0px))!important;
+    gap:10px!important;
+  }
+  .mf-encomendas-v761 .enc-modal-total small{font-size:7.3px!important}
+  .mf-encomendas-v761 .enc-modal-total strong{font-size:15px!important}
+  .mf-encomendas-v761 .enc-add-cart{
+    min-height:34px!important;
+    padding:0 12px!important;
+    font-size:8.7px!important;
+  }
+}
+
+@media (max-width: 390px){
+  .mf-encomendas-v761 .enc-product-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+  .mf-encomendas-v761 .enc-public-header-v772 .enc-public-brand{
+    max-width:43%!important;
+  }
+}
+</style>
+<style id="mf-v850-menu-mobile-categorias-header-right">
+/* v850 — mobile: categorias em chips compactos e redes sociais leves no canto direito. */
+@media (max-width: 640px){
+  .mf-encomendas-v761 .enc-public-header-v772{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    align-items:start!important;
+    column-gap:10px!important;
+    row-gap:8px!important;
+    padding:10px 14px!important;
+  }
+  .mf-encomendas-v761 .enc-public-header-v772 .enc-public-brand{
+    grid-column:1!important;
+    width:100%!important;
+    max-width:none!important;
+    min-width:0!important;
+    align-self:start!important;
+    gap:10px!important;
+  }
+  .mf-encomendas-v761 .enc-public-logo{
+    width:42px!important;
+    height:42px!important;
+    flex-basis:42px!important;
+  }
+  .mf-encomendas-v761 .enc-public-brand>div:last-child{
+    min-width:0!important;
+  }
+  .mf-encomendas-v761 .enc-public-brand>div:last-child strong{
+    display:block!important;
+    font-size:13.8px!important;
+    line-height:1.1!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+  .mf-encomendas-v761 .enc-public-brand>div:last-child span{
+    margin-top:4px!important;
+    max-width:none!important;
+    font-size:8.1px!important;
+    line-height:1.22!important;
+    letter-spacing:.08em!important;
+    display:-webkit-box!important;
+    -webkit-line-clamp:2!important;
+    -webkit-box-orient:vertical!important;
+    white-space:normal!important;
+    overflow:hidden!important;
+  }
+
+  .mf-encomendas-v761 .enc-header-actions-v772{
+    grid-column:2!important;
+    width:auto!important;
+    margin-left:0!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-end!important;
+    gap:5px!important;
+    max-width:none!important;
+    flex-wrap:nowrap!important;
+    white-space:nowrap!important;
+  }
+  .mf-encomendas-v761 .enc-social-icon-v773,
+  .mf-encomendas-v761 .enc-hours-v772 .enc-social-icon-v773,
+  .mf-encomendas-v761 .enc-header-link-v772{
+    width:30px!important;
+    height:30px!important;
+    min-width:30px!important;
+    min-height:30px!important;
+    border-radius:10px!important;
+    box-shadow:0 1px 6px rgba(17,24,39,.05)!important;
+  }
+  .mf-encomendas-v761 .enc-social-icon-v773 i,
+  .mf-encomendas-v761 .enc-hours-v772 .enc-social-icon-v773 i{font-size:13px!important}
+  .mf-encomendas-v761 .enc-cart-btn{
+    width:40px!important;
+    min-width:40px!important;
+    height:30px!important;
+    min-height:30px!important;
+    padding:0 7px!important;
+    margin-left:auto!important;
+    border-radius:12px!important;
+    box-shadow:0 1px 6px rgba(17,24,39,.06)!important;
+  }
+  .mf-encomendas-v761 .enc-cart-btn > span:not(.enc-cart-count){display:none!important}
+  .mf-encomendas-v761 .enc-cart-btn i{font-size:14px!important}
+  .mf-encomendas-v761 .enc-cart-count{
+    right:5px!important;
+    top:4px!important;
+    min-width:17px!important;
+    height:17px!important;
+    padding:0 4px!important;
+    font-size:9px!important;
+  }
+  .mf-encomendas-v761 .enc-hours-popover-v772{
+    top:68px!important;
+    right:14px!important;
+    width:min(280px,calc(100vw - 28px))!important;
+  }
+
+  .mf-encomendas-v761 .enc-category-nav,
+  .mf-encomendas-v761 .enc-category-nav-v762,
+  .mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813{
+    position:static!important;
+    left:auto!important;
+    width:auto!important;
+    max-width:100%!important;
+    margin:9px 0 12px!important;
+    margin-left:0!important;
+    padding:0 2px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    flex-wrap:nowrap!important;
+    gap:6px!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    background:transparent!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+    scrollbar-width:none!important;
+  }
+  .mf-encomendas-v761 .enc-category-nav::-webkit-scrollbar,
+  .mf-encomendas-v761 .enc-category-nav-v762::-webkit-scrollbar,
+  .mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813::-webkit-scrollbar{display:none!important}
+  .mf-encomendas-v761 .enc-category-chip,
+  .mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813 .enc-category-chip{
+    flex:0 0 auto!important;
+    min-width:max-content!important;
+    min-height:34px!important;
+    padding:0 12px!important;
+    border-radius:999px!important;
+    border:1px solid rgba(72,54,40,.12)!important;
+    background:#fff!important;
+    color:#5b4c43!important;
+    font-size:11.5px!important;
+    font-weight:850!important;
+    line-height:1!important;
+    white-space:nowrap!important;
+    box-shadow:0 2px 10px rgba(20,19,18,.04)!important;
+  }
+  .mf-encomendas-v761 .enc-category-chip.active,
+  .mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813 .enc-category-chip.active{
+    background:var(--enc-brand,#1236B5)!important;
+    border-color:var(--enc-brand,#1236B5)!important;
+    color:var(--enc-brand-on,#fff)!important;
+    box-shadow:0 6px 16px rgba(var(--enc-brand-rgb,18,54,181),.18)!important;
+  }
+}
+
+@media (max-width: 430px){
+  .mf-encomendas-v761 .enc-public-header-v772{
+    grid-template-columns:minmax(0,1fr) auto!important;
+    column-gap:8px!important;
+    row-gap:7px!important;
+  }
+  .mf-encomendas-v761 .enc-public-brand>div:last-child strong{font-size:13px!important}
+  .mf-encomendas-v761 .enc-public-brand>div:last-child span{font-size:7.7px!important}
+  .mf-encomendas-v761 .enc-header-actions-v772{max-width:none!important;gap:4px!important;flex-wrap:nowrap!important}
+  .mf-encomendas-v761 .enc-social-icon-v773,
+  .mf-encomendas-v761 .enc-hours-v772 .enc-social-icon-v773,
+  .mf-encomendas-v761 .enc-header-link-v772{
+    width:29px!important;height:29px!important;min-width:29px!important;min-height:29px!important;border-radius:9px!important;
+  }
+  .mf-encomendas-v761 .enc-social-icon-v773 i,
+  .mf-encomendas-v761 .enc-hours-v772 .enc-social-icon-v773 i{font-size:12px!important}
+  .mf-encomendas-v761 .enc-cart-btn{width:38px!important;min-width:38px!important;height:29px!important;min-height:29px!important}
+  .mf-encomendas-v761 .enc-category-chip,
+  .mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813 .enc-category-chip{
+    min-height:32px!important;
+    padding:0 11px!important;
+    font-size:11px!important;
+  }
+}
+</style>
+
+<style id="mf-v851-menu-category-band-modal-center">
+/* v851 — faixa de categorias mais fina no desktop/mobile + modal centralizado no mobile. */
+.mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813{
+  margin-bottom:14px!important;
+  padding-top:8px!important;
+  padding-bottom:8px!important;
+}
+.mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813 .enc-category-chip{
+  height:32px!important;
+  min-height:32px!important;
+  padding-left:12px!important;
+  padding-right:12px!important;
+}
+
+@media (max-width:640px){
+  /* Recupera a faixa no celular, mas baixa e leve. */
+  .mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813{
+    position:relative!important;
+    left:auto!important;
+    width:auto!important;
+    max-width:none!important;
+    margin:8px -14px 12px!important;
+    padding:6px 14px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    flex-wrap:nowrap!important;
+    gap:6px!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    background:var(--enc-category-band,var(--enc-brand))!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+    scrollbar-width:none!important;
+  }
+  .mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813::-webkit-scrollbar{display:none!important}
+  .mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813 .enc-category-chip{
+    flex:0 0 auto!important;
+    height:30px!important;
+    min-height:30px!important;
+    padding:0 11px!important;
+    border-radius:999px!important;
+    border-color:rgba(255,255,255,.52)!important;
+    background:rgba(255,255,255,.72)!important;
+    color:#4f423a!important;
+    font-size:10.5px!important;
+    font-weight:850!important;
+    box-shadow:none!important;
+    backdrop-filter:blur(5px)!important;
+  }
+  .mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813 .enc-category-chip.active{
+    background:rgba(69,48,36,.72)!important;
+    border-color:rgba(255,255,255,.88)!important;
+    color:#fff!important;
+    box-shadow:0 3px 10px rgba(0,0,0,.10)!important;
+  }
+
+  /* Produto abre no centro real da viewport, não preso ao rodapé. */
+  .mf-encomendas-v761 .enc-product-modal{
+    top:50%!important;
+    bottom:auto!important;
+    left:50%!important;
+    right:auto!important;
+    width:min(94vw,380px)!important;
+    max-height:min(88dvh,720px)!important;
+    transform:translate(-50%,-46%) scale(.985)!important;
+    transform-origin:center!important;
+    border-radius:22px!important;
+  }
+  .mf-encomendas-v761 .enc-modal-backdrop.open .enc-product-modal{
+    transform:translate(-50%,-50%) scale(1)!important;
+  }
+}
+
+@media (max-width:430px){
+  .mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813{
+    margin-left:-14px!important;
+    margin-right:-14px!important;
+    padding-left:12px!important;
+    padding-right:12px!important;
+  }
+  .mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813 .enc-category-chip{
+    height:29px!important;
+    min-height:29px!important;
+    padding:0 10px!important;
+    font-size:10px!important;
+  }
+  .mf-encomendas-v761 .enc-product-modal{
+    width:min(94vw,370px)!important;
+    max-height:86dvh!important;
+  }
+}
+</style>
+
+
+<style id="mf-v852-menu-mobile-modal-cards-refinado">
+/* v852 — mobile: modal mais legível + cards compactos sem aperto. */
+@media (max-width:640px){
+  /* Cards: usa toda a largura disponível em 2 colunas e reduz altura. */
+  .mf-encomendas-v761 .enc-product-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    justify-content:stretch!important;
+    gap:8px!important;
+    width:100%!important;
+  }
+  .mf-encomendas-v761 .enc-product-card{
+    min-width:0!important;
+    border-radius:16px!important;
+  }
+  .mf-encomendas-v761 .enc-product-photo{
+    height:104px!important;
+    min-height:104px!important;
+  }
+  .mf-encomendas-v761 .enc-product-tag{
+    top:8px!important;
+    left:8px!important;
+    padding:5px 7px!important;
+    font-size:7px!important;
+  }
+  .mf-encomendas-v761 .enc-available-today-v813{
+    right:7px!important;
+    bottom:7px!important;
+    gap:4px!important;
+    padding:5px 7px!important;
+    font-size:7px!important;
+    white-space:nowrap!important;
+  }
+  .mf-encomendas-v761 .enc-product-body{
+    padding:9px!important;
+  }
+  .mf-encomendas-v761 .enc-product-body h3{
+    min-height:0!important;
+    margin:0 0 5px!important;
+    font-size:14px!important;
+    line-height:1.16!important;
+    display:-webkit-box!important;
+    -webkit-line-clamp:2!important;
+    -webkit-box-orient:vertical!important;
+    overflow:hidden!important;
+  }
+  .mf-encomendas-v761 .enc-product-body p{
+    height:26px!important;
+    margin:0 0 8px!important;
+    font-size:8.2px!important;
+    line-height:1.45!important;
+    display:-webkit-box!important;
+    -webkit-line-clamp:2!important;
+    -webkit-box-orient:vertical!important;
+    overflow:hidden!important;
+  }
+  .mf-encomendas-v761 .enc-product-footer{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    align-items:end!important;
+    gap:6px!important;
+  }
+  .mf-encomendas-v761 .enc-product-price{
+    min-width:0!important;
+  }
+  .mf-encomendas-v761 .enc-product-price small{
+    margin-bottom:2px!important;
+    font-size:6.8px!important;
+    line-height:1!important;
+  }
+  .mf-encomendas-v761 .enc-product-price strong{
+    margin-top:0!important;
+    font-size:11.5px!important;
+    line-height:1.05!important;
+    white-space:nowrap!important;
+  }
+  .mf-encomendas-v761 .enc-order-now{
+    width:auto!important;
+    min-width:70px!important;
+    height:30px!important;
+    padding:0 9px!important;
+    border-radius:10px!important;
+    font-size:7.8px!important;
+    white-space:nowrap!important;
+  }
+
+  /* Modal: X no canto superior direito do modal e conteúdo com respiro. */
+  .mf-encomendas-v761 .enc-product-modal{
+    width:min(94vw,378px)!important;
+    max-height:88dvh!important;
+    border-radius:22px!important;
+  }
+  .mf-encomendas-v761 .enc-modal-photo{
+    height:148px!important;
+    min-height:148px!important;
+  }
+  .mf-encomendas-v761 .enc-modal-content{
+    position:static!important;
+    padding:17px 16px 0!important;
+    max-height:calc(88dvh - 148px)!important;
+    overflow-y:auto!important;
+  }
+  .mf-encomendas-v761 .enc-modal-close{
+    position:absolute!important;
+    top:10px!important;
+    right:10px!important;
+    left:auto!important;
+    z-index:6!important;
+    width:34px!important;
+    height:34px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    border-radius:50%!important;
+    background:rgba(255,255,255,.94)!important;
+    border:1px solid rgba(75,60,50,.14)!important;
+    box-shadow:0 4px 14px rgba(0,0,0,.10)!important;
+    font-size:13px!important;
+  }
+  .mf-encomendas-v761 .enc-modal-content h2{
+    margin:0 0 5px!important;
+    font-size:20px!important;
+    line-height:1.18!important;
+  }
+  .mf-encomendas-v761 .enc-modal-content > p{
+    margin:0 0 14px!important;
+    font-size:9.3px!important;
+    line-height:1.5!important;
+  }
+  .mf-encomendas-v761 .enc-choice-group{
+    padding:11px 0!important;
+  }
+  .mf-encomendas-v761 .enc-choice-head{
+    margin-bottom:8px!important;
+    gap:10px!important;
+  }
+  .mf-encomendas-v761 .enc-choice-head strong{
+    font-size:9.8px!important;
+    line-height:1.2!important;
+  }
+  .mf-encomendas-v761 .enc-choice-head span{
+    font-size:7.6px!important;
+    line-height:1.2!important;
+    white-space:nowrap!important;
+  }
+  .mf-encomendas-v761 .enc-radio-list{
+    gap:8px!important;
+  }
+  .mf-encomendas-v761 .enc-radio{
+    min-height:44px!important;
+    padding:8px 10px!important;
+    gap:8px!important;
+    border-radius:12px!important;
+    font-size:9.3px!important;
+    line-height:1.25!important;
+  }
+  .mf-encomendas-v761 .enc-radio > span{
+    display:flex!important;
+    align-items:center!important;
+    gap:7px!important;
+    min-width:0!important;
+    flex:1 1 auto!important;
+    padding-right:5px!important;
+  }
+  .mf-encomendas-v761 .enc-radio > span input{
+    width:16px!important;
+    height:16px!important;
+    margin:0!important;
+    flex:0 0 16px!important;
+  }
+  .mf-encomendas-v761 .enc-radio > strong{
+    flex:0 0 auto!important;
+    font-size:9.5px!important;
+    white-space:nowrap!important;
+  }
+  .mf-encomendas-v761 .enc-public-control{
+    height:40px!important;
+    padding:0 10px!important;
+    border-radius:11px!important;
+    font-size:9px!important;
+  }
+  .mf-encomendas-v761 .enc-date-grid{
+    gap:8px!important;
+  }
+  .mf-encomendas-v761 .enc-modal-total{
+    margin:11px -16px 0!important;
+    padding:10px 16px calc(11px + env(safe-area-inset-bottom,0px))!important;
+    gap:10px!important;
+  }
+  .mf-encomendas-v761 .enc-modal-total strong{
+    font-size:15px!important;
+    white-space:nowrap!important;
+  }
+  .mf-encomendas-v761 .enc-add-cart{
+    min-height:36px!important;
+    padding:0 13px!important;
+    font-size:8.4px!important;
+    white-space:nowrap!important;
+  }
+}
+
+@media (max-width:370px){
+  .mf-encomendas-v761 .enc-product-grid{gap:7px!important}
+  .mf-encomendas-v761 .enc-product-photo{height:96px!important;min-height:96px!important}
+  .mf-encomendas-v761 .enc-product-body{padding:8px!important}
+  .mf-encomendas-v761 .enc-product-body h3{font-size:13px!important}
+  .mf-encomendas-v761 .enc-order-now{min-width:64px!important;padding:0 7px!important;font-size:7.3px!important}
+  .mf-encomendas-v761 .enc-product-price strong{font-size:10.8px!important}
+  .mf-encomendas-v761 .enc-product-modal{width:95vw!important}
+}
+</style>
+
+<style id="mf-v853-mobile-order-button-compact">
+/* v853 — CTA Encomendar proporcional aos cards de duas colunas no celular. */
+@media (max-width:640px){
+  .mf-encomendas-v761 .enc-product-footer{
+    grid-template-columns:minmax(0,1fr) 60px!important;
+    gap:5px!important;
+  }
+  .mf-encomendas-v761 .enc-order-now{
+    width:60px!important;
+    min-width:60px!important;
+    max-width:60px!important;
+    height:27px!important;
+    min-height:27px!important;
+    padding:0 5px!important;
+    border-radius:8px!important;
+    font-size:6.7px!important;
+    line-height:1!important;
+    font-weight:850!important;
+    letter-spacing:-.01em!important;
+    white-space:nowrap!important;
+    box-shadow:none!important;
+  }
+}
+@media (max-width:370px){
+  .mf-encomendas-v761 .enc-product-footer{grid-template-columns:minmax(0,1fr) 56px!important}
+  .mf-encomendas-v761 .enc-order-now{
+    width:56px!important;
+    min-width:56px!important;
+    max-width:56px!important;
+    height:26px!important;
+    min-height:26px!important;
+    padding:0 4px!important;
+    font-size:6.3px!important;
+  }
+}
+</style>
+
+
+<style id="mf-v854-modal-options-clean-mobile">
+/* v854 — mobile: marcador único e opções com espaço real para texto/preço. */
+@media (max-width:640px){
+  .mf-encomendas-v761 #encModalOptions .enc-radio,
+  .mf-encomendas-v761 #encModalFillings .enc-radio{
+    position:relative!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    align-items:center!important;
+    column-gap:10px!important;
+    min-height:48px!important;
+    padding:9px 12px 9px 44px!important;
+    overflow:hidden!important;
+  }
+
+  /* O input nativo não participa mais do desenho. O marcador é somente o ::before. */
+  .mf-encomendas-v761 #encModalOptions .enc-radio input[type="radio"],
+  .mf-encomendas-v761 #encModalFillings .enc-radio input[type="radio"]{
+    position:absolute!important;
+    width:1px!important;
+    height:1px!important;
+    min-width:1px!important;
+    max-width:1px!important;
+    min-height:1px!important;
+    max-height:1px!important;
+    margin:0!important;
+    padding:0!important;
+    opacity:0!important;
+    appearance:none!important;
+    -webkit-appearance:none!important;
+    pointer-events:none!important;
+    clip:rect(0 0 0 0)!important;
+    clip-path:inset(50%)!important;
+  }
+
+  .mf-encomendas-v761 #encModalOptions .enc-radio::before,
+  .mf-encomendas-v761 #encModalFillings .enc-radio::before{
+    left:13px!important;
+    top:50%!important;
+    width:20px!important;
+    height:20px!important;
+    transform:translateY(-50%)!important;
+    border-radius:7px!important;
+    box-sizing:border-box!important;
+    z-index:2!important;
+  }
+
+  .mf-encomendas-v761 #encModalOptions .enc-radio > span,
+  .mf-encomendas-v761 #encModalFillings .enc-radio > span{
+    display:block!important;
+    min-width:0!important;
+    padding:0!important;
+    margin:0!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    white-space:nowrap!important;
+    font-size:10px!important;
+    line-height:1.25!important;
+    font-weight:800!important;
+  }
+
+  .mf-encomendas-v761 #encModalOptions .enc-radio > strong{
+    justify-self:end!important;
+    min-width:max-content!important;
+    margin:0!important;
+    font-size:10px!important;
+    line-height:1!important;
+    font-weight:900!important;
+    white-space:nowrap!important;
+  }
+
+  .mf-encomendas-v761 #encModalFillings .enc-radio{
+    padding-left:42px!important;
+  }
+  .mf-encomendas-v761 #encModalFillings .enc-radio::before{
+    left:12px!important;
+    width:19px!important;
+    height:19px!important;
+  }
+  .mf-encomendas-v761 #encModalFillings .enc-radio > span{
+    white-space:normal!important;
+  }
+}
+
+@media (max-width:370px){
+  .mf-encomendas-v761 #encModalOptions .enc-radio{
+    padding-left:41px!important;
+    padding-right:9px!important;
+    column-gap:7px!important;
+  }
+  .mf-encomendas-v761 #encModalOptions .enc-radio::before{
+    left:11px!important;
+    width:19px!important;
+    height:19px!important;
+  }
+  .mf-encomendas-v761 #encModalOptions .enc-radio > span,
+  .mf-encomendas-v761 #encModalOptions .enc-radio > strong{
+    font-size:9.4px!important;
+  }
+}
+</style>
+
+<style id="mf-v939-sabores-mobile-alinhamento">
+/* v939 — corrige o texto de Sabores que ficava por baixo do seletor no celular. */
+@media (max-width:640px){
+  .mf-encomendas-v761 #encModalFlavors .enc-radio{
+    position:relative!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    align-items:center!important;
+    min-height:48px!important;
+    padding:9px 12px 9px 42px!important;
+    overflow:hidden!important;
+  }
+
+  /* Mantém um único marcador visual à esquerda e reserva espaço real para o texto. */
+  .mf-encomendas-v761 #encModalFlavors .enc-radio input[type="radio"],
+  .mf-encomendas-v761 #encModalFlavors .enc-radio input[type="checkbox"]{
+    position:absolute!important;
+    width:1px!important;
+    height:1px!important;
+    min-width:1px!important;
+    max-width:1px!important;
+    min-height:1px!important;
+    max-height:1px!important;
+    margin:0!important;
+    padding:0!important;
+    opacity:0!important;
+    appearance:none!important;
+    -webkit-appearance:none!important;
+    pointer-events:none!important;
+    clip:rect(0 0 0 0)!important;
+    clip-path:inset(50%)!important;
+  }
+
+  .mf-encomendas-v761 #encModalFlavors .enc-radio::before{
+    position:absolute!important;
+    left:12px!important;
+    top:50%!important;
+    width:19px!important;
+    height:19px!important;
+    transform:translateY(-50%)!important;
+    border-radius:7px!important;
+    box-sizing:border-box!important;
+    z-index:2!important;
+  }
+
+  .mf-encomendas-v761 #encModalFlavors .enc-radio > span{
+    display:block!important;
+    min-width:0!important;
+    padding:0!important;
+    margin:0!important;
+    overflow:visible!important;
+    white-space:normal!important;
+    font-size:10px!important;
+    line-height:1.25!important;
+    font-weight:800!important;
+  }
+
+  .mf-encomendas-v761 #encModalFlavors .enc-radio > span b{
+    display:block!important;
+    min-width:0!important;
+    margin:0!important;
+    padding:0!important;
+    line-height:1.25!important;
+  }
+}
+</style>
+
+
+<style id="mf-v859-cart-badge-final-mobile">
+/* v859 — carrinho mobile: círculo branco + sacola escura + badge sobreposto. */
+@media (max-width:640px){
+  .mf-encomendas-v761 #encCartButton.enc-cart-btn{
+    position:relative!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    flex:0 0 38px!important;
+    width:38px!important;
+    min-width:38px!important;
+    max-width:38px!important;
+    height:38px!important;
+    min-height:38px!important;
+    max-height:38px!important;
+    margin:0 0 0 auto!important;
+    padding:0!important;
+    overflow:visible!important;
+    border:1px solid rgba(15,23,42,.10)!important;
+    border-radius:999px!important;
+    background:#fff!important;
+    color:#111827!important;
+    box-shadow:0 2px 8px rgba(15,23,42,.10)!important;
+  }
+  .mf-encomendas-v761 #encCartButton.enc-cart-btn > i{
+    display:block!important;
+    position:static!important;
+    margin:0!important;
+    padding:0!important;
+    color:#111827!important;
+    font-size:17px!important;
+    line-height:1!important;
+    transform:none!important;
+  }
+  .mf-encomendas-v761 #encCartButton.enc-cart-btn > span:not(#encCartCount){
+    display:none!important;
+  }
+  .mf-encomendas-v761 #encCartCount.enc-cart-count{
+    position:absolute!important;
+    top:-5px!important;
+    right:-5px!important;
+    left:auto!important;
+    bottom:auto!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    width:16px!important;
+    min-width:16px!important;
+    max-width:16px!important;
+    height:16px!important;
+    min-height:16px!important;
+    max-height:16px!important;
+    margin:0!important;
+    padding:0!important;
+    border:2px solid #fff!important;
+    border-radius:999px!important;
+    background:#2563eb!important;
+    color:#fff!important;
+    font-size:8px!important;
+    font-weight:900!important;
+    line-height:12px!important;
+    text-align:center!important;
+    box-sizing:border-box!important;
+    box-shadow:0 1px 4px rgba(37,99,235,.30)!important;
+    z-index:20!important;
+  }
+}
+@media (max-width:430px){
+  .mf-encomendas-v761 #encCartButton.enc-cart-btn{
+    flex-basis:36px!important;
+    width:36px!important;
+    min-width:36px!important;
+    max-width:36px!important;
+    height:36px!important;
+    min-height:36px!important;
+    max-height:36px!important;
+  }
+  .mf-encomendas-v761 #encCartButton.enc-cart-btn > i{font-size:16px!important}
+  .mf-encomendas-v761 #encCartCount.enc-cart-count{
+    top:-4px!important;
+    right:-4px!important;
+    width:15px!important;
+    min-width:15px!important;
+    max-width:15px!important;
+    height:15px!important;
+    min-height:15px!important;
+    max-height:15px!important;
+    font-size:7.5px!important;
+  }
+}
+</style>
+
+
+<style id="mf-v860-cart-header-pattern-mobile">
+/* v860 — carrinho segue exatamente o padrão visual dos botões do cabeçalho; badge usa a cor da marca. */
+@media (max-width:640px){
+  .mf-encomendas-v761 #encCartButton.enc-cart-btn{
+    position:relative!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    flex:0 0 30px!important;
+    width:30px!important;
+    min-width:30px!important;
+    max-width:30px!important;
+    height:30px!important;
+    min-height:30px!important;
+    max-height:30px!important;
+    margin-left:auto!important;
+    padding:0!important;
+    overflow:visible!important;
+    border:1px solid #dbe4ef!important;
+    border-radius:10px!important;
+    background:#fff!important;
+    color:#27313f!important;
+    box-shadow:0 1px 6px rgba(17,24,39,.05)!important;
+  }
+  .mf-encomendas-v761 #encCartButton.enc-cart-btn > i{
+    position:static!important;
+    display:block!important;
+    margin:0!important;
+    padding:0!important;
+    color:#27313f!important;
+    font-size:13px!important;
+    line-height:1!important;
+    transform:none!important;
+  }
+  .mf-encomendas-v761 #encCartButton.enc-cart-btn > span:not(#encCartCount){display:none!important}
+  .mf-encomendas-v761 #encCartCount.enc-cart-count{
+    position:absolute!important;
+    top:-6px!important;
+    right:-6px!important;
+    left:auto!important;
+    bottom:auto!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    width:15px!important;
+    min-width:15px!important;
+    max-width:15px!important;
+    height:15px!important;
+    min-height:15px!important;
+    max-height:15px!important;
+    margin:0!important;
+    padding:0!important;
+    border:2px solid #fff!important;
+    border-radius:999px!important;
+    background:var(--enc-brand,#1236B5)!important;
+    color:var(--enc-brand-on,#fff)!important;
+    font-size:7.5px!important;
+    font-weight:900!important;
+    line-height:11px!important;
+    text-align:center!important;
+    box-sizing:border-box!important;
+    box-shadow:0 1px 4px rgba(var(--enc-brand-rgb,18,54,181),.28)!important;
+    z-index:30!important;
+  }
+}
+</style>
+
+
+
+
+
+
+
+
+<style id="mf-v884-info-shortcuts-flex">
+/* V884 — quatro atalhos em uma linha, ícone + texto completo no mobile. */
+.mf-encomendas-v761 .enc-info-nav-v883{
+  display:flex!important;
+  flex-wrap:nowrap!important;
+  align-items:stretch!important;
+  justify-content:space-between!important;
+  gap:8px!important;
+  width:100%!important;
+  margin:20px 0 16px!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+}
+.mf-encomendas-v761 .enc-info-nav-v883 > button,
+.mf-encomendas-v761 .enc-info-nav-v883 > button+button{
+  flex:1 1 0!important;
+  width:auto!important;
+  min-width:0!important;
+  max-width:none!important;
+  min-height:42px!important;
+  margin:0!important;
+  padding:6px 5px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:6px!important;
+  border:0!important;
+  border-radius:9px!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  color:var(--enc-brand,#1236B5)!important;
+  font:inherit!important;
+  font-size:11px!important;
+  font-weight:800!important;
+  line-height:1.05!important;
+  cursor:pointer!important;
+}
+.mf-encomendas-v761 .enc-info-nav-v883 > button i{
+  flex:0 0 auto!important;
+  color:var(--enc-brand,#1236B5)!important;
+  font-size:13px!important;
+}
+.mf-encomendas-v761 .enc-info-nav-v883 > button span{
+  min-width:0!important;
+  white-space:nowrap!important;
+}
+.mf-encomendas-v761 .enc-info-nav-v883 > button:hover,
+.mf-encomendas-v761 .enc-info-nav-v883 > button:focus-visible{
+  background:rgba(var(--enc-brand-rgb,18,54,181),.07)!important;
+  outline:none!important;
+}
+@media(max-width:640px){
+  .mf-encomendas-v761 .enc-info-nav-v883{
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:2px!important;
+    margin:13px 0 12px!important;
+    overflow:visible!important;
+  }
+  .mf-encomendas-v761 .enc-info-nav-v883 > button,
+  .mf-encomendas-v761 .enc-info-nav-v883 > button+button{
+    flex:1 1 25%!important;
+    width:25%!important;
+    min-width:0!important;
+    min-height:36px!important;
+    padding:4px 2px!important;
+    flex-direction:row!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:3px!important;
+    border:0!important;
+    background:transparent!important;
+    font-size:8.4px!important;
+    line-height:1!important;
+    white-space:nowrap!important;
+    overflow:visible!important;
+  }
+  .mf-encomendas-v761 .enc-info-nav-v883 > button i{
+    flex:0 0 auto!important;
+    font-size:10px!important;
+    line-height:1!important;
+  }
+  .mf-encomendas-v761 .enc-info-nav-v883 > button span{
+    display:inline!important;
+    width:auto!important;
+    max-width:none!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+    white-space:nowrap!important;
+    text-align:left!important;
+  }
+}
+</style>
+
+
+<style id="mf-v885-info-nav-force-one-row">
+/* V885 — vence o grid antigo de maior especificidade e força os 4 atalhos em UMA linha. */
+@media (max-width:640px){
+  .mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813.enc-info-nav-v883{
+    display:flex!important;
+    flex-direction:row!important;
+    flex-wrap:nowrap!important;
+    grid-template-columns:none!important;
+    grid-auto-flow:unset!important;
+    grid-auto-columns:unset!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    width:calc(100% - 16px)!important;
+    margin:12px auto 10px!important;
+    padding:0!important;
+    gap:1px!important;
+    overflow:visible!important;
+    border:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+  }
+  .mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813.enc-info-nav-v883 > button,
+  .mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813.enc-info-nav-v883 > button + button{
+    flex:1 1 0!important;
+    width:auto!important;
+    min-width:0!important;
+    max-width:25%!important;
+    min-height:34px!important;
+    margin:0!important;
+    padding:3px 1px!important;
+    display:flex!important;
+    flex-direction:row!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:3px!important;
+    border:0!important;
+    border-left:0!important;
+    border-radius:8px!important;
+    background:transparent!important;
+    box-shadow:none!important;
+    color:var(--enc-brand,#8b5e45)!important;
+    font-size:8px!important;
+    font-weight:800!important;
+    line-height:1!important;
+    white-space:nowrap!important;
+    overflow:visible!important;
+  }
+  .mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813.enc-info-nav-v883 > button i{
+    flex:0 0 auto!important;
+    margin:0!important;
+    font-size:9px!important;
+    line-height:1!important;
+    color:var(--enc-brand,#8b5e45)!important;
+  }
+  .mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813.enc-info-nav-v883 > button span{
+    display:inline!important;
+    width:auto!important;
+    max-width:none!important;
+    min-width:0!important;
+    margin:0!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+    white-space:nowrap!important;
+  }
+}
+</style>
+
+
+<style id="mf-v886-info-nav-separators">
+/* V886 — atalhos próximos da divisória e separados por riscos verticais. */
+@media (max-width:640px){
+  .mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813.enc-info-nav-v883{
+    margin:6px auto 2px!important;
+    padding:0 0 3px!important;
+    gap:0!important;
+  }
+  .mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813.enc-info-nav-v883 > button{
+    border-radius:0!important;
+    min-height:30px!important;
+    padding:2px 4px!important;
+  }
+  .mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813.enc-info-nav-v883 > button + button{
+    border-left:1px solid rgba(var(--enc-brand-rgb,139,94,69),.28)!important;
+  }
+}
+</style>
+
+
+<style id="mf-v920-encomendas-footer-mobile-spacing">
+/* V920 — 5 atalhos no mobile sem ficarem espremidos: 3 na primeira linha e 2 centralizados na segunda. */
+@media (max-width:640px){
+  .mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813.enc-info-nav-v883:has(> button:nth-child(5)){
+    display:grid!important;
+    grid-template-columns:repeat(6,minmax(0,1fr))!important;
+    grid-auto-flow:row!important;
+    align-items:center!important;
+    justify-content:stretch!important;
+    width:calc(100% - 20px)!important;
+    margin:9px auto 5px!important;
+    padding:2px 0 5px!important;
+    gap:4px 0!important;
+    overflow:visible!important;
+  }
+  .mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813.enc-info-nav-v883:has(> button:nth-child(5)) > button,
+  .mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813.enc-info-nav-v883:has(> button:nth-child(5)) > button + button{
+    grid-column:span 2!important;
+    width:auto!important;
+    max-width:none!important;
+    min-width:0!important;
+    min-height:32px!important;
+    padding:4px 7px!important;
+    gap:5px!important;
+    border-left:0!important;
+    border-radius:9px!important;
+    font-size:8.6px!important;
+    line-height:1.08!important;
+  }
+  .mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813.enc-info-nav-v883:has(> button:nth-child(5)) > button:nth-child(2),
+  .mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813.enc-info-nav-v883:has(> button:nth-child(5)) > button:nth-child(3),
+  .mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813.enc-info-nav-v883:has(> button:nth-child(5)) > button:nth-child(5){
+    border-left:1px solid rgba(var(--enc-brand-rgb,139,94,69),.20)!important;
+  }
+  .mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813.enc-info-nav-v883:has(> button:nth-child(5)) > button:nth-child(4){
+    grid-column:2 / span 2!important;
+  }
+  .mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813.enc-info-nav-v883:has(> button:nth-child(5)) > button:nth-child(5){
+    grid-column:4 / span 2!important;
+  }
+  .mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813.enc-info-nav-v883:has(> button:nth-child(5)) > button i{
+    font-size:9.5px!important;
+  }
+}
+</style>
+
+<style id="mf-v887-category-nav-like-footer">
+/* V887 — mobile: barra de categorias no mesmo modelo leve dos atalhos do rodapé. */
+@media (max-width:640px){
+  .mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813{
+    display:flex!important;
+    flex-direction:row!important;
+    flex-wrap:nowrap!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    gap:0!important;
+    width:auto!important;
+    max-width:none!important;
+    margin:7px -14px 10px!important;
+    padding:4px 10px!important;
+    min-height:34px!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    background:var(--enc-category-band,var(--enc-brand))!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+    scrollbar-width:none!important;
+  }
+  .mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813::-webkit-scrollbar{display:none!important}
+
+  .mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813 > .enc-category-chip,
+  .mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813 > .enc-category-chip.active{
+    flex:0 0 auto!important;
+    width:auto!important;
+    min-width:max-content!important;
+    height:28px!important;
+    min-height:28px!important;
+    margin:0!important;
+    padding:0 10px!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    border:0!important;
+    border-radius:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+    backdrop-filter:none!important;
+    color:#4f423a!important;
+    font-size:10px!important;
+    font-weight:800!important;
+    line-height:1!important;
+    white-space:nowrap!important;
+  }
+  .mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813 > .enc-category-chip + .enc-category-chip{
+    border-left:1px solid rgba(79,66,58,.28)!important;
+  }
+  .mf-encomendas-v761 .enc-category-nav-v762.enc-category-band-v813 > .enc-category-chip.active{
+    color:var(--enc-brand,#8b5e45)!important;
+    font-weight:950!important;
+    text-decoration:underline!important;
+    text-decoration-thickness:2px!important;
+    text-underline-offset:4px!important;
+  }
+}
+</style>
+
+<style id="mf-encomendas-footer-v929">
+@media(max-width:760px){
+  body.mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813.enc-info-nav-v883,
+  body.mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813.enc-info-nav-v883:has(> button:nth-child(5)){display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-auto-flow:row!important;gap:8px!important;width:calc(100% - 28px)!important;margin:24px 14px 18px!important;padding:0!important;opacity:1!important;overflow:visible!important}
+  body.mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813.enc-info-nav-v883>button,
+  body.mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813.enc-info-nav-v883:has(> button:nth-child(5))>button,
+  body.mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813.enc-info-nav-v883:has(> button:nth-child(5))>button+button{grid-column:auto!important;width:auto!important;max-width:none!important;min-width:0!important;min-height:44px!important;padding:0 11px!important;border:1px solid rgba(96,73,58,.16)!important;border-radius:14px!important;background:rgba(255,255,255,.94)!important;color:#5c4a40!important;box-shadow:0 3px 10px rgba(69,48,36,.055)!important;font-size:11.5px!important;font-weight:850!important;line-height:1.15!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;opacity:1!important}
+  body.mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813.enc-info-nav-v883>button i{color:#8a6249!important;font-size:13px!important;opacity:1!important}
+  body.mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813.enc-info-nav-v883:has(> button:nth-child(5))>button:nth-child(4){grid-column:auto!important}
+  body.mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813.enc-info-nav-v883:has(> button:nth-child(5))>button:nth-child(5),
+  body.mf-encomendas-v761 .enc-info-nav-v776.enc-info-nav-v813.enc-info-nav-v883>button:last-child:nth-child(odd){grid-column:1/-1!important;width:50%!important;justify-self:center!important}
+}
+</style>
+
+{% endblock %}

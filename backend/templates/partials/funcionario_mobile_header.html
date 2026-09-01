@@ -1,0 +1,80 @@
+{% set _mf_lang = 'pt' %}
+<style id="mf-employee-mobile-v3-core">
+:root{
+  --mf-app-blue:#061b8f;
+  --mf-app-blue-soft:#eef3ff;
+  --mf-app-green:#0d5b3a;
+  --mf-app-orange:#ff6b20;
+  --mf-app-purple:#7c3aed;
+  --mf-app-red:#d92d20;
+  --mf-app-ink:#101828;
+  --mf-app-muted:#667085;
+  --mf-app-bg:#f2f6fc;
+  --mf-app-card:#fff;
+  --mf-app-line:#dbe5f2;
+  --mf-app-safe:env(safe-area-inset-bottom,0px);
+}
+@media(max-width:900px){
+  html,body{width:100%!important;max-width:100%!important;min-width:0!important;margin:0!important;overflow-x:hidden!important;background:var(--mf-app-bg)!important}
+  body.mf-ds-employee{padding:0 0 calc(70px + var(--mf-app-safe))!important;background:var(--mf-app-bg)!important;color:var(--mf-app-ink)!important}
+  body.mf-ds-employee .side,body.mf-ds-employee .sidebar,body.mf-ds-employee .premium-sidebar,body.mf-ds-employee aside{display:none!important}
+  body.mf-ds-employee .app,body.mf-ds-employee .layout{display:block!important;width:100%!important;min-width:0!important;min-height:0!important}
+  body.mf-ds-employee .main{width:100%!important;min-width:0!important;padding:0 10px 18px!important;margin:0!important;overflow:visible!important}
+  body.mf-ds-employee .content{width:100%!important;max-width:100%!important;min-width:0!important;padding:12px 0 18px!important;margin:0!important}
+  body.mf-ds-employee .mobilebar{display:none!important}
+
+  .mf-employee-mobile-header{
+    position:sticky;top:0;z-index:10000;width:100%;padding:8px 10px 9px;
+    display:grid;grid-template-columns:minmax(0,1fr);gap:2px;
+    background:rgba(255,255,255,.98);border-bottom:1px solid var(--mf-app-line);
+    box-shadow:0 6px 20px rgba(15,35,90,.055);backdrop-filter:blur(12px)
+  }
+  .mf-employee-head-row{display:flex;align-items:center;gap:8px;min-width:0}
+  .mf-employee-brand{display:flex;align-items:center;gap:9px;min-width:0;flex:1}
+  .mf-employee-logo{width:38px;height:38px;min-width:38px;border-radius:12px;display:grid;place-items:center;overflow:hidden;background:var(--mf-app-blue-soft);color:var(--mf-app-blue);font-size:16px}
+  .mf-employee-logo img{width:100%;height:100%;object-fit:contain;background:#fff}
+  .mf-employee-brand-copy{min-width:0;flex:1}
+  .mf-employee-brand-copy strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--mf-app-blue);font-size:15px;font-weight:950;line-height:1.08}
+  .mf-employee-header-actions{display:flex;align-items:center;gap:5px;flex:0 0 auto}
+  .mf-employee-lang{display:flex;align-items:center;gap:1px;padding:2px;background:#f6f8fc;border:1px solid var(--mf-app-line);border-radius:999px}
+  .mf-employee-lang a{width:26px;height:26px;display:grid;place-items:center;border-radius:999px;color:#667085;font-size:9px;font-weight:950;text-decoration:none}
+  .mf-employee-lang a.active{background:var(--mf-app-blue);color:#fff}
+  .mf-employee-logout{width:34px;height:34px;display:grid;place-items:center;border-radius:11px;background:#fff1f2;color:#be123c;border:1px solid #fecdd3;text-decoration:none;font-size:14px}
+
+  .mf-employee-bottom-nav{
+    position:fixed;left:0;right:0;bottom:0;z-index:11000;min-height:66px;
+    display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);
+    padding:4px 4px calc(4px + var(--mf-app-safe));background:rgba(255,255,255,.99);
+    border-top:1px solid var(--mf-app-line);box-shadow:0 -8px 25px rgba(15,35,90,.08);backdrop-filter:blur(12px)
+  }
+  .mf-employee-bottom-nav a{min-width:0;min-height:56px;padding:4px 1px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:#667085;text-decoration:none;font-size:9px;line-height:1;font-weight:900;text-align:center}
+  .mf-employee-bottom-nav a i{font-size:17px;line-height:1}
+  .mf-employee-bottom-nav a span{display:block;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mf-employee-bottom-nav a.active{background:var(--mf-app-blue-soft);color:var(--mf-app-blue)}
+
+  body.mf-ds-employee input,body.mf-ds-employee select,body.mf-ds-employee textarea{font-size:16px!important}
+  body.mf-ds-employee .modal,body.mf-ds-employee .func-modal,body.mf-ds-employee .modal-agenda{padding:8px!important;align-items:flex-end!important}
+  body.mf-ds-employee .modal-card,body.mf-ds-employee .func-modal-card,body.mf-ds-employee .modal-agenda-card{width:100%!important;max-width:100%!important;max-height:90vh!important;margin:0!important;border-radius:22px 22px 12px 12px!important;overflow-y:auto!important}
+}
+@media(max-width:365px){
+  .mf-employee-brand-copy strong{font-size:14px}
+  .mf-employee-lang a{width:24px;height:24px}
+  .mf-employee-bottom-nav a{font-size:8px}
+  body.mf-ds-employee .main{padding-left:8px!important;padding-right:8px!important}
+}
+</style>
+<header class="mf-employee-mobile-header">
+  <div class="mf-employee-head-row">
+    <div class="mf-employee-brand">
+      <div class="mf-employee-logo">
+        {% if empresa.logo_url %}<img src="{{ empresa.logo_url }}" alt="Logo {{ empresa.nome }}">{% else %}<i class="fa-solid fa-store"></i>{% endif %}
+      </div>
+      <div class="mf-employee-brand-copy">
+        <strong>{{ empresa.nome }}</strong>
+      </div>
+    </div>
+    <div class="mf-employee-header-actions">
+      <a class="mf-employee-logout" href="/logout" aria-label="Sair"><i class="fa-solid fa-right-from-bracket"></i></a>
+    </div>
+  </div>
+</header>

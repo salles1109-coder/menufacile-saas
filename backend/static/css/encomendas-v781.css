@@ -1,0 +1,30 @@
+/* v781 — deixa explícitas as formas online quando existe sinal. */
+.mf-encomendas-v761 .enc-signal-payment-label{
+  margin:0 0 8px;
+  color:#5f554e;
+  font-size:9px;
+  font-weight:850;
+}
+.mf-encomendas-v761 .enc-signal-payment-label[hidden],
+.mf-encomendas-v761 .enc-signal-payment-options[hidden]{display:none!important}
+.mf-encomendas-v761 .enc-signal-payment-options{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  margin-bottom:10px;
+}
+.mf-encomendas-v761 .enc-signal-payment-options .enc-check-option{
+  min-height:54px;
+  padding:9px 10px;
+}
+.mf-encomendas-v761 .enc-signal-box + .enc-payment-balance-label{
+  margin-top:14px;
+}
+@media (max-width:760px){
+  .mf-encomendas-v761 .enc-signal-payment-options{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:430px){
+  .mf-encomendas-v761 .enc-signal-payment-options{grid-template-columns:1fr 1fr}
+  .mf-encomendas-v761 .enc-signal-payment-options .enc-check-option{min-height:52px;padding:8px}
+  .mf-encomendas-v761 .enc-signal-payment-options .enc-check-option small{display:none}
+}

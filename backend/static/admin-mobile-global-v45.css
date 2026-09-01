@@ -1,0 +1,469 @@
+/* MenuFacile Admin Mobile Global v45 — somente celular */
+@media (max-width:768px){
+  :root{--mfg-blue:#1647d8;--mfg-blue-soft:#eaf1ff;--mfg-bg:#f4f7fb;--mfg-card:#fff;--mfg-text:#17233b;--mfg-muted:#718096;--mfg-line:#e3eaf3;--mfg-nav:72px}
+  html,body{width:100%!important;max-width:100%!important;overflow-x:hidden!important;background:var(--mfg-bg)!important}
+  body.mf-global-mobile-admin{padding-bottom:calc(var(--mfg-nav) + env(safe-area-inset-bottom,0px) + 16px)!important;color:var(--mfg-text)!important}
+  body.mf-global-mobile-admin .mf-admin-sidebar,body.mf-global-mobile-admin .mf-admin-sidebar-overlay,body.mf-global-mobile-admin .side,body.mf-global-mobile-admin .fullscreen-toggle{display:none!important}
+  body.mf-global-mobile-admin .mf-admin-shell,body.mf-global-mobile-admin .layout,body.mf-global-mobile-admin .premium-layout,body.mf-global-mobile-admin .delivery-layout{display:block!important;width:100%!important;min-width:0!important;max-width:none!important;background:var(--mfg-bg)!important}
+  body.mf-global-mobile-admin .main,body.mf-global-mobile-admin .premium-main,body.mf-global-mobile-admin .delivery-main,body.mf-global-mobile-admin main.container{display:block!important;width:100%!important;min-width:0!important;max-width:none!important;margin:0!important;padding:0!important;background:var(--mfg-bg)!important;overflow:visible!important}
+  body.mf-global-mobile-admin .topbar,body.mf-global-mobile-admin .premium-topbar,body.mf-global-mobile-admin .delivery-topbar,body.mf-global-mobile-admin>header.header{position:sticky!important;top:0!important;z-index:70!important;min-height:62px!important;padding:10px 14px!important;display:flex!important;align-items:center!important;gap:10px!important;background:rgba(255,255,255,.97)!important;border-bottom:1px solid var(--mfg-line)!important;box-shadow:none!important;backdrop-filter:blur(14px)!important}
+  body.mf-global-mobile-admin .mf-sidebar-toggle{display:none!important}
+  body.mf-global-mobile-admin .top-title,body.mf-global-mobile-admin .premium-page-title,body.mf-global-mobile-admin .delivery-topbar .top-title{min-width:0!important;flex:1!important;gap:0!important}
+  body.mf-global-mobile-admin .top-title:before,body.mf-global-mobile-admin .premium-page-title:before,body.mf-global-mobile-admin .delivery-topbar .top-title:before{display:none!important}
+  body.mf-global-mobile-admin .top-title strong,body.mf-global-mobile-admin .premium-page-title strong,body.mf-global-mobile-admin .delivery-topbar strong{font-size:18px!important;line-height:1.15!important;color:var(--mfg-text)!important;font-weight:900!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+  body.mf-global-mobile-admin .top-title span,body.mf-global-mobile-admin .premium-page-title span{display:none!important}
+  body.mf-global-mobile-admin .top-actions,body.mf-global-mobile-admin .premium-top-actions,body.mf-global-mobile-admin .pp-actions{gap:7px!important;flex:0 0 auto!important}
+  body.mf-global-mobile-admin .top-actions>a:not(:first-child),body.mf-global-mobile-admin .premium-top-actions>a:not(:first-child){display:none!important}
+  body.mf-global-mobile-admin .content,body.mf-global-mobile-admin .premium-content,body.mf-global-mobile-admin .delivery-content,body.mf-global-mobile-admin .pp-content,body.mf-global-mobile-admin main.container{width:100%!important;max-width:none!important;margin:0!important;padding:14px 12px 24px!important;box-sizing:border-box!important}
+  body.mf-global-mobile-admin section,body.mf-global-mobile-admin .grid-2,body.mf-global-mobile-admin .grid-dupla,body.mf-global-mobile-admin .top-row,body.mf-global-mobile-admin .panels{min-width:0!important;max-width:100%!important}
+  body.mf-global-mobile-admin .grid-2,body.mf-global-mobile-admin .grid-dupla,body.mf-global-mobile-admin .top-row,body.mf-global-mobile-admin .panels{display:grid!important;grid-template-columns:1fr!important;gap:12px!important}
+  body.mf-global-mobile-admin .card,body.mf-global-mobile-admin .panel,body.mf-global-mobile-admin .action-card,body.mf-global-mobile-admin .kpi,body.mf-global-mobile-admin .v151-kpi,body.mf-global-mobile-admin .pp-order,body.mf-global-mobile-admin .pp-metric,body.mf-global-mobile-admin .delivery-card{min-width:0!important;max-width:100%!important;border-radius:18px!important;border:1px solid var(--mfg-line)!important;background:#fff!important;box-shadow:0 8px 24px rgba(28,47,82,.055)!important}
+  body.mf-global-mobile-admin .kpis,body.mf-global-mobile-admin .quick-grid,body.mf-global-mobile-admin .v151-kpi-grid,body.mf-global-mobile-admin .pp-summary,body.mf-global-mobile-admin .cards,body.mf-global-mobile-admin .mf-items-kpis{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+  body.mf-global-mobile-admin .kpi,body.mf-global-mobile-admin .action-card,body.mf-global-mobile-admin .v151-kpi,body.mf-global-mobile-admin .pp-metric,body.mf-global-mobile-admin .card-resumo,body.mf-global-mobile-admin .mf-items-kpi{padding:14px!important;min-height:104px!important}
+  body.mf-global-mobile-admin .toolbar,body.mf-global-mobile-admin .pp-toolbar,body.mf-global-mobile-admin .mf-toolbar-navigation,body.mf-global-mobile-admin .mf-toolbar-actions{display:flex!important;gap:9px!important;overflow-x:auto!important;max-width:100%!important;padding-bottom:4px!important;scrollbar-width:none}
+  body.mf-global-mobile-admin .toolbar::-webkit-scrollbar,body.mf-global-mobile-admin .pp-toolbar::-webkit-scrollbar{display:none}
+  body.mf-global-mobile-admin .tabs,body.mf-global-mobile-admin .pp-tabs{display:flex!important;gap:7px!important;overflow-x:auto!important;flex:0 0 auto!important;max-width:100%!important;scrollbar-width:none}
+  body.mf-global-mobile-admin .tab,body.mf-global-mobile-admin .pp-tab{white-space:nowrap!important;min-height:40px!important;border-radius:999px!important}
+  body.mf-global-mobile-admin input,body.mf-global-mobile-admin select,body.mf-global-mobile-admin textarea{max-width:100%!important;min-height:46px!important;border-radius:13px!important;font-size:16px!important;box-sizing:border-box!important}
+  body.mf-global-mobile-admin button,body.mf-global-mobile-admin .btn,body.mf-global-mobile-admin .pp-btn{min-height:42px;border-radius:13px!important}
+  body.mf-global-mobile-admin .form-grid,body.mf-global-mobile-admin .v151-filter-grid,body.mf-global-mobile-admin .delivery-form-grid{display:grid!important;grid-template-columns:1fr!important;gap:12px!important}
+  body.mf-global-mobile-admin .field,body.mf-global-mobile-admin .delivery-field{grid-column:1!important;min-width:0!important}
+  body.mf-global-mobile-admin table{min-width:640px!important}
+  body.mf-global-mobile-admin .table-wrap,body.mf-global-mobile-admin .table-responsive,body.mf-global-mobile-admin .card:has(>table),body.mf-global-mobile-admin .card:has(.table){overflow-x:auto!important;-webkit-overflow-scrolling:touch}
+  body.mf-global-mobile-admin .pp-board{display:grid!important;grid-template-columns:1fr!important;gap:12px!important}
+  body.mf-global-mobile-admin .pp-order{display:grid!important;grid-template-columns:1fr!important;gap:12px!important;padding:15px!important}
+  body.mf-global-mobile-admin .pp-status,body.mf-global-mobile-admin .pp-items,body.mf-global-mobile-admin .pp-total{width:100%!important;min-width:0!important}
+  body.mf-global-mobile-admin .pedido-card,body.mf-global-mobile-admin .reserva-card{width:100%!important;max-width:100%!important;margin-bottom:12px!important}
+  .mf-global-bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:1000;height:var(--mfg-nav);padding:7px 7px calc(7px + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px;background:rgba(255,255,255,.98);border-top:1px solid var(--mfg-line);box-shadow:0 -8px 26px rgba(23,35,58,.08)}
+  .mf-global-bottom-nav a,.mf-global-bottom-nav button{border:0;background:transparent;border-radius:14px;color:#8390a4;text-decoration:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:0;padding:4px 2px;font-family:inherit;font-size:9px;font-weight:900;line-height:1}
+  .mf-global-bottom-nav i{font-size:17px}.mf-global-bottom-nav .is-active{background:var(--mfg-blue-soft);color:var(--mfg-blue)}
+  .mf-global-more-sheet{position:fixed;inset:0;z-index:1200;display:none;align-items:flex-end;background:rgba(15,23,42,.46);padding:12px}.mf-global-more-sheet.is-open{display:flex}
+  .mf-global-more-panel{width:100%;max-height:82vh;overflow:auto;background:#fff;border-radius:24px;padding:14px;box-shadow:0 22px 60px rgba(15,23,42,.24)}
+  .mf-global-more-head{display:flex;align-items:center;justify-content:space-between;padding:4px 4px 12px}.mf-global-more-head strong{font-size:18px}.mf-global-more-close{width:40px;height:40px;border:0;border-radius:13px;background:#f2f5f9;font-size:24px}
+  .mf-global-more-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.mf-global-more-grid a{min-height:74px;padding:12px;border:1px solid var(--mfg-line);border-radius:16px;text-decoration:none;color:var(--mfg-text);display:flex;align-items:center;gap:10px;font-weight:850;background:#fff}.mf-global-more-grid a i{width:30px;height:30px;display:grid;place-items:center;border-radius:10px;background:var(--mfg-blue-soft);color:var(--mfg-blue)}
+  body.mf-global-mobile-admin.mf-has-agenda-nav .mf-global-bottom-nav{display:none!important}
+}
+@media (min-width:769px){.mf-global-bottom-nav,.mf-global-more-sheet{display:none!important}}
+
+/* v46 — correção estrutural definitiva da barra inferior mobile */
+@media (max-width:768px){
+  body.mf-global-mobile-admin .mf-global-bottom-nav{
+    position:fixed!important;
+    left:0!important;
+    right:auto!important;
+    bottom:0!important;
+    width:100vw!important;
+    min-width:100vw!important;
+    max-width:100vw!important;
+    height:calc(var(--mfg-nav) + env(safe-area-inset-bottom,0px))!important;
+    margin:0!important;
+    padding:7px 7px calc(7px + env(safe-area-inset-bottom,0px))!important;
+    box-sizing:border-box!important;
+    display:grid!important;
+    grid-template-columns:repeat(5,minmax(0,1fr))!important;
+    grid-auto-flow:column!important;
+    align-items:stretch!important;
+    gap:3px!important;
+    transform:none!important;
+    overflow:hidden!important;
+  }
+  body.mf-global-mobile-admin .mf-global-bottom-nav>a,
+  body.mf-global-mobile-admin .mf-global-bottom-nav>button{
+    position:relative!important;
+    inset:auto!important;
+    float:none!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    justify-content:center!important;
+    width:auto!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:100%!important;
+    margin:0!important;
+    padding:4px 1px!important;
+    grid-column:auto!important;
+    grid-row:1!important;
+    box-sizing:border-box!important;
+    overflow:hidden!important;
+  }
+  body.mf-global-mobile-admin .mf-global-bottom-nav>a i,
+  body.mf-global-mobile-admin .mf-global-bottom-nav>button i{
+    display:block!important;
+    position:static!important;
+    width:auto!important;
+    height:auto!important;
+    margin:0!important;
+    transform:none!important;
+    line-height:1!important;
+    flex:0 0 auto!important;
+  }
+  body.mf-global-mobile-admin .mf-global-bottom-nav>a span,
+  body.mf-global-mobile-admin .mf-global-bottom-nav>button span{
+    display:block!important;
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+    padding:0!important;
+    text-align:center!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    line-height:1.1!important;
+  }
+}
+
+/* v47 — acabamento visual global dos templates administrativos no celular */
+@media (max-width:768px){
+  body.mf-global-mobile-admin{
+    --mfg-radius:16px;
+    --mfg-control:46px;
+    --mfg-space:12px;
+    --mfg-danger:#e5484d;
+    --mfg-success:#087443;
+  }
+
+  /* Cabeçalhos e títulos */
+  body.mf-global-mobile-admin :is(.page-header,.section-header,.card-header,.panel-header,.modal-header,.mf-section-header){
+    min-width:0!important;
+    max-width:100%!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:10px!important;
+    flex-wrap:wrap!important;
+  }
+  body.mf-global-mobile-admin :is(h1,.page-title,.section-title,.card-title,.panel-title){
+    max-width:100%!important;
+    margin-top:0!important;
+    overflow-wrap:anywhere!important;
+    color:var(--mfg-text)!important;
+  }
+  body.mf-global-mobile-admin h1{font-size:21px!important;line-height:1.2!important}
+  body.mf-global-mobile-admin h2{font-size:18px!important;line-height:1.25!important}
+  body.mf-global-mobile-admin h3{font-size:16px!important;line-height:1.3!important}
+
+  /* Cards */
+  body.mf-global-mobile-admin :is(.card,.panel,.box,.widget,.settings-card,.config-card,.integration-card,.employee-card,.finance-card,.order-card,.product-card){
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    margin-left:0!important;
+    margin-right:0!important;
+    box-sizing:border-box!important;
+  }
+  body.mf-global-mobile-admin :is(.card-body,.panel-body,.box-body,.settings-body,.config-body){
+    min-width:0!important;
+    max-width:100%!important;
+    padding:14px!important;
+    box-sizing:border-box!important;
+  }
+  body.mf-global-mobile-admin :is(.cards-grid,.card-grid,.grid,.dashboard-grid,.settings-grid,.integrations-grid,.employees-grid,.products-grid){
+    min-width:0!important;
+    max-width:100%!important;
+    grid-template-columns:1fr!important;
+    gap:12px!important;
+  }
+
+  /* Filtros, buscas e barras de ações */
+  body.mf-global-mobile-admin :is(.filters,.filter-bar,.filters-bar,.search-bar,.actions-bar,.toolbar,.pp-toolbar,.mf-toolbar-navigation,.mf-toolbar-actions){
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    box-sizing:border-box!important;
+  }
+  body.mf-global-mobile-admin :is(.filters,.filter-bar,.filters-bar){
+    display:flex!important;
+    align-items:center!important;
+    gap:8px!important;
+    overflow-x:auto!important;
+    flex-wrap:nowrap!important;
+    padding:2px 0 5px!important;
+    scrollbar-width:none!important;
+  }
+  body.mf-global-mobile-admin :is(.filters,.filter-bar,.filters-bar)::-webkit-scrollbar{display:none!important}
+  body.mf-global-mobile-admin :is(.filter-btn,.filter-chip,.chip,.badge-filter,.tab,.pp-tab){
+    flex:0 0 auto!important;
+    white-space:nowrap!important;
+    min-height:38px!important;
+    padding:8px 12px!important;
+    border-radius:999px!important;
+  }
+  body.mf-global-mobile-admin :is(.search-box,.search-wrap,.input-search){
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+  }
+
+  /* Formulários */
+  body.mf-global-mobile-admin form{max-width:100%!important;min-width:0!important}
+  body.mf-global-mobile-admin :is(.form-row,.form-grid,.fields-grid,.input-grid,.config-grid,.filter-grid){
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:12px!important;
+    width:100%!important;
+    min-width:0!important;
+  }
+  body.mf-global-mobile-admin :is(.form-group,.field,.input-group,.control-group){
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    margin-left:0!important;
+    margin-right:0!important;
+  }
+  body.mf-global-mobile-admin label{
+    display:block!important;
+    margin-bottom:6px!important;
+    font-size:13px!important;
+    font-weight:800!important;
+    color:#334155!important;
+  }
+  body.mf-global-mobile-admin :is(input:not([type="checkbox"]):not([type="radio"]),select,textarea){
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    border:1px solid #dbe4ef!important;
+    background:#fff!important;
+    box-shadow:none!important;
+    padding:11px 13px!important;
+  }
+  body.mf-global-mobile-admin textarea{min-height:110px!important;resize:vertical!important}
+  body.mf-global-mobile-admin :is(input,select,textarea):focus{
+    border-color:var(--mfg-blue)!important;
+    outline:3px solid rgba(22,71,216,.12)!important;
+    outline-offset:0!important;
+  }
+
+  /* Botões */
+  body.mf-global-mobile-admin :is(button,.btn,.button,.pp-btn,a.btn){
+    box-sizing:border-box!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:7px!important;
+    max-width:100%!important;
+    font-weight:800!important;
+    line-height:1.15!important;
+    text-align:center!important;
+    white-space:normal!important;
+  }
+  body.mf-global-mobile-admin :is(.form-actions,.modal-actions,.card-actions,.footer-actions,.actions){
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:8px!important;
+    width:100%!important;
+    max-width:100%!important;
+  }
+  body.mf-global-mobile-admin :is(.form-actions,.modal-actions,.card-actions,.footer-actions,.actions)>*{
+    width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+  }
+  body.mf-global-mobile-admin :is(.btn-primary,.primary,.save-btn){background:var(--mfg-blue)!important;color:#fff!important}
+  body.mf-global-mobile-admin :is(.btn-danger,.danger,.delete-btn){background:var(--mfg-danger)!important;color:#fff!important}
+  body.mf-global-mobile-admin :is(.btn-success,.success){background:var(--mfg-success)!important;color:#fff!important}
+
+  /* Modais */
+  body.mf-global-mobile-admin :is(.modal,.dialog,.popup){padding:12px!important;box-sizing:border-box!important}
+  body.mf-global-mobile-admin :is(.modal-content,.dialog-content,.popup-content){
+    width:100%!important;
+    max-width:520px!important;
+    max-height:calc(100dvh - 24px)!important;
+    overflow:auto!important;
+    border-radius:20px!important;
+    margin:auto!important;
+    box-sizing:border-box!important;
+  }
+
+  /* Tabelas e conteúdo longo */
+  body.mf-global-mobile-admin :is(.table-wrap,.table-responsive,.responsive-table){
+    width:100%!important;
+    max-width:100%!important;
+    overflow-x:auto!important;
+    border-radius:14px!important;
+  }
+  body.mf-global-mobile-admin img,body.mf-global-mobile-admin svg,body.mf-global-mobile-admin video{
+    max-width:100%!important;
+    height:auto;
+  }
+  body.mf-global-mobile-admin pre,body.mf-global-mobile-admin code{max-width:100%!important;overflow-wrap:anywhere!important}
+
+  /* Estados vazios e mensagens */
+  body.mf-global-mobile-admin :is(.empty-state,.no-results,.alert,.notice,.message){
+    width:100%!important;
+    max-width:100%!important;
+    box-sizing:border-box!important;
+    border-radius:15px!important;
+  }
+
+  /* Evita elementos flutuantes cobrindo a barra inferior */
+  body.mf-global-mobile-admin :is(.fab,.floating-action,.floating-btn){
+    bottom:calc(var(--mfg-nav) + env(safe-area-inset-bottom,0px) + 14px)!important;
+  }
+
+  /* Páginas densas: ações principais em uma linha limpa */
+  body.mf-page-cardapio :is(.top-actions,.page-actions),
+  body.mf-page-configuracoes :is(.top-actions,.page-actions),
+  body.mf-page-integracoes :is(.top-actions,.page-actions),
+  body.mf-page-funcionarios :is(.top-actions,.page-actions){
+    width:auto!important;
+    max-width:48%!important;
+  }
+}
+
+
+/* v53 — Central de Pedidos mobile: topo sem vazio, controles compactos e navegação contextual */
+@media (max-width:768px){
+  body.mf-global-mobile-admin.mf-ds-pedidos,
+  body.mf-global-mobile-admin.mf-ds-pedidos .mf-admin-shell,
+  body.mf-global-mobile-admin.mf-ds-pedidos .premium-layout,
+  body.mf-global-mobile-admin.mf-ds-pedidos .premium-main{
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    min-height:0!important;
+    margin:0!important;
+    padding-top:0!important;
+    transform:none!important;
+  }
+
+  body.mf-global-mobile-admin.mf-ds-pedidos .premium-sidebar{
+    display:none!important;
+  }
+
+  body.mf-global-mobile-admin.mf-ds-pedidos .premium-topbar{
+    position:relative!important;
+    inset:auto!important;
+    top:auto!important;
+    width:100%!important;
+    height:58px!important;
+    min-height:58px!important;
+    max-height:58px!important;
+    margin:0!important;
+    padding:0 18px!important;
+    display:flex!important;
+    align-items:center!important;
+    overflow:hidden!important;
+    border-radius:0!important;
+    background:#fff!important;
+    border-bottom:1px solid #e3eaf3!important;
+    box-shadow:none!important;
+  }
+
+  body.mf-global-mobile-admin.mf-ds-pedidos .premium-topbar::before,
+  body.mf-global-mobile-admin.mf-ds-pedidos .premium-topbar::after{
+    content:none!important;
+    display:none!important;
+  }
+
+  body.mf-global-mobile-admin.mf-ds-pedidos .premium-page-title{
+    width:100%!important;
+    height:58px!important;
+    min-height:58px!important;
+    margin:0!important;
+    padding:0!important;
+    display:flex!important;
+    align-items:center!important;
+    gap:10px!important;
+  }
+
+  body.mf-global-mobile-admin.mf-ds-pedidos .premium-page-title::before{
+    content:"\f05a"!important;
+    display:grid!important;
+    place-items:center!important;
+    width:34px!important;
+    height:34px!important;
+    min-width:34px!important;
+    flex:0 0 34px!important;
+    margin:0!important;
+    border:1px solid #d9e2f1!important;
+    border-radius:50%!important;
+    background:#f4efff!important;
+    color:#4b006e!important;
+    font-family:"Font Awesome 6 Free"!important;
+    font-size:13px!important;
+    font-weight:900!important;
+  }
+
+  body.mf-global-mobile-admin.mf-ds-pedidos .premium-page-title strong{
+    margin:0!important;
+    color:#17233b!important;
+    font-size:17px!important;
+    line-height:1.1!important;
+    font-weight:950!important;
+  }
+
+  body.mf-global-mobile-admin.mf-ds-pedidos .premium-top-actions{
+    display:none!important;
+  }
+
+  body.mf-global-mobile-admin.mf-ds-pedidos .content{
+    margin:0!important;
+    padding:12px 12px calc(112px + env(safe-area-inset-bottom,0px))!important;
+  }
+
+  body.mf-global-mobile-admin.mf-ds-pedidos .top-row{
+    gap:10px!important;
+    margin:0 0 10px!important;
+  }
+
+  body.mf-global-mobile-admin.mf-ds-pedidos :is(
+    .operacao-card,
+    .tempos-clean-card,
+    .atendimento-card,
+    #v125MesasAbertas,
+    .v125-mesas-abertas
+  ){
+    width:100%!important;
+    min-width:0!important;
+    min-height:0!important;
+    height:auto!important;
+    margin:0!important;
+    padding:0!important;
+    border-radius:16px!important;
+    box-sizing:border-box!important;
+  }
+
+  body.mf-global-mobile-admin.mf-ds-pedidos :is(
+    .operacao-head,
+    .tempos-clean-head,
+    .atendimento-head,
+    #v125MesasAbertas>.v125-mesas-head
+  ){
+    width:100%!important;
+    min-height:64px!important;
+    height:64px!important;
+    margin:0!important;
+    padding:10px 12px!important;
+    align-items:center!important;
+    box-sizing:border-box!important;
+  }
+
+  body.mf-global-mobile-admin.mf-ds-pedidos .status-tabs{
+    width:100%!important;
+    margin:0 0 12px!important;
+    padding:1px 18px 5px 1px!important;
+    scroll-padding-left:1px!important;
+    scroll-padding-right:18px!important;
+  }
+
+  body.mf-global-mobile-admin.mf-ds-pedidos .status-tabs::after{
+    content:""!important;
+    display:block!important;
+    flex:0 0 8px!important;
+    width:8px!important;
+  }
+
+  body.mf-global-mobile-admin.mf-ds-pedidos .v83-auto-status-dot{
+    width:11px!important;
+    height:11px!important;
+    right:18px!important;
+    bottom:calc(88px + env(safe-area-inset-bottom,0px))!important;
+    box-shadow:0 0 0 5px rgba(22,163,74,.14),0 7px 18px rgba(15,35,90,.16)!important;
+  }
+
+  body.mf-global-mobile-admin.mf-ds-pedidos .mf-global-bottom-nav[data-mf-business="restaurante"] a span,
+  body.mf-global-mobile-admin.mf-ds-pedidos .mf-global-bottom-nav[data-mf-business="restaurante"] button span{
+    font-size:9.5px!important;
+  }
+}

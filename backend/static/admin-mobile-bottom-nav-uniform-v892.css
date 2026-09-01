@@ -1,0 +1,95 @@
+/* MenuFacile V892 — barra inferior mobile: todos os itens no mesmo alinhamento. */
+@media (max-width:768px){
+  body.mf-global-mobile-admin :is(.mf-global-bottom-nav,.mf-mobile-bottom-nav,.mf-stage1-bottom-nav) > :nth-child(3),
+  body.mf-global-mobile-admin :is(.mf-global-bottom-nav,.mf-mobile-bottom-nav,.mf-stage1-bottom-nav) > [aria-label*="notifica" i],
+  body.mf-global-mobile-admin :is(.mf-global-bottom-nav,.mf-mobile-bottom-nav,.mf-stage1-bottom-nav) > [title*="notifica" i]{
+    position:relative!important;
+    inset:auto!important;
+    top:auto!important;
+    right:auto!important;
+    bottom:auto!important;
+    left:auto!important;
+    transform:none!important;
+    translate:none!important;
+    float:none!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:4px!important;
+    width:auto!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:100%!important;
+    min-height:0!important;
+    max-height:none!important;
+    margin:0!important;
+    padding:4px 1px!important;
+    border:0!important;
+    border-radius:14px!important;
+    background:transparent!important;
+    box-shadow:none!important;
+    overflow:hidden!important;
+    color:#8390a4!important;
+    font-size:9px!important;
+    line-height:1!important;
+    z-index:auto!important;
+  }
+
+  body.mf-global-mobile-admin :is(.mf-global-bottom-nav,.mf-mobile-bottom-nav,.mf-stage1-bottom-nav) > :nth-child(3)::before,
+  body.mf-global-mobile-admin :is(.mf-global-bottom-nav,.mf-mobile-bottom-nav,.mf-stage1-bottom-nav) > :nth-child(3)::after,
+  body.mf-global-mobile-admin :is(.mf-global-bottom-nav,.mf-mobile-bottom-nav,.mf-stage1-bottom-nav) > [aria-label*="notifica" i]::before,
+  body.mf-global-mobile-admin :is(.mf-global-bottom-nav,.mf-mobile-bottom-nav,.mf-stage1-bottom-nav) > [aria-label*="notifica" i]::after{
+    box-shadow:none!important;
+    transform:none!important;
+  }
+
+  body.mf-global-mobile-admin :is(.mf-global-bottom-nav,.mf-mobile-bottom-nav,.mf-stage1-bottom-nav) > :nth-child(3) > :is(i,svg),
+  body.mf-global-mobile-admin :is(.mf-global-bottom-nav,.mf-mobile-bottom-nav,.mf-stage1-bottom-nav) > [aria-label*="notifica" i] > :is(i,svg){
+    position:static!important;
+    inset:auto!important;
+    display:block!important;
+    width:auto!important;
+    min-width:0!important;
+    height:auto!important;
+    min-height:0!important;
+    margin:0!important;
+    padding:0!important;
+    border:0!important;
+    border-radius:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+    color:inherit!important;
+    font-size:20px!important;
+    line-height:1!important;
+    transform:none!important;
+  }
+
+  body.mf-global-mobile-admin :is(.mf-global-bottom-nav,.mf-mobile-bottom-nav,.mf-stage1-bottom-nav) > :nth-child(3) > span,
+  body.mf-global-mobile-admin :is(.mf-global-bottom-nav,.mf-mobile-bottom-nav,.mf-stage1-bottom-nav) > [aria-label*="notifica" i] > span{
+    position:static!important;
+    display:block!important;
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+    padding:0!important;
+    background:transparent!important;
+    color:inherit!important;
+    font-size:9px!important;
+    font-weight:900!important;
+    line-height:1.1!important;
+    text-align:center!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    transform:none!important;
+  }
+
+  body.mf-global-mobile-admin :is(.mf-global-bottom-nav,.mf-mobile-bottom-nav,.mf-stage1-bottom-nav) > :nth-child(3).is-active,
+  body.mf-global-mobile-admin :is(.mf-global-bottom-nav,.mf-mobile-bottom-nav,.mf-stage1-bottom-nav) > :nth-child(3).active,
+  body.mf-global-mobile-admin :is(.mf-global-bottom-nav,.mf-mobile-bottom-nav,.mf-stage1-bottom-nav) > [aria-label*="notifica" i].is-active,
+  body.mf-global-mobile-admin :is(.mf-global-bottom-nav,.mf-mobile-bottom-nav,.mf-stage1-bottom-nav) > [aria-label*="notifica" i].active{
+    background:var(--mfg-blue-soft,#eaf1ff)!important;
+    color:var(--mfg-blue,#1236b5)!important;
+  }
+}
